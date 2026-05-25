@@ -1,0 +1,55 @@
+[34m[INFO](B[m Selected workflow: install
+[34m[INFO](B[m Nvidia GPU detected. Setting up proper env's and configs
+[34m[INFO](B[m Bibata-Hyprcursor directory detected. Activating Hyprcursor....
+[33m[NOTE](B[m kb_layout [35mus(B[m configured in settings.
+[34m[INFO](B[m Quickshell detected - enabling in startup and refresh scripts
+[34m[INFO](B[m Added KeybindsLayoutInit.sh to user Startup_Apps overlay
+[32m[OK](B[m You have chosen ≥ 1440p resolution.
+Editing [36m/usr/share/sddm/themes/simple_sddm_2(B[m to 12H format
+[32m[OK](B[m 12H format set on waybar clocks succesfully.
+[32m[OK](B[m - Copy completed for [33mfastfetch(B[m
+[33m[NOTE](B[m - Backed up kitty to /home/c0o0c/.config/kitty-backup-back-up_0521_2310.
+[32m[OK](B[m - Replaced kitty with new configuration.
+[32m[OK](B[m - Copy completed for [33mrofi(B[m
+[32m[OK](B[m - Copy completed for [33mswaync(B[m
+[32m[OK](B[m - Copy completed for [33mwaybar(B[m
+[32m[OK](B[m - Copy of config for [33mbtop(B[m completed!
+[32m[OK](B[m - Copy of config for [33mcava(B[m completed!
+[32m[OK](B[m - Copy of config for [33mhypr(B[m completed!
+[32m[OK](B[m - Copy of config for [33mKvantum(B[m completed!
+[32m[OK](B[m - Copy of config for [33mqt5ct(B[m completed!
+[32m[OK](B[m - Copy of config for [33mqt6ct(B[m completed!
+[32m[OK](B[m - Copy of config for [33mswappy(B[m completed!
+[32m[OK](B[m - Copy of config for [33mwallust(B[m completed!
+[32m[OK](B[m - Copy of config for [33mwlogout(B[m completed!
+[33m[NOTE](B[m - Found old Quickshell startup command, updating to new overview config...
+[32m[OK](B[m - Updated Quickshell startup command to use overview config
+[34m[INFO](B[m Skipping UserConfigs duplicate cleanup for detected version v2.3.20 (>= 2.3.20).
+[33m[NOTE](B[m Restoring some files in [35m/home/c0o0c/.config/hypr directory(B[m...
+[31m[ERROR](B[m - Backup file /home/c0o0c/.config/hypr-backup-back-up_0521_2310/hyprlock.conf does not exist.
+[31m[ERROR](B[m - Backup file /home/c0o0c/.config/hypr-backup-back-up_0521_2310/hypridle.conf does not exist.
+[32m[OK](B[m Some [35mwallpapers(B[m copied successfully!
+[33m[NOTE](B[m Current wallpaper applied as default SDDM background
+[32m[OK](B[m Wallpapers downloaded successfully.
+[32m[OK](B[m Wallpapers copied successfully.
+[[1m[34mI[39m[0m] [1m[35mimage[39m[0m: .wallpaper_current
+[[1m[34mI[39m[0m] [1m[35mimage parser[39m[0m: Using [94m[1mKmeans[0m[39m backend parser
+[[1m[34mI[39m[0m] [1m[35mthreshold[39m[0m: Using a threshold of 11 in between colors.
+[[1m[34mI[39m[0m] [1m[35mcolorspace[39m[0m: Using [32m[1mLabMixed[0m[39m colorspace variation
+[[1m[34mI[39m[0m] [1m[35mscheme palette[39m[0m: Using [94m[1mDark16[0m[39m palette
+▐⠂       ▌     0.000 s	Generating color scheme..▐⠈       ▌     0.080 s	Generating color scheme..▐ ⠂      ▌     0.160 s	Generating color scheme..▐ ⠠      ▌     0.241 s	Generating color scheme..▐  ⡀     ▌     0.321 s	Generating color scheme..▐  ⠠     ▌     0.401 s	Generating color scheme..▐   ⠂    ▌     0.481 s	Generating color scheme..[    🗸    ]     0.496 s	Generating color scheme..
+[[1m[34mI[39m[0m] Color scheme palette generated!
+[48;2;77;72;77m    [49m[48;2;37;21;38m    [49m[48;2;84;53;112m    [49m[48;2;84;53;113m    [49m[48;2;162;75;116m    [49m[48;2;162;75;116m    [49m[48;2;147;95;83m    [49m[48;2;217;183;175m    [49m
+[48;2;152;128;122m    [49m[48;2;50;28;50m    [49m[48;2;112;70;150m    [49m[48;2;112;70;150m    [49m[48;2;216;100;154m    [49m[48;2;216;100;154m    [49m[48;2;196;127;111m    [49m[48;2;217;183;175m    [49m
+
+[[1m[34mI[39m[0m] [1m[35mtemplates[39m[0m: Writing templates..
+ [1m[34m*[39m[0m Templated [1mkitty[0m to '[3m/home/c0o0c/.config/kitty/kitty-themes/01-Wallust.conf[0m'
+ [1m[34m*[39m[0m Templated [1mhypr[0m to '[3m/home/c0o0c/.config/hypr/wallust/wallust-hyprland.conf[0m'
+ [1m[34m*[39m[0m Templated [1mghostty[0m to '[3m/home/c0o0c/.config/ghostty/wallust.conf[0m'
+ [1m[34m*[39m[0m Templated [1mcava[0m to '[3m/home/c0o0c/.config/cava/config[0m'
+ [1m[34m*[39m[0m Templated [1mquickshell[0m to '[3m/home/c0o0c/.config/quickshell/qml_color.json[0m'
+ [1m[34m*[39m[0m Templated [1mwaybar[0m to '[3m/home/c0o0c/.config/waybar/wallust/colors-waybar.css[0m'
+ [1m[34m*[39m[0m Templated [1mrofi[0m to '[3m/home/c0o0c/.config/rofi/wallust/colors-rofi.rasi[0m'
+[[1m[34mI[39m[0m] [1m[35mcache[39m[0m: Saving scheme to cache.
+
+[5m[1m[38;2;217;183;175mE [39m[0m[0m[5m[1m[38;2;196;127;111mN [39m[0m[0m[5m[1m[38;2;216;100;154mJ [39m[0m[0m[5m[1m[38;2;216;100;154mO [39m[0m[0m[5m[1m[38;2;112;70;150mY [39m[0m[0m[9m  [0m[5m[1m[38;2;112;70;150mT [39m[0m[0m[5m[1m[38;2;50;28;50mH [39m[0m[0m[5m[1m[38;2;152;128;122mE [39m[0m[0m[9m  [0m[5m[1m[38;2;217;183;175mP [39m[0m[0m[5m[1m[38;2;147;95;83mA [39m[0m[0m[5m[1m[38;2;162;75;116mL [39m[0m[0m[5m[1m[38;2;162;75;116mE [39m[0m[0m[5m[1m[38;2;84;53;113mT [39m[0m[0m[5m[1m[38;2;84;53;112mT [39m[0m[0m[5m[1m[38;2;37;21;38mE [39m[0m[0m[5m[1m[38;2;234;210;205m! [39m[0m[0m

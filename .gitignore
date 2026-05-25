@@ -1,0 +1,17 @@
+# Ignore wallpapers images but keep the download script
+Hyprland-Dots/wallpapers/*
+!Hyprland-Dots/wallpapers/download_wallpapers.sh
+
+# Ignore system installation logs and build leftovers
+yay-bin/
+install-*.log
+Install-Logs/
+
+# Python and virtual environments
+__pycache__/
+.venv/
+venv/
+.idea/
+.vscode/
+*.swp
+*.swo
