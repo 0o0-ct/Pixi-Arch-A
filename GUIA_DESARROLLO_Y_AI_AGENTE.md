@@ -4,7 +4,7 @@
 Este documento contiene las directrices técnicas y de diseño fundamentales para cualquier Agente de Inteligencia Artificial (por ejemplo: Antigravity, Gemini 3.5 Flash, Gemini 3.1 Pro) que colabore con el creador **`0o0-ct`** en el desarrollo y mantenimiento del sistema operativo **`Pixi-Arch-A`**.
 
 > [!IMPORTANT]
-> **REGLA DE ORO PARA EL AGENTE:** Toda la interfaz de usuario, los scripts de instalación, desinstalación y configuración deben permanecer en **Español de alta calidad (Castellano)**. Ningún script debe mostrar menciones externas a marcas antiguas como "JaKooLit" o banderas ajenas al proyecto como "🇵🇭" en los diálogos interactivos, manteniendo la identidad exclusiva de **`Pixi-Arch-A`**.
+> **REGLA DE ORO PARA EL AGENTE:** Toda la interfaz de usuario, los scripts de instalación, desinstalación y configuración deben permanecer en **Español de alta calidad (Castellano)**. Ningún script debe mostrar menciones externas a marcas antiguas como "JaKooLit" o banderas ajenas al proyecto en los diálogos interactivos. La única bandera permitida y oficial para el sistema es la de **Guatemala (🇬🇹)** en honor al origen de su creador, manteniendo la identidad exclusiva de **`Pixi-Arch-A 🇬🇹`**.
 
 ---
 

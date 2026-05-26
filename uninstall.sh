@@ -243,19 +243,19 @@ while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
 done
 
 printf "\n%.0s" {1..1}
-printf "\n%s${SKY_BLUE}Attempting to remove locally installed packages${RESET}\n" "${NOTE}"
+printf "\n%s${SKY_BLUE}Intentando eliminar paquetes instalados localmente${RESET}\n" "${NOTE}"
 for file in ags pokemon-colorscripts; do
     if [ -f "/usr/local/bin/$file" ]; then
         sudo rm "/usr/local/bin/$file"
-        echo "$file removed."
+        echo "$file eliminado."
     fi
 done
 
 printf "\n%.0s" {1..1}
-printf "\n%s${SKY_BLUE}Attempting to remove selected directories${RESET}\n" "${NOTE}"
+printf "\n%s${SKY_BLUE}Intentando eliminar directorios seleccionados${RESET}\n" "${NOTE}"
 remove_directories /tmp/selected_directories.txt
 
 printf "\n%.0s" {1..1}
-echo -e "$MAGENTA Hyprland and related components have been uninstalled.$RESET"
-echo -e "$YELLOW It is recommended to reboot your system now.$RESET"
+echo -e "$MAGENTA 🇬🇹 Pixi-Arch-A y sus componentes relacionados han sido desinstalados.$RESET"
+echo -e "$YELLOW Se recomienda reiniciar el sistema ahora.$RESET"
 printf "\n%.0s" {1..1}

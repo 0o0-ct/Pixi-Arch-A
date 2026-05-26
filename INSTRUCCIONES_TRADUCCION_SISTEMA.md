@@ -103,7 +103,7 @@ fi
 Durante la traducción, aprovecha para purgar firmas antiguas o caracteres que no pertenezcan al sistema **`Pixi-Arch-A`**:
 * Reemplaza `"KooL's Hyprland"` o `"JaKooLit's Dots"` por `"Pixi-Arch-A"`.
 * Reemplaza `"KooL's Dots"` por `"dotfiles de Pixi-Arch-A"`.
-* Remueve la bandera `"🇵🇭"` de los textos de salida.
+* Remueve la bandera `"🇵🇭"` de los textos de salida e introduce con orgullo la bandera de **Guatemala (`"🇬🇹"`)** en su lugar como la bandera oficial de **Pixi-Arch-A**.
 
 ---
 
