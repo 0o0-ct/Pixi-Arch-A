@@ -270,7 +270,7 @@ options_command+=(
     "zsh" "Install zsh shell with Oh-My-Zsh?" "OFF"
     "pokemon" "Add Pokemon color scripts to your terminal?" "OFF"
     "rog" "Are you installing on Asus ROG laptops?" "OFF"
-    "dots" "Download and install pre-configured KooL Hyprland dotfiles?" "OFF"
+    "dots" "Descargar e instalar configuraciones y dotfiles de Pixi-Arch-A" "OFF"
 )
 
 # Capture the selected options before the while loop starts
@@ -308,33 +308,33 @@ while true; do
     # If "dots" is not selected, show a note and ask the user to proceed or return to choices
     if [[ "$dots_selected" == "OFF" ]]; then
         # Show a note about not selecting the "dots" option
-        if ! whiptail --title "KooL Hyprland Dot Files" --yesno \
-        "You have not selected to install the pre-configured KooL Hyprland dotfiles.\n\nKindly NOTE that if you proceed without Dots, Hyprland will start with default vanilla Hyprland configuration and I won't be able to give you support.\n\nWould you like to continue install without KooL Hyprland Dots or return to choices/options?" \
-        --yes-button "Continue" --no-button "Return" 15 90; then
-            echo "🔙 Returning to options..." | tee -a "$LOG"
+        if ! whiptail --title "Configuraciones de Pixi-Arch-A" --yesno \
+        "No has seleccionado instalar las configuraciones y dotfiles personalizadas de Pixi-Arch-A.\n\nNOTA: Si continúas sin las Dots, Hyprland iniciará con una configuración vacía por defecto y no podrás disfrutar del diseño de cristal esmerilado premium.\n\n¿Deseas continuar la instalación sin las dotfiles de Pixi-Arch-A?" \
+        --yes-button "Continuar" --no-button "Regresar" 15 90; then
+            echo "🔙 Regresando a las opciones..." | tee -a "$LOG"
             continue
         else
             # User chose to continue
-            echo "${INFO} ⚠️ Continuing WITHOUT the dotfiles installation..." | tee -a "$LOG"
+            echo "${INFO} ⚠️ Continuando SIN la instalación de las dotfiles..." | tee -a "$LOG"
 			printf "\n%.0s" {1..1}
         fi
     fi
 
     # Prepare the confirmation message
-    confirm_message="You have selected the following options:\n\n"
+    confirm_message="Has seleccionado las siguientes opciones:\n\n"
     for option in "${options[@]}"; do
         confirm_message+=" - $option\n"
     done
-    confirm_message+="\nAre you happy with these choices?"
+    confirm_message+="\n¿Estás de acuerdo con estas opciones?"
 
     # Confirmation prompt
-    if ! whiptail --title "Confirm Your Choices" --yesno "$(printf "%s" "$confirm_message")" 25 80; then
+    if ! whiptail --title "Confirmar Opciones" --yesno "$(printf "%s" "$confirm_message")" 25 80; then
         echo -e "\n"
-        echo "❌ ${SKY_BLUE}You're not 🫵 happy${RESET}. ${YELLOW}Returning to options...${RESET}" | tee -a "$LOG"
+        echo "❌ ${SKY_BLUE}No estás de acuerdo${RESET}. ${YELLOW}Regresando a las opciones...${RESET}" | tee -a "$LOG"
         continue 
     fi
 
-    echo "👌 ${OK} You confirmed your choices. Proceeding with ${SKY_BLUE}KooL 🇵🇭 Hyprland Installation...${RESET}" | tee -a "$LOG"
+    echo "👌 ${OK} Confirmaste tus opciones. Procediendo con la instalación de ${SKY_BLUE}Pixi-Arch-A...${RESET}" | tee -a "$LOG"
     break  
 done
 
@@ -356,7 +356,7 @@ fi
 sleep 1
 
 # Run the Hyprland related scripts
-echo "${INFO} Installing ${SKY_BLUE}KooL Hyprland additional packages...${RESET}" | tee -a "$LOG"
+echo "${INFO} Instalando los paquetes adicionales de ${SKY_BLUE}Pixi-Arch-A...${RESET}" | tee -a "$LOG"
 sleep 1
 execute_script "01-hypr-pkgs.sh"
 
@@ -441,7 +441,7 @@ for option in "${options[@]}"; do
             execute_script "rog.sh"
             ;;
         dots)
-            echo "${INFO} Installing pre-configured ${SKY_BLUE}KooL Hyprland dotfiles...${RESET}" | tee -a "$LOG"
+            echo "${INFO} Instalando las configuraciones y dotfiles de ${SKY_BLUE}Pixi-Arch-A...${RESET}" | tee -a "$LOG"
             execute_script "dotfiles-main.sh"
             ;;
         *)
@@ -470,37 +470,37 @@ if pacman -Q hyprland &> /dev/null || pacman -Q hyprland-git &> /dev/null; then
     sleep 2
     printf "\n%.0s" {1..2}
 
-    printf "${SKY_BLUE}Thank you${RESET} 🫰 for using 🇵🇭 ${MAGENTA}KooL's Hyprland Dots${RESET}. ${YELLOW}Enjoy and Have a good day!${RESET}"
+    printf "${SKY_BLUE}¡Muchas gracias${RESET} 🫰 por usar ${MAGENTA}Pixi-Arch-A${RESET}! ${YELLOW}¡Disfruta tu nuevo sistema y ten un gran día!${RESET}"
     printf "\n%.0s" {1..2}
 
-    printf "\n${NOTE} You can start Hyprland by typing ${SKY_BLUE}Hyprland${RESET} (IF SDDM is not installed) (note the capital H!).\n"
-    printf "\n${NOTE} However, it is ${YELLOW}highly recommended to reboot${RESET} your system.\n\n"
+    printf "\n${NOTE} Puedes iniciar Hyprland escribiendo ${SKY_BLUE}Hyprland${RESET} (si no instalaste SDDM) (¡nota la H mayúscula!).\n"
+    printf "\n${NOTE} Sin embargo, se ${YELLOW}recomienda encarecidamente reiniciar${RESET} el sistema.\n\n"
 
     while true; do
-        echo -n "${CAT} Would you like to reboot now? (y/n): "
+        echo -n "${CAT} ¿Deseas reiniciar el sistema ahora? (s/n): "
         read HYP
         HYP=$(echo "$HYP" | tr '[:upper:]' '[:lower:]')
 
-        if [[ "$HYP" == "y" || "$HYP" == "yes" ]]; then
-            echo "${INFO} Rebooting now..."
+        if [[ "$HYP" == "s" || "$HYP" == "si" || "$HYP" == "sí" || "$HYP" == "y" || "$HYP" == "yes" ]]; then
+            echo "${INFO} Reiniciando el sistema ahora..."
             systemctl reboot 
             break
         elif [[ "$HYP" == "n" || "$HYP" == "no" ]]; then
-            echo "👌 ${OK} You chose NOT to reboot"
+            echo "👌 ${OK} Elegiste NO reiniciar"
             printf "\n%.0s" {1..1}
             # Check if NVIDIA GPU is present
             if lspci | grep -i "nvidia" &> /dev/null; then
-                echo "${INFO} HOWEVER ${YELLOW}NVIDIA GPU${RESET} detected. Reminder that you must REBOOT your SYSTEM..."
+                echo "${INFO} SIN EMBARGO, se detectó una ${YELLOW}GPU NVIDIA${RESET}. Te recordamos que es necesario REINICIAR el SISTEMA..."
                 printf "\n%.0s" {1..1}
             fi
             break
         else
-            echo "${WARN} Invalid response. Please answer with 'y' or 'n'."
+            echo "${WARN} Respuesta inválida. Por favor, responde con 's' o 'n'."
         fi
     done
 else
     # Print error message if neither package is installed
-    printf "\n${WARN} Hyprland is NOT installed. Please check 00_CHECK-time_installed.log and other files in the Install-Logs/ directory..."
+    printf "\n${WARN} Hyprland NO está instalado. Por favor, revisa el archivo de registro en Install-Logs/..."
     printf "\n%.0s" {1..3}
     exit 1
 fi

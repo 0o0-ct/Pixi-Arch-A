@@ -22,25 +22,29 @@ RESET="$(tput sgr0)"
 
 printf "\n%.0s" {1..2}
 echo -e "\e[35m
-	╦╔═┌─┐┌─┐╦    ╦ ╦┬ ┬┌─┐┬─┐┬  ┌─┐┌┐┌┌┬┐
-	╠╩╗│ ││ │║    ╠═╣└┬┘├─┘├┬┘│  ├─┤│││ ││ UNINSTALL
-	╩ ╩└─┘└─┘╩═╝  ╩ ╩ ┴ ┴  ┴└─┴─┘┴ ┴┘└┘─┴┘ Arch Linux
+    ██████╗ ██╗██╗  ██╗██╗      █████╗ ██████╗  ██████╗██╗  ██╗      █████╗ 
+    ██╔══██╗██║╚██╗██╔╝██║     ██╔══██╗██╔══██╗██╔════╝██║  ██║     ██╔══██╗
+    ██████╔╝██║ ╚███╔╝ ██║     ███████║██████╔╝██║     ███████║     ███████║
+    ██╔═══╝ ██║ ██╔██╗ ██║     ██╔══██║██╔══██╗██║     ██╔══██║     ██╔══██║
+    ██║     ██║██╔╝ ██╗██║     ██║  ██║██║  ██║╚██████╗██║  ██║     ██║  ██║
+    ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝     ╚═╝  ╚═╝
+                         [ U N I N S T A L L ]
 \e[0m"
 printf "\n%.0s" {1..1}
 
 # Show welcome message using whiptail with Yes/No options
-whiptail --title "Arch-Hyprland KooL Dots Uninstall Script" --yesno \
-"Hello! This script will uninstall KooL Hyprland packages and configs.
+whiptail --title "Script de Desinstalación de Pixi-Arch-A" --yesno \
+"¡Hola! Este script desinstalará los paquetes y configuraciones de Pixi-Arch-A.
 
-You can choose packages and directories you want to remove.
-NOTE: This will remove configs from ~/.config
+Podrás elegir los paquetes y directorios que deseas eliminar.
+NOTA: Esto eliminará las configuraciones de tu carpeta ~/.config.
 
-WARNING: After uninstallation, your system may become unstable.
+ADVERTENCIA: Después de la desinstalación, tu sistema podría quedar inestable.
 
-Shall we Proceed?" 20 80
+¿Deseas continuar?" 20 80
 
 if [ $? -eq 1 ]; then
-    echo "$INFO uninstall process canceled."
+    echo "$INFO Proceso de desinstalación cancelado."
     exit 0
 fi
 
