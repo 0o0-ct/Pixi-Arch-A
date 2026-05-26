@@ -6,8 +6,8 @@ get_backup_dirname() {
   echo "back-up_$(date +"%m%d_%H%M")"
 }
 
-# Move a directory hacia a timestamped backup alongside the original.
-# Usage: backup_dir "/path/hacia/dir" [logfile]
+# Mueve un directorio a un respaldo con marca de tiempo junto al original.
+# Uso: backup_dir "/path/a/dir" [logfile]
 backup_dir() {
   local dir="$1"
   local log="${2:-/dev/null}"
@@ -48,25 +48,25 @@ cleanup_backups() {
           rm -rf "$BACKUP"
         fi
       done
-      echo "${INFO:-[INFO]} Modo Express: recortes de copias de seguridad para ${YELLOW:-}${DIR##*/}${RESET:-}, keeping ${MAGENTA:-}${latest_backup##*/}${RESET:-}." 2>&1 | tee -a "$log"
+      echo "${INFO:-[INFO]} Modo Exprés: recorte de respaldos para ${YELLOW:-}${DIR##*/}${RESET:-}, manteniendo ${MAGENTA:-}${latest_backup##*/}${RESET:-}." 2>&1 | tee -a "$log"
       continue
     fi
 
-    printf "\n%s Found multiple backups for: %s\n" "${INFO:-[INFO]}" "${DIR##*/}"
-    echo "${YELLOW:-}Copias de seguridad:${RESET:-}"
+    printf "\n%s Se encontraron múltiples respaldos para: %s\n" "${INFO:-[INFO]}" "${DIR##*/}"
+    echo "${YELLOW:-}Respaldos antiguos:${RESET:-}"
     for BACKUP in "${BACKUP_DIRS[@]}"; do
       echo "  - ${BACKUP##*/}"
     done
-    echo -n "${CAT:-[ACTION]} ¿Borrar copias antiguas y mantener solo la última? (s/N): "
+    echo -n "${CAT:-[ACTION]} ¿Deseas eliminar los respaldos antiguos y conservar solo el último? (s/N): "
     read back_choice
-    if [[ "$back_choice" == [Yy]* ]]; then
+    if [[ "$back_choice" == [SsYy]* ]]; then
       for BACKUP in "${BACKUP_DIRS[@]}"; do
         if [ "$BACKUP" != "$latest_backup" ]; then
           rm -rf "$BACKUP"
           echo "Eliminado: ${BACKUP##*/}"
         fi
       done
-      echo "Mantenido: ${latest_backup##*/}"
+      echo "Conservado: ${latest_backup##*/}"
     fi
   done
 }

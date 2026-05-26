@@ -6,7 +6,7 @@ enable_asusctl() {
   if command -v asusctl >/dev/null 2>&1; then
     local OVERLAY_SA="config/hypr/configs/Startup_Apps.conf"
     mkdir -p "$(dirname "$OVERLAY_SA")"
-    haciauch "$OVERLAY_SA"
+    touch "$OVERLAY_SA"
     grep -qx 'exec-once = rog-control-center' "$OVERLAY_SA" || echo 'exec-once = rog-control-center' >>"$OVERLAY_SA"
   fi
 }
@@ -16,7 +16,7 @@ enable_blueman() {
   if command -v blueman-applet >/dev/null 2>&1; then
     local OVERLAY_SA="config/hypr/configs/Startup_Apps.conf"
     mkdir -p "$(dirname "$OVERLAY_SA")"
-    haciauch "$OVERLAY_SA"
+    touch "$OVERLAY_SA"
     grep -qx 'exec-once = blueman-applet' "$OVERLAY_SA" || echo 'exec-once = blueman-applet' >>"$OVERLAY_SA"
   fi
 }
@@ -27,7 +27,7 @@ enable_ags() {
     echo "${INFO:-[INFO]} AGS detectado - habilitando en scripts de inicio y actualización" 2>&1 | tee -a "$log"
     local OVERLAY_SA="config/hypr/configs/Startup_Apps.conf"
     mkdir -p "$(dirname "$OVERLAY_SA")"
-    haciauch "$OVERLAY_SA"
+    touch "$OVERLAY_SA"
     grep -qx 'exec-once = ags' "$OVERLAY_SA" || echo 'exec-once = ags' >>"$OVERLAY_SA"
     sed -i '/#ags -q && ags &/s/^#//' config/hypr/scripts/RefreshNoWaybar.sh
     sed -i '/#ags -q && ags &/s/^#//' config/hypr/scripts/Refresh.sh
@@ -40,7 +40,7 @@ enable_quickshell() {
     echo "${INFO:-[INFO]} Quickshell detectado - habilitando en scripts de inicio y actualización" 2>&1 | tee -a "$log"
     local OVERLAY_SA="config/hypr/configs/Startup_Apps.conf"
     mkdir -p "$(dirname "$OVERLAY_SA")"
-    haciauch "$OVERLAY_SA"
+    touch "$OVERLAY_SA"
     grep -qx 'exec-once = qs' "$OVERLAY_SA" || echo 'exec-once = qs' >>"$OVERLAY_SA"
     sed -i '/#pkill qs && qs &/s/^#//' config/hypr/scripts/RefreshNoWaybar.sh
     sed -i '/#pkill qs && qs &/s/^#//' config/hypr/scripts/Refresh.sh
@@ -71,7 +71,7 @@ install_terminal_configs() {
       sed -i -E 's/^(\\s*palette\\s*=\\s*)([0-9]{1,2}):/\\1\\2=/' "$GHOSTTY_DIR/wallust.conf" 2>&1 | tee -a "$log" || true
     fi
   else
-    echo "${ERROR:-[ERROR]} - $GHOSTTY_SRC no encontrado; omitiendo Ghostty config install." 2>&1 | tee -a "$log"
+    echo "${ERROR:-[ERROR]} - No se encontró $GHOSTTY_SRC; omitiendo la instalación de la configuración de Ghostty." 2>&1 | tee -a "$log"
   fi
 
   # WezTerm
@@ -82,7 +82,7 @@ install_terminal_configs() {
     mkdir -p "$WEZTERM_DIR"
     install -m 0644 "$WEZTERM_SRC" "$WEZTERM_DEST" 2>&1 | tee -a "$log"
   else
-    echo "${ERROR:-[ERROR]} - $WEZTERM_SRC no encontrado; omitiendo WezTerm config install." 2>&1 | tee -a "$log"
+    echo "${ERROR:-[ERROR]} - No se encontró $WEZTERM_SRC; omitiendo la instalación de la configuración de WezTerm." 2>&1 | tee -a "$log"
   fi
 }
 
@@ -92,22 +92,22 @@ choose_default_editor() {
   update_editor() {
     local editor=$1
     sed -i "s/#env = EDITOR,.*/env = EDITOR,$editor #default editor/" config/hypr/UserConfigs/01-UserDefaults.conf
-    echo "${OK:-[OK]} Default editor set hacia ${MAGENTA:-}$editor${RESET:-}." 2>&1 | tee -a "$log"
+    echo "${OK:-[OK]} El editor predeterminado se configuró como ${MAGENTA:-}$editor${RESET:-}." 2>&1 | tee -a "$log"
   }
   if command -v nvim &>/dev/null; then
-    printf "${INFO:-[INFO]} ${MAGENTA:-}neovim${RESET:-} is detected as installed\n"
+    printf "${INFO:-[INFO]} Se detectó que ${MAGENTA:-}neovim${RESET:-} está instalado\n"
     if ! read -r -p "${CAT:-[ACTION]} ¿Quieres que ${MAGENTA:-}neovim${RESET:-} sea el editor predeterminado? (s/N): " EDITOR_CHOICE </dev/tty; then
       :
-    elif [[ "$EDITOR_CHOICE" == "y" || "$EDITOR_CHOICE" == "Y" ]]; then
+    elif [[ "$EDITOR_CHOICE" == "s" || "$EDITOR_CHOICE" == "S" || "$EDITOR_CHOICE" == "y" || "$EDITOR_CHOICE" == "Y" ]]; then
       update_editor "nvim"
       editor_set=1
     fi
   fi
   printf "\n"
   if [[ "$editor_set" -eq 0 ]] && command -v vim &>/dev/null; then
-    printf "${INFO:-[INFO]} ${MAGENTA:-}vim${RESET:-} is detected as installed\n"
+    printf "${INFO:-[INFO]} Se detectó que ${MAGENTA:-}vim${RESET:-} está instalado\n"
     if read -r -p "${CAT:-[ACTION]} ¿Quieres que ${MAGENTA:-}vim${RESET:-} sea el editor predeterminado? (s/N): " EDITOR_CHOICE </dev/tty; then
-      if [[ "$EDITOR_CHOICE" == "y" || "$EDITOR_CHOICE" == "Y" ]]; then
+      if [[ "$EDITOR_CHOICE" == "s" || "$EDITOR_CHOICE" == "S" || "$EDITOR_CHOICE" == "y" || "$EDITOR_CHOICE" == "Y" ]]; then
         update_editor "vim"
         editor_set=1
       fi

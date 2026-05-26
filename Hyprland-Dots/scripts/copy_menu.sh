@@ -7,35 +7,35 @@
 show_copy_menu() {
   local express_supported="${1:-0}"
   local menu_title="      KooL's Hyprland Dotfiles      "
-  local prompt="Select what you would like to do:"
+  local prompt="Selecciona lo que te gustaría hacer:"
 
-  local install_tag="Install"
-  local upgrade_tag="Upgrade"
-  local express_tag="Express"
-  local update_tag="Update"
-  local quit_tag="Quit"
+  local install_tag="Instalar"
+  local upgrade_tag="Actualizar"
+  local express_tag="Exprés"
+  local update_tag="ActualizarRepo"
+  local quit_tag="Salir"
 
-  local install_desc="Fresh copy"
-  local upgrade_desc="Backups + prompts"
-  local express_desc="Skips restores & wallpapers"
-  local update_desc="Stash + git pull"
-  local quit_desc="Exit without changes"
+  local install_desc="Copia limpia y nueva"
+  local upgrade_desc="Respaldos + preguntas interacticas"
+  local express_desc="Omite restauraciones y fondos adicionales"
+  local update_desc="Guardar cambios locales + git pull"
+  local quit_desc="Salir sin realizar cambios"
 
   local choice=""
   run_basic_menu() {
     while true; do
       printf "\n%s\n" "$menu_title"
       printf "%s\n" "$prompt"
-      printf "  1) Install - %s\n" "$install_desc"
-      printf "  2) Upgrade - %s\n" "$upgrade_desc"
+      printf "  1) Instalar - %s\n" "$install_desc"
+      printf "  2) Actualizar - %s\n" "$upgrade_desc"
       if [ "$express_supported" -eq 1 ]; then
-        printf "  3) Express - %s\n" "$express_desc"
+        printf "  3) Exprés - %s\n" "$express_desc"
       else
-        printf "  3) Express - %s (disabled)\n" "$express_desc"
+        printf "  3) Exprés - %s (desactivado)\n" "$express_desc"
       fi
-      printf "  4) Update  - %s\n" "$update_desc"
-      printf "  5) Quit    - %s\n" "$quit_desc"
-      printf "Enter choice [1-5]: "
+      printf "  4) ActualizarRepo - %s\n" "$update_desc"
+      printf "  5) Salir - %s\n" "$quit_desc"
+      printf "Introduce tu elección [1-5]: "
       read -r text_choice
       case "$text_choice" in
       1) choice="$install_tag"; break ;;
@@ -57,7 +57,15 @@ show_copy_menu() {
 
   if [ "$COPY_TUI_BACKEND" = "basic" ]; then
     run_basic_menu
-    COPY_MENU_CHOICE="$choice"
+      case "$choice" in
+    "Instalar"|"Install"|"install") choice="install" ;;
+    "Actualizar"|"Upgrade"|"upgrade") choice="upgrade" ;;
+    "Exprés"|"Express"|"express") choice="express" ;;
+    "ActualizarRepo"|"Update"|"update") choice="update" ;;
+    "Salir"|"Quit"|"quit") choice="quit" ;;
+  esac
+  COPY_MENU_CHOICE="$choice"
+
     return 0
   fi
 
@@ -78,5 +86,13 @@ show_copy_menu() {
   fi
 
   # shellcheck disable=SC2034  # used by parent script after sourcing this file
+    case "$choice" in
+    "Instalar"|"Install"|"install") choice="install" ;;
+    "Actualizar"|"Upgrade"|"upgrade") choice="upgrade" ;;
+    "Exprés"|"Express"|"express") choice="express" ;;
+    "ActualizarRepo"|"Update"|"update") choice="update" ;;
+    "Salir"|"Quit"|"quit") choice="quit" ;;
+  esac
   COPY_MENU_CHOICE="$choice"
+
 }

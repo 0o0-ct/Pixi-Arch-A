@@ -67,42 +67,42 @@ if [ -f "$BACKUP_HELPER" ]; then
   # shellcheck source=./scripts/lib_backup.sh
   . "$BACKUP_HELPER"
 else
-  echo "${ERROR} Backup helper not found at $BACKUP_HELPER. Exiting."
+  echo "${ERROR} No se encontró el asistente de respaldo en $BACKUP_HELPER. Saliendo."
   exit 1
 fi
 if [ -f "$DETECT_HELPER" ]; then
   # shellcheck source=./scripts/lib_detect.sh
   . "$DETECT_HELPER"
 else
-  echo "${ERROR} Detect helper not found at $DETECT_HELPER. Exiting."
+  echo "${ERROR} No se encontró el asistente de detección en $DETECT_HELPER. Saliendo."
   exit 1
 fi
 if [ -f "$PROMPTS_HELPER" ]; then
   # shellcheck source=./scripts/lib_prompts.sh
   . "$PROMPTS_HELPER"
 else
-  echo "${ERROR} Prompts helper not found at $PROMPTS_HELPER. Exiting."
+  echo "${ERROR} No se encontró el asistente de avisos en $PROMPTS_HELPER. Saliendo."
   exit 1
 fi
 if [ -f "$APPS_HELPER" ]; then
   # shellcheck source=./scripts/lib_apps.sh
   . "$APPS_HELPER"
 else
-  echo "${ERROR} Apps helper not found at $APPS_HELPER. Exiting."
+  echo "${ERROR} No se encontró el asistente de aplicaciones en $APPS_HELPER. Saliendo."
   exit 1
 fi
 if [ -f "$COPY_HELPER" ]; then
   # shellcheck source=./scripts/lib_copy.sh
   . "$COPY_HELPER"
 else
-  echo "${ERROR} Copy helper not found at $COPY_HELPER. Exiting."
+  echo "${ERROR} No se encontró el asistente de copia en $COPY_HELPER. Saliendo."
   exit 1
 fi
 if [ -f "$UPDATE_HELPER" ]; then
   # shellcheck source=./scripts/lib_update.sh
   . "$UPDATE_HELPER"
 else
-  echo "${ERROR} Update helper not found at $UPDATE_HELPER. Exiting."
+  echo "${ERROR} No se encontró el asistente de actualización en $UPDATE_HELPER. Saliendo."
   exit 1
 fi
 
@@ -131,12 +131,12 @@ express_supported() {
 }
 print_usage() {
   cat <<'EOF'
-Usage: copy.sh [--upgrade] [--express-upgrade] [--help]
+Uso: copy.sh [--upgrade] [--express-upgrade] [--help]
 
-Options:
-  --upgrade           Run the script in upgrade mode (can still prompt for express).
-  --express-upgrade   Upgrade with express behavior (no restore prompts, trims backups).
-  -h, --help          Show this help message and exit.
+Opciones:
+  --upgrade           Ejecuta el script en modo actualización (aún puede sugerir modo exprés).
+  --express-upgrade   Actualización exprés (sin preguntas de restauración, recorta respaldos).
+  -h, --help          Muestra este mensaje de ayuda y sale.
 EOF
 }
 
@@ -160,7 +160,7 @@ while [[ $# -gt 0 ]]; do
     exit 0
     ;;
   *)
-    echo "${ERROR} Unknown option: $1"
+    echo "${ERROR} Opción desconocida: $1"
     print_usage
     exit 1
     ;;
@@ -173,7 +173,7 @@ if express_supported; then
   EXPRESS_SUPPORTED=1
 fi
 if [ "$EXPRESS_MODE" -eq 1 ] && [ "$EXPRESS_SUPPORTED" -eq 0 ]; then
-  echo "${WARN} Express upgrade requires installed dotfiles v${MIN_EXPRESS_VERSION} or newer. Falling back to standard upgrade."
+  echo "${WARN} La actualización exprés requiere dotfiles instalados v${MIN_EXPRESS_VERSION} o más recientes. Volviendo a la actualización estándar."
   EXPRESS_MODE=0
   RUN_MODE="upgrade"
 fi
@@ -196,7 +196,7 @@ if [ -z "$RUN_MODE" ]; then
         ;;
       express)
         if [ "$EXPRESS_SUPPORTED" -eq 0 ]; then
-          echo "${WARN} Express mode requires installed dotfiles v${MIN_EXPRESS_VERSION} or newer. Please choose another option."
+          echo "${WARN} El modo exprés requiere dotfiles instalados v${MIN_EXPRESS_VERSION} o más recientes. Por favor, elige otra opción."
           continue
         fi
         RUN_MODE="express"
@@ -209,23 +209,23 @@ if [ -z "$RUN_MODE" ]; then
         continue
         ;;
       quit)
-        echo "${NOTE} Exiting per user selection."
+        echo "${NOTE} Saliendo según la selección del usuario."
         exit 0
         ;;
       *)
-        echo "${WARN} Invalid selection."
+        echo "${WARN} Selección no válida."
         ;;
       esac
     done
   else
-    echo "${NOTE} Menu helper not found; defaulting to install workflow."
+    echo "${NOTE} No se encontró el asistente de menú; usando por defecto el flujo de instalación."
     RUN_MODE="install"
   fi
 fi
 
 # Check if running as root. If root, script will exit
 if [[ $EUID -eq 0 ]]; then
-  echo "${ERROR}  This script should ${WARNING}NOT${RESET} be executed as root!! Exiting......."
+  echo "${ERROR} ¡Este script ${WARNING}NO${RESET} debe ser ejecutado como root! Saliendo......."
   printf "\n%.0s" {1..2}
   exit 1
 fi
@@ -239,13 +239,13 @@ print_color() {
 # Check /etc/os-release for Ubuntu or Debian and warn about Hyprland version requirement
 if grep -iqE '^(ID_LIKE|ID)=.*(ubuntu|debian)' /etc/os-release >/dev/null 2>&1; then
   printf "\n%.0s" {1..1}
-  print_color $WARNING "\nThese Dotfiles are only supported on Hyprland v0.50 or greater. Do not install on older versions of Hyprland.\n"
+  print_color $WARNING "\nEstos Dotfiles solo son compatibles con Hyprland v0.50 o superior. No los instales en versiones anteriores de Hyprland.\n"
   while true; do
     echo -n "${CAT} ¿Deseas continuar de todos modos? (s/N): "
     read _continue
     _continue=$(echo "${_continue}" | tr '[:upper:]' '[:lower:]')
     case "${_continue}" in
-    y | yes)
+    s | si | sí | y | yes)
       echo "${NOTE} Procediendo en Ubuntu/Debian por confirmación del usuario."
       break
       ;;
@@ -256,7 +256,7 @@ if grep -iqE '^(ID_LIKE|ID)=.*(ubuntu|debian)' /etc/os-release >/dev/null 2>&1; 
       exit 1
       ;;
     *)
-      echo "${WARN} Please answer 'y' or 'n'."
+      echo "${WARN} Por favor responde 's' o 'n'."
       ;;
     esac
   done
@@ -300,7 +300,7 @@ detect_nixos_adjust "$LOG"
 # activating hyprcursor on env by checking if the directory ~/.icons/Bibata-Modern-Ice/hyprcursors exists
 if [ -d "$HOME/.icons/Bibata-Modern-Ice/hyprcursors" ]; then
   HYPRCURSOR_ENV_FILE="config/hypr/configs/ENVariables.conf"
-  echo "${INFO} Bibata-Hyprcursor directory detected. Activating Hyprcursor...." 2>&1 | tee -a "$LOG" || true
+  echo "${INFO} Directorio Bibata-Hyprcursor detectado. Activando Hyprcursor...." 2>&1 | tee -a "$LOG" || true
   sed -i 's/^#env = HYPRCURSOR_THEME,Bibata-Modern-Ice/env = HYPRCURSOR_THEME,Bibata-Modern-Ice/' "$HYPRCURSOR_ENV_FILE"
   sed -i 's/^#env = HYPRCURSOR_SIZE,24/env = HYPRCURSOR_SIZE,24/' "$HYPRCURSOR_ENV_FILE"
 fi
@@ -321,18 +321,18 @@ printf "\n%.0s" {1..1}
 choose_default_editor "$LOG"
 resolution=""
 while true; do
-  echo "${INFO} Select monitor resolution for scaling:"
-  echo "  1) < 1440p   (lower DPI; smaller displays)"
-  echo "  2) ≥ 1440p   (default; 1440p/2k/4k)"
-  echo -n "${CAT} Enter the number of your choice (1 or 2): "
+  echo "${INFO} Selecciona la resolución del monitor para el escalado:"
+  echo "  1) < 1440p   (DPI bajo; pantallas más pequeñas)"
+  echo "  2) ≥ 1440p   (predeterminado; 1440p/2k/4k)"
+  echo -n "${CAT} Introduce el número de tu elección (1 o 2): "
   read -r choice
   case "$choice" in
     1) resolution="< 1440p"; break ;;
     2) resolution="≥ 1440p"; break ;;
-    *) echo "${ERROR} Invalid choice. Please enter 1 or 2.";;
+    *) echo "${ERROR} Elección no válida. Por favor, introduce 1 o 2.";;
   esac
 done
-echo "${OK} You have chosen $resolution resolution." 2>&1 | tee -a "$LOG"
+echo "${OK} Has elegido la resolución $resolution." 2>&1 | tee -a "$LOG"
 if [ "$resolution" == "< 1440p" ]; then
   # kitty font size
   sed -i 's/font_size 16.0/font_size 14.0/' config/kitty/kitty.conf
@@ -363,48 +363,48 @@ set -e
 
 # Check if the ~/.config/ directory exists
 if [ ! -d "$HOME/.config" ]; then
-  echo "${ERROR} - $HOME/.config directory does not exist. Creating it now."
-  mkdir -p "$HOME/.config" && echo "Directory created successfully." || echo "Failed to create directory."
+  echo "${ERROR} - El directorio $HOME/.config no existe. Creándolo ahora."
+  mkdir -p "$HOME/.config" && echo "Directorio creado con éxito." || echo "No se pudo crear el directorio."
 fi
 
-printf "${INFO} - copying dotfiles ${SKY_BLUE}first${RESET} part\n"
+printf "${INFO} - Copiando la ${SKY_BLUE}primera${RESET} parte de los dotfiles\n"
 copy_phase1 "$LOG"
 printf "\n%.0s" {1..1}
 copy_waybar "$LOG"
 printf "\n%.0s" {1..1}
-printf "${INFO} - Copying dotfiles ${SKY_BLUE}second${RESET} part\n"
+printf "${INFO} - Copiando la ${SKY_BLUE}segunda${RESET} parte de los dotfiles\n"
 copy_phase2 "$LOG"
 printf "\\n%.0s" {1..1}
 
 # ags config
 # Check if ags is installed
 if command -v ags >/dev/null 2>&1; then
-  echo -e "${NOTE} - ${YELLOW}ags${RESET} is detected as installed"
+  echo -e "${NOTE} - Se detectó que ${YELLOW}ags${RESET} está instalado"
 
   DIRPATH_AGS="$HOME/.config/ags"
 
   if [ ! -d "$DIRPATH_AGS" ]; then
-    echo "${INFO} - ags config not found, copying new config."
+    echo "${INFO} - No se encontró la configuración de ags, copiando nueva configuración."
     if [ -d "config/ags" ]; then
       cp -r "config/ags/" "$DIRPATH_AGS" 2>&1 | tee -a "$LOG"
     fi
   else
-    read -p "${CAT} Do you want to overwrite your existing ${YELLOW}ags${RESET} config? [y/N] " answer_ags
+    read -p "${CAT} ¿Deseas sobrescribir tu configuración existente de ${YELLOW}ags${RESET}? [s/N] " answer_ags
     case "$answer_ags" in
-    [Yy]*)
+    [SsYy]*)
       BACKUP_DIR=$(get_backup_dirname)
       mv "$DIRPATH_AGS" "$DIRPATH_AGS-backup-$BACKUP_DIR" 2>&1 | tee -a "$LOG"
-      echo -e "${NOTE} - Backed up ags config to $DIRPATH_AGS-backup-$BACKUP_DIR"
+      echo -e "${NOTE} - Se respaldó la configuración de ags en $DIRPATH_AGS-backup-$BACKUP_DIR"
 
       if cp -r "config/ags/" "$DIRPATH_AGS" 2>&1 | tee -a "$LOG"; then
-        echo "${OK} - ${YELLOW}ags configs${RESET} overwritten successfully."
+        echo "${OK} - Configuración de ${YELLOW}ags${RESET} sobrescrita con éxito."
       else
-        echo "${ERROR} - Failed to copy ${YELLOW}ags${RESET} config."
+        echo "${ERROR} - Error al copiar la configuración de ${YELLOW}ags${RESET}."
         exit 1
       fi
       ;;
     *)
-      echo "${NOTE} - Skipping overwrite of ags config."
+      echo "${NOTE} - Omitiendo la sobrescritura de la configuración de ags."
       ;;
     esac
   fi
@@ -420,12 +420,12 @@ INSTALLED_VERSION_AT_START="$(get_installed_dotfiles_version || true)"
 # quickshell (ags alternative)
 # Check if quickshell is installed
 if command -v qs >/dev/null 2>&1; then
-  echo -e "${NOTE} - ${YELLOW}quickshell${RESET} is detected as installed"
+  echo -e "${NOTE} - Se detectó que ${YELLOW}quickshell${RESET} está instalado"
 
   DIRPATH_QS="$HOME/.config/quickshell"
 
   if [ ! -d "$DIRPATH_QS" ]; then
-    echo "${INFO} - quickshell config not found, copying new config."
+    echo "${INFO} - No se encontró la configuración de quickshell, copiando nueva configuración."
     if [ -d "config/quickshell" ]; then
       cp -r "config/quickshell/" "$DIRPATH_QS" 2>&1 | tee -a "$LOG"
     fi
@@ -433,29 +433,29 @@ if command -v qs >/dev/null 2>&1; then
     # If default shell.qml exists, it blocks named config subdirectory detection
     # Remove it to enable the overview config to be found
     if [ -f "$DIRPATH_QS/shell.qml" ]; then
-      echo "${NOTE} - Removing default shell.qml to enable quickshell overview config detection" 2>&1 | tee -a "$LOG"
+      echo "${NOTE} - Eliminando el archivo shell.qml predeterminado para permitir la detección de la configuración de vista general de quickshell" 2>&1 | tee -a "$LOG"
       rm "$DIRPATH_QS/shell.qml"
     fi
     
-    read -p "${CAT} Do you want to overwrite your existing ${YELLOW}quickshell${RESET} config? [y/N] " answer_qs
+    read -p "${CAT} ¿Deseas sobrescribir tu configuración existente de ${YELLOW}quickshell${RESET}? [s/N] " answer_qs
     case "$answer_qs" in
-    [Yy]*)
+    [SsYy]*)
       BACKUP_DIR=$(get_backup_dirname)
       mv "$DIRPATH_QS" "$DIRPATH_QS-backup-$BACKUP_DIR" 2>&1 | tee -a "$LOG"
-      echo -e "${NOTE} - Backed up quickshell to $DIRPATH_QS-backup-$BACKUP_DIR"
+      echo -e "${NOTE} - Se respaldó quickshell en $DIRPATH_QS-backup-$BACKUP_DIR"
 
       cp -r "config/quickshell/" "$DIRPATH_QS" 2>&1 | tee -a "$LOG"
       if [ $? -eq 0 ]; then
-        echo "${OK} - ${YELLOW}quickshell${RESET} overwritten successfully."
+        echo "${OK} - Configuración de ${YELLOW}quickshell${RESET} sobrescrita con éxito."
         # Remove default shell.qml from new copy to enable overview detection
         rm -f "$DIRPATH_QS/shell.qml" 2>&1 | tee -a "$LOG"
       else
-        echo "${ERROR} - Failed to copy ${YELLOW}quickshell${RESET} config."
+        echo "${ERROR} - Error al copiar la configuración de ${YELLOW}quickshell${RESET}."
         exit 1
       fi
       ;;
     *)
-      echo "${NOTE} - Skipping overwrite of quickshell config."
+      echo "${NOTE} - Omitiendo la sobrescritura de la configuración de quickshell."
       ;;
     esac
   fi
@@ -463,20 +463,20 @@ if command -v qs >/dev/null 2>&1; then
   # Ensure overview subdirectory exists and is up to date
   DIRPATH_OVERVIEW="$DIRPATH_QS/overview"
   if [ ! -d "$DIRPATH_OVERVIEW" ] && [ -d "config/quickshell/overview" ]; then
-    echo "${INFO} - Copying quickshell overview config..." 2>&1 | tee -a "$LOG"
+    echo "${INFO} - Copiando la configuración de vista general de quickshell..." 2>&1 | tee -a "$LOG"
     cp -r "config/quickshell/overview" "$DIRPATH_QS/" 2>&1 | tee -a "$LOG"
-    echo "${OK} - Quickshell overview config copied successfully" 2>&1 | tee -a "$LOG"
+    echo "${OK} - Configuración de vista general de quickshell copiada con éxito" 2>&1 | tee -a "$LOG"
   fi
   
   # Check for old quickshell startup commands and update them
   HYPR_STARTUP="$HOME/.config/hypr/configs/Startup_Apps.conf"
   if [ -f "$HYPR_STARTUP" ]; then
     if grep -q '^exec-once = qs\s*$\|^exec-once = qs &' "$HYPR_STARTUP"; then
-      echo "${NOTE} - Found old Quickshell startup command, updating to new overview config..." 2>&1 | tee -a "$LOG"
+      echo "${NOTE} - Se encontró un comando de inicio antiguo de Quickshell, actualizando a la nueva configuración de vista general..." 2>&1 | tee -a "$LOG"
       # Replace old 'qs' or 'qs &' with new 'qs -c overview'
       sed -i 's/^\(\s*\)exec-once = qs\s*$/\1exec-once = qs -c overview  # Quickshell Overview/' "$HYPR_STARTUP" 2>&1 | tee -a "$LOG"
       sed -i 's/^\(\s*\)exec-once = qs &$/\1exec-once = qs -c overview  # Quickshell Overview/' "$HYPR_STARTUP" 2>&1 | tee -a "$LOG"
-      echo "${OK} - Updated Quickshell startup command to use overview config" 2>&1 | tee -a "$LOG"
+      echo "${OK} - Se actualizó el comando de inicio de Quickshell para usar la configuración de vista general" 2>&1 | tee -a "$LOG"
     fi
   fi
 fi
@@ -518,9 +518,9 @@ printf "\n%.0s" {1..1}
 PICTURES_DIR="$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")"
 mkdir -p "$PICTURES_DIR/wallpapers"
 if cp -r wallpapers "$PICTURES_DIR/"; then
-  echo "${OK} Some ${MAGENTA}wallpapers${RESET} copied successfully!" | tee -a "$LOG"
+  echo "${OK} ¡Se copiaron algunos ${MAGENTA}fondos de pantalla${RESET} con éxito!" | tee -a "$LOG"
 else
-  echo "${ERROR} Failed to copy some ${YELLOW}wallpapers${RESET}" | tee -a "$LOG"
+  echo "${ERROR} Error al copiar algunos ${YELLOW}fondos de pantalla${RESET}" | tee -a "$LOG"
 fi
 
 # Set some files as executable
@@ -566,18 +566,18 @@ elif [ -d "$sddm_simple_sddm_2" ]; then
     SDDM_WALL=$(echo "$SDDM_WALL" | tr -d '\n' | tr -d ' ')
 
     case $SDDM_WALL in
-    [Yy])
+    [SsYy])
       # Copy the wallpaper, ignore errors if the file exists or fails
       sudo -n cp -r "config/hypr/wallpaper_effects/.wallpaper_current" "/usr/share/sddm/themes/simple_sddm_2/Backgrounds/default" || true
-      echo "${NOTE} Current wallpaper applied as default SDDM background" 2>&1 | tee -a "$LOG"
+      echo "${NOTE} Fondo de pantalla actual aplicado como fondo predeterminado de SDDM" 2>&1 | tee -a "$LOG"
       break
       ;;
-    [Nn])
-      echo "${NOTE} You chose not to apply the current wallpaper to SDDM." 2>&1 | tee -a "$LOG"
+    [Nn]*)
+      echo "${NOTE} Elegiste no aplicar el fondo de pantalla actual a SDDM." 2>&1 | tee -a "$LOG"
       break
       ;;
     *)
-      echo "Please enter 'y' or 'n' to proceed."
+      echo "Por favor introduce 's' o 'n' para continuar."
       ;;
     esac
   done
@@ -585,10 +585,10 @@ fi
 
 # additional wallpapers
 printf "\n%.0s" {1..1}
-echo "${MAGENTA}By default only a few wallpapers are copied${RESET}..."
+echo "${MAGENTA}Por defecto, solo se copian unos pocos fondos de pantalla${RESET}..."
 
 if [ "$EXPRESS_MODE" -eq 1 ]; then
-  echo "${NOTE} Express mode: skipping additional wallpaper download prompt." 2>&1 | tee -a "$LOG"
+  echo "${NOTE} Modo exprés: omitiendo la pregunta de descarga de fondos de pantalla adicionales." 2>&1 | tee -a "$LOG"
 else
   while true; do
     echo "${NOTE} Descargaremos tus fondos de pantalla personales curados en 4K y HD."
@@ -596,22 +596,22 @@ else
     read WALL
 
     case $WALL in
-    [Yy])
-      echo "${NOTE} Running custom wallpaper downloader script..."
+    [SsYy])
+      echo "${NOTE} Ejecutando el script de descarga de fondos de pantalla personalizados..."
       chmod +x "$SCRIPT_DIR/wallpapers/download_wallpapers.sh" 2>&1 | tee -a "$LOG"
       if "$SCRIPT_DIR/wallpapers/download_wallpapers.sh" 2>&1 | tee -a "$LOG"; then
-        echo "${OK} Custom wallpapers downloaded and synchronized successfully." 2>&1 | tee -a "$LOG"
+        echo "${OK} Fondos de pantalla personalizados descargados y sincronizados con éxito." 2>&1 | tee -a "$LOG"
         break
       else
-        echo "${ERROR} Downloading custom wallpapers failed." 2>&1 | tee -a "$LOG"
+        echo "${ERROR} Error al descargar los fondos de pantalla personalizados." 2>&1 | tee -a "$LOG"
       fi
       ;;
-    [Nn])
-      echo "${NOTE} You chose not to download custom wallpapers." 2>&1 | tee -a "$LOG"
+    [Nn]*)
+      echo "${NOTE} Elegiste no descargar fondos de pantalla adicionales." 2>&1 | tee -a "$LOG"
       break
       ;;
     *)
-      echo "Please enter 'y' or 'n' to proceed."
+      echo "Por favor introduce 's' o 'n' para continuar."
       ;;
     esac
   done
@@ -635,9 +635,9 @@ printf "\n%.0s" {1..1}
 wallust run -s $wallpaper 2>&1 | tee -a "$LOG"
 
 printf "\n%.0s" {1..2}
-printf "${OK} GREAT! KooL's Hyprland-Dots is now Loaded & Ready !!! "
+printf "${OK} ¡GENIAL! ¡Los Dotfiles de Hyprland de Pixi-Arch-A ya están cargados y listos! "
 printf "\n%.0s" {1..1}
-printf "${INFO} However, it is ${MAGENTA}HIGHLY SUGGESTED${RESET} to logout and re-login or better reboot to avoid any issues"
+printf "${INFO} Sin embargo, se ${MAGENTA}SUGIERE ENFÁTICAMENTE${RESET} cerrar sesión y volver a entrar o, mejor aún, reiniciar para evitar cualquier problema"
 printf "\n%.0s" {1..1}
-printf "${SKY_BLUE}Thank you${RESET} for using ${MAGENTA}KooL's Hyprland Configuration${RESET}... ${YELLOW}ENJOY!!!${RESET}"
+printf "${SKY_BLUE}¡Muchas gracias${RESET} por usar la configuración de Hyprland de ${MAGENTA}Pixi-Arch-A${RESET}... ¡${YELLOW}DISFRÚTALA${RESET}!"
 printf "\n%.0s" {1..3}
