@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  ##
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
 # Rofi menu for KooL Hyprland Quick Settings (SUPER SHIFT E)
 # Updated for UserConfigs/configs separation
 

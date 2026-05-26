@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  #
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  #
 # Purpose:
-#   Orchestrates copying/upgrading 0o0-ct/Pixi-Arch's Hyprland dotfiles into ~/.config.
+#   Orchestrates copying/upgrading 0o0-ct/Pixi-Arch-A's Hyprland dotfiles into ~/.config.
 #   Handles interactive prompts, backups/restores, per-app tweaks, and express mode.
 #
 # Layout (high-level; future modularization targets):

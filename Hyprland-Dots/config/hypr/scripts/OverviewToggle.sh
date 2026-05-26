@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  #
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  #
 # Overview toggle wrapper - tries Quickshell first, falls back to AGS
 
 set -euo pipefail

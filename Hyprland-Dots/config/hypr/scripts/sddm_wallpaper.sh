@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
 # SDDM Wallpaper and Wallust Colors Setter
 
 # for the upcoming changes on the simple_sddm_theme

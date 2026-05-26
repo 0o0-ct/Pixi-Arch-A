@@ -16,7 +16,7 @@ A diferencia de las licencias de software propietario que están diseñadas para
 1. 🚀 **Libertad de Uso:** Tienes el derecho absoluto de ejecutar el programa para cualquier propósito que desees.
 2. 📖 **Libertad de Estudio:** Puedes examinar cómo funciona el código fuente y modificarlo para que haga lo que tú necesites.
 3. 🤝 **Libertad de Compartir:** Puedes copiar y distribuir copias del software de forma gratuita o comercial.
-4. 🛠️ **Libertad de Mejora:** Puedes publicar tus modificaciones y mejoras para que toda la comunidad se beneficie de ellas.
+4. 🛠️ **Libertad de Mejora:** Puedes publicar tus modificaciones y mejoras para que toda la comunidad se beneficie de ellas.<>>>>>>
 
 ---
 

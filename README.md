@@ -9,7 +9,7 @@
 ![Version](https://img.shields.io/badge/Version-v1.0.0--Antigravity-white?style=for-the-badge)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/0o0-ct/Pixi-Arch/main/Hyprland-Dots/assets/latte.png" width="450" style="border-radius: 12px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);" />
+  <img src="https://raw.githubusercontent.com/0o0-ct/Pixi-Arch-A/main/Hyprland-Dots/assets/latte.png" width="450" style="border-radius: 12px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);" />
 </p>
 
 ### 💫 Un entorno de escritorio ultra-premium de cristal esmerilado impulsado por Hyprland y Arch Linux 💫
@@ -74,7 +74,7 @@ Este sistema está completamente enlazado a tu repositorio personal en GitHub. P
 
 ```bash
 # Clonar tu repositorio oficial
-git clone https://github.com/0o0-ct/Pixi-Arch.git ~/Pixi-Arch-A
+git clone https://github.com/0o0-ct/Pixi-Arch-A.git ~/Pixi-Arch-A
 
 # Empujar nuevos cambios y actualizaciones
 git add .

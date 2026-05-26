@@ -1,5 +1,5 @@
 #!/bin/bash
-# 💫 https://github.com/0o0-ct/Pixi-Arch 💫 #
+# 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
 # pacman adding up extra-spices #
 
 ## WARNING: DO NOT EDIT BEYOND THIS LINE IF YOU DON'T KNOW WHAT YOU ARE DOING! ##

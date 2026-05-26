@@ -1,5 +1,5 @@
 #!/bin/bash
-# 💫 https://github.com/0o0-ct/Pixi-Arch 💫 #
+# 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
 # Temperature Monitor - CPU/GPU Temperature Alerts #
 
 temp=(

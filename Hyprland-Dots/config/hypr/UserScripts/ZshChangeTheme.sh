@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  ##
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
 # Script for Oh my ZSH theme ( CTRL SHIFT O)
 
 # preview of theme can be view here: https://github.com/ohmyzsh/ohmyzsh/wiki/Themes

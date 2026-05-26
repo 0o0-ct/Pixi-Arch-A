@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  #
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  #
 # Kitty Themes Source https://github.com/dexpota/kitty-themes #
 
 # Define directories and variables

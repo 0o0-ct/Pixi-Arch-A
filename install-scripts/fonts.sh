@@ -1,5 +1,5 @@
 #!/bin/bash
-# 💫 https://github.com/0o0-ct/Pixi-Arch 💫 #
+# 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
 # Fonts #
 
 # These fonts are minimun required for pre-configured dots to work. You can add here as required

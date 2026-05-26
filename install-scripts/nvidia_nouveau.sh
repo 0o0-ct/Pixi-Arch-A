@@ -1,5 +1,5 @@
 #!/bin/bash
-# 💫 https://github.com/0o0-ct/Pixi-Arch 💫 #
+# 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
 # Nvidia Blacklist #
 
 ## WARNING: DO NOT EDIT BEYOND THIS LINE IF YOU DON'T KNOW WHAT YOU ARE DOING! ##

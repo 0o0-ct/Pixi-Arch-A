@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  ##
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
 # Weather entrypoint: prefer Python (Open‑Meteo), fallback to legacy Bash (wttr.in)
 
 SCRIPT_DIR="$(dirname "$0")"

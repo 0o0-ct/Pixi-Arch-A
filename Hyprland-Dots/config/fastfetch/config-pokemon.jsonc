@@ -30,7 +30,7 @@
             "type": "command",
             "key": " ",
             "keyColor": "blue",
-            "text": "echo 0o0-ct/Pixi-Arch Version: ${DOTS_VERSION}"
+            "text": "echo 0o0-ct/Pixi-Arch-A Version: ${DOTS_VERSION}"
         },
         {
             "type": "wm",

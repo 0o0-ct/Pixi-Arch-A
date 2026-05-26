@@ -22,7 +22,7 @@ Esta suite de configuraciones ha sido modificada a fondo para ofrecer un entorno
 
 * **`config/hypr/UserConfigs/UserDecorations.conf`:** Define el motor de cristal esmerilado de Hyprland con desenfoque de 4 pasadas (`passes = 4`), granulado denso y transparencias del `86%` en ventanas activas.
 * **`config/hypr/UserConfigs/WindowRules.conf`:** Establece las reglas de ventanas y capas, incluyendo la translucidez extrema para Thunar y su borde brillante de cristal.
-* **`config/hypr/scripts/KooLsDotsUpdate.sh`:** Script del actualizador de sistema totalmente personalizado para apuntar e instalar desde tu repositorio personal de GitHub `0o0-ct/Pixi-Arch`.
+* **`config/hypr/scripts/KooLsDotsUpdate.sh`:** Script del actualizador de sistema totalmente personalizado para apuntar e instalar desde tu repositorio personal de GitHub `0o0-ct/Pixi-Arch-A`.
 
 ---
 

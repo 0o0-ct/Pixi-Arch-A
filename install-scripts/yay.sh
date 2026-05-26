@@ -1,5 +1,5 @@
 #!/bin/bash
-# 💫 https://github.com/0o0-ct/Pixi-Arch 💫 #
+# 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
 # Yay AUR Helper #
 # NOTE: If paru is already installed, yay will not be installed #
 

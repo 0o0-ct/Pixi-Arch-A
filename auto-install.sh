@@ -1,5 +1,5 @@
 #!/bin/bash
-# https://github.com/0o0-ct/Pixi-Arch
+# https://github.com/0o0-ct/Pixi-Arch-A
 
 # Set some colors for output messages
 OK="$(tput setaf 2)[OK]$(tput sgr0)"
@@ -18,9 +18,9 @@ SKY_BLUE="$(tput setaf 6)"
 RESET="$(tput sgr0)"
 
 # Variables
-Distro="Arch-Hyprland"
-Github_URL="https://github.com/0o0-ct/Pixi-Arch/$Distro.git"
-Distro_DIR="$HOME/$Distro"
+Distro="Pixi-Arch-A"
+Github_URL="https://github.com/0o0-ct/Pixi-Arch-A.git"
+Distro_DIR="$HOME/Pixi-Arch-A"
 
 printf "\n%.0s" {1..1}
 

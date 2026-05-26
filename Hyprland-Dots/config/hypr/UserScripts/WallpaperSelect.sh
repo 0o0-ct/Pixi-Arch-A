@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
 # This script for selecting wallpapers (SUPER W)
 
 # WALLPAPERS PATH

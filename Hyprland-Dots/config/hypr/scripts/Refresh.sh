@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  ##
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
 # Scripts for refreshing ags, waybar, rofi, swaync, wallust
 
 SCRIPTSDIR=$HOME/.config/hypr/scripts

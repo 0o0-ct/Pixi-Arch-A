@@ -1,5 +1,5 @@
 #!/bin/bash
-# 💫 https://github.com/0o0-ct/Pixi-Arch 💫 #
+# 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
 # quickshell - for desktop overview replacing AGS
 
 if [[ $USE_PRESET = [Yy] ]]; then

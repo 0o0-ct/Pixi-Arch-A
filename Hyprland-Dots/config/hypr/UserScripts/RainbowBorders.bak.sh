@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  ##
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
 # Smooth border cycling effect using Wallust palette or full rainbow
 
 # Possible values: "wallust_random", "rainbow", "gradient_flow"

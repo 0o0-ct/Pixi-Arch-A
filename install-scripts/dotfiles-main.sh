@@ -1,5 +1,5 @@
 #!/bin/bash
-# 💫 https://github.com/0o0-ct/Pixi-Arch 💫 #
+# 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
 # Hyprland-Dots to download from main #
 
 
@@ -17,20 +17,22 @@ if ! source "$(dirname "$(readlink -f "$0")")/Global_functions.sh"; then
 fi
 
 # Check if Hyprland-Dots exists
-printf "${NOTE} Cloning and Installing ${SKY_BLUE}KooL's Hyprland Dots${RESET}....\n"
+printf "${NOTE} Instalando ${SKY_BLUE}las configuraciones de Pixi-Arch-A${RESET}....\n"
 
 if [ -d Hyprland-Dots ]; then
-  cd Hyprland-Dots
-  git stash && git pull
+  cd Hyprland-Dots || exit 1
   chmod +x copy.sh
   ./copy.sh 
 else
-  if git clone --depth=1 https://github.com/0o0-ct/Pixi-Arch/Hyprland-Dots; then
+  # Fallback to cloning from the new standalone repository Pixi-Arch-A
+  if git clone --depth=1 https://github.com/0o0-ct/Pixi-Arch-A.git temp_clone; then
+    mv temp_clone/Hyprland-Dots ./Hyprland-Dots
+    rm -rf temp_clone
     cd Hyprland-Dots || exit 1
     chmod +x copy.sh
-    ./copy.sh 
+    ./copy.sh
   else
-    echo -e "$ERROR Can't download ${YELLOW}KooL's Hyprland-Dots${RESET} . Check your internet connection"
+    echo -e "$ERROR No se pudieron descargar las configuraciones de ${YELLOW}Pixi-Arch-A${RESET} . Verifica tu conexión a internet."
   fi
 fi
 

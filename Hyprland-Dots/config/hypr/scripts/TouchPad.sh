@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  ##
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
 # For disabling touchpad.
 # Edit the Touchpad_Device on ~/.config/hypr/UserConfigs/Laptops.conf according to your system
 # use hyprctl devices to get your system touchpad device name

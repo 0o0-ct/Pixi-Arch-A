@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 Custom Wallpaper Downloader for 0o0-ct/Pixi-Arch Dotfiles 💫 ---- */
+# /* ---- 💫 Custom Wallpaper Downloader for 0o0-ct/Pixi-Arch-A Dotfiles 💫 ---- */
 
 # Configuración de carpetas
 REPO_WALLPAPERS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -200,7 +200,7 @@ FIRST_WALL=$(find "$SYSTEM_WALLPAPERS_DIR" -type f \( -iname "*.jpg" -o -iname "
 if [ -n "$FIRST_WALL" ] && [ -f "$FIRST_WALL" ]; then
   echo "${INFO} Inicializando tema estético del sistema con: $(basename "$FIRST_WALL")"
   wallust run -s "$FIRST_WALL" > /dev/null 2>&1
-  # Intentar ejecutar el script oficial de 0o0-ct/Pixi-Arch si existe para refrescar el backend de swww/awww
+  # Intentar ejecutar el script oficial de 0o0-ct/Pixi-Arch-A si existe para refrescar el backend de swww/awww
   SCRIPTS_DIR="$HOME/.config/hypr/scripts"
   if [ -f "$SCRIPTS_DIR/WallustSwww.sh" ]; then
     "$SCRIPTS_DIR/WallustSwww.sh" "$FIRST_WALL" > /dev/null 2>&1 &

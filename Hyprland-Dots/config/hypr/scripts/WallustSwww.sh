@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  ##
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
 # Wallust: derive colors from the current wallpaper and update templates
 # Usage: WallustSwww.sh [absolute_path_to_wallpaper]
 

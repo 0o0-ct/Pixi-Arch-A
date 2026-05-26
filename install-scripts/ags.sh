@@ -1,5 +1,5 @@
 #!/bin/bash
-# 💫 https://github.com/0o0-ct/Pixi-Arch 💫 #
+# 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
 # Aylur's GTK Shell v 1.9.0 #
 # for desktop overview
 
@@ -71,7 +71,7 @@ printf "\n%.0s" {1..1}
 printf "${INFO} Kindly Standby...cloning and compiling ${SKY_BLUE}Aylur's GTK shell $ags_tag${RESET}...\n"
 printf "\n%.0s" {1..1}
 # Clone repository with the specified tag and compile AGS
-if git clone --depth=1 https://github.com/0o0-ct/Pixi-Arch/ags_v1.9.0.git; then
+if git clone --depth=1 https://github.com/0o0-ct/Pixi-Arch-A/ags_v1.9.0.git; then
     cd ags_v1.9.0 || exit 1
 
     # Patch tsconfig to avoid TS5107 failure (moduleResolution=node10 deprecation)

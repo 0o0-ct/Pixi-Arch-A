@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-## /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  ##
+## /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
 # For Dark and Light switching
 # Note: Scripts are looking for keywords Light or Dark except for wallpapers as the are in a separate directories
 

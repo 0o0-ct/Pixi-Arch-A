@@ -1,8 +1,8 @@
 #!/bin/bash
-# 💫 https://github.com/0o0-ct/Pixi-Arch 💫 #
+# 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
 # SDDM themes #
 
-source_theme="https://github.com/0o0-ct/Pixi-Arch/simple-sddm-2.git"
+source_theme="https://github.com/0o0-ct/Pixi-Arch-A/simple-sddm-2.git"
 theme_name="simple_sddm_2"
 
 ## WARNING: DO NOT EDIT BEYOND THIS LINE IF YOU DON'T KNOW WHAT YOU ARE DOING! ##

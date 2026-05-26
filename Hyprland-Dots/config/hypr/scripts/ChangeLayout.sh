@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  ##
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
 # for changing Hyprland Layouts (Master or Dwindle) on the fly
 
 notif="$HOME/.config/swaync/images/ja.png"

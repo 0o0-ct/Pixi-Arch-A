@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  #
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  #
 # Rofi Themes - Script to preview and apply themes by live-reloading the config.
 
 # --- Configuration ---

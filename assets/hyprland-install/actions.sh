@@ -1,5 +1,5 @@
 #!/bin/bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch 💫 ---- */  #
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  #
 
 # Set some colors for output messages
 OK="$(tput setaf 2)[OK]$(tput sgr0)"
