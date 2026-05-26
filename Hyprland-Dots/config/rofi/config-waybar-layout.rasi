@@ -23,7 +23,7 @@ window {
 /* ---- Entry ---- */ 
 entry {
   expand: true;
-  placeholder: " 🖼️  Search / Choose Waybar Layout";
+  placeholder: " 🖼️  Buscar / Elegir Diseño Waybar";
 }
 
 /* ---- Listview ---- */
