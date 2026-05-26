@@ -15,7 +15,7 @@ source "$tmp_config_file"
 configs="$HOME/.config/hypr/configs"
 UserConfigs="$HOME/.config/hypr/UserConfigs"
 rofi_theme="$HOME/.config/rofi/config-edit.rasi"
-msg=' ⁉️ Choose what to do ⁉️'
+msg=' ⁉️ Elige qué hacer ⁉️'
 iDIR="$HOME/.config/swaync/images"
 scriptsDir="$HOME/.config/hypr/scripts"
 UserScripts="$HOME/.config/hypr/UserScripts"
@@ -54,17 +54,17 @@ toggle_rainbow_borders() {
             fi
         fi
     elif [[ -f "$disabled_sh_bak" ]]; then
-        # Disabled (.sh.bak) -> enable
+        # Deshabilitado (.sh.bak) -> enable
         if mv "$disabled_sh_bak" "$rainbow_script"; then
             status="enabled"
         fi
     elif [[ -f "$disabled_bak_sh" ]]; then
-        # Disabled (.bak.sh) -> enable (normalize to .sh)
+        # Deshabilitado (.bak.sh) -> enable (normalize to .sh)
         if mv "$disabled_bak_sh" "$rainbow_script"; then
             status="enabled"
         fi
     else
-        show_info "RainbowBorders script not found in $UserScripts (checked .sh, .sh.bak, .bak.sh)."
+        show_info "No se encontró el script RainbowBorders en $UserScripts."
         return
     fi
 
@@ -97,24 +97,24 @@ rainbow_borders_menu() {
     # Map internal mode to friendly display
     local current_display="$current"
     case "$current" in
-        wallust_random) current_display="Wallust Color" ;;
-        rainbow) current_display="Original Rainbow" ;;
-        gradient_flow) current_display="Gradient Flow" ;;
-        deshabilitado) current_display="Disabled" ;;
+        wallust_random) current_display="Color Wallust" ;;
+        rainbow) current_display="Arcoíris Original" ;;
+        gradient_flow) current_display="Flujo de Gradiente" ;;
+        deshabilitado) current_display="Deshabilitado" ;;
     esac
 
 
     # Build options and prompt
-    local options="Disable Rainbow Borders\nWallust Color\nOriginal Rainbow\nGradient Flow"
+    local options="Deshabilitar Bordes Arcoíris\nColor Wallust\nArcoíris Original\nFlujo de Gradiente"
     local choice
-    choice=$(printf "%b" "$options" | rofi -i -dmenu -config "$rofi_theme" -mesg "Rainbow Borders: current = $current_display")
+    choice=$(printf "%b" "$options" | rofi -i -dmenu -config "$rofi_theme" -mesg "Bordes Arcoíris: actual = $current_display")
 
     [[ -z "$choice" ]] && return
 
     local previous="$current"
 
     case "$choice" in
-        "Disable Rainbow Borders")
+        "Deshabilitar Bordes Arcoíris")
             if [[ -f "$rainbow_script" ]]; then
                 mv "$rainbow_script" "$disabled_sh_bak"
             fi
@@ -123,12 +123,12 @@ rainbow_borders_menu() {
                 hyprctl reload >/dev/null 2>&1 || true
             fi
             ;;
-        "Wallust Color"|"Original Rainbow"|"Gradient Flow")
+        "Color Wallust"|"Arcoíris Original"|"Flujo de Gradiente")
             local mode=""
             case "$choice" in
-                "Wallust Color") mode="wallust_random" ;;
-                "Original Rainbow") mode="rainbow" ;;
-                "Gradient Flow") mode="gradient_flow" ;;
+                "Color Wallust") mode="wallust_random" ;;
+                "Arcoíris Original") mode="rainbow" ;;
+                "Flujo de Gradiente") mode="gradient_flow" ;;
             esac
             # Ensure script is habilitado
             if [[ ! -f "$rainbow_script" ]]; then
@@ -137,7 +137,7 @@ rainbow_borders_menu() {
                 elif [[ -f "$disabled_bak_sh" ]]; then
                     mv "$disabled_bak_sh" "$rainbow_script"
                 else
-                    show_info "RainbowBorders script not found in $UserScripts."
+                    show_info "No se encontró el script RainbowBorders en $UserScripts."
                     return
                 fi
             fi
@@ -175,36 +175,36 @@ rainbow_borders_menu() {
 # Function to display the menu options without numbers
 menu() {
     cat <<EOF
---- USER CUSTOMIZATIONS ---
-Edit User Defaults
-Edit User Keybinds
-Edit User ENV variables
-Edit User Startup Apps (overlay)
-Edit User Window Rules (overlay)
-Edit User Settings
-Edit User Decorations
-Edit User Animations
-Edit User Laptop Settings
---- SYSTEM DEFAULTS  ---
-Edit System Default Keybinds
-Edit System Default Startup Apps
-Edit System Default Window Rules
-Edit System Default Settings
---- UTILITIES ---
-Set SDDM Wallpaper
-Choose Kitty Terminal Theme
-Configure Monitors (nwg-displays)
-Configure Workspace Rules (nwg-displays)
-GTK Settings (nwg-look)
-QT Apps Settings (qt6ct)
-QT Apps Settings (qt5ct)
-Choose Hyprland Animations
-Choose Monitor Profiles
-Choose Rofi Themes
-Search for Keybinds
-Toggle Game Mode
-Switch Dark-Light Theme
-Rainbow Borders Mode
+--- PERSONALIZACIONES DE USUARIO ---
+Editar Valores por Defecto (Usuario)
+Editar Atajos de Teclado (Usuario)
+Editar Variables ENV (Usuario)
+Editar Apps de Inicio (Capa Usuario)
+Editar Reglas de Ventana (Capa Usuario)
+Editar Ajustes de Sistema (Usuario)
+Editar Decoraciones (Usuario)
+Editar Animaciones (Usuario)
+Editar Ajustes de Portátil (Usuario)
+--- VALORES DEL SISTEMA ---
+Editar Atajos del Sistema
+Editar Apps de Inicio del Sistema
+Editar Reglas de Ventana del Sistema
+Editar Ajustes del Sistema
+--- UTILIDADES ---
+Configurar Fondo de SDDM
+Elegir Tema de Terminal Kitty
+Configurar Monitores (nwg-displays)
+Configurar Reglas de Espacios (nwg-displays)
+Ajustes GTK (nwg-look)
+Ajustes Apps QT (qt6ct)
+Ajustes Apps QT (qt5ct)
+Elegir Animaciones de Hyprland
+Elegir Perfiles de Monitor
+Elegir Temas de Rofi
+Buscar Atajos de Teclado
+Alternar Modo de Juego
+Cambiar Tema Claro-Oscuro
+Modo de Bordes Arcoíris
 EOF
 }
 
@@ -214,58 +214,58 @@ main() {
     
     # Map choices to corresponding files
     case "$choice" in
-    	"Edit User Defaults") file="$UserConfigs/01-UserDefaults.conf" ;;
-        "Edit User ENV variables") file="$UserConfigs/ENVariables.conf" ;;
-        "Edit User Keybinds") file="$UserConfigs/UserKeybinds.conf" ;;
-        "Edit User Startup Apps (overlay)") file="$UserConfigs/Startup_Apps.conf" ;;
-        "Edit User Window Rules (overlay)") file="$UserConfigs/WindowRules.conf" ;;
-        "Edit User Settings") file="$configs/SystemSettings.conf"; show_info "Editing default settings. Copy to UserConfigs/UserSettings.conf to override." ;;
-        "Edit User Decorations") file="$UserConfigs/UserDecorations.conf" ;;
-        "Edit User Animations") file="$UserConfigs/UserAnimations.conf" ;;
-        "Edit User Laptop Settings") file="$UserConfigs/Laptops.conf" ;;
-        "Edit System Default Keybinds") file="$configs/Keybinds.conf" ;;
-        "Edit System Default Startup Apps") file="$configs/Startup_Apps.conf" ;;
-        "Edit System Default Window Rules") file="$configs/WindowRules.conf" ;;
-        "Edit System Default Settings") file="$configs/SystemSettings.conf" ;;
-        "Set SDDM Wallpaper") $scriptsDir/sddm_wallpaper.sh --normal ;;
-        "Choose Kitty Terminal Theme") $scriptsDir/Kitty_themes.sh ;;
-        "Configure Monitors (nwg-displays)") 
+    	"Editar Valores por Defecto (Usuario)") file="$UserConfigs/01-UserDefaults.conf" ;;
+        "Editar Variables ENV (Usuario)") file="$UserConfigs/ENVariables.conf" ;;
+        "Editar Atajos de Teclado (Usuario)") file="$UserConfigs/UserKeybinds.conf" ;;
+        "Editar Apps de Inicio (Capa Usuario)") file="$UserConfigs/Startup_Apps.conf" ;;
+        "Editar Reglas de Ventana (Capa Usuario)") file="$UserConfigs/WindowRules.conf" ;;
+        "Editar Ajustes de Sistema (Usuario)") file="$configs/SystemSettings.conf"; show_info "Editando ajustes por defecto. Copia a UserConfigs/UserSettings.conf para sobrescribir." ;;
+        "Editar Decoraciones (Usuario)") file="$UserConfigs/UserDecorations.conf" ;;
+        "Editar Animaciones (Usuario)") file="$UserConfigs/UserAnimations.conf" ;;
+        "Editar Ajustes de Portátil (Usuario)") file="$UserConfigs/Laptops.conf" ;;
+        "Editar Atajos del Sistema") file="$configs/Keybinds.conf" ;;
+        "Editar Apps de Inicio del Sistema") file="$configs/Startup_Apps.conf" ;;
+        "Editar Reglas de Ventana del Sistema") file="$configs/WindowRules.conf" ;;
+        "Editar Ajustes del Sistema") file="$configs/SystemSettings.conf" ;;
+        "Configurar Fondo de SDDM") $scriptsDir/sddm_wallpaper.sh --normal ;;
+        "Elegir Tema de Terminal Kitty") $scriptsDir/Kitty_themes.sh ;;
+        "Configurar Monitores (nwg-displays)") 
             if ! command -v nwg-displays &>/dev/null; then
                 notify-send -i "$iDIR/error.png" "E-R-R-O-R" "Install nwg-displays first"
                 exit 1
             fi
             nwg-displays ;;
-        "Configure Workspace Rules (nwg-displays)") 
+        "Configurar Reglas de Espacios (nwg-displays)") 
             if ! command -v nwg-displays &>/dev/null; then
                 notify-send -i "$iDIR/error.png" "E-R-R-O-R" "Install nwg-displays first"
                 exit 1
             fi
             nwg-displays ;;
-		"GTK Settings (nwg-look)") 
+		"Ajustes GTK (nwg-look)") 
             if ! command -v nwg-look &>/dev/null; then
                 notify-send -i "$iDIR/error.png" "E-R-R-O-R" "Install nwg-look first"
                 exit 1
             fi
             nwg-look ;;
-		"QT Apps Settings (qt6ct)") 
+		"Ajustes Apps QT (qt6ct)") 
             if ! command -v qt6ct &>/dev/null; then
                 notify-send -i "$iDIR/error.png" "E-R-R-O-R" "Install qt6ct first"
                 exit 1
             fi
             qt6ct ;;
-		"QT Apps Settings (qt5ct)") 
+		"Ajustes Apps QT (qt5ct)") 
             if ! command -v qt5ct &>/dev/null; then
                 notify-send -i "$iDIR/error.png" "E-R-R-O-R" "Install qt5ct first"
                 exit 1
             fi
             qt5ct ;;
-        "Choose Hyprland Animations") $scriptsDir/Animations.sh ;;
-        "Choose Monitor Profiles") $scriptsDir/MonitorProfiles.sh ;;
-        "Choose Rofi Themes") $scriptsDir/RofiThemeSelector.sh ;;
-        "Search for Keybinds") $scriptsDir/KeyBinds.sh ;;
-        "Toggle Game Mode") $scriptsDir/GameMode.sh ;;
-        "Switch Dark-Light Theme") $scriptsDir/DarkLight.sh ;;
-        "Rainbow Borders Mode") rainbow_borders_menu ;;
+        "Elegir Animaciones de Hyprland") $scriptsDir/Animations.sh ;;
+        "Elegir Perfiles de Monitor") $scriptsDir/MonitorProfiles.sh ;;
+        "Elegir Temas de Rofi") $scriptsDir/RofiThemeSelector.sh ;;
+        "Buscar Atajos de Teclado") $scriptsDir/KeyBinds.sh ;;
+        "Alternar Modo de Juego") $scriptsDir/GameMode.sh ;;
+        "Cambiar Tema Claro-Oscuro") $scriptsDir/DarkLight.sh ;;
+        "Modo de Bordes Arcoíris") rainbow_borders_menu ;;
         *) return ;;  # Do nothing for invalid choices
     esac
 
