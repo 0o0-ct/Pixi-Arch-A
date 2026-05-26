@@ -6,7 +6,7 @@
 # Configura la variable global COPY_MENU_CHOICE hacia one of: install, upgrade, express, quit
 show_copy_menu() {
   local express_supported="${1:-0}"
-  local menu_title="      KooL's Hyprland Dotfiles      "
+  local menu_title="      Dotfiles de Pixi-Arch-A      "
   local prompt="Selecciona lo que te gustaría hacer:"
 
   local install_tag="Instalar"
