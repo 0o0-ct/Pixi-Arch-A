@@ -1,4 +1,4 @@
- /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  
+ /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  
  /* wallust template - colors-rofi */
 
 * {
@@ -23,8 +23,8 @@ selected-normal-foreground: {{background}};
 selected-urgent-background: {{color11}};
 selected-urgent-foreground: {{background}};
 
-background-color: {{background}};
-background: rgba(0,0,0,0.7);
+background-color: rgba({{background | rgb}}, 0.25);
+background: rgba({{background | rgb}}, 0.35);
 foreground: {{foreground}};
 border-color: {{color12}};
 

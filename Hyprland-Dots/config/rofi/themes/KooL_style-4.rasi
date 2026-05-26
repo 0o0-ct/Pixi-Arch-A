@@ -1,4 +1,4 @@
-/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/* ---- 💫 https://github.com/JaKooLit 💫 ---- */
 /* KooL Hyprland Rofi Style 4 */
 /* credit: https://github.com/adi1090x/rofi */
 
@@ -22,38 +22,39 @@ configuration {
 
 /*****----- Global Properties -----*****/
 * {
-    background-alt: @color0;
-    /* selected uses color12, active uses color11 (match other working styles) */
-    selected:       @color12;
-    active:         @color11;
-    urgent:         @color13;
+    /* --- Premium Dark Glassmorphism Variables --- */
+    background:                  rgba(15, 16, 21, 0.28);
+    background-alt:              rgba(255, 255, 255, 0.04);
+    foreground:                  #ffffff;
+    selected:                    rgba(255, 255, 255, 0.2);
+    active:                      rgba(255, 255, 255, 0.25);
+    urgent:                      #cc3436;
     
-    border-color:                @active;
+    border-color:                rgba(255, 255, 255, 0.15);
     handle-color:                @selected;
     background-color:            @background;
     foreground-color:            @foreground;
     alternate-background:        @background-alt;
-    normal-background:           @background;
+    normal-background:           transparent;
     normal-foreground:           @foreground;
     urgent-background:           @urgent;
-    urgent-foreground:           @background;
+    urgent-foreground:           @foreground;
     active-background:           @active;
-    active-foreground:           @background;
-    /* force selection to use the selected accent, not imported selected-* values */
+    active-foreground:           @foreground;
+    
     selected-normal-background:  @selected;
-    selected-normal-foreground:  @background;
+    selected-normal-foreground:  #ffffff;
     selected-urgent-background:  @selected;
-    selected-urgent-foreground:  @background;
+    selected-urgent-foreground:  #ffffff;
     selected-active-background:  @selected;
-    selected-active-foreground:  @background;
-    alternate-normal-background: @background;
+    selected-active-foreground:  #ffffff;
+    
+    alternate-normal-background: transparent;
     alternate-normal-foreground: @foreground;
     alternate-urgent-background: @urgent;
-    alternate-urgent-foreground: @background;
+    alternate-urgent-foreground: @foreground;
     alternate-active-background: @active;
-    alternate-active-foreground: @background;
-    
-
+    alternate-active-foreground: @foreground;
 }
 
 
@@ -72,9 +73,9 @@ window {
     enabled:                     true;
     margin:                      0px;
     padding:                     0px;
-    border:                      0px solid;
-    border-radius:               10px;
-    border-color:                @border-color;
+    border:                      1px solid;
+    border-radius:               12px;
+    border-color:                rgba(255, 255, 255, 0.15);
     cursor:                      "default";
     /* Backgroud Colors */
     background-color:            @background-color;
@@ -222,15 +223,15 @@ element normal.active {
 element-text selected,
 element selected.normal {
     background-color:            @selected;
-    text-color:                  @background;
+    text-color:                  #ffffff;
 }
 element selected.urgent {
     background-color:            @selected;
-    text-color:                  @background;
+    text-color:                  #ffffff;
 }
 element selected.active {
     background-color:            @selected;
-    text-color:                  @background;
+    text-color:                  #ffffff;
 }
 element alternate.normal {
     background-color:            @alternate-normal-background;
@@ -288,7 +289,7 @@ button selected {
     border-radius:               6px;
     border-color:                @border-color;
     background-color:            @selected;
-    text-color:                  @background;
+    text-color:                  #ffffff;
 }
 
 /*****----- Message -----*****/

@@ -1,13 +1,13 @@
-/* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
+/* ----------- 💫 https://github.com/JaKooLit 💫 -------- */
 /* swaync colors - wallust from waybar.css */
 
 @import '../../.config/waybar/wallust/colors-waybar.css';
 
-@define-color noti-border-color @color12;
-@define-color noti-bg rgba(0, 0, 0, 0.8);
-@define-color noti-bg-alt @background-alt;
-@define-color noti-bg-hover @background;
-@define-color text-color @foreground;
+@define-color noti-border-color rgba(255, 255, 255, 0.15);
+@define-color noti-bg rgba(15, 16, 21, 0.28);
+@define-color noti-bg-alt rgba(255, 255, 255, 0.04);
+@define-color noti-bg-hover rgba(255, 255, 255, 0.12);
+@define-color text-color #ffffff;
 
 * {
     font-family: "JetBrains Mono Nerd Font";

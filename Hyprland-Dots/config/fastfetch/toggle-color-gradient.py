@@ -3,10 +3,11 @@
 import json
 import os
 
-LOGO_REG = "/home/c0o0c/.config/fastfetch/pixi-arch.txt"
-LOGO_MIC = "/home/c0o0c/.config/fastfetch/pixi-arch-micro.txt"
-CONFIG_REG = "/home/c0o0c/.config/fastfetch/config-pixi.jsonc"
-CONFIG_MIC = "/home/c0o0c/.config/fastfetch/config-pixi-micro.jsonc"
+HOME_DIR = os.path.expanduser("~")
+LOGO_REG = os.path.join(HOME_DIR, ".config/fastfetch/pixi-arch.txt")
+LOGO_MIC = os.path.join(HOME_DIR, ".config/fastfetch/pixi-arch-micro.txt")
+CONFIG_REG = os.path.join(HOME_DIR, ".config/fastfetch/config-pixi.jsonc")
+CONFIG_MIC = os.path.join(HOME_DIR, ".config/fastfetch/config-pixi-micro.jsonc")
 
 WHITE_REG_RAW = """                  -`
                  .o+`
@@ -112,14 +113,17 @@ def update_config_title(path, style):
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
     
+    is_micro = "micro" in path
+    spacing = "   " if is_micro else "  "
+    
     for mod in data["modules"]:
-        if isinstance(mod, dict) and mod.get("type") == "custom" and "Pixi - Arch" in mod.get("format", ""):
+        if isinstance(mod, dict) and mod.get("type") == "custom" and any(x in mod.get("format", "") for x in ["Pixi", "𝗣𝗶𝘅𝗶"]):
             if style == "white":
                 # Pure True-Color Bold RGB White (\u001b[1;38;2;255;255;255m)
-                mod["format"] = " \u001b[1;38;2;255;255;255m󰣇  Pixi - Arch\u001b[0m"
+                mod["format"] = f" \u001b[1;38;2;255;255;255m󰣇{spacing}𝗣𝗶𝘅𝗶-𝗔𝗿𝗰𝗵-𝗔\u001b[0m"
             else:
                 # Pure True-Color Bold RGB Cyan (\u001b[1;38;2;0;255;255m)
-                mod["format"] = " \u001b[1;38;2;0;255;255m󰣇  Pixi - Arch\u001b[0m"
+                mod["format"] = f" \u001b[1;38;2;0;255;255m󰣇{spacing}𝗣𝗶𝘅𝗶-𝗔𝗿𝗰𝗵-𝗔\u001b[0m"
                 
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)

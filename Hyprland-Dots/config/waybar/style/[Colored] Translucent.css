@@ -1,4 +1,4 @@
-/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/* ---- 💫 https://github.com/JaKooLit 💫 ---- */
 /* Translucent */
 
 @define-color critical #ff0000; /* critical color */
@@ -25,11 +25,14 @@ font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
 window#waybar {
-    background-color: rgba(0,0,0,0.3);
+    background: rgba(15, 20, 30, 0.34) !important;
+    background-image: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
     color: #ffffff;
     transition-property: background-color;
     transition-duration: .5s;
-    border-radius: 10px;
 }
 
 window#waybar.hidden {
@@ -37,12 +40,11 @@ window#waybar.hidden {
 }
 
 tooltip {
-    background: #1e1e2e;
-    opacity: 0.6;
+    background-color: rgba(15, 20, 30, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 10px;
-    border-width: 2px;
-    border-style: solid;
-    border-color: #11111b;
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.5);
+    color: #ffffff;
 }
 
 #taskbar button,
