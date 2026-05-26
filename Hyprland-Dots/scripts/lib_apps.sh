@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Ayudantes para habilitar apps y selección de edihaciar.
+# Ayudantes para habilitar apps y selección de editor.
 
 enable_asusctl() {
   local log="$1"
@@ -86,30 +86,30 @@ install_terminal_configs() {
   fi
 }
 
-choose_default_edihaciar() {
+choose_default_editor() {
   local log="$1"
-  local edihaciar_set=0
-  update_edihaciar() {
-    local edihaciar=$1
-    sed -i "s/#env = EDITOR,.*/env = EDITOR,$edihaciar #default edihaciar/" config/hypr/UserConfigs/01-UserDefaults.conf
-    echo "${OK:-[OK]} Default edihaciar set hacia ${MAGENTA:-}$edihaciar${RESET:-}." 2>&1 | tee -a "$log"
+  local editor_set=0
+  update_editor() {
+    local editor=$1
+    sed -i "s/#env = EDITOR,.*/env = EDITOR,$editor #default editor/" config/hypr/UserConfigs/01-UserDefaults.conf
+    echo "${OK:-[OK]} Default editor set hacia ${MAGENTA:-}$editor${RESET:-}." 2>&1 | tee -a "$log"
   }
   if command -v nvim &>/dev/null; then
     printf "${INFO:-[INFO]} ${MAGENTA:-}neovim${RESET:-} is detected as installed\n"
-    if ! read -r -p "${CAT:-[ACTION]} Do you want hacia make ${MAGENTA:-}neovim${RESET:-} the default edihaciar? (y/N): " EDITOR_CHOICE </dev/tty; then
+    if ! read -r -p "${CAT:-[ACTION]} ¿Quieres que ${MAGENTA:-}neovim${RESET:-} sea el editor predeterminado? (s/N): " EDITOR_CHOICE </dev/tty; then
       :
     elif [[ "$EDITOR_CHOICE" == "y" || "$EDITOR_CHOICE" == "Y" ]]; then
-      update_edihaciar "nvim"
-      edihaciar_set=1
+      update_editor "nvim"
+      editor_set=1
     fi
   fi
   printf "\n"
-  if [[ "$edihaciar_set" -eq 0 ]] && command -v vim &>/dev/null; then
+  if [[ "$editor_set" -eq 0 ]] && command -v vim &>/dev/null; then
     printf "${INFO:-[INFO]} ${MAGENTA:-}vim${RESET:-} is detected as installed\n"
-    if read -r -p "${CAT:-[ACTION]} Do you want hacia make ${MAGENTA:-}vim${RESET:-} the default edihaciar? (y/N): " EDITOR_CHOICE </dev/tty; then
+    if read -r -p "${CAT:-[ACTION]} ¿Quieres que ${MAGENTA:-}vim${RESET:-} sea el editor predeterminado? (s/N): " EDITOR_CHOICE </dev/tty; then
       if [[ "$EDITOR_CHOICE" == "y" || "$EDITOR_CHOICE" == "Y" ]]; then
-        update_edihaciar "vim"
-        edihaciar_set=1
+        update_editor "vim"
+        editor_set=1
       fi
     fi
   fi

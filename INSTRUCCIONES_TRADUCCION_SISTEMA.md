@@ -8,7 +8,9 @@ Esta guía técnica explica paso a paso cómo traducir completamente al español
 ## 📌 Regla de Oro de la Traducción Técnica
 
 > [!WARNING]
-> **LO QUE SE TRADUCE:** Únicamente los textos que lee el usuario final (mensajes de logs, diálogos interactivos, preguntas, títulos de ventanas y notificaciones).
+> **LO QUE SE TRADUCE:** 
+> 1. Los textos que lee el usuario final (mensajes de logs, diálogos interactivos, preguntas, títulos de ventanas y notificaciones).
+> 2. **Los comentarios explicativos dentro del código** (líneas que empiezan con `#` o `//`), para que todo el sistema esté documentado 100% en español.
 >
 > **LO QUE NO SE TRADUCE (BAJO NINGÚN CONCEPTO):**
 > * Comandos de Linux (`sudo`, `pacman`, `git`, `systemctl`, `sed`, `grep`, `mkdir`, etc.).
@@ -79,7 +81,7 @@ Muchos scripts preguntan al usuario mediante un prompt `read`. Debes traducir la
 
 ### ❌ Ejemplo Original (Inglés):
 ```bash
-echo -n "Would you like to install additional software? (y/n): "
+echo -n "¿Te gustaría instalar software adicional? (s/n): "
 read CHOICE
 if [[ "$CHOICE" == "y" || "$CHOICE" == "yes" ]]; then
     # código

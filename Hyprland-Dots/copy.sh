@@ -241,7 +241,7 @@ if grep -iqE '^(ID_LIKE|ID)=.*(ubuntu|debian)' /etc/os-release >/dev/null 2>&1; 
   printf "\n%.0s" {1..1}
   print_color $WARNING "\nThese Dotfiles are only supported on Hyprland v0.50 or greater. Do not install on older versions of Hyprland.\n"
   while true; do
-    echo -n "${CAT} Do you want to continue anyway? (y/N): "
+    echo -n "${CAT} ¿Deseas continuar de todos modos? (s/N): "
     read _continue
     _continue=$(echo "${_continue}" | tr '[:upper:]' '[:lower:]')
     case "${_continue}" in
@@ -559,7 +559,7 @@ if [ -d "$sddm_simple_sddm_2" ] && [ "$EXPRESS_MODE" -eq 1 ]; then
   echo "${NOTE} Express mode: skipping SDDM wallpaper prompt." 2>&1 | tee -a "$LOG"
 elif [ -d "$sddm_simple_sddm_2" ]; then
   while true; do
-    echo -n "${CAT} SDDM simple_sddm_2 theme detected! Apply current wallpaper as SDDM background? (y/n): "
+    echo -n "${CAT} ¡Tema SDDM simple_sddm_2 detectado! ¿Aplicar el fondo de pantalla actual como fondo de SDDM? (s/n): "
     read SDDM_WALL
 
     # Remove any leading/trailing whitespace or newlines from input
@@ -592,7 +592,7 @@ if [ "$EXPRESS_MODE" -eq 1 ]; then
 else
   while true; do
     echo "${NOTE} We will download your personal 4K & HD curated wallpapers."
-    echo -n "${CAT} Would you like to download your new high-quality wallpapers? (y/n): "
+    echo -n "${CAT} ¿Te gustaría descargar tus nuevos fondos de pantalla de alta calidad? (s/n): "
     read WALL
 
     case $WALL in

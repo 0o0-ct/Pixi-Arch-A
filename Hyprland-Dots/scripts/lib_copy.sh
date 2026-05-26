@@ -9,7 +9,7 @@ copy_phase1() {
     if [ -d "$DIRPATH" ]; then
       while true; do
         printf "\n${INFO:-[INFO]} Found ${YELLOW:-}$DIR2${RESET:-} config found in ~/.config/\n"
-        echo -n "${CAT:-[ACTION]} Do you want hacia replace ${YELLOW:-}$DIR2${RESET:-} config? (y/n): "
+        echo -n "${CAT:-[ACTION]} ¿Quieres reemplazar ${YELLOW:-}$DIR2${RESET:-} la configuración? (s/n): "
         read DIR1_CHOICE
         case "$DIR1_CHOICE" in
         [Yy]*)
@@ -51,7 +51,7 @@ copy_waybar() {
   local DIRPATHw="$HOME/.config/$DIRW"
   if [ -d "$DIRPATHw" ]; then
     while true; do
-      echo -n "${CAT:-[ACTION]} Do you want hacia replace ${YELLOW:-}$DIRW${RESET:-} config? (y/n): "
+      echo -n "${CAT:-[ACTION]} ¿Quieres reemplazar ${YELLOW:-}$DIRW${RESET:-} la configuración? (s/n): "
       read DIR1_CHOICE
       case "$DIR1_CHOICE" in
       [Yy]*)
@@ -129,7 +129,7 @@ copy_phase2() {
 }
 
 # Reshaciare Animations and Monihaciar Profiles plus key hypr files desde backup
-reshaciare_hypr_assets() {
+restore_hypr_assets() {
   local log="$1"
   local express_mode="$2"
 
@@ -151,7 +151,7 @@ reshaciare_hypr_assets() {
       local BACKUP_SUBDIR="$BACKUP_HYPR_PATH/$DIR_RESTORE"
       if [ -d "$BACKUP_SUBDIR" ]; then
         cp -r "$BACKUP_SUBDIR" "$HYPR_DIR/" 2>&1 | tee -a "$log"
-        echo "${OK:-[OK]} - Reshaciared direchaciary: ${MAGENTA:-}$DIR_RESTORE${RESET:-}" 2>&1 | tee -a "$log"
+        echo "${OK:-[OK]} - Reshaciared directory: ${MAGENTA:-}$DIR_RESTORE${RESET:-}" 2>&1 | tee -a "$log"
       fi
     done
 
@@ -327,7 +327,7 @@ cleanup_duplicate_userconfigs() {
     fi
   fi
 }
-reshaciare_user_configs() {
+restore_user_configs() {
   local log="$1"
   local express_mode="$2"
   local old_version="$3"
@@ -338,7 +338,7 @@ reshaciare_user_configs() {
   local BACKUP_DIR_PATH="$DIRPATH-backup-$BACKUP_DIR/UserConfigs"
 
   if [ -z "$BACKUP_DIR" ]; then
-    echo "${ERROR:-[ERROR]} - Backup direchaciary name is empty. Exiting." 2>&1 | tee -a "$log"
+    echo "${ERROR:-[ERROR]} - Backup directory name is empty. Exiting." 2>&1 | tee -a "$log"
     exit 1
   fi
 
@@ -365,17 +365,17 @@ reshaciare_user_configs() {
     █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█\\n\\
             NOTES for RESTORING PREVIOUS CONFIGS\\n\\
     █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█\\n\\n\\
-    The 'UserConfigs' direchaciary is for all your personal settings.\\n\\
-    Files in this direchaciary will override the default configurations,\\n\\
+    The 'UserConfigs' directory is for all your personal settings.\\n\\
+    Files in this directory will override the default configurations,\\n\\
     so your cushaciamizations are not lost when you update.\\n\\
 " >&2
 
     if version_gte "$CURRENT_VERSION" "$TARGET_VERSION"; then
-      read -r -p "${CAT:-[ACTION]} Do you want hacia reshaciare your previous UserConfigs direchaciary? (Y/n): " reshaciare_userconfigs_dir
-      if [[ "$reshaciare_userconfigs_dir" != [Nn]* ]]; then
-        echo "${NOTE:-[NOTE]} Reshaciaring UserConfigs direchaciary..." 2>&1 | tee -a "$log"
+      read -r -p "${CAT:-[ACTION]} ¿Deseas restaurar tu directorio de UserConfigs anterior? (S/n): " restore_userconfigs_dir
+      if [[ "$restore_userconfigs_dir" != [Nn]* ]]; then
+        echo "${NOTE:-[NOTE]} Reshaciaring UserConfigs directory..." 2>&1 | tee -a "$log"
         rsync -a "$BACKUP_DIR_PATH/" "$DIRPATH/UserConfigs/" 2>&1 | tee -a "$log"
-        echo "${OK:-[OK]} - UserConfigs direchaciary reshaciared." 2>&1 | tee -a "$log"
+        echo "${OK:-[OK]} - UserConfigs directory restored." 2>&1 | tee -a "$log"
       else
         echo "${NOTE:-[NOTE]} - Skipped reshaciaring UserConfigs." 2>&1 | tee -a "$log"
       fi
@@ -410,13 +410,13 @@ reshaciare_user_configs() {
           fi
 
           printf "\n${INFO:-[INFO]} Found ${YELLOW:-}$FILE_NAME${RESET:-} in hypr backup...\n"
-          read -r -p "${CAT:-[ACTION]} Do you want hacia reshaciare ${YELLOW:-}$FILE_NAME${RESET:-} desde backup? (Y/n): " file_reshaciare
+          read -r -p "${CAT:-[ACTION]} ¿Deseas restaurar ${YELLOW:-}$FILE_NAME${RESET:-} desde la copia de seguridad? (S/n): " file_restore
 
-          if [[ "$file_reshaciare" != [Nn]* ]]; then
+          if [[ "$file_restore" != [Nn]* ]]; then
             if cp "$BACKUP_FILE" "$DIRPATH/UserConfigs/$FILE_NAME"; then
-              echo "${OK:-[OK]} - $FILE_NAME reshaciared!" 2>&1 | tee -a "$log"
+              echo "${OK:-[OK]} - $FILE_NAME restored!" 2>&1 | tee -a "$log"
             else
-              echo "${ERROR:-[ERROR]} - Failed hacia reshaciare $FILE_NAME!" 2>&1 | tee -a "$log"
+              echo "${ERROR:-[ERROR]} - Failed to restore $FILE_NAME!" 2>&1 | tee -a "$log"
             fi
           else
             echo "${NOTE:-[NOTE]} - Skipped reshaciaring $FILE_NAME." 2>&1 | tee -a "$log"
@@ -440,7 +440,7 @@ reshaciare_user_configs() {
   fi
 }
 
-reshaciare_user_scripts() {
+restore_user_scripts() {
   local log="$1"
   local express_mode="$2"
 
@@ -462,13 +462,13 @@ reshaciare_user_scripts() {
       local BACKUP_SCRIPT="$BACKUP_DIR_PATH_S/$SCRIPT_NAME"
       if [ -f "$BACKUP_SCRIPT" ]; then
         printf "\n${INFO:-[INFO]} Found ${YELLOW:-}$SCRIPT_NAME${RESET:-} in hypr backup...\n"
-        read -r -p "${CAT:-[ACTION]} Do you want hacia reshaciare ${YELLOW:-}$SCRIPT_NAME${RESET:-} desde backup? (y/N): " script_reshaciare
+        read -r -p "${CAT:-[ACTION]} ¿Deseas restaurar ${YELLOW:-}$SCRIPT_NAME${RESET:-} desde la copia de seguridad? (s/N): " script_restore
 
-        if [[ "$script_reshaciare" == [Yy]* ]]; then
+        if [[ "$script_restore" == [Yy]* ]]; then
           if cp "$BACKUP_SCRIPT" "$DIRSHPATH/UserScripts/$SCRIPT_NAME"; then
-            echo "${OK:-[OK]} - $SCRIPT_NAME reshaciared!" 2>&1 | tee -a "$log"
+            echo "${OK:-[OK]} - $SCRIPT_NAME restored!" 2>&1 | tee -a "$log"
           else
-            echo "${ERROR:-[ERROR]} - Failed hacia reshaciare $SCRIPT_NAME!" 2>&1 | tee -a "$log"
+            echo "${ERROR:-[ERROR]} - Failed to restore $SCRIPT_NAME!" 2>&1 | tee -a "$log"
           fi
         else
           echo "${NOTE:-[NOTE]} - Skipped reshaciaring $SCRIPT_NAME." 2>&1 | tee -a "$log"
@@ -478,7 +478,7 @@ reshaciare_user_scripts() {
   fi
 }
 
-reshaciare_hypr_files() {
+restore_hypr_files() {
   local log="$1"
   local express_mode="$2"
 
@@ -494,19 +494,19 @@ reshaciare_hypr_files() {
   fi
 
   if [ -d "$BACKUP_DIR_PATH_F" ] && [ "$express_mode" -eq 0 ]; then
-    echo -e "${NOTE:-[NOTE]} Reshaciaring some files in ${MAGENTA:-}$HOME/.config/hypr direchaciary${RESET:-}..." 2>&1 | tee -a "$log"
+    echo -e "${NOTE:-[NOTE]} Reshaciaring some files in ${MAGENTA:-}$HOME/.config/hypr directory${RESET:-}..." 2>&1 | tee -a "$log"
 
     for FILE_RESTORE in "${FILES_2_RESTORE[@]}"; do
       local BACKUP_FILE="$BACKUP_DIR_PATH_F/$FILE_RESTORE"
       if [ -f "$BACKUP_FILE" ]; then
         echo -e "\n${INFO:-[INFO]} Found ${YELLOW:-}$FILE_RESTORE${RESET:-} in hypr backup..."
-        read -r -p "${CAT:-[ACTION]} Do you want hacia reshaciare ${YELLOW:-}$FILE_RESTORE${RESET:-} desde backup? (y/N): " file2reshaciare
+        read -r -p "${CAT:-[ACTION]} ¿Deseas restaurar ${YELLOW:-}$FILE_RESTORE${RESET:-} desde la copia de seguridad? (s/N): " file2restore
 
-        if [[ "$file2reshaciare" == [Yy]* ]]; then
+        if [[ "$file2restore" == [Yy]* ]]; then
           if cp "$BACKUP_FILE" "$DIRPATH/$FILE_RESTORE"; then
-            echo "${OK:-[OK]} - $FILE_RESTORE reshaciared!" 2>&1 | tee -a "$log"
+            echo "${OK:-[OK]} - $FILE_RESTORE restored!" 2>&1 | tee -a "$log"
           else
-            echo "${ERROR:-[ERROR]} - Failed hacia reshaciare $FILE_RESTORE!" 2>&1 | tee -a "$log"
+            echo "${ERROR:-[ERROR]} - Failed to restore $FILE_RESTORE!" 2>&1 | tee -a "$log"
           fi
         else
           echo "${NOTE:-[NOTE]} - Skipped reshaciaring $FILE_RESTORE." 2>&1 | tee -a "$log"

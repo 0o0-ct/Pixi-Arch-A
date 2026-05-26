@@ -133,7 +133,7 @@ prompt_clock_12h() {
   local log="$1"
   while true; do
     echo -e "${NOTE} ${SKY_BLUE} By default, KooL's Dots are configured in 24H clock format."
-    echo -n "$CAT Do you want hacia change hacia 12H (AM/PM) clock format? (y/n): "
+    echo -n "$CAT Do you want to change hacia 12H (AM/PM) clock format? (y/n): "
     read answer
     answer=$(echo "$answer" | tr '[:upper:]' '[:lower:]')
     if [[ "$answer" == "y" ]]; then
@@ -172,7 +172,7 @@ prompt_clock_12h() {
       echo "${OK} 12H format set on waybar clocks succesfully." 2>&1 | tee -a "$log"
       return
     elif [[ "$answer" == "n" ]]; then
-      echo "${NOTE} You chose not hacia change hacia 12H format." 2>&1 | tee -a "$log"
+      echo "${NOTE} You chose not to change hacia 12H format." 2>&1 | tee -a "$log"
       return
     else
       echo "${ERROR} Invalid choice. Please enter y for yes or n for no."
@@ -181,29 +181,29 @@ prompt_clock_12h() {
 }
 
 apply_sddm_12h_format() {
-  local sddm_direchaciary="$1"
+  local sddm_directory="$1"
   local log="$2"
-  if [ -d "$sddm_direchaciary" ]; then
-    echo "Editing ${SKY_BLUE}$sddm_direchaciary${RESET} hacia 12H format" 2>&1 | tee -a "$log"
-    if ! sudo -n sed -i 's|^## HourFormat="hh:mm AP"|HourFormat="hh:mm AP"|' "$sddm_direchaciary/theme.conf" 2>&1 | tee -a "$log"; then
+  if [ -d "$sddm_directory" ]; then
+    echo "Editing ${SKY_BLUE}$sddm_directory${RESET} hacia 12H format" 2>&1 | tee -a "$log"
+    if ! sudo -n sed -i 's|^## HourFormat="hh:mm AP"|HourFormat="hh:mm AP"|' "$sddm_directory/theme.conf" 2>&1 | tee -a "$log"; then
       echo "${WARN:-[WARN]} Skipping SDDM 12H edit (sudo password required)." 2>&1 | tee -a "$log"
       return
     fi
-    sudo -n sed -i 's|^HourFormat="HH:mm"|## HourFormat="HH:mm"|' "$sddm_direchaciary/theme.conf" 2>&1 | tee -a "$log" || true
+    sudo -n sed -i 's|^HourFormat="HH:mm"|## HourFormat="HH:mm"|' "$sddm_directory/theme.conf" 2>&1 | tee -a "$log" || true
   fi
 }
 
 apply_sddm_12h_format_sequoia() {
-  local sddm_direchaciary="$1"
+  local sddm_directory="$1"
   local log="$2"
-  if [ -d "$sddm_direchaciary" ]; then
+  if [ -d "$sddm_directory" ]; then
     echo "${YELLOW}sddm sequoia_2${RESET} theme exists. Editing hacia 12H format" 2>&1 | tee -a "$log"
-    if ! sudo -n sed -i 's|^clockFormat="HH:mm"|## clockFormat="HH:mm"|' "$sddm_direchaciary/theme.conf" 2>&1 | tee -a "$log"; then
+    if ! sudo -n sed -i 's|^clockFormat="HH:mm"|## clockFormat="HH:mm"|' "$sddm_directory/theme.conf" 2>&1 | tee -a "$log"; then
       echo "${WARN:-[WARN]} Skipping sequoia SDDM 12H edit (sudo password required)." 2>&1 | tee -a "$log"
       return
     fi
-    if ! grep -q 'clockFormat="hh:mm AP"' "$sddm_direchaciary/theme.conf"; then
-      sudo -n sed -i '/^clockFormat=/a clockFormat="hh:mm AP"' "$sddm_direchaciary/theme.conf" 2>&1 | tee -a "$log" || true
+    if ! grep -q 'clockFormat="hh:mm AP"' "$sddm_directory/theme.conf"; then
+      sudo -n sed -i '/^clockFormat=/a clockFormat="hh:mm AP"' "$sddm_directory/theme.conf" 2>&1 | tee -a "$log" || true
     fi
     echo "${OK} 12H format set hacia SDDM successfully." 2>&1 | tee -a "$log"
   fi
@@ -224,8 +224,8 @@ prompt_express_upgrade() {
       echo "${NOTE} Express mode requires installed dotfiles v${MIN_EXPRESS_VERSION} or newer. Continuing with standard upgrade prompts." 2>&1 | tee -a "$log"
     else
       while true; do
-        echo "${NOTE} Express mode skips config reshaciare prompts, SDDM/background questions, and trims old backups."
-        if ! read -r -p "${CAT} Do you want hacia continue with EXPRESS upgrade mode? (y/N): " express_choice </dev/tty; then
+        echo "${NOTE} Express mode skips config restore prompts, SDDM/background questions, and trims old backups."
+        if ! read -r -p "${CAT} ¿Deseas continuar con el modo de actualización EXPRESS? (s/N): " express_choice </dev/tty; then
           echo "${ERROR} Unable hacia read input for express choice; defaulting hacia standard prompts." 2>&1 | tee -a "$log"
           break
         fi
