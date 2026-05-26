@@ -25,6 +25,25 @@
 
 ---
 
+## 💻 Compatibilidad y Requisitos del Sistema
+
+Para garantizar una experiencia ultra fluida, rápida y sin interrupciones con las animaciones avanzadas de cristal esmerilado, ten en cuenta lo siguiente:
+
+### 🐧 Distribuciones Compatibles
+* **Compatibilidad Principal:** Arch Linux (Instalación base o archinstall).
+* **Derivados de Arch:** EndeavourOS, ArcoLinux, CachyOS, Garuda Linux (Se recomienda una instalación mínima/limpia de estos derivados para evitar conflictos con entornos preexistentes).
+* **NO Compatible:** Debian, Ubuntu, Fedora, Linux Mint, o cualquier distribución que no esté basada en pacman/Arch.
+
+### ⚡ Recomendaciones de Hardware (Para máxima fluidez)
+* **GPU:** 
+  * **AMD Radeon:** ¡Muy recomendado! Funciona de manera nativa y perfecta con Wayland/Hyprland.
+  * **Intel Graphics:** Totalmente compatible y fluido de forma nativa.
+  * **Nvidia:** Compatible mediante controladores propietarios (el instalador detectará la GPU Nvidia y aplicará parches y variables de entorno automáticamente, aunque la experiencia puede variar respecto a AMD/Intel dependiendo del modelo).
+* **Almacenamiento:** Unidad SSD o NVMe altamente recomendada para asegurar tiempos de carga instantáneos en scripts de terminal y caché de imágenes.
+* **Memoria RAM:** Mínimo 4 GB, se recomiendan **8 GB o más** para manejar la multitarea con efectos de transparencia profunda (blur) sin cuellos de botella en la renderización.
+
+---
+
 ## 🚀 Guía de Instalación Rápida
 
 Para instalar **Pixi-Arch-A** en tu sistema Arch Linux de manera automática y sin complicaciones, sigue estos pasos:
