@@ -1,4 +1,4 @@
-# 󰣇  Pixi-Arch-A 🇬🇹
+# 󰣇  Pixi-Arch-A
 
 <div align="center">
 
@@ -21,7 +21,7 @@
 > [!IMPORTANT]
 > **Pixi-Arch-A** es una evolución y ramificación personalizada de alto rendimiento diseñada para ofrecer una experiencia estética fuera de serie. Combina la velocidad de Arch Linux con el dinamismo del compositor Hyprland, fusionando un diseño de **Cristal Esmerilado (Frosted Glassmorphism)** coherente con colores oscuros e iluminación carmesí.
 >
-> Este proyecto ha sido creado y pulido con amor por su creador 🇬🇹 junto a su asistente de IA **Antigravity** para ofrecer una experiencia hispanohablante única, fluida y con un diseño visual insuperable.
+> Este proyecto ha sido creado y pulido con amor por su creador junto a su asistente de IA **Antigravity** para ofrecer una experiencia hispanohablante única, fluida y con un diseño visual insuperable.
 
 ---
 

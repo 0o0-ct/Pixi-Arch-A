@@ -334,7 +334,7 @@ while true; do
         continue 
     fi
 
-    echo "👌 ${OK} Confirmaste tus opciones. Procediendo con la instalación de ${SKY_BLUE}Pixi-Arch-A...${RESET}" | tee -a "$LOG"
+    echo "👌 ${OK} Confirmaste tus opciones. Procediendo con la instalación de ${SKY_BLUE}Pixi-Arch-A 🇬🇹...${RESET}" | tee -a "$LOG"
     break  
 done
 
@@ -470,7 +470,7 @@ if pacman -Q hyprland &> /dev/null || pacman -Q hyprland-git &> /dev/null; then
     sleep 2
     printf "\n%.0s" {1..2}
 
-    printf "${SKY_BLUE}¡Muchas gracias${RESET} 🫰 por usar 🇬🇹 ${MAGENTA}Pixi-Arch-A${RESET}! ${YELLOW}¡Disfruta tu nuevo sistema y ten un gran día!${RESET}"
+    printf "${SKY_BLUE}¡Muchas gracias${RESET} 🫰 por usar ${MAGENTA}Pixi-Arch-A 🇬🇹${RESET}! ${YELLOW}¡Disfruta tu nuevo sistema y ten un gran día!${RESET}"
     printf "\n%.0s" {1..2}
 
     printf "\n${NOTE} Puedes iniciar Hyprland escribiendo ${SKY_BLUE}Hyprland${RESET} (si no instalaste SDDM) (¡nota la H mayúscula!).\n"

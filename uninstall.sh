@@ -256,6 +256,6 @@ printf "\n%s${SKY_BLUE}Intentando eliminar directorios seleccionados${RESET}\n" 
 remove_directories /tmp/selected_directories.txt
 
 printf "\n%.0s" {1..1}
-echo -e "$MAGENTA 🇬🇹 Pixi-Arch-A y sus componentes relacionados han sido desinstalados.$RESET"
+echo -e "$MAGENTA Pixi-Arch-A 🇬🇹 y sus componentes relacionados han sido desinstalados.$RESET"
 echo -e "$YELLOW Se recomienda reiniciar el sistema ahora.$RESET"
 printf "\n%.0s" {1..1}
