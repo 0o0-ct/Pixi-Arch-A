@@ -246,12 +246,12 @@ if grep -iqE '^(ID_LIKE|ID)=.*(ubuntu|debian)' /etc/os-release >/dev/null 2>&1; 
     _continue=$(echo "${_continue}" | tr '[:upper:]' '[:lower:]')
     case "${_continue}" in
     y | yes)
-      echo "${NOTE} Proceeding on Ubuntu/Debian by user confirmation."
+      echo "${NOTE} Procediendo en Ubuntu/Debian por confirmación del usuario."
       break
       ;;
     n | no | "")
       printf "\n%.0s" {1..1}
-      echo "${INFO} Aborting per user choice. No changes made."
+      echo "${INFO} Cancelando por elección del usuario. No se hicieron cambios."
       printf "\n%.0s" {1..1}
       exit 1
       ;;
@@ -271,8 +271,8 @@ echo -e "\e[35m
 printf "\n%.0s" {1..1}
 
 ####### Announcement
-echo "${WARNING}A T T E N T I O N !${RESET}"
-echo "${MAGENTA}Kindly visit KooL Hyprland Own Wiki for changelogs${RESET}"
+echo "${WARNING}¡ A T E N C I Ó N !${RESET}"
+echo "${MAGENTA}Por favor, visita la Wiki de Pixi-Arch-A para ver los cambios y actualizaciones${RESET}"
 printf "\n%.0s" {1..1}
 
 # Create Directory for Copy Logs
@@ -285,12 +285,12 @@ LOG="Copy-Logs/install-$(date +%d-%H%M%S)_dotfiles.log"
 
 # update home directories
 xdg-user-dirs-update 2>&1 | tee -a "$LOG" || true
-echo "${INFO} Selected workflow: ${RUN_MODE}" 2>&1 | tee -a "$LOG"
+echo "${INFO} Flujo de trabajo seleccionado: ${RUN_MODE}" 2>&1 | tee -a "$LOG"
 if [ "$UPGRADE_MODE" -eq 1 ]; then
-  echo "${INFO} Upgrade mode enabled." 2>&1 | tee -a "$LOG"
+  echo "${INFO} Modo de actualización activado." 2>&1 | tee -a "$LOG"
 fi
 if [ "$EXPRESS_MODE" -eq 1 ]; then
-  echo "${INFO} Express mode enabled. Optional restore prompts will be skipped." 2>&1 | tee -a "$LOG"
+  echo "${INFO} Modo exprés activado. Se omitirán las preguntas opcionales de restauración." 2>&1 | tee -a "$LOG"
 fi
 
 detect_nvidia_adjust "$LOG"
@@ -556,7 +556,7 @@ printf "\n%.0s" {1..1}
 # for SDDM (simple_sddm_2)
 sddm_simple_sddm_2="/usr/share/sddm/themes/simple_sddm_2"
 if [ -d "$sddm_simple_sddm_2" ] && [ "$EXPRESS_MODE" -eq 1 ]; then
-  echo "${NOTE} Express mode: skipping SDDM wallpaper prompt." 2>&1 | tee -a "$LOG"
+  echo "${NOTE} Modo exprés: omitiendo la pregunta del fondo de SDDM." 2>&1 | tee -a "$LOG"
 elif [ -d "$sddm_simple_sddm_2" ]; then
   while true; do
     echo -n "${CAT} ¡Tema SDDM simple_sddm_2 detectado! ¿Aplicar el fondo de pantalla actual como fondo de SDDM? (s/n): "
@@ -591,7 +591,7 @@ if [ "$EXPRESS_MODE" -eq 1 ]; then
   echo "${NOTE} Express mode: skipping additional wallpaper download prompt." 2>&1 | tee -a "$LOG"
 else
   while true; do
-    echo "${NOTE} We will download your personal 4K & HD curated wallpapers."
+    echo "${NOTE} Descargaremos tus fondos de pantalla personales curados en 4K y HD."
     echo -n "${CAT} ¿Te gustaría descargar tus nuevos fondos de pantalla de alta calidad? (s/n): "
     read WALL
 

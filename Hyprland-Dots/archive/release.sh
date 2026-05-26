@@ -33,12 +33,12 @@ if grep -iqE '^(ID_LIKE|ID)=.*(ubuntu|debian)' /etc/os-release >/dev/null 2>&1; 
         ;;
       n|no|"")
         printf "\n%.0s" {1..1}
-        echo "${INFO} Aborting per user choice. No changes made." 
+        echo "${INFO} Cancelando por elección del usuario. No se hicieron cambios." 
         printf "\n%.0s" {1..1}
         exit 1
         ;;
       *)
-        echo "${WARN} Please answer 'y' or 'n'." 
+        echo "${WARN} Por favor responde 's' o 'n'." 
         ;;
     esac
   done
@@ -53,26 +53,26 @@ echo -e "\e[35m
 \e[0m"
 printf "\n%.0s" {1..1}  
 
-echo "${WARNING}A T T E N T I O N !${RESET}"
-echo "${SKY_BLUE}This script is meant to download from the "RELEASES" on the KooL Hyprland-Dots${RESET}"
-echo "${YELLOW}Kindly note that the RELEASES is one version older that from main${RESET}"
+echo "${WARNING}¡ A T E N C I Ó N !${RESET}"
+echo "${SKY_BLUE}Este script está diseñado para descargar desde los "RELEASES" (Versiones) de Pixi-Arch-A${RESET}"
+echo "${YELLOW}Ten en cuenta que los RELEASES suelen ser una versión más antigua que la rama principal (main)${RESET}"
 printf "\n%.0s" {1..1}
-echo "${MAGENTA}If you want to get the latest, kindly ran the ${SKY_BLUE}copy.sh${RESET} ${MAGENTA}instead${RESET}"
+echo "${MAGENTA}Si deseas obtener la versión más reciente, por favor ejecuta ${SKY_BLUE}copy.sh${RESET} ${MAGENTA}instead${RESET}"
 printf "\n%.0s" {1..1}
-read -p "${CAT} - Would you like to proceed and install from releases? (y/n): ${RESET}" proceed
+read -p "${CAT} - ¿Te gustaría proceder e instalar desde los releases? (s/n): ${RESET}" proceed
 
 if [ "$proceed" != "y" ]; then
     printf "\n%.0s" {1..1}
-    echo "${INFO} Installation aborted. ${SKY_BLUE}No changes in your system.${RESET} ${YELLOW}Goodbye!${RESET}"
+    echo "${INFO} Instalación cancelada. ${SKY_BLUE}Sin cambios en tu sistema.${RESET} ${YELLOW}¡Adiós!${RESET}"
     printf "\n%.0s" {1..1}
     exit 1
 fi
 
-printf "${NOTE} Downloading / Checking for existing Hyprland-Dots.tar.gz...\n"
+printf "${NOTE} Descargando / Comprobando si existe Hyprland-Dots.tar.gz...\n"
 
 # Check if Hyprland-Dots.tar.gz exists
 if [ -f Hyprland-Dots.tar.gz ]; then
-  printf "${NOTE} Hyprland-Dots.tar.gz found.\n"
+  printf "${NOTE} Hyprland-Dots.tar.gz encontrado.\n"
 
   # Get the version from the existing tarball filename
   existing_version=$(echo Hyprland-Dots.tar.gz | grep -oP 'v\d+\.\d+\.\d+' | sed 's/v//')
@@ -85,7 +85,7 @@ if [ -f Hyprland-Dots.tar.gz ]; then
     echo -e "${OK} Hyprland-Dots.tar.gz is up-to-date with the latest release ($latest_version)."
     
     # Sleep for 10 seconds before exiting
-    printf "${NOTE} No update found. Sleeping for 10 seconds...\n"
+    printf "${NOTE} No update encontrado. Sleeping for 10 seconds...\n"
     sleep 10
     exit 0
   else
