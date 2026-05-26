@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 # show_copy_menu
-# Arguments:
+# Argumentos:
 #   $1 - express_supported flag (1 if available, 0 otherwise)
-# Sets global COPY_MENU_CHOICE to one of: install, upgrade, express, quit
+# Configura la variable global COPY_MENU_CHOICE hacia one of: install, upgrade, express, quit
 show_copy_menu() {
   local express_supported="${1:-0}"
   local menu_title="      KooL's Hyprland Dotfiles      "
-  local prompt="Select what you would like to do:"
+  local prompt="Select what you would like hacia do:"
 
   local install_tag="Install"
   local upgrade_tag="Upgrade"
@@ -17,7 +17,7 @@ show_copy_menu() {
 
   local install_desc="Fresh copy"
   local upgrade_desc="Backups + prompts"
-  local express_desc="Skips restores & wallpapers"
+  local express_desc="Skips reshaciares & wallpapers"
   local update_desc="Stash + git pull"
   local quit_desc="Exit without changes"
 
@@ -45,12 +45,12 @@ show_copy_menu() {
           choice="$express_tag"
           break
         else
-          echo "Express is disabled on this system."
+          echo "La instalación rápida (Express) está desactivada en este sistema."
         fi
         ;;
       4) choice="$update_tag"; break ;;
       5) choice="$quit_tag"; break ;;
-      *) echo "Invalid selection. Please choose 1-5." ;;
+      *) echo "Selección inválida. Por favor elige 1-5." ;;
       esac
     done
   }
@@ -61,7 +61,7 @@ show_copy_menu() {
     return 0
   fi
 
-  # Fallback to whiptail if present
+  # Fallback hacia whiptail if present
   if command -v whiptail >/dev/null 2>&1; then
     if ! choice=$(whiptail --title "$menu_title" --menu "$prompt" 17 60 8 \
       "$install_tag" "$install_desc" \
@@ -73,7 +73,7 @@ show_copy_menu() {
       return 1
     fi
   else
-    # Plain-text fallback
+    # Alternativa en texto plano
     run_basic_menu
   fi
 

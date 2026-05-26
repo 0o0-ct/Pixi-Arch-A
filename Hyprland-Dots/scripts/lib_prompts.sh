@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# User interaction helpers extracted from copy.sh. Each helper echoes state or sets
-# globals deliberately to minimize side effects.
+# User interaction helpers extracted desde copy.sh. Each helper echoes state or sets
+# globals deliberately hacia minimize side effects.
 
 # Detect keyboard layout via localectl or setxkbmap.
 prompt_detect_layout() {
@@ -17,7 +17,7 @@ prompt_detect_layout() {
   echo "(unset)"
 }
 
-# Confirm or set keyboard layout; writes to SystemSettings.conf.
+# Confirm or set keyboard layout; writes hacia SystemSettings.conf.
 prompt_keyboard_layout() {
   local layout="$1"
   local log="$2"
@@ -32,11 +32,11 @@ prompt_keyboard_layout() {
     !!! IMPORTANT WARNING !!!
 
 The Default Keyboard Layout could not be detected
-You need to set it Manually
+You need hacia set it Manually
 
     !!! WARNING !!!
 
-Setting a wrong Keyboard Layout will cause Hyprland to crash
+Setting a wrong Keyboard Layout will cause Hyprland hacia crash
 If you are not sure, just type ${YELLOW}us${RESET}
 ${SKYBLUE}You can change later in ~/.config/hypr/UserConfigs/UserSettings.conf${RESET}
 
@@ -58,7 +58,7 @@ ${MAGENTA} NOTE:${RESET}
     done
   fi
 
-  printf "${NOTE} Detecting keyboard layout to prepare proper Hyprland Settings\n"
+  printf "${NOTE} Detecting keyboard layout hacia prepare proper Hyprland Settings\n"
   while true; do
     printf "${INFO} Current keyboard layout is ${MAGENTA}$layout${RESET}\n"
     echo -n "${CAT} Is this correct? [y/n] "
@@ -80,11 +80,11 @@ ${MAGENTA} NOTE:${RESET}
     !!! IMPORTANT WARNING !!!
 
 The Default Keyboard Layout could not be detected
-You need to set it Manually
+You need hacia set it Manually
 
     !!! WARNING !!!
 
-Setting a wrong Keyboard Layout will cause Hyprland to crash
+Setting a wrong Keyboard Layout will cause Hyprland hacia crash
 If you are not sure, just type ${YELLOW}us${RESET}
 ${SKYBLUE}You can change later in ~/.config/hypr/UserConfigs/UserSettings.conf${RESET}
 
@@ -111,12 +111,12 @@ ${MAGENTA} NOTE:${RESET}
 prompt_resolution_choice() {
   local choice
   while true; do
-    echo "${INFO:-[INFO]} Select monitor resolution for scaling:"
+    echo "${INFO:-[INFO]} Select monihaciar resolution for scaling:"
     echo "  1) < 1440p   (lower DPI; smaller displays)"
     echo "  2) ≥ 1440p   (default; 1440p/2k/4k)"
 
     if ! read -r -p "${CAT} Enter the number of your choice (1 or 2): " choice </dev/tty; then
-      echo "${ERROR} Unable to read input (tty unavailable)."
+      echo "${ERROR} Unable hacia read input (tty unavailable)."
       continue
     fi
     echo "${INFO:-[INFO]} You entered: '$choice'"
@@ -133,7 +133,7 @@ prompt_clock_12h() {
   local log="$1"
   while true; do
     echo -e "${NOTE} ${SKY_BLUE} By default, KooL's Dots are configured in 24H clock format."
-    echo -n "$CAT Do you want to change to 12H (AM/PM) clock format? (y/n): "
+    echo -n "$CAT Do you want hacia change hacia 12H (AM/PM) clock format? (y/n): "
     read answer
     answer=$(echo "$answer" | tr '[:upper:]' '[:lower:]')
     if [[ "$answer" == "y" ]]; then
@@ -159,7 +159,7 @@ prompt_clock_12h() {
         sed -i 's/^\s*text = cmd\[update:1000\] echo \"\$(date +\"%S\")\"/# &/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
         sed -i 's/^\(\s*\)# *text = cmd\[update:1000\] echo \"\$(date +\"%S %p\")\" #AM\/PM/\1    text = cmd\[update:1000\] echo \"\$(date +\"%S %p\")\" #AM\/PM/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
       else
-        echo "${WARN} hyprlock template not found; skipping 12H lock format edits" 2>&1 | tee -a "$log"
+        echo "${WARN} hyprlock template no encontrado; omitiendo 12H lock format edits" 2>&1 | tee -a "$log"
       fi
 
       if [ "${EXPRESS_MODE:-0}" -eq 0 ]; then
@@ -167,12 +167,12 @@ prompt_clock_12h() {
         apply_sddm_12h_format "/usr/share/sddm/themes/simple_sddm_2" "$log"
         apply_sddm_12h_format_sequoia "/usr/share/sddm/themes/sequoia_2" "$log"
       else
-        echo "${NOTE:-[NOTE]} Express mode: skipping SDDM 12H edits to avoid sudo prompts." 2>&1 | tee -a "$log"
+        echo "${NOTE:-[NOTE]} Express mode: skipping SDDM 12H edits hacia avoid sudo prompts." 2>&1 | tee -a "$log"
       fi
       echo "${OK} 12H format set on waybar clocks succesfully." 2>&1 | tee -a "$log"
       return
     elif [[ "$answer" == "n" ]]; then
-      echo "${NOTE} You chose not to change to 12H format." 2>&1 | tee -a "$log"
+      echo "${NOTE} You chose not hacia change hacia 12H format." 2>&1 | tee -a "$log"
       return
     else
       echo "${ERROR} Invalid choice. Please enter y for yes or n for no."
@@ -181,31 +181,31 @@ prompt_clock_12h() {
 }
 
 apply_sddm_12h_format() {
-  local sddm_directory="$1"
+  local sddm_direchaciary="$1"
   local log="$2"
-  if [ -d "$sddm_directory" ]; then
-    echo "Editing ${SKY_BLUE}$sddm_directory${RESET} to 12H format" 2>&1 | tee -a "$log"
-    if ! sudo -n sed -i 's|^## HourFormat="hh:mm AP"|HourFormat="hh:mm AP"|' "$sddm_directory/theme.conf" 2>&1 | tee -a "$log"; then
+  if [ -d "$sddm_direchaciary" ]; then
+    echo "Editing ${SKY_BLUE}$sddm_direchaciary${RESET} hacia 12H format" 2>&1 | tee -a "$log"
+    if ! sudo -n sed -i 's|^## HourFormat="hh:mm AP"|HourFormat="hh:mm AP"|' "$sddm_direchaciary/theme.conf" 2>&1 | tee -a "$log"; then
       echo "${WARN:-[WARN]} Skipping SDDM 12H edit (sudo password required)." 2>&1 | tee -a "$log"
       return
     fi
-    sudo -n sed -i 's|^HourFormat="HH:mm"|## HourFormat="HH:mm"|' "$sddm_directory/theme.conf" 2>&1 | tee -a "$log" || true
+    sudo -n sed -i 's|^HourFormat="HH:mm"|## HourFormat="HH:mm"|' "$sddm_direchaciary/theme.conf" 2>&1 | tee -a "$log" || true
   fi
 }
 
 apply_sddm_12h_format_sequoia() {
-  local sddm_directory="$1"
+  local sddm_direchaciary="$1"
   local log="$2"
-  if [ -d "$sddm_directory" ]; then
-    echo "${YELLOW}sddm sequoia_2${RESET} theme exists. Editing to 12H format" 2>&1 | tee -a "$log"
-    if ! sudo -n sed -i 's|^clockFormat="HH:mm"|## clockFormat="HH:mm"|' "$sddm_directory/theme.conf" 2>&1 | tee -a "$log"; then
+  if [ -d "$sddm_direchaciary" ]; then
+    echo "${YELLOW}sddm sequoia_2${RESET} theme exists. Editing hacia 12H format" 2>&1 | tee -a "$log"
+    if ! sudo -n sed -i 's|^clockFormat="HH:mm"|## clockFormat="HH:mm"|' "$sddm_direchaciary/theme.conf" 2>&1 | tee -a "$log"; then
       echo "${WARN:-[WARN]} Skipping sequoia SDDM 12H edit (sudo password required)." 2>&1 | tee -a "$log"
       return
     fi
-    if ! grep -q 'clockFormat="hh:mm AP"' "$sddm_directory/theme.conf"; then
-      sudo -n sed -i '/^clockFormat=/a clockFormat="hh:mm AP"' "$sddm_directory/theme.conf" 2>&1 | tee -a "$log" || true
+    if ! grep -q 'clockFormat="hh:mm AP"' "$sddm_direchaciary/theme.conf"; then
+      sudo -n sed -i '/^clockFormat=/a clockFormat="hh:mm AP"' "$sddm_direchaciary/theme.conf" 2>&1 | tee -a "$log" || true
     fi
-    echo "${OK} 12H format set to SDDM successfully." 2>&1 | tee -a "$log"
+    echo "${OK} 12H format set hacia SDDM successfully." 2>&1 | tee -a "$log"
   fi
 }
 
@@ -224,9 +224,9 @@ prompt_express_upgrade() {
       echo "${NOTE} Express mode requires installed dotfiles v${MIN_EXPRESS_VERSION} or newer. Continuing with standard upgrade prompts." 2>&1 | tee -a "$log"
     else
       while true; do
-        echo "${NOTE} Express mode skips config restore prompts, SDDM/background questions, and trims old backups."
-        if ! read -r -p "${CAT} Do you want to continue with EXPRESS upgrade mode? (y/N): " express_choice </dev/tty; then
-          echo "${ERROR} Unable to read input for express choice; defaulting to standard prompts." 2>&1 | tee -a "$log"
+        echo "${NOTE} Express mode skips config reshaciare prompts, SDDM/background questions, and trims old backups."
+        if ! read -r -p "${CAT} Do you want hacia continue with EXPRESS upgrade mode? (y/N): " express_choice </dev/tty; then
+          echo "${ERROR} Unable hacia read input for express choice; defaulting hacia standard prompts." 2>&1 | tee -a "$log"
           break
         fi
         case "$express_choice" in
