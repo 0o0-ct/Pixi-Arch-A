@@ -53,14 +53,14 @@ remove_packages() {
     local selected_packages_file=$1
     while read -r package; do
         if pacman -Qi "$package" &> /dev/null; then
-            echo "Removing package: $package"
+            echo "Eliminando paquete: $package"
             if ! sudo pacman -Rs --noconfirm "$package"; then
-                echo "$ERROR Failed to remove package: $package"
+                echo "$ERROR Error al eliminar el paquete: $package"
             else
-                echo "$OK Successfully removed package: $package"
+                echo "$OK Paquete eliminado exitosamente: $package"
             fi
         else
-            echo "$INFO Package ${YELLOW}$package${RESET} not found. Skipping."
+            echo "$INFO Paquete ${YELLOW}$package${RESET} no encontrado. Omitiendo."
         fi
     done < "$selected_packages_file"
 }
@@ -73,14 +73,14 @@ remove_directories() {
         # Loop through directories matching the pattern
         for dir_to_remove in $pattern; do
             if [ -d "$dir_to_remove" ]; then
-                echo "Removing directory: $dir_to_remove"
+                echo "Eliminando directorio: $dir_to_remove"
                 if ! rm -rf "$dir_to_remove"; then
-                    echo "$ERROR Failed to remove directory: $dir_to_remove"
+                    echo "$ERROR Error al eliminar el directorio: $dir_to_remove"
                 else
-                    echo "$OK Successfully removed directory: $dir_to_remove"
+                    echo "$OK Directorio eliminado exitosamente: $dir_to_remove"
                 fi
             else
-                echo "$INFO Directory ${YELLOW}$dir_to_remove${RESET} not found. Skipping."
+                echo "$INFO Directorio ${YELLOW}$dir_to_remove${RESET} no encontrado. Omitiendo."
             fi
         done
     done < "$selected_dirs_file"
@@ -88,138 +88,138 @@ remove_directories() {
 
 # Define the list of packages to choose from (with options_command tags)
 packages=(
-    "btop" "resource monitor" "off"
+    "btop" "monitor de recursos" "off"
     "brightnessctl" "brightnessctl" "off"
-    "cava" "Cross-platform Audio Visualizer" "off"
-    "cliphist" "clipboard manager" "off"
+    "cava" "Visualizador de Audio" "off"
+    "cliphist" "gestor de portapapeles" "off"
     "fastfetch" "fastfetch" "off"
-    "ffmpegthumbnailer" "FFmpeg Thumbnailer" "off"
-    "grim" "screenshot tool" "off"
-    "imagemagick" "Image manipulation tool" "off"
+    "ffmpegthumbnailer" "Generador de miniaturas FFmpeg" "off"
+    "grim" "herramienta de capturas de pantalla" "off"
+    "imagemagick" "Herramienta de manipulación de imágenes" "off"
     "kitty" "kitty-terminal" "off"
-    "kvantum" "QT apps theming" "off"
-    "mousepad" "simple text editor" "off"
-    "mpv" "multi-media player" "off"
+    "kvantum" "Temas para apps QT" "off"
+    "mousepad" "editor de texto simple" "off"
+    "mpv" "reproductor multimedia" "off"
     "mpv-mpris" "mpv-plugin" "off"
     "network-manager-applet" "network-manager-applet" "off"
-    "nvtop" "gpu resource monitor" "off"
-    "nwg-displays" "display monitor configuration app" "off"
-    "nwg-look" "gtk settings app" "off"
+    "nvtop" "monitor de recursos gpu" "off"
+    "nwg-displays" "app de configuración de monitor" "off"
+    "nwg-look" "app de configuración gtk" "off"
     "pamixer" "pamixer" "off"
-    "pokemon-colorscripts-git" "terminal colorscripts" "off"
+    "pokemon-colorscripts-git" "scripts de colores de terminal" "off"
     "pavucontrol" "pavucontrol" "off"
     "playerctl" "playerctl" "off"
     "pyprland" "pyprland" "off"
-    "qalculate-gtk" "calculator - QT" "off"
+    "qalculate-gtk" "calculadora - QT" "off"
     "qt5ct" "qt5ct" "off"
     "qt6ct" "qt6ct" "off"
     "quickshell" "quickshell" "off"
     "rofi-wayland" "rofi-wayland" "off"
-    "slurp" "screenshot tool" "off"
-    "swappy" "screenshot tool" "off"
+    "slurp" "herramienta de capturas de pantalla" "off"
+    "swappy" "herramienta de capturas de pantalla" "off"
     "swaync" "notification agent" "off"
-    "swww" "wallpaper engine" "off"
-    "thunar" "File Manager" "off"
-    "thunar-archive-plugin" "Archive Plugin" "off"
-    "thunar-volman" "Volume Management" "off"
-    "tumbler" "Thumbnail Service" "off"
-    "wallust" "color pallete generator" "off"
-    "waybar" "wayland bar" "off"
-    "wl-clipboard" "clipboard manager" "off"
-    "wlogout" "logout menu" "off"
-    "xdg-desktop-portal-hyprland" "hyprland file picker" "off"
-    "yad" "dialog box" "off"
-    "yt-dlp" "video downloader" "off"
-    "xarchiver" "Archive Manager" "off"
-    "hypridle" "hyprland idling agent" "off"
-    "hyprlock" "lockscreen" "off"
-    "hyprpolkitagent" "hyprland polkit agent" "off"
-    "hyprland" "hyprland main package" "off"
+    "swww" "motor de fondos de pantalla" "off"
+    "thunar" "Gestor de Archivos" "off"
+    "thunar-archive-plugin" "Plugin de Archivos (ZIP/RAR)" "off"
+    "thunar-volman" "Gestión de Volúmenes" "off"
+    "tumbler" "Servicio de Miniaturas" "off"
+    "wallust" "generador de paleta de colores" "off"
+    "waybar" "barra de wayland" "off"
+    "wl-clipboard" "gestor de portapapeles" "off"
+    "wlogout" "menú de cierre de sesión" "off"
+    "xdg-desktop-portal-hyprland" "selector de archivos de hyprland" "off"
+    "yad" "cajas de diálogo" "off"
+    "yt-dlp" "descargador de videos" "off"
+    "xarchiver" "Gestor de Archivos comprimidos" "off"
+    "hypridle" "agente de inactividad de hyprland" "off"
+    "hyprlock" "pantalla de bloqueo" "off"
+    "hyprpolkitagent" "agente polkit de hyprland" "off"
+    "hyprland" "paquete principal de hyprland" "off"
 )
 
 # Define the list of directories to choose from (with options_command tags)
 directories=(
-    "btop" "btop configuration" "off"
-    "cava" "cava configuration" "off"
-    "fastfetch" "fastfetch configuration" "off"
-    "hypr" "main hyprland configuration" "off"
-    "kitty" "kitty terminal configuration" "off"
-    "Kvantum" "Kvantum-manager configuration" "off"
-    "quickshell" "quickshell desktop overview configuration" "off"
-    "qt5ct" "qt5ct configuration" "off"
-    "qt6ct" "qt6ct configuration" "off"
-    "rofi" "rofi configuration" "off"
-    "swappy" "swappy (screenshot tool) configuration" "off"
-    "swaync" "swaync (notification agent) configuration" "off"
-    "Thunar" "Thunar file manager configuration" "off"
-    "wallust" "wallust (color pallete) configuration" "off"
-    "waybar" "waybar configuration" "off"
-    "wlogout" "wlogout (logout menu) configuration" "off"    
+    "btop" "configuración de btop" "off"
+    "cava" "configuración de cava" "off"
+    "fastfetch" "configuración de fastfetch" "off"
+    "hypr" "configuración principal de hyprland" "off"
+    "kitty" "configuración de la terminal kitty" "off"
+    "Kvantum" "configuración de Kvantum-manager" "off"
+    "quickshell" "configuración de quickshell desktop overview" "off"
+    "qt5ct" "configuración de qt5ct" "off"
+    "qt6ct" "configuración de qt6ct" "off"
+    "rofi" "configuración de rofi" "off"
+    "swappy" "configuración de swappy (capturas)" "off"
+    "swaync" "configuración de swaync (notificaciones)" "off"
+    "Thunar" "configuración del gestor de archivos Thunar" "off"
+    "wallust" "configuración de wallust (paleta de colores)" "off"
+    "waybar" "configuración de waybar" "off"
+    "wlogout" "configuración de wlogout (menú de salida)" "off"    
 )
 
 # Loop for package selection until user selects something or cancels
 while true; do
-    package_choices=$(whiptail --title "Select Packages to Uninstall" --checklist \
-    "Select the packages you want to remove\nNOTE: 'SPACEBAR' to select & 'TAB' key to change selection" 35 90 25 \
+    package_choices=$(whiptail --title "Seleccionar Paquetes a Desinstalar" --checklist \
+    "Selecciona los paquetes que quieres eliminar\nNOTA: 'ESPACIO' para seleccionar y 'TAB' para cambiar la selección" 35 90 25 \
     "${packages[@]}" 3>&1 1>&2 2>&3)
 
     # Check if the user canceled the operation
     if [ $? -eq 1 ]; then
-        echo "$INFO uninstall process canceled."
+        echo "$INFO proceso de desinstalación cancelado."
         exit 0
     fi
 
     # If no packages are selected, ask again
     if [[ -z "$package_choices" ]]; then
-        echo "$NOTE No packages selected. Please select at least one package."
+        echo "$NOTE No se seleccionaron paquetes. Por favor, selecciona al menos un paquete."
     else
         echo "$package_choices" | tr -d '"' | tr ' ' '\n' > /tmp/selected_packages.txt
-        echo "Packages to remove: $package_choices"
+        echo "Paquetes a eliminar: $package_choices"
         break
     fi
 done
 
 # Loop for directory selection until user selects something or cancels
 while true; do
-    dir_choices=$(whiptail --title "Select Directories to Remove" --checklist \
-    "Select the directories you want to remove\nNOTE: This will remove configs from ~/.config\n\nNOTE: 'SPACEBAR' to select & 'TAB' key to change selection" 28 90 18 \
+    dir_choices=$(whiptail --title "Seleccionar Directorios a Eliminar" --checklist \
+    "Selecciona los directorios que deseas eliminar\nNOTA: Esto eliminará configuraciones de ~/.config\n\nNOTA: 'ESPACIO' para seleccionar y 'TAB' para cambiar la selección" 28 90 18 \
     "${directories[@]}" 3>&1 1>&2 2>&3)
 
     # Check if the user canceled the operation
     if [ $? -eq 1 ]; then
-        echo "$INFO uninstall process canceled."
+        echo "$INFO proceso de desinstalación cancelado."
         exit 0
     fi
 
     # If no directories are selected, ask again
     if [[ -z "$dir_choices" ]]; then
-        echo "$NOTE No directories selected. Please select at least one directory."
+        echo "$NOTE No se seleccionaron directorios. Por favor, selecciona al menos un directorio."
     else
         # Save each selected directory to a new line in the temporary file
         echo "$dir_choices" | tr -d '"' | tr ' ' '\n' > /tmp/selected_directories.txt
-        echo "Directories to remove: $dir_choices"
+        echo "Directorios a eliminar: $dir_choices"
         break
     fi
 done
 
-# First confirmation - Warning about potential instability
-if ! whiptail --title "Warning" --yesno \
-"Warning: Removing these packages and directories may cause your system to become unstable and you may not be able to recover it.\n\nAre you sure you want to proceed?" \
+# First confirmation - Advertencia about potential instability
+if ! whiptail --title "Advertencia" --yesno \
+"Advertencia: Removing these packages and directories may cause your system to become unstable and you may not be able to recover it.\n\nAre you sure you want to proceed?" \
 10 80; then
-    echo "$INFO uninstall process canceled."
+    echo "$INFO proceso de desinstalación cancelado."
     exit 0
 fi
 
 # Second confirmation - Final confirmation to proceed
-if ! whiptail --title "Final Confirmation" --yesno \
-"Are you absolutely sure you want to remove the selected packages and directories?\n\nWARNING! This action is irreversible." \
+if ! whiptail --title "Confirmación Final" --yesno \
+"¿Estás absolutamente seguro de que deseas eliminar los paquetes y directorios seleccionados?\n\n¡ADVERTENCIA! Esta acción es irreversible." \
 10 80; then
-    echo "$INFO uninstall process canceled."
+    echo "$INFO proceso de desinstalación cancelado."
     exit 0
 fi
 
 printf "\n%.0s" {1..1}
-printf "\n%s${SKY_BLUE}Attempting to remove selected packages${RESET}\n" "${NOTE}"
+printf "\n%s${SKY_BLUE}Intentando eliminar los paquetes seleccionados${RESET}\n" "${NOTE}"
 MAX_ATTEMPTS=2
 ATTEMPT=0
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
@@ -236,7 +236,7 @@ while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
 
     if [ $MISSING_PACKAGE_COUNT -gt 0 ]; then
         ATTEMPT=$((ATTEMPT + 1))
-        echo "Attempt #$ATTEMPT failed, retrying..."
+        echo "Intento #$ATTEMPT fallido, reintentando..."
     else
         break
     fi

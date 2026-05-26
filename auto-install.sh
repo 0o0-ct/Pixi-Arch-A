@@ -26,9 +26,9 @@ printf "\n%.0s" {1..1}
 
 if ! command -v git &> /dev/null
 then
-    echo "${INFO} Git not found! ${SKY_BLUE}Installing Git...${RESET}"
+    echo "${INFO} ¡Git no encontrado! ${SKY_BLUE}Instalando Git...${RESET}"
     if ! sudo pacman -S git --noconfirm; then
-        echo "${ERROR} Failed to install Git. Exiting."
+        echo "${ERROR} Error al instalar Git. Saliendo."
         exit 1
     fi
 fi
@@ -36,13 +36,13 @@ fi
 printf "\n%.0s" {1..1}
 
 if [ -d "$Distro_DIR" ]; then
-    echo "${YELLOW}$Distro_DIR exists. Updating the repository... ${RESET}"
+    echo "${YELLOW}$Distro_DIR existe. Actualizando el repositorio... ${RESET}"
     cd "$Distro_DIR"
     git stash && git pull
     chmod +x install.sh
     ./install.sh
 else
-    echo "${MAGENTA}$Distro_DIR does not exist. Cloning the repository...${RESET}"
+    echo "${MAGENTA}$Distro_DIR no existe. Clonando el repositorio...${RESET}"
     git clone --depth=1 "$Github_URL" "$Distro_DIR"
     cd "$Distro_DIR"
     chmod +x install.sh
