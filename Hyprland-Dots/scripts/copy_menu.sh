@@ -7,7 +7,7 @@
 show_copy_menu() {
   local express_supported="${1:-0}"
   local menu_title="      KooL's Hyprland Dotfiles      "
-  local prompt="Select what you would like hacia do:"
+  local prompt="Select what you would like to do:"
 
   local install_tag="Install"
   local upgrade_tag="Upgrade"
@@ -17,7 +17,7 @@ show_copy_menu() {
 
   local install_desc="Fresh copy"
   local upgrade_desc="Backups + prompts"
-  local express_desc="Skips reshaciares & wallpapers"
+  local express_desc="Skips restores & wallpapers"
   local update_desc="Stash + git pull"
   local quit_desc="Exit without changes"
 

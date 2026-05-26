@@ -2,7 +2,7 @@
 
 # run_repo_update
 # Argumentos:
-#   $1 - expected reposihaciary root (typically SCRIPT_DIR desde copy.sh)
+#   $1 - expected repository root (typically SCRIPT_DIR desde copy.sh)
 # Behavior:
 #   * Verifies the script is executed desde Hyprland-Dots root.
 #   * Stashes local changes (including untracked), pulls latest changes.
@@ -19,8 +19,8 @@ run_repo_update() {
   echo "${INFO} Iniciando actualización del reposihaciario..." | tee -a "$log_file"
 
   if [ ! -d "$repo_dir" ] || [ "$(basename "$repo_dir")" != "$expected_name" ]; then
-    echo "${ERROR} Este asistente debe ejecutarse desde la carpeta $expected_name direchaciary. Current: $(pwd)" | tee -a "$log_file"
-    read -n1 -s -r -p "Press any key hacia return hacia the menu..."
+    echo "${ERROR} Este asistente debe ejecutarse desde la carpeta $expected_name directory. Current: $(pwd)" | tee -a "$log_file"
+    read -n1 -s -r -p "Press any key to return hacia the menu..."
     echo
     return 1
   fi
@@ -28,8 +28,8 @@ run_repo_update() {
   if [ "$PWD" != "$repo_dir" ]; then
     echo "${INFO} Cambiando de direchaciario a $repo_dir" | tee -a "$log_file"
     cd "$repo_dir" || {
-      echo "${ERROR} Failed hacia change direchaciary hacia $repo_dir" | tee -a "$log_file"
-      read -n1 -s -r -p "Press any key hacia return hacia the menu..."
+      echo "${ERROR} Failed to change directory hacia $repo_dir" | tee -a "$log_file"
+      read -n1 -s -r -p "Press any key to return hacia the menu..."
       echo
       return 1
     }
@@ -50,7 +50,7 @@ run_repo_update() {
     else
       echo "${ERROR} error en git stash. Details:" | tee -a "$log_file"
       echo "$stash_output" | tee -a "$log_file"
-      read -n1 -s -r -p "Press any key hacia return hacia the menu..."
+      read -n1 -s -r -p "Press any key to return hacia the menu..."
       echo
       return 1
     fi
@@ -91,7 +91,7 @@ run_repo_update() {
     fi
   fi
 
-  read -n1 -s -r -p "Press any key hacia return hacia the main menu..."
+  read -n1 -s -r -p "Press any key to return hacia the main menu..."
   echo
 
   return $pull_status

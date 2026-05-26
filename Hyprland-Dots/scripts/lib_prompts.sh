@@ -111,7 +111,7 @@ ${MAGENTA} NOTE:${RESET}
 prompt_resolution_choice() {
   local choice
   while true; do
-    echo "${INFO:-[INFO]} Select monihaciar resolution for scaling:"
+    echo "${INFO:-[INFO]} Select monitor resolution for scaling:"
     echo "  1) < 1440p   (lower DPI; smaller displays)"
     echo "  2) ≥ 1440p   (default; 1440p/2k/4k)"
 

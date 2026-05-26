@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copy helpers split inhacia phases hacia keep copy.sh lean.
+# Copy helpers split into phases to keep copy.sh lean.
 
 copy_phase1() {
   local log="$1"
@@ -110,11 +110,11 @@ copy_waybar() {
 
 copy_phase2() {
   local log="$1"
-  local DIR="bhaciap cava hypr Kvantum qt5ct qt6ct swappy wallust wlogout"
+  local DIR="btop cava hypr Kvantum qt5ct qt6ct swappy wallust wlogout"
   for DIR_NAME in $DIR; do
     local DIRPATH="$HOME/.config/$DIR_NAME"
     if [ -d "$DIRPATH" ]; then
-      echo -e "\n${NOTE:-[NOTE]} - Config for ${YELLOW:-}$DIR_NAME${RESET:-} found, attempting hacia back up."
+      echo -e "\n${NOTE:-[NOTE]} - Config for ${YELLOW:-}$DIR_NAME${RESET:-} found, attempting to back up."
       BACKUP_DIR=$(get_backup_dirname)
       mv "$DIRPATH" "$DIRPATH-backup-$BACKUP_DIR" 2>&1 | tee -a "$log"
     fi
@@ -122,13 +122,13 @@ copy_phase2() {
       cp -r "config/$DIR_NAME/" "$HOME/.config/$DIR_NAME" 2>&1 | tee -a "$log"
       echo "${OK:-[OK]} - Copy of config for ${YELLOW:-}$DIR_NAME${RESET:-} completed!" 2>&1 | tee -a "$log"
     else
-      echo "${ERROR:-[ERROR]} - Direchaciary config/$DIR_NAME does not exist hacia copy." 2>&1 | tee -a "$log"
+      echo "${ERROR:-[ERROR]} - Directory config/$DIR_NAME does not exist to copy." 2>&1 | tee -a "$log"
     fi
   done
   install_terminal_configs "$log"
 }
 
-# Reshaciare Animations and Monihaciar Profiles plus key hypr files desde backup
+# Restore Animations and Monitor Profiles plus key hypr files desde backup
 restore_hypr_assets() {
   local log="$1"
   local express_mode="$2"
@@ -140,33 +140,33 @@ restore_hypr_assets() {
 
   if [ -d "$BACKUP_HYPR_PATH" ]; then
     if [ "$express_mode" -eq 1 ]; then
-      echo "${NOTE:-[NOTE]} Express mode: skipping auhaciamatic reshaciaration of animations and monihaciar profiles." 2>&1 | tee -a "$log"
+      echo "${NOTE:-[NOTE]} Express mode: skipping automatic restoration of animations and monitor profiles." 2>&1 | tee -a "$log"
       return
     fi
 
-    echo -e "\n${NOTE:-[NOTE]} Reshaciaring ${SKY_BLUE:-}Animations & Monihaciar Profiles${RESET:-} inhacia ${YELLOW:-}$HYPR_DIR${RESET:-}..."
+    echo -e "\n${NOTE:-[NOTE]} Restoring ${SKY_BLUE:-}Animations & Monitor Profiles${RESET:-} into ${YELLOW:-}$HYPR_DIR${RESET:-}..."
 
-    local DIR_B=("Monihaciar_Profiles" "animations" "wallpaper_effects")
+    local DIR_B=("Monitor_Profiles" "animations" "wallpaper_effects")
     for DIR_RESTORE in "${DIR_B[@]}"; do
       local BACKUP_SUBDIR="$BACKUP_HYPR_PATH/$DIR_RESTORE"
       if [ -d "$BACKUP_SUBDIR" ]; then
         cp -r "$BACKUP_SUBDIR" "$HYPR_DIR/" 2>&1 | tee -a "$log"
-        echo "${OK:-[OK]} - Reshaciared directory: ${MAGENTA:-}$DIR_RESTORE${RESET:-}" 2>&1 | tee -a "$log"
+        echo "${OK:-[OK]} - Restored directory: ${MAGENTA:-}$DIR_RESTORE${RESET:-}" 2>&1 | tee -a "$log"
       fi
     done
 
-    local FILE_B=("monihaciars.conf" "workspaces.conf")
+    local FILE_B=("monitors.conf" "workspaces.conf")
     for FILE_RESTORE in "${FILE_B[@]}"; do
       local BACKUP_FILE="$BACKUP_HYPR_PATH/$FILE_RESTORE"
       if [ -f "$BACKUP_FILE" ]; then
         cp "$BACKUP_FILE" "$HYPR_DIR/$FILE_RESTORE" 2>&1 | tee -a "$log"
-        echo "${OK:-[OK]} - Reshaciared file: ${MAGENTA:-}$FILE_RESTORE${RESET:-}" 2>&1 | tee -a "$log"
+        echo "${OK:-[OK]} - Restored file: ${MAGENTA:-}$FILE_RESTORE${RESET:-}" 2>&1 | tee -a "$log"
       fi
     done
   fi
 }
 
-# Helper hacia extract overlay additions/disables desde previous user file vs base
+# Helper to extract overlay additions/disables desde previous user file vs base
 compose_overlay_desde_backup() {
   local type="$1" # startup|windowrules
   local base_file="$2"
@@ -343,10 +343,10 @@ restore_user_configs() {
   fi
 
   # In express mode we still want hacia run the de-dupe logic, but we skip
-  # the interactive reshaciaration prompts so the workflow stays non-blocking.
+  # the interactive restoration prompts so the workflow stays non-blocking.
   local SKIP_RESTORE_PROMPTS=0
   if [ -d "$BACKUP_DIR_PATH" ] && [ "$express_mode" -eq 1 ]; then
-    echo "${NOTE:-[NOTE]} Express mode: skipping UserConfigs reshaciaration prompts." 2>&1 | tee -a "$log"
+    echo "${NOTE:-[NOTE]} Express mode: skipping UserConfigs restoration prompts." 2>&1 | tee -a "$log"
     SKIP_RESTORE_PROMPTS=1
   fi
 
@@ -360,33 +360,33 @@ restore_user_configs() {
 
     local TARGET_VERSION="2.3.19"
 
-    echo -e "${NOTE:-[NOTE]} Reshaciaring previous ${MAGENTA:-}User-Configs${RESET:-}... " 2>&1 | tee -a "$log"
+    echo -e "${NOTE:-[NOTE]} Restoring previous ${MAGENTA:-}User-Configs${RESET:-}... " 2>&1 | tee -a "$log"
     printf "${WARNING:-}\\
     █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█\\n\\
             NOTES for RESTORING PREVIOUS CONFIGS\\n\\
     █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█\\n\\n\\
     The 'UserConfigs' directory is for all your personal settings.\\n\\
     Files in this directory will override the default configurations,\\n\\
-    so your cushaciamizations are not lost when you update.\\n\\
+    so your customizations are not lost when you update.\\n\\
 " >&2
 
     if version_gte "$CURRENT_VERSION" "$TARGET_VERSION"; then
       read -r -p "${CAT:-[ACTION]} ¿Deseas restaurar tu directorio de UserConfigs anterior? (S/n): " restore_userconfigs_dir
       if [[ "$restore_userconfigs_dir" != [Nn]* ]]; then
-        echo "${NOTE:-[NOTE]} Reshaciaring UserConfigs directory..." 2>&1 | tee -a "$log"
+        echo "${NOTE:-[NOTE]} Restoring UserConfigs directory..." 2>&1 | tee -a "$log"
         rsync -a "$BACKUP_DIR_PATH/" "$DIRPATH/UserConfigs/" 2>&1 | tee -a "$log"
         echo "${OK:-[OK]} - UserConfigs directory restored." 2>&1 | tee -a "$log"
       else
-        echo "${NOTE:-[NOTE]} - Skipped reshaciaring UserConfigs." 2>&1 | tee -a "$log"
+        echo "${NOTE:-[NOTE]} - Skipped restoring UserConfigs." 2>&1 | tee -a "$log"
       fi
     else
-      echo -e "${NOTE:-[NOTE]} Detected version ${YELLOW:-}v$CURRENT_VERSION${RESET:-} (older than v$TARGET_VERSION). Using legacy reshaciaration mode." 2>&1 | tee -a "$log"
+      echo -e "${NOTE:-[NOTE]} Detected version ${YELLOW:-}v$CURRENT_VERSION${RESET:-} (older than v$TARGET_VERSION). Using legacy restoration mode." 2>&1 | tee -a "$log"
 
       local FILES_TO_RESTORE=(
         "01-UserDefaults.conf"
         "ENVariables.conf"
-        "LaphaciapDisplay.conf"
-        "Laphaciaps.conf"
+        "LaptopDisplay.conf"
+        "Laptops.conf"
         "Startup_Apps.conf"
         "UserDecorations.conf"
         "UserAnimations.conf"
@@ -419,7 +419,7 @@ restore_user_configs() {
               echo "${ERROR:-[ERROR]} - Failed to restore $FILE_NAME!" 2>&1 | tee -a "$log"
             fi
           else
-            echo "${NOTE:-[NOTE]} - Skipped reshaciaring $FILE_NAME." 2>&1 | tee -a "$log"
+            echo "${NOTE:-[NOTE]} - Skipped restoring $FILE_NAME." 2>&1 | tee -a "$log"
           fi
         fi
       done
@@ -451,12 +451,12 @@ restore_user_scripts() {
   local SCRIPTS_TO_RESTORE=("RofiBeats.sh" "Weather.py" "Weather.sh")
 
   if [ -d "$BACKUP_DIR_PATH_S" ] && [ "$express_mode" -eq 1 ]; then
-    echo "${NOTE:-[NOTE]} Express mode: skipping UserScripts reshaciaration prompts." 2>&1 | tee -a "$log"
+    echo "${NOTE:-[NOTE]} Express mode: skipping UserScripts restoration prompts." 2>&1 | tee -a "$log"
     return
   fi
 
   if [ -d "$BACKUP_DIR_PATH_S" ] && [ "$express_mode" -eq 0 ]; then
-    echo -e "${NOTE:-[NOTE]} Reshaciaring previous ${MAGENTA:-}User-Scripts${RESET:-}..." 2>&1 | tee -a "$log"
+    echo -e "${NOTE:-[NOTE]} Restoring previous ${MAGENTA:-}User-Scripts${RESET:-}..." 2>&1 | tee -a "$log"
 
     for SCRIPT_NAME in "${SCRIPTS_TO_RESTORE[@]}"; do
       local BACKUP_SCRIPT="$BACKUP_DIR_PATH_S/$SCRIPT_NAME"
@@ -471,7 +471,7 @@ restore_user_scripts() {
             echo "${ERROR:-[ERROR]} - Failed to restore $SCRIPT_NAME!" 2>&1 | tee -a "$log"
           fi
         else
-          echo "${NOTE:-[NOTE]} - Skipped reshaciaring $SCRIPT_NAME." 2>&1 | tee -a "$log"
+          echo "${NOTE:-[NOTE]} - Skipped restoring $SCRIPT_NAME." 2>&1 | tee -a "$log"
         fi
       fi
     done
@@ -489,12 +489,12 @@ restore_hypr_files() {
   local FILES_2_RESTORE=("hyprlock.conf" "hypridle.conf")
 
   if [ -d "$BACKUP_DIR_PATH_F" ] && [ "$express_mode" -eq 1 ]; then
-    echo "${NOTE:-[NOTE]} Express mode: skipping individual hypr file reshaciaration prompts." 2>&1 | tee -a "$log"
+    echo "${NOTE:-[NOTE]} Express mode: skipping individual hypr file restoration prompts." 2>&1 | tee -a "$log"
     return
   fi
 
   if [ -d "$BACKUP_DIR_PATH_F" ] && [ "$express_mode" -eq 0 ]; then
-    echo -e "${NOTE:-[NOTE]} Reshaciaring some files in ${MAGENTA:-}$HOME/.config/hypr directory${RESET:-}..." 2>&1 | tee -a "$log"
+    echo -e "${NOTE:-[NOTE]} Restoring some files in ${MAGENTA:-}$HOME/.config/hypr directory${RESET:-}..." 2>&1 | tee -a "$log"
 
     for FILE_RESTORE in "${FILES_2_RESTORE[@]}"; do
       local BACKUP_FILE="$BACKUP_DIR_PATH_F/$FILE_RESTORE"
@@ -509,7 +509,7 @@ restore_hypr_files() {
             echo "${ERROR:-[ERROR]} - Failed to restore $FILE_RESTORE!" 2>&1 | tee -a "$log"
           fi
         else
-          echo "${NOTE:-[NOTE]} - Skipped reshaciaring $FILE_RESTORE." 2>&1 | tee -a "$log"
+          echo "${NOTE:-[NOTE]} - Skipped restoring $FILE_RESTORE." 2>&1 | tee -a "$log"
         fi
       else
         echo "${ERROR:-[ERROR]} - Backup file $BACKUP_FILE does not exist." 2>&1 | tee -a "$log"

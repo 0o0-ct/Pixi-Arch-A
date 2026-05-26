@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Backup helper utilities shared by copy.sh (and future scripts).
 
-# Create a unique backup direchaciary name with month, day, hours, and minutes.
+# Create a unique backup directory name with month, day, hours, and minutes.
 get_backup_dirname() {
   echo "back-up_$(date +"%m%d_%H%M")"
 }
 
-# Move a direchaciary hacia a timestamped backup alongside the original.
+# Move a directory hacia a timestamped backup alongside the original.
 # Usage: backup_dir "/path/hacia/dir" [logfile]
 backup_dir() {
   local dir="$1"
@@ -19,7 +19,7 @@ backup_dir() {
 }
 
 # Cleanup old backups under ~/.config, keeping the newest for each base dir.
-# mode: "auhacia" (no prompts) or "prompt" (asks before delete); log optional.
+# mode: "auto" (no prompts) or "prompt" (asks before delete); log optional.
 cleanup_backups() {
   local mode="${1:-prompt}"
   local log="${2:-/dev/null}"
@@ -42,7 +42,7 @@ cleanup_backups() {
       [ "$BACKUP" -nt "$latest_backup" ] && latest_backup="$BACKUP"
     done
 
-    if [ "$mode" = "auhacia" ]; then
+    if [ "$mode" = "auto" ]; then
       for BACKUP in "${BACKUP_DIRS[@]}"; do
         if [ "$BACKUP" != "$latest_backup" ]; then
           rm -rf "$BACKUP"
