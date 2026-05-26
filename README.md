@@ -20,6 +20,50 @@
 
 > [!IMPORTANT]
 > **Pixi-Arch-A** es una evolución y ramificación personalizada de alto rendimiento diseñada para ofrecer una experiencia estética fuera de serie. Combina la velocidad de Arch Linux con el dinamismo del compositor Hyprland, fusionando un diseño de **Cristal Esmerilado (Frosted Glassmorphism)** coherente con colores oscuros e iluminación carmesí.
+>
+> Este proyecto ha sido creado y pulido con amor por su creador junto a su asistente de IA **Antigravity** para ofrecer una experiencia hispanohablante única, fluida y con un diseño visual insuperable.
+
+---
+
+## 🚀 Guía de Instalación Rápida
+
+Para instalar **Pixi-Arch-A** en tu sistema Arch Linux de manera automática y sin complicaciones, sigue estos pasos:
+
+### 1. Clonar el Repositorio
+Usa el método HTTPS para descargar el proyecto de forma segura, rápida y sin necesidad de contraseñas ni llaves SSH:
+```bash
+git clone https://github.com/0o0-ct/Pixi-Arch-A.git ~/Pixi-Arch-A
+```
+
+### 2. Acceder al Directorio
+Entra a la carpeta del proyecto descargado:
+```bash
+cd ~/Pixi-Arch-A
+```
+
+### 3. Dar Permisos de Ejecución al Script
+Dale permisos de ejecución al script principal de instalación:
+```bash
+chmod +x install.sh
+```
+
+### 4. Ejecutar el Instalador
+Inicia el instalador oficial interactivo en español y sigue las amigables instrucciones en pantalla:
+```bash
+./install.sh
+```
+
+---
+
+## 🛠️ Atajos de Teclado Clave y Uso
+
+* **Bloqueo del Sistema instantáneo:** Presiona **`SUPER + L`** para bloquear tu pantalla con un efecto de desenfoque e información en tiempo real a través de `hyprlock` y `hypridle`.
+* **Lanzador de Aplicaciones Rofi:** Presiona **`SUPER + D`** para abrir un menú flotante de cristal esmerilado que se adapta de forma inteligente a la paleta de colores de tu fondo.
+* **Abrir Terminal Kitty:** Presiona **`SUPER + Enter`** para desplegar terminales traslúcidas que se superponen estéticamente como hojas de vidrio.
+* **Alternar Paleta del Logo de Terminal:** Ejecuta el alternador rápido para cambiar la coloración del logotipo:
+  ```bash
+  ~/.config/fastfetch/toggle-color-gradient.py
+  ```
 
 ---
 
@@ -50,18 +94,6 @@ El comando de bienvenida en la terminal es completamente interactivo y lleva la 
 
 ---
 
-## 🛠️ Atajos de Teclado Clave y Uso
-
-* **Bloqueo del Sistema instantáneo:** Presiona **`SUPER + L`** para bloquear tu pantalla con un efecto de desenfoque e información en tiempo real a través de `hyprlock` y `hypridle`.
-* **Lanzador de Aplicaciones Rofi:** Presiona **`SUPER + D`** para abrir un menú flotante de cristal esmerilado que se adapta de forma inteligente a la paleta de colores de tu fondo.
-* **Abrir Terminal Kitty:** Presiona **`SUPER + Enter`** para desplegar terminales traslúcidas que se superponen estéticamente como hojas de vidrio.
-* **Alternar Paleta del Logo de Terminal:** Ejecuta:
-  ```bash
-  ~/.config/fastfetch/toggle-color-gradient.py
-  ```
-
----
-
 ## ⚙️ Gestión de Bloqueo e Inactividad (Timeout)
 Toda la inactividad de tu pantalla se gestiona de forma centralizada en [`hypridle.conf`](file:///.config/hypr/hypridle.conf):
 * **Aviso de inactividad:** A los **9 minutos** (`timeout = 540`) recibirás una notificación de aviso en el sistema.
@@ -69,14 +101,11 @@ Toda la inactividad de tu pantalla se gestiona de forma centralizada en [`hyprid
 
 ---
 
-## 📥 Clonación y Sincronización del Proyecto
-Este sistema está completamente enlazado a tu repositorio personal en GitHub. Para sincronizar tus personalizaciones y actualizaciones futuras:
+## 📥 Sincronización y Control del Proyecto con Git
+Este sistema está completamente enlazado a tu repositorio personal en GitHub. Para empujar tus personalizaciones y actualizaciones futuras:
 
 ```bash
-# Clonar tu repositorio oficial
-git clone https://github.com/0o0-ct/Pixi-Arch-A.git ~/Pixi-Arch-A
-
-# Empujar nuevos cambios y actualizaciones
+# Empujar nuevos cambios y actualizaciones al repositorio
 git add .
 git commit -m "feat: descripción de mis mejoras"
 git push origin main
