@@ -23,7 +23,7 @@
 # Invocation:
 #   ./Tak0-Autodispatch.sh <workspace> [rule ...] -- <command>
 #
-# Important notes:
+# Important notas:
 #   • All window rules are TEMPORARY
 #   • No permanent pollution of Hyprland configuration
 # ─────────────────────────────────────────────────────────────────────────────

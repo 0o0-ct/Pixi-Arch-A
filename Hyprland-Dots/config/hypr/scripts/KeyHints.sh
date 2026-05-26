@@ -55,7 +55,7 @@ GDK_BACKEND=$BACKEND yad \
 "ALT Print" "Screenshot active window" "active window only" \
 "CTRL ALT P" "power-menu" "(wlogout)" \
 "CTRL ALT L" "screen lock" "(hyprlock)" \
-"CTRL ALT Del" "Hyprland Exit" "(NOTE: Hyprland Will exit immediately)" \
+"CTRL ALT Del" "Hyprland Exit" "(NOTA: Hyprland Will exit immediately)" \
 " SHIFT F" "Fullscreen" "Toggles to full screen" \
 " CTL F" "Fake Fullscreen" "Toggles to fake full screen" \
 " ALT L" "Toggle Dwindle | Master Layout" "Hyprland Layout" \

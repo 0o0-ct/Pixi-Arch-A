@@ -3,7 +3,7 @@
 
 # Variables
 rofi_theme="$HOME/.config/rofi/config-emoji.rasi"
-msg='** note ** 👀 Click or Return to choose || Ctrl V to Paste'
+msg='** nota ** 👀 Clic o Enter para elegir || Ctrl V para Pegar'
 
 # Check if rofi is already running
 if pidof rofi > /dev/null; then
@@ -1093,8 +1093,8 @@ exit
 🔔 bell sound notification christmas xmas chime
 🔕 bell with slash sound volume mute quiet silent
 🎼 musical score treble clef compose
-🎵 musical note score tone sound
-🎶 musical notes music score
+🎵 musical nota score tone sound
+🎶 musical notas music score
 🎙️ studio microphone sing recording artist talkshow
 🎚️ level slider scale
 🎛️ control knobs dial
@@ -1143,15 +1143,15 @@ exit
 🔦 flashlight dark camping sight night
 🏮 red paper lantern light paper halloween spooky
 🪔 diya lamp lighting
-📔 notebook with decorative cover classroom notes record paper study
+📔 notabook with decorative cover classroom notas record paper study
 📕 closed book read library knowledge textbook learn
 📖 open book book read library knowledge literature learn study
 📗 green book read library knowledge study
 📘 blue book read library knowledge learn study
 📙 orange book read library knowledge textbook study
 📚 books literature library study
-📓 notebook stationery record notes paper study
-📒 ledger notes paper
+📓 notabook stationery record notas paper study
+📒 ledger notas paper
 📃 page with curl documents office paper
 📜 scroll documents ancient history paper
 📄 page facing up documents office paper information
@@ -1161,10 +1161,10 @@ exit
 🔖 bookmark favorite label save
 🏷️ label sale tag
 💰 money bag dollar payment coins sale
-💴 yen banknote money sales japanese dollar currency
-💵 dollar banknote money sales bill currency
-💶 euro banknote money sales dollar currency
-💷 pound banknote british sterling money sales bills uk england currency
+💴 yen banknota money sales japanese dollar currency
+💵 dollar banknota money sales bill currency
+💶 euro banknota money sales dollar currency
+💷 pound banknota british sterling money sales bills uk england currency
 💸 money with wings dollar bills payment sale
 💳 credit card money sales dollar bill payment shopping
 🧾 receipt accounting expenses
@@ -1197,7 +1197,7 @@ exit
 🗂️ card index dividers organizing business stationery
 📅 calendar calendar schedule
 📆 tear off calendar schedule date planning
-🗒️ spiral notepad memo stationery
+🗒️ spiral notapad memo stationery
 🗓️ spiral calendar date schedule planning
 📇 card index business stationery
 📈 chart increasing graph presentation stats recovery business economics money sales good success
@@ -1420,7 +1420,7 @@ ycap  symbol blue-square twitter
 🔠 input latin uppercase alphabet words blue-square
 🔡 input latin lowercase blue-square alphabet
 🔢 input numbers numbers blue-square
-🔣 input symbols blue-square music note ampersand percent glyphs characters
+🔣 input symbols blue-square music nota ampersand percent glyphs characters
 🔤 input latin letters blue-square alphabet
 🅰️ a button red-square alphabet letter
 🆎 ab button red-square alphabet

@@ -125,7 +125,7 @@ while true; do
     rofi -dmenu -i \
       -format 'i' \
       -p "Rofi Theme" \
-      -mesg "‼️ **note** ‼️ Enter: Preview || Ctrl+S: Apply &amp; Exit || Esc: Cancel" \
+      -mesg "‼️ **nota** ‼️ Enter: Preview || Ctrl+S: Apply &amp; Exit || Esc: Cancel" \
       -config "$ROFI_THEME_FOR_THIS_SCRIPT" \
       -selected-row "$current_selection_index" \
       -kb-custom-1 "Control+s")
@@ -138,7 +138,7 @@ while true; do
       current_selection_index="$chosen_index_from_rofi"
     fi
   elif [ $rofi_exit_code -eq 1 ]; then # Escape
-    notify_user "$IDIR/note.png" "Rofi Theme" "Selection cancelled. Reverting to original theme."
+    notify_user "$IDIR/nota.png" "Rofi Theme" "Selection cancelled. Reverting to original theme."
     echo "$original_rofi_config_content_backup" >"$ROFI_CONFIG_FILE"
     break
   elif [ $rofi_exit_code -eq 10 ]; then # Custom bind 1 (Ctrl+S)

@@ -15,7 +15,7 @@ source "$tmp_config_file"
 configs="$HOME/.config/hypr/configs"
 UserConfigs="$HOME/.config/hypr/UserConfigs"
 rofi_theme="$HOME/.config/rofi/config-edit.rasi"
-msg=' ⁉️ Elige qué hacer ⁉️'
+msg='⁉️  Elige que hacer  ⁉️'
 iDIR="$HOME/.config/swaync/images"
 scriptsDir="$HOME/.config/hypr/scripts"
 UserScripts="$HOME/.config/hypr/UserScripts"

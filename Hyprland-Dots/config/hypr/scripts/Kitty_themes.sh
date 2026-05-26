@@ -118,7 +118,7 @@ while true; do
       :
     fi
   elif [ $rofi_exit_code -eq 1 ]; then
-    notify_user "$iDIR/note.png" "Kitty Theme" "Selection cancelled. Reverting to original theme."
+    notify_user "$iDIR/nota.png" "Kitty Theme" "Selection cancelled. Reverting to original theme."
     echo "$original_kitty_config_content_backup" >"$kitty_config"
     for pid_kitty in $(pidof kitty); do if [ -n "$pid_kitty" ]; then kill -SIGUSR1 "$pid_kitty"; fi; done
     break

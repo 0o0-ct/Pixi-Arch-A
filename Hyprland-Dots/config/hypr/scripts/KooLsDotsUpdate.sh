@@ -34,7 +34,7 @@ fi
 
 # Comparing local and github versions
 if [ "$(echo -e "$github_version\n$local_version" | sort -V | head -n 1)" = "$github_version" ]; then
-   notify-send -i "$iDIR/note.png" "KooL Hyprland:" "No hay actualización disponible"
+   notify-send -i "$iDIR/nota.png" "KooL Hyprland:" "No hay actualización disponible"
   exit 0
 else
   # update available
