@@ -64,7 +64,7 @@ update_theme_mode() {
 
 # Function to notify user
 notify_user() {
-    notify-send -u low -i "$notif" " Switching to" " $1 mode"
+    notify-send -u low -i "$notif" " Cambiando a" " modo $1"
 }
 
 # Use sed to replace the palette setting in the wallust config file
@@ -261,7 +261,7 @@ ${SCRIPTSDIR}/Refresh.sh
 
 sleep 0.5
 # Display notifications for theme and icon changes 
-notify-send -u low -i "$notif" " Themes switched to:" " $next_mode Mode"
+notify-send -u low -i "$notif" " Temas cambiados a:" " Modo $next_mode"
 
 exit 0
 

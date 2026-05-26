@@ -32,7 +32,7 @@ then
 fi
 if [ -z "${NOTIFY_SEND}" ]
 then
-    echo "Did not find 'notify-send', notifications won't work."
+    echo "No se encontró 'notify-send', las notificaciones no funcionarán."
 fi
 
 TMP_CONFIG_FILE=$(${MKTEMP}).rasi
@@ -219,7 +219,7 @@ then
     # Send notification with the selected theme name
     selection="${theme_names[${SELECTED}]}"
     if [ -n "$NOTIFY_SEND" ]; then
-        notify-send -u low -i "$iDIR/ja.png"  "Rofi Theme applied:" "$selection"
+        notify-send -u low -i "$iDIR/ja.png"  "Tema de Rofi aplicado:" "$selection"
     fi
 fi
 

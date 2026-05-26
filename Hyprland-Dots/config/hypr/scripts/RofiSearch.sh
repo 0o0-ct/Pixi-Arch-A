@@ -5,7 +5,7 @@
 # Define the path to the config file
 config_file=$HOME/.config/hypr/UserConfigs/01-UserDefaults.conf
 if ! command -v jq >/dev/null 2>&1; then
-    notify-send -u low "Rofi Search" "jq is required for URL encoding. Please install jq."
+    notify-send -u low "Búsqueda Rofi" "Se requiere jq para la codificación URL. Por favor instala jq."
     exit 1
 fi
 

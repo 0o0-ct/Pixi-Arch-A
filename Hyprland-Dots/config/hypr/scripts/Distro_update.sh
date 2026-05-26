@@ -7,7 +7,7 @@ iDIR="$HOME/.config/swaync/images"
 
 # Check for required tools (kitty)
 if ! command -v kitty &> /dev/null; then
-  notify-send -i "$iDIR/error.png" "Need Kitty:" "Kitty terminal not found. Please install Kitty terminal."
+  notify-send -i "$iDIR/error.png" "Need Kitty:" "Terminal Kitty no encontrada. Por favor instala la terminal Kitty."
   exit 1
 fi
 

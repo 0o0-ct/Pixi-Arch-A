@@ -1,9 +1,9 @@
 # README
 #
-# In order for this theme to render correctly, you will need a
+# Para que este tema se muestre correctamente, necesitarás una
 # [Powerline-patched font](https://github.com/Lokaltog/powerline-fonts).
 #
-# In addition, I recommend the
+# Además, recomiendo el
 # [Tomorrow Night theme](https://github.com/chriskempson/tomorrow-theme) and, if
 # you're using it on Mac OS X, [iTerm 2](http://www.iterm2.com/) over
 # Terminal.app - it has significantly better color fidelity.

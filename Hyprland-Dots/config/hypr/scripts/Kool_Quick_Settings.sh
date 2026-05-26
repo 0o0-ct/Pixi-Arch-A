@@ -31,12 +31,12 @@ show_info() {
 # Function to toggle Rainbow Borders script availability and refresh UI components
 toggle_rainbow_borders() {
     local rainbow_script="$UserScripts/RainbowBorders.sh"
-    local disabled_sh_bak="${rainbow_script}.bak"           # RainbowBorders.sh.bak
-    local disabled_bak_sh="$UserScripts/RainbowBorders.bak.sh" # RainbowBorders.bak.sh (created by copy.sh when disabled)
+    local deshabilitado_sh_bak="${rainbow_script}.bak"           # RainbowBorders.sh.bak
+    local deshabilitado_bak_sh="$UserScripts/RainbowBorders.bak.sh" # RainbowBorders.bak.sh (created by copy.sh when deshabilitado)
     local refresh_script="$scriptsDir/Refresh.sh"
     local status=""
 
-    # If both disabled variants exist, keep the newer one to avoid ambiguity
+    # If both deshabilitado variants exist, keep the newer one to avoid ambiguity
     if [[ -f "$disabled_sh_bak" && -f "$disabled_bak_sh" ]]; then
         if [[ "$disabled_sh_bak" -nt "$disabled_bak_sh" ]]; then
             rm -f "$disabled_bak_sh"
@@ -46,7 +46,7 @@ toggle_rainbow_borders() {
     fi
 
     if [[ -f "$rainbow_script" ]]; then
-        # Currently enabled -> disable to canonical .sh.bak
+        # Currently habilitado -> disable to canonical .sh.bak
         if mv "$rainbow_script" "$disabled_sh_bak"; then
             status="disabled"
             if command -v hyprctl &>/dev/null; then
@@ -83,8 +83,8 @@ toggle_rainbow_borders() {
 # Submenu to choose Rainbow Borders mode (disable, wallust_random, rainbow, gradient_flow)
 rainbow_borders_menu() {
     local rainbow_script="$UserScripts/RainbowBorders.sh"
-    local disabled_sh_bak="${rainbow_script}.bak"
-    local disabled_bak_sh="$UserScripts/RainbowBorders.bak.sh"
+    local deshabilitado_sh_bak="${rainbow_script}.bak"
+    local deshabilitado_bak_sh="$UserScripts/RainbowBorders.bak.sh"
     local refresh_script="$scriptsDir/Refresh.sh"
 
     # Determine current mode/status (internal)
@@ -100,7 +100,7 @@ rainbow_borders_menu() {
         wallust_random) current_display="Wallust Color" ;;
         rainbow) current_display="Original Rainbow" ;;
         gradient_flow) current_display="Gradient Flow" ;;
-        disabled) current_display="Disabled" ;;
+        deshabilitado) current_display="Disabled" ;;
     esac
 
 
@@ -130,7 +130,7 @@ rainbow_borders_menu() {
                 "Original Rainbow") mode="rainbow" ;;
                 "Gradient Flow") mode="gradient_flow" ;;
             esac
-            # Ensure script is enabled
+            # Ensure script is habilitado
             if [[ ! -f "$rainbow_script" ]]; then
                 if   [[ -f "$disabled_sh_bak" ]]; then
                     mv "$disabled_sh_bak" "$rainbow_script"

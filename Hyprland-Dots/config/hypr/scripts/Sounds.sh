@@ -6,7 +6,7 @@
 theme="freedesktop" # Set the theme for the system sounds.
 mute=false          # Set to true to mute the system sounds.
 
-# Mute individual sounds here.
+# Silenciado individual sounds here.
 muteScreenshots=false
 muteVolume=false
 

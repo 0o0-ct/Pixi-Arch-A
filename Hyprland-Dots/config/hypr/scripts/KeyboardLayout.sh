@@ -84,7 +84,7 @@ if ! get_current_layout_info; then
   echo "Could not get current layout information." >&2
   echo "There might not be any keyboards available, \
     or some were unnecessarily set as ignored." >&2
-  notify-send -u low -t 2000 'kb_layout' " Error:" " Layout change failed"
+  notify-send -u low -t 2000 'kb_layout' " Error:" " Cambio de distribución fallido"
   echo "Exiting $0 $@" >&2
   exit 1
 fi
@@ -107,7 +107,7 @@ elif [[ "$1" == "switch" ]]; then
 
   # Execute layout change and notify
   if ! change_layout; then
-    notify-send -u low -t 2000 'kb_layout' " Error:" " Layout change failed"
+    notify-send -u low -t 2000 'kb_layout' " Error:" " Cambio de distribución fallido"
     echo "Layout change failed." >&2
     exit 1
   else

@@ -1276,7 +1276,7 @@ exit
 🏧 atm sign money sales cash blue-square payment bank
 🚮 litter in bin sign blue-square sign human info
 🚰 potable water blue-square liquid restroom cleaning faucet
-♿ wheelchair symbol blue-square disabled accessibility
+♿ wheelchair symbol blue-square deshabilitado accessibility
 🚹 men s room toilet restroom wc blue-square gender male
 🚺 women s room purple-square woman female toilet loo restroom gender
 🚻 restroom blue-square toilet refresh wc gender

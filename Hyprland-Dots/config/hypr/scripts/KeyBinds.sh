@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
-# searchable enabled keybinds using rofi (supports bindd descriptions)
+# searchable habilitado keybinds using rofi (supports bindd descriptions)
 
 # kill yad to not interfere with this binds
 pkill yad || true
