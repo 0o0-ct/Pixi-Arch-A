@@ -2,28 +2,28 @@
 # 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
 # pokemon-color-scripts#
 
-## WARNING: DO NOT EDIT BEYOND THIS LINE IF YOU DON'T KNOW WHAT YOU ARE DOING! ##
+## ADVERTENCIA: ¡NO EDITES MÁS ALLÁ DE ESTA LÍNEA SI NO SABES LO QUE ESTÁS HACIENDO! ##
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Change the working directory to the parent directory of the script
+# Cambiar el directorio de trabajo al directorio padre del script
 PARENT_DIR="$SCRIPT_DIR/.."
-cd "$PARENT_DIR" || { echo "${ERROR} Failed to change directory to $PARENT_DIR"; exit 1; }
+cd "$PARENT_DIR" || { echo "${ERROR} Error al cambiar al directorio $PARENT_DIR"; exit 1; }
 
-# Source the global functions script
+# Cargar el script de funciones globales
 if ! source "$(dirname "$(readlink -f "$0")")/Global_functions.sh"; then
-  echo "Failed to source Global_functions.sh"
+  echo "Error al cargar Global_functions.sh"
   exit 1
 fi
 
 
 
-# Set the name of the log file to include the current date and time
+# Configurar el nombre del archivo de registro para incluir fecha y hora actuales
 LOG="Install-Logs/install-$(date +%d-%H%M%S)_zsh_pokemon.log"
 
 printf "${NOTE} Removing any traces of ${SKY_BLUE}Pokemon Color Scripts${RESET}\n"
 
 # Install Pokemon Color Scripts
-printf "${NOTE} Installing ${SKY_BLUE}Pokemon Color Scripts${RESET}\n"
+printf "${NOTE} Instalando ${SKY_BLUE}Pokemon Color Scripts${RESET}\n"
 for pok in "pokemon-colorscripts-git"; do
   install_package_f "$pok" "$LOG"
 done

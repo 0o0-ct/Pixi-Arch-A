@@ -5,25 +5,25 @@
 source_theme="https://github.com/0o0-ct/Pixi-Arch-A/simple-sddm-2.git"
 theme_name="simple_sddm_2"
 
-## WARNING: DO NOT EDIT BEYOND THIS LINE IF YOU DON'T KNOW WHAT YOU ARE DOING! ##
+## ADVERTENCIA: ¡NO EDITES MÁS ALLÁ DE ESTA LÍNEA SI NO SABES LO QUE ESTÁS HACIENDO! ##
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Change the working directory to the parent directory of the script
+# Cambiar el directorio de trabajo al directorio padre del script
 PARENT_DIR="$SCRIPT_DIR/.."
-cd "$PARENT_DIR" || { echo "${ERROR} Failed to change directory to $PARENT_DIR"; exit 1; }
+cd "$PARENT_DIR" || { echo "${ERROR} Error al cambiar al directorio $PARENT_DIR"; exit 1; }
 
-# Source the global functions script
+# Cargar el script de funciones globales
 if ! source "$(dirname "$(readlink -f "$0")")/Global_functions.sh"; then
-  echo "Failed to source Global_functions.sh"
+  echo "Error al cargar Global_functions.sh"
   exit 1
 fi
 
 
-# Set the name of the log file to include the current date and time
+# Configurar el nombre del archivo de registro para incluir fecha y hora actuales
 LOG="Install-Logs/install-$(date +%d-%H%M%S)_sddm_theme.log"
     
 # SDDM-themes
-printf "${INFO} Installing ${SKY_BLUE}Additional SDDM Theme${RESET}\n"
+printf "${INFO} Instalando ${SKY_BLUE}Additional SDDM Theme${RESET}\n"
 
 # Check if /usr/share/sddm/themes/$theme_name exists and remove if it does
 if [ -d "/usr/share/sddm/themes/$theme_name" ]; then
@@ -34,7 +34,7 @@ fi
 # Check if $theme_name directory exists in the current directory and remove if it does
 if [ -d "$theme_name" ]; then
   rm -rf "$theme_name"
-  echo -e "\e[1A\e[K${OK} - Removed existing $theme_name directory from the current location." 2>&1 | tee -a "$LOG"
+  echo -e "\e[1A\e[K${OK} - Removed existing $theme_name directory desde the current location." 2>&1 | tee -a "$LOG"
 fi
 
 # Clone the repository
@@ -46,7 +46,7 @@ if git clone --depth=1 "$source_theme" "$theme_name"; then
   # Create themes directory if it doesn't exist
   if [ ! -d "/usr/share/sddm/themes" ]; then
     sudo mkdir -p /usr/share/sddm/themes
-    echo "${OK} - Directory '/usr/share/sddm/themes' created." | tee -a "$LOG"
+    echo "${OK} - Directorio '/usr/share/sddm/themes' created." | tee -a "$LOG"
   fi
 
   # Move cloned theme to the themes directory
@@ -100,7 +100,7 @@ if git clone --depth=1 "$source_theme" "$theme_name"; then
     fi
   fi
 
-  # Replace current background from assets
+  # Replace current background desde assets
   sudo cp -r assets/sddm.png "/usr/share/sddm/themes/$theme_name/Backgrounds/default" 2>&1 | tee -a "$LOG"
   sudo sed -i 's|^wallpaper=".*"|wallpaper="Backgrounds/default"|' "/usr/share/sddm/themes/$theme_name/theme.conf" 2>&1 | tee -a "$LOG"
 
@@ -108,7 +108,7 @@ if git clone --depth=1 "$source_theme" "$theme_name"; then
 
 else
 
-  echo "${ERROR} - Failed to clone the sddm theme repository. Please check your internet connection." | tee -a "$LOG" >&2
+  echo "${ERROR} - Failed to clone the sddm theme repository. Por favor revisa your internet connection." | tee -a "$LOG" >&2
 fi
 
 printf "\n%.0s" {1..2}

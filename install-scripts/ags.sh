@@ -25,33 +25,33 @@ ags=(
 # specific tags to download
 ags_tag="v1.9.0"
 
-## WARNING: DO NOT EDIT BEYOND THIS LINE IF YOU DON'T KNOW WHAT YOU ARE DOING! ##
+## ADVERTENCIA: ¡NO EDITES MÁS ALLÁ DE ESTA LÍNEA SI NO SABES LO QUE ESTÁS HACIENDO! ##
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Change the working directory to the parent directory of the script
+# Cambiar el directorio de trabajo al directorio padre del script
 PARENT_DIR="$SCRIPT_DIR/.."
-cd "$PARENT_DIR" || { echo "${ERROR} Failed to change directory to $PARENT_DIR"; exit 1; }
+cd "$PARENT_DIR" || { echo "${ERROR} Error al cambiar al directorio $PARENT_DIR"; exit 1; }
 
-# Source the global functions script
+# Cargar el script de funciones globales
 if ! source "$(dirname "$(readlink -f "$0")")/Global_functions.sh"; then
-  echo "Failed to source Global_functions.sh"
+  echo "Error al cargar Global_functions.sh"
   exit 1
 fi
 
-# Fail early and make pipelines fail if any command fails
+# Fallar rápido y hacer que los pipelines fallen si algún comando falla
 set -eo pipefail
 
-# Set the name of the log file to include the current date and time
+# Configurar el nombre del archivo de registro para incluir fecha y hora actuales
 LOG="Install-Logs/install-$(date +%d-%H%M%S)_ags.log"
 MLOG="install-$(date +%d-%H%M%S)_ags2.log"
 
 # NOTE: We intentionally do NOT run `ags -v` here, because a broken AGS
 # installation (missing GUtils, etc.) would crash gjs and spam errors
 # during install. We always (re)install v1.9.0 when this script is run.
-# Installation of main components
-printf "\n%s - Installing ${SKY_BLUE}Aylur's GTK shell $ags_tag${RESET} Dependencies \n" "${NOTE}"
+# Instalación de main components
+printf "\n%s - Instalando ${SKY_BLUE}Aylur's GTK shell $ags_tag${RESET} Dependencies \n" "${NOTE}"
 
-# Installing ags Dependencies
+# Instalando ags Dependencies
 for PKG1 in "${ags[@]}"; do
     install_package "$PKG1" "$LOG"
 done
@@ -80,7 +80,7 @@ if git clone --depth=1 https://github.com/0o0-ct/Pixi-Arch-A/ags_v1.9.0.git; the
         if ! grep -q '"ignoreDeprecations"[[:space:]]*:' tsconfig.json; then
             sed -i 's/"compilerOptions":[[:space:]]*{/"compilerOptions": {\n    "ignoreDeprecations": "6.0",/' tsconfig.json
         fi
-        # 2) Bump moduleResolution from node10 to node16 if present
+        # 2) Bump moduleResolution desde node10 to node16 if present
         if grep -q '"moduleResolution"[[:space:]]*:[[:space:]]*"node10"' tsconfig.json; then
             sed -i 's/"moduleResolution"[[:space:]]*:[[:space:]]*"node10"/"moduleResolution": "node16"/' tsconfig.json || true
         fi
@@ -133,7 +133,7 @@ PAM_STUB
     LAUNCHER_PATH="$LAUNCHER_DIR/com.github.Aylur.ags"
     sudo mkdir -p "$LAUNCHER_DIR"
 
-    # Install the known-good launcher we captured from a working system.
+    # Install the known-good launcher we captured desde a working system.
     # This JS entry script uses GLib to set GI_TYPELIB_PATH and does not
     # depend on GIRepository, which avoids missing-typelib crashes.
     LAUNCHER_SRC="$SCRIPT_DIR/ags.launcher.com.github.Aylur.ags"
@@ -151,7 +151,7 @@ PAM_STUB
     mv "$MLOG" ../Install-Logs/ || true
     cd ..
 else
-    echo -e "\n${ERROR} Failed to download ${YELLOW}Aylur's GTK shell $ags_tag${RESET} Please check your connection\n" 2>&1 | tee -a "$LOG"
+    echo -e "\n${ERROR} Error al descargar ${YELLOW}Aylur's GTK shell $ags_tag${RESET} Por favor revisa your connection\n" 2>&1 | tee -a "$LOG"
     mv "$MLOG" ../Install-Logs/ || true
     exit 1
 fi

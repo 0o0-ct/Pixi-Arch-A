@@ -1,7 +1,7 @@
 #!/bin/bash
 # 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
-# Final checking if packages are installed
-# NOTE: These package check are only the essentials
+# Comprobación final de si los paquetes están instalados
+# NOTA: Esta comprobación de paquetes es solo de los esenciales
 
 packages=(
   cliphist
@@ -25,51 +25,51 @@ local_pkgs_installed=(
 
 )
 
-## WARNING: DO NOT EDIT BEYOND THIS LINE IF YOU DON'T KNOW WHAT YOU ARE DOING! ##
-# Determine the directory where the script is located
+## ADVERTENCIA: ¡NO EDITES MÁS ALLÁ DE ESTA LÍNEA SI NO SABES LO QUE ESTÁS HACIENDO! ##
+# Determinar el directorio donde se ubica el script
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Change the working directory to the parent directory of the script
+# Cambiar el directorio de trabajo al directorio padre del script
 PARENT_DIR="$SCRIPT_DIR/.."
-cd "$PARENT_DIR" || { echo "${ERROR} Failed to change directory to $PARENT_DIR"; exit 1; }
+cd "$PARENT_DIR" || { echo "${ERROR} Error al cambiar al directorio $PARENT_DIR"; exit 1; }
 
-# Source the global functions script
+# Cargar el script de funciones globales
 source "$(dirname "$(readlink -f "$0")")/Global_functions.sh"
 
-# Set the name of the log file to include the current date and time
+# Configurar el nombre del archivo de registro para incluir fecha y hora actuales
 LOG="Install-Logs/00_CHECK-$(date +%d-%H%M%S)_installed.log"
 
-printf "\n%s - Final Check if all ${SKY_BLUE}Essential packages${RESET} were installed \n" "${NOTE}"
-# Initialize an empty array to hold missing packages
+printf "\n%s - Comprobación final para verificar si todos los ${SKY_BLUE}paquetes esenciales${RESET} se instalaron \n" "${NOTE}"
+# Inicializar un arreglo vacío para guardar paquetes faltantes
 missing=()
 local_missing=()
 
-# Function to check if a packages are installed using pacman
+# Función para comprobar si un paquete está instalado usando pacman
 is_installed_pacman() {
     pacman -Qi "$1" &>/dev/null
 }
 
-# Loop through each package
+# Iterar a través de cada paquete
 for pkg in "${packages[@]}"; do
-    # Check if the packages are installed
+    # Comprobar si los paquetes están instalados
     if ! is_installed_pacman "$pkg"; then
         missing+=("$pkg")
     fi
 done
 
-# Check for local packages
+# Comprobar paquetes locales
 for pkg1 in "${local_pkgs_installed[@]}"; do
     if ! [ -f "/usr/local/bin/$pkg1" ]; then
         local_missing+=("$pkg1")
     fi
 done
 
-# Log missing packages
+# Registrar paquetes faltantes
 if [ ${#missing[@]} -eq 0 ] && [ ${#local_missing[@]} -eq 0 ]; then
-    echo "${OK} GREAT! All ${YELLOW}essential packages${RESET} have been successfully installed." | tee -a "$LOG"
+    echo "${OK} ¡EXCELENTE! Todos los ${YELLOW}paquetes esenciales${RESET} se han instalado correctamente." | tee -a "$LOG"
 else
     if [ ${#missing[@]} -ne 0 ]; then
-        echo "${WARN} The following packages are not installed and will be logged:"
+        echo "${WARN} Los siguientes paquetes no están instalados y serán registrados:"
         for pkg in "${missing[@]}"; do
             echo "${WARNING}$pkg${RESET}"
             echo "$pkg" >> "$LOG" 
@@ -77,13 +77,13 @@ else
     fi
 
     if [ ${#local_missing[@]} -ne 0 ]; then
-        echo "${WARN} The following local packages are missing from /usr/local/bin/ and will be logged:"
+        echo "${WARN} Faltan los siguientes paquetes locales en /usr/local/bin/ y serán registrados:"
         for pkg1 in "${local_missing[@]}"; do
-            echo "${WARNING}$pkg1${REST} is not installed. Can't find it in /usr/local/bin/"
+            echo "${WARNING}$pkg1${REST} no está instalado. No se encuentra en /usr/local/bin/"
             echo "$pkg1" >> "$LOG" 
         done
     fi
 
-    echo "${NOTE} Missing packages logged at $(date)" >> "$LOG"
+    echo "${NOTE} Paquetes faltantes registrados a las $(date)" >> "$LOG"
 fi
 

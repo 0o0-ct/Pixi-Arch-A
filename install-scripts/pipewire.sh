@@ -17,17 +17,17 @@ pipewire_2=(
     pipewire-pulse
 )
 
-############## WARNING: DO NOT EDIT BEYOND THIS LINE IF YOU DON'T KNOW WHAT YOU ARE DOING! ##############
+############## ADVERTENCIA: ¡NO EDITES MÁS ALLÁ DE ESTA LÍNEA SI NO SABES LO QUE ESTÁS HACIENDO! ##############
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Change the working directory to the parent directory of the script
+# Cambiar el directorio de trabajo al directorio padre del script
 PARENT_DIR="$SCRIPT_DIR/.."
-cd "$PARENT_DIR" || { echo "${ERROR} Failed to change directory to $PARENT_DIR"; exit 1; }
+cd "$PARENT_DIR" || { echo "${ERROR} Error al cambiar al directorio $PARENT_DIR"; exit 1; }
 
-# Source the global functions script
+# Cargar el script de funciones globales
 source "$(dirname "$(readlink -f "$0")")/Global_functions.sh"
 
-# Set the name of the log file to include the current date and time
+# Configurar el nombre del archivo de registro para incluir fecha y hora actuales
 LOG="Install-Logs/install-$(date +%d-%H%M%S)_pipewire.log"
 
 # Disabling pulseaudio to avoid conflicts and logging output
@@ -35,7 +35,7 @@ echo -e "${NOTE} Disabling pulseaudio to avoid conflicts..."
 systemctl --user disable --now pulseaudio.socket pulseaudio.service >> "$LOG" 2>&1 || true
 
 # Pipewire
-echo -e "${NOTE} Installing ${SKY_BLUE}Pipewire${RESET} Packages..."
+echo -e "${NOTE} Instalando ${SKY_BLUE}Pipewire${RESET} Packages..."
 for PIPEWIRE in "${pipewire[@]}"; do
     install_package "$PIPEWIRE" "$LOG"
 done

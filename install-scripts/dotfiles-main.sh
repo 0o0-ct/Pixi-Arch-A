@@ -1,18 +1,18 @@
 #!/bin/bash
 # 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
-# Hyprland-Dots to download from main #
+# Hyprland-Dots to download desde main #
 
 
-## WARNING: DO NOT EDIT BEYOND THIS LINE IF YOU DON'T KNOW WHAT YOU ARE DOING! ##
+## ADVERTENCIA: ¡NO EDITES MÁS ALLÁ DE ESTA LÍNEA SI NO SABES LO QUE ESTÁS HACIENDO! ##
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Change the working directory to the parent directory of the script
+# Cambiar el directorio de trabajo al directorio padre del script
 PARENT_DIR="$SCRIPT_DIR/.."
-cd "$PARENT_DIR" || { echo "${ERROR} Failed to change directory to $PARENT_DIR"; exit 1; }
+cd "$PARENT_DIR" || { echo "${ERROR} Error al cambiar al directorio $PARENT_DIR"; exit 1; }
 
-# Source the global functions script
+# Cargar el script de funciones globales
 if ! source "$(dirname "$(readlink -f "$0")")/Global_functions.sh"; then
-  echo "Failed to source Global_functions.sh"
+  echo "Error al cargar Global_functions.sh"
   exit 1
 fi
 
@@ -24,7 +24,7 @@ if [ -d Hyprland-Dots ]; then
   chmod +x copy.sh
   ./copy.sh 
 else
-  # Fallback to cloning from the new standalone repository Pixi-Arch-A
+  # Fallback to cloning desde the new standalone repository Pixi-Arch-A
   if git clone --depth=1 https://github.com/0o0-ct/Pixi-Arch-A.git temp_clone; then
     mv temp_clone/Hyprland-Dots ./Hyprland-Dots
     rm -rf temp_clone
