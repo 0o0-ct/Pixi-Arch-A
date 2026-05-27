@@ -25,10 +25,14 @@ font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
 window#waybar {
-    background: rgba(255, 255, 255, 0);
+    background: rgba(255, 255, 255, 0.00);
     background-image: none;
-    border: none;
-    box-shadow: none;
+    border: 0.5px solid rgba(255, 255, 255, 0.07);
+    border-radius: 38px;
+    box-shadow: 0 25px 23px rgba(0, 0, 0, 0.03);
+    color: #ffffff;
+    transition-property: background-color;
+    transition-duration: .5s;
 }
 
 window#waybar.hidden {
@@ -149,18 +153,10 @@ tooltip {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-	background-color: rgba(255, 255, 255, 0.00);
-	border: 0.5px solid rgba(255, 255, 255, 0.07);
-	border-radius: 38px;
-	padding-top: 3px;
-	padding-bottom: 3px;
-	padding-right: 12px;
-	padding-left: 12px;
-	margin-top: 4px;
-	margin-bottom: 4px;
-	margin-left: 5px;
-	margin-right: 5px;
-	box-shadow: 0 25px 23px rgba(0, 0, 0, 0.03);
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-right: 6px;
+	padding-left: 6px;
 }
 
 /* If workspaces is the leftmost module, omit left margin */
