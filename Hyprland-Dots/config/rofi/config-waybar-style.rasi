@@ -25,6 +25,14 @@ entry {
   placeholder: " 🖼️  Buscar / Elegir Estilo Waybar";
 }
 
+inputbar {
+  background-color: @background;
+}
+
+entry {
+  background-color: @background;
+}
+
 /* ---- Listview ---- */
 listview {
   columns: 2;

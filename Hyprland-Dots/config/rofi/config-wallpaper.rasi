@@ -11,12 +11,15 @@ configuration {
 window {
   width: 75%;
   height: inherit;
+  background-color: transparent;
+  transparency: "real";
 }
 
 /* ---- Mainbox ---- */
 mainbox {
   children:
     [ "inputbar", "listview"];
+  background-color: transparent;
 }
 
 entry {
@@ -38,6 +41,7 @@ listview {
   fixed-width: true;
   fixed-height: true;
   cycle: true;
+  background-color: transparent;
 }
 
 /* ---- Element ---- */
@@ -48,6 +52,7 @@ element {
   border-radius: 10px;
   padding: 0px;
   margin: 0px;
+  background-color: transparent;
 }
 
 element selected.normal {
