@@ -25,11 +25,11 @@ font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
 window#waybar {
-    background: rgba(15, 20, 30, 0.34) !important;
-    background-image: none !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    background: rgba(15, 20, 30, 0.34);
+    background-image: none;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 12px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     color: #ffffff;
     transition-property: background-color;
     transition-duration: .5s;

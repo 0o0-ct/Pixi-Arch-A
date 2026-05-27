@@ -3,6 +3,9 @@
 # Wallust: derive colors from the current wallpaper and update templates
 # Usage: WallustSwww.sh [absolute_path_to_wallpaper]
 
+# Add local bin to PATH for swww/awww compatibility
+export PATH="$HOME/.local/bin:$PATH"
+
 set -euo pipefail
 
 # Inputs and paths

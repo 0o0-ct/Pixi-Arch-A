@@ -203,7 +203,7 @@ Elegir Perfiles de Monitor
 Elegir Temas de Rofi
 Buscar Atajos de Teclado
 Alternar Modo de Juego
-Cambiar Tema Claro-Oscuro
+Cambiar Fondo y Colores (Dark)
 Modo de Bordes Arcoíris
 EOF
 }
@@ -264,7 +264,7 @@ main() {
         "Elegir Temas de Rofi") $scriptsDir/RofiThemeSelector.sh ;;
         "Buscar Atajos de Teclado") $scriptsDir/KeyBinds.sh ;;
         "Alternar Modo de Juego") $scriptsDir/GameMode.sh ;;
-        "Cambiar Tema Claro-Oscuro") $scriptsDir/DarkLight.sh ;;
+        "Cambiar Fondo y Colores (Dark)") $scriptsDir/DarkLight.sh ;;
         "Modo de Bordes Arcoíris") rainbow_borders_menu ;;
         *) return ;;  # Do nothing for invalid choices
     esac

@@ -15,13 +15,18 @@
 ![Shell](https://img.shields.io/badge/Shell-Zsh%20%2B%20OhMyZsh-4BF?style=for-the-badge&logo=gnu-bash&logoColor=white)
 ![Version](https://img.shields.io/badge/Version-v1.0.0--Antigravity-white?style=for-the-badge)
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/0o0-ct/Pixi-Arch-A/main/Hyprland-Dots/assets/latte.png" width="450" style="border-radius: 12px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);" />
-</p>
-
 ### 💫 Un entorno de escritorio ultra-premium de cristal esmerilado impulsado por Hyprland y Arch Linux 💫
 
+<p align="center">
+  <img src="./Hyprland-Dots/assets/screenshot.jpg" width="100%" style="border-radius: 12px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);" />
+  <br>
+  <sub><b>[Pixi-Arch-A - Súper Glass & Carmesí Oscuro]</b></sub>
+</p>
+
 </div>
+
+> [!TIP]
+> **🎨 Ciclador de Temas Dark Glass Integrado:** ¡Olvídate de los fondos claros y aburridos! **Pixi-Arch-A** está blindado al 100% en Modo Oscuro. Haz clic en el botón de la paleta (`󰏘 `) en tu barra superior para ciclar fondos oscuros aleatorios y regenerar de forma instantánea todo tu tema de cristal translúcido con **Wallust** de forma totalmente automática y cohesiva.
 
 ---
 
@@ -110,6 +115,12 @@ El comando de bienvenida en la terminal es completamente interactivo y lleva la 
   * **Menos de 100 columnas:** Carga automáticamente un diseño compacto superior con el logotipo micro oficial de Arch Linux (`arch_small`).
   * **100 columnas o más:** Carga el diseño de pantalla completa con el logotipo estándar lateral de Arch Linux (`arch`).
 * **Utilidad de Cambio de Color Integrada:** Ejecuta el comando de alternancia `toggle-color-gradient.py` para cambiar instantáneamente la paleta de colores del logotipo y título entre **Súper Blanco Brillante** (por defecto) y el **Gradiente Cian Oficial de Arch** en un solo clic.
+
+### 5. 🎨 Ciclador de Fondo y Generador de Temas Dark Glass (100% Oscuro)
+Hemos blindado el sistema contra modos claros genéricos para ofrecer una experiencia de personalización oscura insuperable:
+* **Fuerza Bruta Estética en Waybar:** Tu barra superior está imperativamente fijada al diseño de cristal translúcido de la casa (`[Colored] Translucent.css`) en todo momento, eliminando barras sólidas feas.
+* **Ciclado de Fondos y Colores Dinámicos:** Al hacer clic izquierdo en el botón de la paleta (`󰏘 `) de tu Waybar, el script elige un nuevo fondo oscuro al azar y emplea **Wallust** en modo `dark16` para regenerar de forma instantánea el color de acento de tu barra, menús Rofi y notificaciones SwayNC.
+* **Respeto Absoluto a tu Personalización:** El intercambio de temas GTK e iconos lee tu configuración activa (`settings.ini`) para proteger tus preciosas carpetas rojas **`Tela-red-dark`** y tu tema oscuro, alternándolos de forma determinista y libre de aleatoriedad.
 
 ---
 
