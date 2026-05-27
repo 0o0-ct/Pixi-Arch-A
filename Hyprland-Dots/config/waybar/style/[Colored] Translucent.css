@@ -25,7 +25,7 @@ font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
 window#waybar {
-    background: rgba(10, 12, 18, 0.15);
+    background: rgba(10, 12, 18, 0.05);
     background-image: none;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 16px;
