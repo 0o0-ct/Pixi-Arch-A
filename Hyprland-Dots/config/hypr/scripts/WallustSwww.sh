@@ -72,11 +72,58 @@ else
 fi
 
 if [[ -z "${wallpaper_path:-}" || ! -f "$wallpaper_path" ]]; then
-  # Nothing to do; avoid failing loudly so callers can continue
   exit 0
 fi
 
-# Update helpers that depend on the path
+detect_wallpaper_mean() {
+  local img="$1"
+  if command -v magick >/dev/null 2>&1; then
+    magick identify -format '%[fx:mean]' "$img" 2>/dev/null || true
+  fi
+}
+
+apply_dynamic_waybar_glass() {
+  local mean="$1"
+  local style_link="$HOME/.config/waybar/style.css"
+  local style_target
+  style_target=$(readlink -f "$style_link" 2>/dev/null || true)
+  if [[ -z "$style_target" || ! -f "$style_target" ]]; then
+    return 0
+  fi
+
+  local bg_line="    background: rgba(255, 255, 255, 0.12);"
+  local border_line="    border: 1px solid rgba(255, 255, 255, 0.25);"
+
+  if [[ -n "$mean" ]] && awk "BEGIN{exit !($mean > 0.58)}"; then
+    bg_line="    background: rgba(15, 20, 30, 0.36);"
+    border_line="    border: 1px solid rgba(255, 255, 255, 0.40);"
+  fi
+
+  awk -v bg_line="$bg_line" -v border_line="$border_line" '
+    BEGIN { in_waybar=0; bg_done=0; border_done=0 }
+    /^window#waybar[[:space:]]*\{/ { in_waybar=1 }
+    {
+      if (in_waybar == 1 && bg_done == 0 && $0 ~ /^[[:space:]]*background:[[:space:]]*rgba\(/) {
+        print bg_line
+        bg_done=1
+        next
+      }
+      if (in_waybar == 1 && border_done == 0 && $0 ~ /^[[:space:]]*border:[[:space:]]*[0-9.]+px[[:space:]]+solid[[:space:]]+rgba\(/) {
+        print border_line
+        border_done=1
+        next
+      }
+      print
+      if (in_waybar == 1 && $0 ~ /^}/) {
+        in_waybar=0
+      }
+    }
+  ' "$style_target" > "$style_target.tmp" && mv "$style_target.tmp" "$style_target"
+}
+
+wallpaper_mean=$(detect_wallpaper_mean "$wallpaper_path")
+apply_dynamic_waybar_glass "$wallpaper_mean"
+
 ln -sf "$wallpaper_path" "$rofi_link" || true
 mkdir -p "$(dirname "$wallpaper_current")"
 cp -f "$wallpaper_path" "$wallpaper_current" || true
