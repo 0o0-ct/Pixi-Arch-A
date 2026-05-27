@@ -153,9 +153,9 @@ tooltip {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-	background: rgba(10, 12, 18, 0.38);
+	background: rgba(10, 12, 18, 0.20);
 	border: 1px solid rgba(255, 255, 255, 0.08);
-	border-radius: 8px;
+	border-radius: 12px;
 	padding-top: 3px;
 	padding-bottom: 3px;
 	padding-right: 8px;
