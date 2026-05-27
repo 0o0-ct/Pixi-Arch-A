@@ -29,7 +29,7 @@ window#waybar {
     background-image: none;
     border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 38px;
-    box-shadow: 0 25px 23px rgba(0, 0, 0, 0.10);
+    box-shadow: none;
     color: #ffffff;
     transition-property: background-color;
     transition-duration: .5s;
