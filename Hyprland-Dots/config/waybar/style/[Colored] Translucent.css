@@ -153,10 +153,18 @@ tooltip {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-	padding-top: 4px;
-	padding-bottom: 4px;
-	padding-right: 6px;
-	padding-left: 6px;
+	background: rgba(10, 12, 18, 0.38);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 8px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-right: 8px;
+	padding-left: 8px;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	margin-left: 3px;
+	margin-right: 3px;
+	box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 /* If workspaces is the leftmost module, omit left margin */
