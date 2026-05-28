@@ -91,13 +91,14 @@ apply_dynamic_waybar_glass() {
     return 0
   fi
 
-  local bg_line="    background: rgba(255, 255, 255, 0.12);"
-  local border_line="    border: 1px solid rgba(255, 255, 255, 0.25);"
+  local bg_line="    background: rgba(15, 20, 30, 0.36);"
+  local border_line="    border: 1px solid rgba(255, 255, 255, 0.40);"
 
-  if [[ -n "$mean" ]] && awk "BEGIN{exit !($mean > 0.58)}"; then
-    bg_line="    background: rgba(15, 20, 30, 0.36);"
-    border_line="    border: 1px solid rgba(255, 255, 255, 0.40);"
-  fi
+  # Temporarily locked to dark-glass mode for testing as requested by the user
+  # if [[ -n "$mean" ]] && awk "BEGIN{exit !($mean > 0.58)}"; then
+  #   bg_line="    background: rgba(15, 20, 30, 0.36);"
+  #   border_line="    border: 1px solid rgba(255, 255, 255, 0.40);"
+  # fi
 
   awk -v bg_line="$bg_line" -v border_line="$border_line" '
     BEGIN { in_waybar=0; bg_done=0; border_done=0 }
