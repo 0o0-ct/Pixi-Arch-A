@@ -23,7 +23,7 @@ configuration {
 /*****----- Global Properties -----*****/
 * {
     /* --- Premium Dark Glassmorphism Variables --- */
-    background:                  rgba(15, 16, 21, 0.52);
+    background:                  rgba(15, 16, 21, 0.35);
     background-alt:              rgba(255, 255, 255, 0.08);
     foreground:                  #ffffff;
     selected:                    rgba(255, 255, 255, 0.2);
@@ -97,7 +97,7 @@ mainbox {
 /*****----- A Custom Box -----*****/
 custombox {
     spacing:                     0px;
-    background-color:            @background-color;
+    background-color:            transparent;
     text-color:                  @foreground-color;
     orientation:                 horizontal;
     children:                    [ "mode-switcher", "listview" ];
