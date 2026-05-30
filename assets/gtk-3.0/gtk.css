@@ -58,9 +58,9 @@ separator,
 
 /* Override selection background globally in Thunar (Carmesí Red highlight!) */
 ThunarWindow *:selected {
-    background-color: rgba(229, 57, 53, 0.35) !important;
-    background-image: none !important;
-    color: #ffffff !important;
+    background-color: rgba(229, 57, 53, 0.35);
+    background-image: none;
+    color: #ffffff;
 }
 
 /* Thunar Floating Menubar (Archivo, Editar, Ver, Ir, Marcadores, Ayuda) */
@@ -85,8 +85,8 @@ ThunarWindow menubar > menuitem {
 }
 
 ThunarWindow menubar > menuitem:hover {
-    background-color: rgba(229, 57, 53, 0.25) !important;
-    color: #ffffff !important;
+    background-color: rgba(229, 57, 53, 0.25);
+    color: #ffffff;
 }
 
 /* Thunar Floating Toolbar (Back, Forward, Home, Pathbar) */
@@ -111,7 +111,7 @@ ThunarWindow .sidebar row {
 
 ThunarWindow .sidebar,
 ThunarWindow .shortcuts-paned {
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     margin: 8px 4px 8px 10px;
     padding: 8px;
@@ -122,10 +122,10 @@ ThunarWindow .shortcuts-paned {
 ThunarWindow .sidebar row:selected,
 ThunarWindow .sidebar row:selected:hover,
 ThunarWindow .shortcuts-paned row:selected {
-    background-image: none !important;
-    background-color: rgba(229, 57, 53, 0.35) !important;
-    color: #ffffff !important;
-    border-left: 4px solid #e53935 !important;
+    background-image: none;
+    background-color: rgba(229, 57, 53, 0.35);
+    color: #ffffff;
+    border-left: 4px solid #e53935;
     border-radius: 8px;
     font-weight: bold;
 }
@@ -141,8 +141,8 @@ ThunarWindow .shortcuts-paned row:hover {
 
 /* Scrolledwindow parent of main view must be transparent */
 ThunarWindow scrolledwindow {
-    background-color: transparent !important;
-    border: none !important;
+    background-color: transparent;
+    border-style: none;
 }
 
 /* Thunar Main File Grid/List View - Floating Card on the Right */
@@ -150,7 +150,7 @@ ThunarWindow .view,
 ThunarWindow ThunarIconView,
 ThunarWindow ThunarTreeView {
     background-color: rgba(15, 20, 30, 0.50);
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     margin: 8px 10px 8px 4px;
     padding: 12px;
@@ -161,10 +161,10 @@ ThunarWindow ThunarTreeView {
 ThunarWindow .view:selected,
 ThunarWindow .view:selected:focus,
 ThunarWindow ThunarIconView:selected {
-    background-color: rgba(229, 57, 53, 0.30) !important;
-    color: #ffffff !important;
+    background-color: rgba(229, 57, 53, 0.30);
+    color: #ffffff;
     border-radius: 8px;
-    border: 1px solid rgba(229, 57, 53, 0.50) !important;
+    border: 1px solid rgba(229, 57, 53, 0.50);
 }
 
 /* Thunar Breadcrumbs / Pathbar Buttons */
