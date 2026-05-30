@@ -50,42 +50,83 @@ separator,
 /* ---- 💫 Pixi-Arch-A Premium Thunar File Manager Glassmorphism Stylesheet 💫 ---- */
 /* ========================================================================= */
 
-/* Thunar Window Main Container */
+/* Thunar Window Main Container - highly transparent to let Hyprland blur shine through */
 .thunar, ThunarWindow {
-    background-color: rgba(15, 20, 30, 0.85);
+    background-color: rgba(10, 12, 18, 0.15);
     color: #e0e0e0;
 }
 
-/* Thunar Menubar & Toolbars */
-ThunarWindow menubar,
-ThunarWindow toolbar,
-ThunarWindow .menubar,
-ThunarWindow .toolbar {
-    background-color: rgba(15, 20, 30, 0.60);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
-    padding: 6px;
+/* Override selection background globally in Thunar (Carmesí Red highlight!) */
+ThunarWindow *:selected {
+    background-color: rgba(229, 57, 53, 0.35) !important;
+    background-image: none !important;
+    color: #ffffff !important;
 }
 
-/* Thunar Sidebar (Places/Shortcuts Panel) */
+/* Thunar Floating Menubar (Archivo, Editar, Ver, Ir, Marcadores, Ayuda) */
+ThunarWindow menubar {
+    background-image: none;
+    background-color: rgba(15, 20, 30, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    margin: 10px 10px 2px 10px;
+    padding: 6px 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* Menubar item styling (making them look like floating capsules) */
+ThunarWindow menubar > menuitem {
+    padding: 6px 14px;
+    border-radius: 8px;
+    color: #e0e0e0;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin: 0 3px;
+}
+
+ThunarWindow menubar > menuitem:hover {
+    background-color: rgba(229, 57, 53, 0.25) !important;
+    color: #ffffff !important;
+}
+
+/* Thunar Floating Toolbar (Back, Forward, Home, Pathbar) */
+ThunarWindow toolbar,
+ThunarWindow .toolbar {
+    background-image: none;
+    background-color: rgba(15, 20, 30, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    margin: 4px 10px 4px 10px;
+    padding: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* Thunar Sidebar (Places/Shortcuts Panel - Floating Card on the Left) */
 ThunarWindow .sidebar,
 ThunarWindow .shortcuts-paned,
 ThunarWindow .sidebar row {
-    background-color: rgba(10, 15, 22, 0.65);
+    background-color: rgba(10, 15, 22, 0.45);
     font-size: 13px;
 }
 
-ThunarWindow .sidebar {
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+ThunarWindow .sidebar,
+ThunarWindow .shortcuts-paned {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px;
+    margin: 8px 4px 8px 10px;
+    padding: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.30);
 }
 
-/* Sidebar item active state (Carmesí Red theme highlight!) */
+/* Sidebar item active state (Carmesí Red highlight!) */
 ThunarWindow .sidebar row:selected,
 ThunarWindow .sidebar row:selected:hover,
 ThunarWindow .shortcuts-paned row:selected {
-    background-image: none;
-    background-color: rgba(229, 57, 53, 0.25);
-    color: #ffffff;
-    border-left: 3px solid #e53935;
+    background-image: none !important;
+    background-color: rgba(229, 57, 53, 0.35) !important;
+    color: #ffffff !important;
+    border-left: 4px solid #e53935 !important;
+    border-radius: 8px;
     font-weight: bold;
 }
 
@@ -94,25 +135,36 @@ ThunarWindow .sidebar row:hover,
 ThunarWindow .shortcuts-paned row:hover {
     background-color: rgba(255, 255, 255, 0.08);
     color: #ffffff;
+    border-radius: 8px;
     transition: all 0.2s ease;
 }
 
-/* Thunar Main File Grid/List View */
+/* Scrolledwindow parent of main view must be transparent */
+ThunarWindow scrolledwindow {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+/* Thunar Main File Grid/List View - Floating Card on the Right */
 ThunarWindow .view,
 ThunarWindow ThunarIconView,
 ThunarWindow ThunarTreeView {
-    background-color: rgba(15, 20, 30, 0.90);
-    color: #e5e5e5;
+    background-color: rgba(15, 20, 30, 0.50);
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px;
+    margin: 8px 10px 8px 4px;
+    padding: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.30);
 }
 
 /* Selected files/folders in Main View (Carmesí Red highlight!) */
 ThunarWindow .view:selected,
 ThunarWindow .view:selected:focus,
 ThunarWindow ThunarIconView:selected {
-    background-color: rgba(229, 57, 53, 0.25);
-    color: #ffffff;
+    background-color: rgba(229, 57, 53, 0.30) !important;
+    color: #ffffff !important;
     border-radius: 8px;
-    border: 1px solid rgba(229, 57, 53, 0.40);
+    border: 1px solid rgba(229, 57, 53, 0.50) !important;
 }
 
 /* Thunar Breadcrumbs / Pathbar Buttons */
@@ -145,13 +197,16 @@ ThunarWindow .path-bar button:active {
     font-weight: bold;
 }
 
-/* Thunar Statusbar (Footer) */
+/* Thunar Floating Statusbar (Footer Card) */
 ThunarWindow .statusbar {
-    background-color: rgba(10, 15, 22, 0.70);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: rgba(10, 15, 22, 0.50);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    margin: 2px 10px 10px 10px;
+    padding: 6px 14px;
     color: #aaaaaa;
     font-size: 11px;
-    padding: 6px 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.20);
 }
 
 /* Sleek Thin Scrollbars with Red Hover Accent */
@@ -164,15 +219,15 @@ scrollbar,
 scrollbar slider {
     background-color: rgba(255, 255, 255, 0.15);
     border-radius: 8px;
-    min-width: 8px;
-    min-height: 8px;
+    min-width: 6px;
+    min-height: 6px;
     border: 2px solid transparent;
 }
 
 scrollbar slider:hover {
     background-color: rgba(229, 57, 53, 0.60);
-    min-width: 10px;
-    min-height: 10px;
+    min-width: 8px;
+    min-height: 8px;
 }
 
 scrollbar slider:active {
@@ -180,6 +235,6 @@ scrollbar slider:active {
 }
 
 scrollbar.horizontal slider {
-    min-width: 8px;
-    min-height: 8px;
+    min-width: 6px;
+    min-height: 6px;
 }
