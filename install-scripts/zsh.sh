@@ -44,29 +44,30 @@ if [ -d "zsh-completions" ]; then
     rm -rf zsh-completions
 fi
 
-# Install Oh My Zsh, plugins, and set zsh as default shell
+# Instalar Zsh, plugins y establecer zsh como la shell predeterminada
 if command -v zsh >/dev/null; then
-  printf "${NOTE} Instalando ${SKY_BLUE}Oh My Zsh and plugins${RESET} ...\n"
+  printf "${NOTE} Instalando ${SKY_BLUE}Zsh y plugins de Pixi-Arch-A${RESET} ...\n"
   if [ ! -d "$HOME/.oh-my-zsh" ]; then  
-    sh -c "$(curl -fsSL https://install.ohmyz.sh)" "" --unattended  	       
+    sh -c "$(curl -fsSL https://install.ohmyz.sh)" "" --unattended >> "$LOG" 2>&1
+    echo "${OK} ${GREEN}¡Estructura base de Pixi-Arch-A instalada correctamente!${RESET}" 2>&1 | tee -a "$LOG"
   else
-    echo "${INFO} Directorio .oh-my-zsh already exists. Omitiendo re-installation." 2>&1 | tee -a "$LOG"
+    echo "${INFO} El directorio de configuración de Pixi-Arch-A (.oh-my-zsh) ya existe. Omitiendo instalación." 2>&1 | tee -a "$LOG"
   fi
   
-  # Check if the directories exist before cloning the repositories
+  # Comprobar si los directorios existen antes de clonar los repositorios
   if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
-      git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 
+      git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions >> "$LOG" 2>&1
   else
-      echo "${INFO} Directorio zsh-autosuggestions already exists. Cloning Skipped." 2>&1 | tee -a "$LOG"
+      echo "${INFO} El directorio zsh-autosuggestions ya existe. Omitiendo la descarga." 2>&1 | tee -a "$LOG"
   fi
 
   if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
-      git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 
+      git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting >> "$LOG" 2>&1
   else
-      echo "${INFO} Directorio zsh-syntax-highlighting already exists. Cloning Skipped." 2>&1 | tee -a "$LOG"
+      echo "${INFO} El directorio zsh-syntax-highlighting ya existe. Omitiendo la descarga." 2>&1 | tee -a "$LOG"
   fi
   
-  # Check if ~/.zshrc and .zprofile exists, create a backup, and copy the new configuration
+  # Comprobar si ~/.zshrc y .zprofile existen, crear copias de seguridad y copiar la nueva configuración
   if [ -f "$HOME/.zshrc" ]; then
       cp -b "$HOME/.zshrc" "$HOME/.zshrc-backup" || true
   fi
@@ -75,25 +76,25 @@ if command -v zsh >/dev/null; then
       cp -b "$HOME/.zprofile" "$HOME/.zprofile-backup" || true
   fi
   
-  # Copia deing the preconfigured zsh themes and profile
+  # Copiar los temas y perfiles preconfigurados de Pixi-Arch-A
   cp -r 'assets/.zshrc' ~/
   cp -r 'assets/.zprofile' ~/
 
-  # Check if the current shell is zsh
+  # Comprobar si la shell actual es zsh
   current_shell=$(basename "$SHELL")
   if [ "$current_shell" != "zsh" ]; then
-    printf "${NOTE} Changing default shell to ${MAGENTA}zsh${RESET}..."
+    printf "${NOTE} Cambiando la shell predeterminada a ${MAGENTA}zsh${RESET}..."
     printf "\n%.0s" {1..2}
 
-    # Loop to ensure the chsh command succeeds
+    # Bucle para asegurar que el comando chsh tenga éxito
     while ! chsh -s "$(command -v zsh)"; do
-      echo "${ERROR} Authentication fallida. Please enter the correct password." 2>&1 | tee -a "$LOG"
+      echo "${ERROR} Autenticación fallida. Por favor, introduce la contraseña correcta." 2>&1 | tee -a "$LOG"
       sleep 1
     done
 
-    printf "${INFO} Shell changed successfully to ${MAGENTA}zsh${RESET}" 2>&1 | tee -a "$LOG"
+    printf "${INFO} Shell cambiada correctamente a ${MAGENTA}zsh${RESET}\n" 2>&1 | tee -a "$LOG"
   else
-    echo "${NOTE} Your shell is already set to ${MAGENTA}zsh${RESET}."
+    echo "${NOTE} Tu shell ya está configurada como ${MAGENTA}zsh${RESET}."
   fi
   
 fi
@@ -104,7 +105,7 @@ for ZSH2 in "${zsh_pkg2[@]}"; do
   install_package "$ZSH2" "$LOG"
 done
 
-# copy additional oh-my-zsh themes desde assets
+# copiar temas adicionales de Pixi-Arch-A desde assets
 if [ -d "$HOME/.oh-my-zsh/themes" ]; then
     cp -r assets/add_zsh_theme/* ~/.oh-my-zsh/themes >> "$LOG" 2>&1
 fi

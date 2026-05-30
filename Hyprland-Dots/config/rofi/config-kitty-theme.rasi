@@ -1,5 +1,5 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Oh My ZSH Theme */
+/* Tema Kitty de Pixi-Arch-A */
 
 @import "~/.config/rofi/config.rasi"  
 
@@ -32,7 +32,7 @@ inputbar {
 
 entry {
   expand: true;
-  placeholder: " 🐾  Choose Kitty theme: Enter to Preview; CTRL S to Apply";
+  placeholder: " 🐾  Elegir tema Kitty: Enter para Previsualizar; CTRL S para Aplicar";
 }
 
 /* ---- Listview ---- */

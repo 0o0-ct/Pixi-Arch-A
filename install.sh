@@ -266,7 +266,7 @@ options_command+=(
     "thunar" "¿Deseas instalar el gestor de archivos Thunar?" "OFF"
     "quickshell" "¿Instalar quickshell para la Vista de Escritorio?" "OFF"
     "xdph" "¿Instalar XDG-DESKTOP-PORTAL-HYPRLAND (para compartir pantalla)?" "OFF"
-    "zsh" "¿Instalar la shell zsh con Oh-My-Zsh?" "OFF"
+    "zsh" "¿Instalar la shell zsh con personalización Pixi-Arch-A?" "OFF"
     "rog" "¿Estás instalando en una laptop Asus ROG?" "OFF"
     "dots" "Descargar e instalar configuraciones y dotfiles de Pixi-Arch-A" "OFF"
 )
@@ -427,7 +427,7 @@ for option in "${options[@]}"; do
             execute_script "sddm_theme.sh"
             ;;
         zsh)
-            echo "${INFO} Instalando ${SKY_BLUE}zsh con Oh-My-Zsh...${RESET}" | tee -a "$LOG"
+            echo "${INFO} Instalando ${SKY_BLUE}zsh con la personalización Pixi-Arch-A...${RESET}" | tee -a "$LOG"
             execute_script "zsh.sh"
             ;;
         rog)
