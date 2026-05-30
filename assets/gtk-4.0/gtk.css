@@ -1,0 +1,45 @@
+/* ---- 💫 Pixi-Arch-A Premium macOS Glassmorphic GTK4 Stylesheet 💫 ---- */
+
+/* Reset all internal and structural backgrounds of Libadwaita inside Nautilus */
+.nautilus-window,
+window.nautilus-window,
+window.nautilus-window box,
+window.nautilus-window paned,
+window.nautilus-window stack,
+window.nautilus-window scrolledwindow,
+window.nautilus-window viewport,
+window.nautilus-window .sidebar,
+window.nautilus-window .navigation-sidebar {
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+/* Headerbar - macOS Clean Glass Capsular Bar */
+window.nautilus-window headerbar {
+    background-color: rgba(15, 20, 30, 0.40) !important;
+    background-image: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Sidebar macOS translucent background */
+window.nautilus-window .sidebar,
+window.nautilus-window .navigation-sidebar {
+    background-color: rgba(10, 15, 22, 0.30) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Main scrolled window viewport subtle backlight */
+window.nautilus-window scrolledwindow {
+    background-color: rgba(15, 20, 30, 0.20) !important;
+}
+
+/* List rows and folders selection styled with Carmesí Red accent */
+window.nautilus-window list row:selected,
+window.nautilus-window flowboxchild:selected,
+window.nautilus-window .navigation-sidebar list row:selected,
+window.nautilus-window list row:selected:hover {
+    background-color: rgba(229, 57, 53, 0.35) !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+}
