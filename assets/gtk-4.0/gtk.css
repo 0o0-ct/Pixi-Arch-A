@@ -6,10 +6,7 @@ window.nautilus-window,
 window.nautilus-window box,
 window.nautilus-window paned,
 window.nautilus-window stack,
-window.nautilus-window scrolledwindow,
-window.nautilus-window viewport,
-window.nautilus-window .sidebar,
-window.nautilus-window .navigation-sidebar {
+window.nautilus-window viewport {
     background-color: transparent !important;
     background-image: none !important;
 }
@@ -22,16 +19,25 @@ window.nautilus-window headerbar {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Sidebar macOS translucent background */
+/* Sidebar macOS translucent background - Floating Card on the Left */
 window.nautilus-window .sidebar,
 window.nautilus-window .navigation-sidebar {
-    background-color: rgba(10, 15, 22, 0.30) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+    background-color: rgba(10, 15, 22, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    margin: 10px 5px 10px 10px !important;
+    padding: 8px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
 }
 
-/* Main scrolled window viewport subtle backlight */
+/* Main scrolled window viewport - Floating Card on the Right */
 window.nautilus-window scrolledwindow {
     background-color: rgba(15, 20, 30, 0.20) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    margin: 10px 10px 10px 5px !important;
+    padding: 10px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
 }
 
 /* List rows and folders selection styled with Carmesí Red accent */
