@@ -107,39 +107,6 @@ git pull origin main
 
 ---
 
-## ✨ Características Premium Exclusivas
-
-### 1. 🔮 Motor de Cristal Esmerilado (Frosted Glassmorphism)
-Hemos rediseñado por completo el compositor para crear un efecto de vidrio real tridimensional, denso y texturizado a lo largo de todo tu sistema:
-* **Desenfoque Denso y Granulado:** Configurado con `passes = 4` y `size = 10` para una difuminación de calidad cinematográfica, junto a un grano sutil de `noise = 0.03`, contraste de `1.15`, brillo de `0.82` y vibración de `0.3` en `UserDecorations.conf`.
-* **Transparencia en Capas Altas (ignore_alpha 0.1):** Rediseñamos el filtro alfa de Hyprland para permitir el desenfoque en fondos con baja opacidad. Componentes como **Waybar**, **Rofi**, **SwayNC** y las **Notificaciones** flotan ahora como placas de cristal esmerilado traslúcido sin perder legibilidad.
-* **Translucidez Inteligente de Ventanas:** Opacidad global optimizada al `86%` para ventanas activas y al `78%` para inactivas, creando un hermoso apilamiento visual.
-
-### 2. 🗁 Thunar Estilo "Ultra-Glass" con Bordes Brillantes
-El gestor de archivos Thunar se ha transformado en la joya de la corona del sistema:
-* **Efecto Vidrio Puro:** Opacidad específica del `80%` (activa) y `70%` (inactiva) para fundirse de forma espectacular sobre cualquier fondo de pantalla.
-* **Borde Fino de Cristal:** Configurado con un borde ultra-delgado de `border_size = 1` y un gradiente de color blanco semi-transparente (`rgba(ffffff66)` y `rgba(ffffff1a)`) que brilla sutilmente al enfocar la ventana en `WindowRules.conf`.
-
-### 3. 🎨 Estética Cohesiva "Tela Red-Dark"
-* **Iconografía Premium:** Implementación a nivel de sistema del paquete de iconos premium `Tela-red-dark` de vinceliuice para una combinación perfecta con tonos oscuros y detalles en rojo carmesí.
-* **Integración GTK y Aplicaciones:** Sincronización completa en GTK 3/4, Rofi, Waybar y SwayNC para mantener un lenguaje visual oscuro y unificado.
-
-### 4. 󰣇 Fastfetch Adaptativo "Pixi-Arch-A" (Con Inicial del Creador)
-El comando de bienvenida en la terminal es completamente interactivo y lleva la marca de nuestro equipo:
-* **Letras Sans-Serif Bold:** Diseñado con caracteres matemáticos estilizados de alta intensidad (`𝗣𝗶𝘅𝗶-𝗔𝗿𝗰𝗵-𝗔`) para un impacto visual nítido sobre fondos transparentes.
-* **Diseño Adaptativo en Tiempo Real (.zshrc):** El inicio de la shell mide dinámicamente el ancho de tu terminal:
-  * **Menos de 100 columnas:** Carga automáticamente un diseño compacto superior con el logotipo micro oficial de Arch Linux (`arch_small`).
-  * **100 columnas o más:** Carga el diseño de pantalla completa con el logotipo estándar lateral de Arch Linux (`arch`).
-* **Utilidad de Cambio de Color Integrada:** Ejecuta el comando de alternancia `toggle-color-gradient.py` para cambiar instantáneamente la paleta de colores del logotipo y título entre **Súper Blanco Brillante** (por defecto) y el **Gradiente Cian Oficial de Arch** en un solo clic.
-
-### 5. 🎨 Ciclador de Fondo y Generador de Temas Dark Glass (100% Oscuro)
-Hemos blindado el sistema contra modos claros genéricos para ofrecer una experiencia de personalización oscura insuperable:
-* **Fuerza Bruta Estética en Waybar:** Tu barra superior está imperativamente fijada al diseño de cristal translúcido de la casa (`[Colored] Translucent.css`) en todo momento, eliminando barras sólidas feas.
-* **Ciclado de Fondos y Colores Dinámicos:** Al hacer clic izquierdo en el botón de la paleta (`󰏘 `) de tu Waybar, el script elige un nuevo fondo oscuro al azar y emplea **Wallust** en modo `dark16` para regenerar de forma instantánea el color de acento de tu barra, menús Rofi y notificaciones SwayNC.
-* **Respeto Absoluto a tu Personalización:** El intercambio de temas GTK e iconos lee tu configuración activa (`settings.ini`) para proteger tus preciosas carpetas rojas **`Tela-red-dark`** y tu tema oscuro, alternándolos de forma determinista y libre de aleatoriedad.
-
----
-
 ## ⚙️ Gestión de Bloqueo e Inactividad (Timeout)
 Toda la inactividad de tu pantalla se gestiona de forma centralizada en `hypridle.conf`:
 * **Aviso de inactividad:** A los **9 minutos** (`timeout = 540`) recibirás una notificación de aviso en el sistema.
