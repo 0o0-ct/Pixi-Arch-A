@@ -100,6 +100,7 @@ git pull origin main
 * **Bloqueo del Sistema instantáneo:** Presiona **`SUPER + L`** para bloquear tu pantalla con un efecto de desenfoque e información en tiempo real a través de `hyprlock` y `hypridle`.
 * **Lanzador de Aplicaciones Rofi:** Presiona **`SUPER + D`** para abrir un menú flotante de cristal esmerilado que se adapta de forma inteligente a la paleta de colores de tu fondo.
 * **Abrir Terminal Kitty:** Presiona **`SUPER + Enter`** para desplegar terminales traslúcidas que se superponen estéticamente como hojas de vidrio.
+* **Cambiar Idioma de Teclado (Español / Inglés):** Presiona **`ALT Izquierdo + SHIFT Izquierdo`** para alternar de forma instantánea la distribución de tu teclado. Por defecto, el sistema está configurado en **Español (`es`)** como idioma principal.
 * **Alternar Paleta del Logo de Terminal:** Ejecuta el alternador rápido para cambiar la coloración del logotipo:
   ```bash
   ~/.config/fastfetch/toggle-color-gradient.py
