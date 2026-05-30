@@ -77,6 +77,22 @@ Inicia el instalador oficial interactivo en español y sigue las amigables instr
 ./install.sh
 ```
 
+### 🔄 Mantener el Sistema Actualizado
+Si ya tienes instalado el sistema y deseas actualizarlo con las últimas mejoras, parches y personalizaciones de **Pixi-Arch-A**, ejecuta los siguientes comandos:
+```bash
+# 1. Acceder al directorio del proyecto
+cd ~/Pixi-Arch-A
+
+# 2. Traer los últimos cambios desde el repositorio de GitHub
+git pull origin main
+
+# 3. Volver a ejecutar el instalador para aplicar las actualizaciones
+./install.sh
+```
+
+> [!TIP]
+> El instalador es inteligente y detectará si ya tienes paquetes instalados. Solo actualizará y aplicará los nuevos perfiles y configuraciones estéticas de Pixi-Arch-A de forma completamente segura.
+
 ---
 
 ## 🛠️ Atajos de Teclado Clave y Uso
@@ -128,18 +144,6 @@ Hemos blindado el sistema contra modos claros genéricos para ofrecer una experi
 Toda la inactividad de tu pantalla se gestiona de forma centralizada en `hypridle.conf`:
 * **Aviso de inactividad:** A los **9 minutos** (`timeout = 540`) recibirás una notificación de aviso en el sistema.
 * **Bloqueo de seguridad:** A los **10 minutos** (`timeout = 600`) el sistema bloqueará la sesión automáticamente mediante el comando `loginctl lock-session`, el cual ejecuta el protector de pantalla seguro `hyprlock`.
-
----
-
-## 📥 Sincronización y Control del Proyecto con Git
-Este sistema está completamente enlazado a tu repositorio personal en GitHub. Para empujar tus personalizaciones y actualizaciones futuras:
-
-```bash
-# Empujar nuevos cambios y actualizaciones al repositorio
-git add .
-git commit -m "feat: descripción de mis mejoras"
-git push origin main
-```
 
 ---
 
