@@ -133,7 +133,6 @@ sddm="OFF"
 sddm_theme="OFF"
 xdph="OFF"
 zsh="OFF"
-pokemon="OFF"
 rog="OFF"
 dots="OFF"
 input_group="OFF"
@@ -268,7 +267,6 @@ options_command+=(
     "quickshell" "¿Instalar quickshell para la Vista de Escritorio?" "OFF"
     "xdph" "¿Instalar XDG-DESKTOP-PORTAL-HYPRLAND (para compartir pantalla)?" "OFF"
     "zsh" "¿Instalar la shell zsh con Oh-My-Zsh?" "OFF"
-    "pokemon" "¿Añadir scripts de colores de Pokémon a tu terminal?" "OFF"
     "rog" "¿Estás instalando en una laptop Asus ROG?" "OFF"
     "dots" "Descargar e instalar configuraciones y dotfiles de Pixi-Arch-A" "OFF"
 )
@@ -431,10 +429,6 @@ for option in "${options[@]}"; do
         zsh)
             echo "${INFO} Instalando ${SKY_BLUE}zsh con Oh-My-Zsh...${RESET}" | tee -a "$LOG"
             execute_script "zsh.sh"
-            ;;
-        pokemon)
-            echo "${INFO} Añadiendo ${SKY_BLUE}scripts de colores de Pokémon a la terminal...${RESET}" | tee -a "$LOG"
-            execute_script "zsh_pokemon.sh"
             ;;
         rog)
             echo "${INFO} Instalando ${SKY_BLUE}paquetes para laptop ROG...${RESET}" | tee -a "$LOG"
