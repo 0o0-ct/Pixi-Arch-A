@@ -54,8 +54,10 @@ else
           cd \"$KooL_Dots_DIR\" &&
           git stash &&
           git pull &&
+          cd Hyprland-Dots &&
+          chmod +x copy.sh &&
           ./copy.sh &&
-		  notify-send -u critical -i "$iDIR/ja.png" 'Actualización Completada:' 'Por favor cierra sesión y vuelve a entrar para aplicar cambios'
+		  notify-send -u critical -i \"$iDIR/ja.png\" 'Actualización Completada:' 'Por favor cierra sesión y vuelve a entrar para aplicar cambios'
         "
 	
       else
@@ -64,11 +66,11 @@ else
   			exit 1
 		fi
         kitty -e bash -c "
-          git clone --depth=1 https://github.com/0o0-ct/Pixi-Arch-A.git $KooL_Dots_DIR &&
-          cd \"$KooL_Dots_DIR\" &&
+          git clone --depth=1 https://github.com/0o0-ct/Pixi-Arch-A.git \$KooL_Dots_DIR &&
+          cd \"\$KooL_Dots_DIR/Hyprland-Dots\" &&
           chmod +x copy.sh &&
           ./copy.sh &&
-		  notify-send -u critical -i "$iDIR/ja.png" 'Actualización Completada:' 'Por favor cierra sesión y vuelve a entrar para aplicar cambios'
+		  notify-send -u critical -i \"\$iDIR/ja.png\" 'Actualización Completada:' 'Por favor cierra sesión y vuelve a entrar para aplicar cambios'
         "
       fi
       ;;
