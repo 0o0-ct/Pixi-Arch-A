@@ -1,51 +1,50 @@
 /* ---- 💫 Pixi-Arch-A Premium macOS Glassmorphic GTK4 Stylesheet 💫 ---- */
 
-/* Reset all internal and structural backgrounds of Libadwaita inside Nautilus */
-.nautilus-window,
-window.nautilus-window,
-window.nautilus-window box,
-window.nautilus-window paned,
-window.nautilus-window stack,
-window.nautilus-window viewport {
-    background-color: transparent !important;
-    background-image: none !important;
+/* Reset all internal and structural backgrounds of Libadwaita inside Nautilus using high specificity */
+window.nautilus-window.background,
+window.nautilus-window.background box,
+window.nautilus-window.background paned,
+window.nautilus-window.background stack,
+window.nautilus-window.background viewport {
+    background-color: transparent;
+    background-image: none;
 }
 
 /* Headerbar - macOS Clean Glass Capsular Bar */
-window.nautilus-window headerbar {
-    background-color: rgba(15, 20, 30, 0.40) !important;
-    background-image: none !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+window.nautilus-window.background headerbar {
+    background-color: rgba(15, 20, 30, 0.40);
+    background-image: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Sidebar macOS translucent background - Floating Card on the Left */
-window.nautilus-window .sidebar,
-window.nautilus-window .navigation-sidebar {
-    background-color: rgba(10, 15, 22, 0.35) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 12px !important;
-    margin: 10px 5px 10px 10px !important;
-    padding: 8px !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
+window.nautilus-window.background .sidebar,
+window.nautilus-window.background .navigation-sidebar {
+    background-color: rgba(10, 15, 22, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    margin: 10px 5px 10px 10px;
+    padding: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
 }
 
 /* Main scrolled window viewport - Floating Card on the Right */
-window.nautilus-window scrolledwindow {
-    background-color: rgba(15, 20, 30, 0.20) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 12px !important;
-    margin: 10px 10px 10px 5px !important;
-    padding: 10px !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
+window.nautilus-window.background scrolledwindow {
+    background-color: rgba(15, 20, 30, 0.20);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    margin: 10px 10px 10px 5px;
+    padding: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
 }
 
 /* List rows and folders selection styled with Carmesí Red accent */
-window.nautilus-window list row:selected,
-window.nautilus-window flowboxchild:selected,
-window.nautilus-window .navigation-sidebar list row:selected,
-window.nautilus-window list row:selected:hover {
-    background-color: rgba(229, 57, 53, 0.35) !important;
-    color: #ffffff !important;
-    border-radius: 8px !important;
+window.nautilus-window.background list row:selected,
+window.nautilus-window.background flowboxchild:selected,
+window.nautilus-window.background .navigation-sidebar list row:selected,
+window.nautilus-window.background list row:selected:hover {
+    background-color: rgba(229, 57, 53, 0.35);
+    color: #ffffff;
+    border-radius: 8px;
 }
