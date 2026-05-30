@@ -1,50 +1,290 @@
-/* ---- 💫 Pixi-Arch-A Premium macOS Glassmorphic GTK4 Stylesheet 💫 ---- */
+/* ============================================================
+   💫 macOS Tahoe Glass — GTK4 / Libadwaita para Nautilus
+   Ubicación: ~/.config/gtk-4.0/gtk.css
+   ============================================================ */
 
-/* Reset all internal and structural backgrounds of Libadwaita inside Nautilus using high specificity */
-window.nautilus-window.background,
-window.nautilus-window.background box,
-window.nautilus-window.background paned,
-window.nautilus-window.background stack,
-window.nautilus-window.background viewport {
+/* --- OVERRIDE LIBADWAITA: forzar transparencia base --- */
+:root {
+    --window-bg-color: rgba(12, 15, 22, 0.01);
+    --headerbar-bg-color: rgba(12, 15, 22, 0.01);
+    --sidebar-bg-color: rgba(12, 15, 22, 0.01);
+    --card-bg-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Ventana principal - completamente transparente para que Hyprland haga el blur */
+window,
+window.background,
+.nautilus-window {
+    background-color: transparent;
+    background-image: none;
+    border-radius: 16px;
+}
+
+/* Todos los contenedores internos - transparentes */
+window > *,
+window box,
+window paned,
+window stack,
+window overlay,
+window viewport,
+window scrolledwindow > viewport,
+window > box > stack,
+window > box > paned {
     background-color: transparent;
     background-image: none;
 }
 
-/* Headerbar - macOS Clean Glass Capsular Bar */
-window.nautilus-window.background headerbar {
-    background-color: rgba(15, 20, 30, 0.40);
+/* ---- HEADERBAR (barra superior) ---- */
+headerbar {
+    background-color: rgba(18, 22, 35, 0.55);
     background-image: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06),
+                0 4px 16px rgba(0, 0, 0, 0.30);
+    /* Capsular style rounded at top to match macOS window */
+    border-radius: 16px 16px 0 0;
+    padding: 4px 12px;
+    min-height: 44px;
 }
 
-/* Sidebar macOS translucent background - Floating Card on the Left */
-window.nautilus-window.background .sidebar,
-window.nautilus-window.background .navigation-sidebar {
-    background-color: rgba(10, 15, 22, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+/* Botones dentro del header */
+headerbar button {
+    background-color: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.75);
     border-radius: 12px;
-    margin: 10px 5px 10px 10px;
-    padding: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    padding: 6px 10px;
+    transition: background-color 150ms ease;
 }
-
-/* Main scrolled window viewport - Floating Card on the Right */
-window.nautilus-window.background scrolledwindow {
-    background-color: rgba(15, 20, 30, 0.20);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    margin: 10px 10px 10px 5px;
-    padding: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-}
-
-/* List rows and folders selection styled with Carmesí Red accent */
-window.nautilus-window.background list row:selected,
-window.nautilus-window.background flowboxchild:selected,
-window.nautilus-window.background .navigation-sidebar list row:selected,
-window.nautilus-window.background list row:selected:hover {
-    background-color: rgba(229, 57, 53, 0.35);
+headerbar button:hover {
+    background-color: rgba(255, 255, 255, 0.10);
     color: #ffffff;
+}
+headerbar button:active {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Título en el header */
+headerbar .title,
+headerbar label {
+    color: rgba(255, 255, 255, 0.90);
+    font-weight: 600;
+}
+
+/* ---- SIDEBAR — El panel izquierdo FLOTANTE ---- */
+/* Este es el efecto que querés: card flotante con glass */
+.sidebar,
+.navigation-sidebar,
+placessidebar,
+.sidebar-pane {
+    background-color: rgba(14, 18, 28, 0.50);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 18px;
+    margin: 10px 4px 10px 10px;
+    padding: 6px 4px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Items del sidebar */
+.sidebar list row,
+placessidebar list row,
+.navigation-sidebar list row {
+    background-color: transparent;
+    border-radius: 12px;
+    margin: 2px 4px;
+    padding: 4px 8px;
+    color: rgba(255, 255, 255, 0.70);
+    min-height: 36px;
+    transition: background-color 120ms ease;
+}
+
+.sidebar list row:hover,
+placessidebar list row:hover,
+.navigation-sidebar list row:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.90);
+}
+
+/* Seleccionado - acento rojo carmesí como tenías */
+.sidebar list row:selected,
+placessidebar list row:selected,
+.navigation-sidebar list row:selected {
+    background-color: rgba(220, 50, 47, 0.40);
+    color: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(220, 50, 47, 0.30);
+}
+
+/* Labels del sidebar */
+.sidebar list row label,
+placessidebar list row label {
+    color: inherit;
+    font-size: 13px;
+}
+
+/* Separadores en sidebar */
+.sidebar separator,
+placessidebar separator {
+    background-color: rgba(255, 255, 255, 0.07);
+    margin: 4px 12px;
+    min-height: 1px;
+}
+
+/* Cabeceras de sección sidebar ("Lugares", "Redes", etc.) */
+.sidebar list row.sidebar-row > label,
+placessidebar > box > revealer > list > row.sidebar-section-header label {
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* ---- ÁREA PRINCIPAL DE ARCHIVOS — Card flotante derecha ---- */
+.view,
+.nautilus-window scrolledwindow,
+scrolledwindow {
+    background-color: rgba(18, 22, 35, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 18px;
+    margin: 10px 10px 10px 4px;
+}
+
+/* Viewport interno - debe ser transparente */
+scrolledwindow > viewport,
+.view > viewport {
+    background-color: transparent;
+}
+
+/* Iconos / grid de archivos */
+.nautilus-window .view,
+flowbox,
+iconview {
+    background-color: transparent;
+    padding: 8px;
+}
+
+/* Items de archivo en grid */
+flowboxchild,
+.nautilus-canvas-item {
+    background-color: transparent;
+    border-radius: 14px;
+    padding: 8px;
+    transition: background-color 120ms ease;
+}
+
+flowboxchild:hover,
+.nautilus-canvas-item:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+flowboxchild:selected,
+.nautilus-canvas-item:selected {
+    background-color: rgba(220, 50, 47, 0.35);
+    border-radius: 14px;
+}
+
+/* Labels de archivos */
+flowboxchild label,
+.nautilus-canvas-item label {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 12px;
+}
+
+/* ---- VISTA DE LISTA ---- */
+columnview,
+listview,
+treeview {
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.80);
+}
+
+columnview > row:hover,
+listview > row:hover {
+    background-color: rgba(255, 255, 255, 0.06);
     border-radius: 8px;
+}
+
+columnview > row:selected,
+listview > row:selected {
+    background-color: rgba(220, 50, 47, 0.35);
+    border-radius: 12px;
+    color: #ffffff;
+}
+
+/* Header de columnas */
+columnview > header > button {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.50);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+}
+
+/* ---- BARRA DE BÚSQUEDA ---- */
+searchbar,
+searchentry {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    color: #ffffff;
+    padding: 6px 12px;
+    box-shadow: none;
+}
+
+searchentry:focus {
+    border-color: rgba(220, 50, 47, 0.60);
+    background-color: rgba(255, 255, 255, 0.11);
+}
+
+/* ---- SCROLLBARS ---- */
+scrollbar {
+    background-color: transparent;
+    border: none;
+}
+
+scrollbar slider {
+    background-color: rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    min-width: 5px;
+    min-height: 5px;
+}
+
+scrollbar slider:hover {
+    background-color: rgba(255, 255, 255, 0.30);
+}
+
+/* ---- TOOLTIPS ---- */
+tooltip {
+    background-color: rgba(20, 25, 38, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.90);
+    padding: 6px 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.40);
+}
+
+/* ---- POPOVER / MENÚS CONTEXTUALES ---- */
+popover,
+popover.menu {
+    background-color: rgba(16, 20, 32, 0.80);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+popover modelbutton,
+popover > contents > box > modelbutton {
+    border-radius: 8px;
+    padding: 8px 14px;
+    color: rgba(255, 255, 255, 0.85);
+    transition: background-color 100ms;
+}
+
+popover modelbutton:hover {
+    background-color: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
 }
