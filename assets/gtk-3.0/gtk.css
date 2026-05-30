@@ -45,3 +45,141 @@ separator,
     min-height: 1px;
     margin: 6px 8px;
 }
+
+/* ========================================================================= */
+/* ---- 💫 Pixi-Arch-A Premium Thunar File Manager Glassmorphism Stylesheet 💫 ---- */
+/* ========================================================================= */
+
+/* Thunar Window Main Container */
+.thunar, ThunarWindow {
+    background-color: rgba(15, 20, 30, 0.85);
+    color: #e0e0e0;
+}
+
+/* Thunar Menubar & Toolbars */
+ThunarWindow menubar,
+ThunarWindow toolbar,
+ThunarWindow .menubar,
+ThunarWindow .toolbar {
+    background-color: rgba(15, 20, 30, 0.60);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    padding: 6px;
+}
+
+/* Thunar Sidebar (Places/Shortcuts Panel) */
+ThunarWindow .sidebar,
+ThunarWindow .shortcuts-paned,
+ThunarWindow .sidebar row {
+    background-color: rgba(10, 15, 22, 0.65);
+    font-size: 13px;
+}
+
+ThunarWindow .sidebar {
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Sidebar item active state (Carmesí Red theme highlight!) */
+ThunarWindow .sidebar row:selected,
+ThunarWindow .sidebar row:selected:hover,
+ThunarWindow .shortcuts-paned row:selected {
+    background-image: none;
+    background-color: rgba(229, 57, 53, 0.25);
+    color: #ffffff;
+    border-left: 3px solid #e53935;
+    font-weight: bold;
+}
+
+/* Sidebar row hover */
+ThunarWindow .sidebar row:hover,
+ThunarWindow .shortcuts-paned row:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+/* Thunar Main File Grid/List View */
+ThunarWindow .view,
+ThunarWindow ThunarIconView,
+ThunarWindow ThunarTreeView {
+    background-color: rgba(15, 20, 30, 0.90);
+    color: #e5e5e5;
+}
+
+/* Selected files/folders in Main View (Carmesí Red highlight!) */
+ThunarWindow .view:selected,
+ThunarWindow .view:selected:focus,
+ThunarWindow ThunarIconView:selected {
+    background-color: rgba(229, 57, 53, 0.25);
+    color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid rgba(229, 57, 53, 0.40);
+}
+
+/* Thunar Breadcrumbs / Pathbar Buttons */
+ThunarWindow .path-bar-container {
+    background-color: transparent;
+}
+
+ThunarWindow .path-bar button {
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #cccccc;
+    border-radius: 6px;
+    padding: 4px 10px;
+    margin: 2px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+ThunarWindow .path-bar button:hover {
+    background-color: rgba(229, 57, 53, 0.15);
+    border-color: rgba(229, 57, 53, 0.30);
+    color: #ffffff;
+}
+
+ThunarWindow .path-bar button:checked,
+ThunarWindow .path-bar button:active {
+    background-color: rgba(229, 57, 53, 0.30);
+    border-color: rgba(229, 57, 53, 0.50);
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* Thunar Statusbar (Footer) */
+ThunarWindow .statusbar {
+    background-color: rgba(10, 15, 22, 0.70);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: #aaaaaa;
+    font-size: 11px;
+    padding: 6px 10px;
+}
+
+/* Sleek Thin Scrollbars with Red Hover Accent */
+scrollbar,
+.scrollbar {
+    background-color: transparent;
+    transition: all 0.3s ease;
+}
+
+scrollbar slider {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    min-width: 8px;
+    min-height: 8px;
+    border: 2px solid transparent;
+}
+
+scrollbar slider:hover {
+    background-color: rgba(229, 57, 53, 0.60);
+    min-width: 10px;
+    min-height: 10px;
+}
+
+scrollbar slider:active {
+    background-color: #e53935;
+}
+
+scrollbar.horizontal slider {
+    min-width: 8px;
+    min-height: 8px;
+}
