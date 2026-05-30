@@ -131,9 +131,9 @@ apply_image_wallpaper() {
 
   kill_wallpaper_for_image
 
-  if ! pgrep -x "swww-daemon" >/dev/null; then
-    echo "Starting swww-daemon..."
-    swww-daemon --format xrgb &
+  if ! pgrep -x "swww-daemon" >/dev/null && ! pgrep -x "awww-daemon" >/dev/null; then
+    echo "Starting wallpaper daemon..."
+    (awww-daemon || swww-daemon) &
   fi
 
   swww img -o "$focused_monitor" "$image_path" $SWWW_PARAMS

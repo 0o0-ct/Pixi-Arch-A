@@ -45,4 +45,28 @@ for PKG1 in "${fonts[@]}"; do
   install_package "$PKG1" "$LOG"
 done
 
+# Descargar e instalar las fuentes Londrina Solid y Londrina Outline (necesarias para el reloj de Hyprlock)
+printf "\n${NOTE} Descargando fuentes de diseño Londrina para el reloj de bloqueo...\n"
+FONT_DIR="$HOME/.local/share/fonts"
+mkdir -p "$FONT_DIR"
+
+URL_SOLID="https://github.com/google/fonts/raw/main/ofl/londrinasolid/LondrinaSolid-Regular.ttf"
+URL_OUTLINE="https://github.com/google/fonts/raw/main/ofl/londrinaoutline/LondrinaOutline-Regular.ttf"
+
+if [ ! -f "$FONT_DIR/LondrinaSolid-Regular.ttf" ]; then
+    echo "Descargando Londrina Solid..." | tee -a "$LOG"
+    curl -fsSL -o "$FONT_DIR/LondrinaSolid-Regular.ttf" "$URL_SOLID" >> "$LOG" 2>&1 || true
+    cp "$FONT_DIR/LondrinaSolid-Regular.ttf" "$FONT_DIR/Londrina Solid.ttf" 2>/dev/null || true
+fi
+
+if [ ! -f "$FONT_DIR/LondrinaOutline-Regular.ttf" ]; then
+    echo "Descargando Londrina Outline..." | tee -a "$LOG"
+    curl -fsSL -o "$FONT_DIR/LondrinaOutline-Regular.ttf" "$URL_OUTLINE" >> "$LOG" 2>&1 || true
+    cp "$FONT_DIR/LondrinaOutline-Regular.ttf" "$FONT_DIR/Londrina Outline.ttf" 2>/dev/null || true
+fi
+
+echo "Actualizando caché de fuentes..." | tee -a "$LOG"
+fc-cache -f "$FONT_DIR" >> "$LOG" 2>&1 || true
+printf "${OK} ¡Fuentes Londrina instaladas correctamente!\n"
+
 printf "\n%.0s" {1..2}

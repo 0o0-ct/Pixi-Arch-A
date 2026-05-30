@@ -34,7 +34,7 @@ done
 
 
 # Initialize swww if needed
-swww query || swww-daemon --format xrgb
+swww query || awww-daemon || swww-daemon
 
 # Set swww options
 swww="swww img"
