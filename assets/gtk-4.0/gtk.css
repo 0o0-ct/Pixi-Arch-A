@@ -316,8 +316,8 @@ popover,
 popover.menu {
     background-color: rgba(14, 18, 28, 0.60);
     border: 1px solid rgba(255, 255, 255, 0.13);
-    border-radius: 16px;
-    padding: 6px;
+    border-radius: 14px;
+    padding: 3px;
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55),
                 inset 0 1px 0 rgba(255, 255, 255, 0.10);
 }
@@ -326,7 +326,8 @@ popover.menu {
 popover > contents,
 popover > contents > box {
     background-color: transparent;
-    border-radius: 12px;
+    border-radius: 11px;
+    padding: 0;
 }
 
 /* El widget menu dentro del popover */
@@ -341,12 +342,12 @@ popover modelbutton,
 popover > contents > box > modelbutton,
 menuitem {
     background-color: transparent;
-    border-radius: 10px;
-    padding: 7px 16px;
+    border-radius: 8px;
+    padding: 6px 10px;
     color: rgba(255, 255, 255, 0.88);
     transition: background-color 120ms ease,
                 color 120ms ease;
-    min-height: 30px;
+    min-height: 28px;
 }
 
 /* Hover: cristal blanco sutil */
