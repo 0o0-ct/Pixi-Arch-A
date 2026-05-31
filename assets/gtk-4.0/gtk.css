@@ -1,15 +1,26 @@
 /* ============================================================
-   💫 macOS Tahoe Glass — GTK4 / Libadwaita para Nautilus
-   v2 — Fix: sin capas múltiples anidadas
+   💫 macOS Tahoe Glass — GTK4 / Libadwaita — Tema Global
+   Aplica a: Nautilus, Diálogos del sistema, todas las apps GTK4
    Ubicación: ~/.config/gtk-4.0/gtk.css
    ============================================================ */
 
-/* --- OVERRIDE LIBADWAITA: forzar transparencia base --- */
+/* --- OVERRIDE LIBADWAITA CSS VARIABLES (la forma correcta en GTK4) ---
+   Libadwaita usa var(--window-bg-color) internamente.
+   Poner background-color directo no siempre funciona.
+   Definiendo las variables aquí afecta TODO el sistema GTK4. */
 :root {
-    --window-bg-color: rgba(12, 15, 22, 0.01);
-    --headerbar-bg-color: rgba(12, 15, 22, 0.01);
-    --sidebar-bg-color: rgba(12, 15, 22, 0.01);
-    --card-bg-color: rgba(255, 255, 255, 0.04);
+    /* Fondos semitransparentes para el efecto glass global */
+    --window-bg-color:        rgba(14, 18, 28, 0.55);
+    --dialog-bg-color:        rgba(14, 18, 28, 0.55);
+    --popover-bg-color:       rgba(14, 18, 28, 0.60);
+    --headerbar-bg-color:     rgba(18, 22, 35, 0.60);
+    --sidebar-bg-color:       rgba(14, 18, 28, 0.50);
+    --view-bg-color:          rgba(18, 22, 35, 0.38);
+    --card-bg-color:          rgba(255, 255, 255, 0.04);
+    /* Acento carmesí — reemplaza el azul de GTK en TODO el sistema */
+    --accent-color:           rgb(220, 50, 47);
+    --accent-bg-color:        rgba(220, 50, 47, 0.85);
+    --accent-fg-color:        #ffffff;
 }
 
 /* Ventana principal — SIN border-radius: Hyprland ya redondea con su
@@ -393,19 +404,27 @@ menuitem image {
 /* ============================================================
    🗂️ DIÁLOGO DE ARCHIVOS DEL SISTEMA (Guardar / Abrir / Subir)
    GtkFileChooserDialog — aplica a nivel GLOBAL en todas las apps
+   NOTA: el portal GNOME crea GtkWindow con clase .dialog,
+         por eso usamos window.dialog Y dialog como selectores.
    ============================================================ */
 
-/* Ventana del diálogo — transparente para el blur de Hyprland */
+/* Ventana del diálogo — override de variables Libadwaita scoped al dialog
+   Esto asegura que el portal y cualquier app GTK4 use el fondo glass */
 dialog,
-dialog.background,
-dialog.filechooser,
-filechooserdialog {
-    background-color: transparent;
+window.dialog,
+.dialog {
+    --window-bg-color:    rgba(14, 18, 28, 0.55);
+    --dialog-bg-color:    rgba(14, 18, 28, 0.55);
+    --headerbar-bg-color: rgba(18, 22, 35, 0.60);
+    --view-bg-color:      rgba(18, 22, 35, 0.38);
+    --sidebar-bg-color:   rgba(14, 18, 28, 0.50);
+    background-color: rgba(14, 18, 28, 0.55);
     background-image: none;
 }
 
 /* Todos los contenedores internos del diálogo — transparentes */
 dialog > box,
+window.dialog > box,
 dialog > box > * {
     background-color: transparent;
     background-image: none;
