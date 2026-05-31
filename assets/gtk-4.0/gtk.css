@@ -155,9 +155,7 @@ placessidebar > box > revealer > list > row.sidebar-section-header label {
 
 /* ---- ÁREA PRINCIPAL DE ARCHIVOS — Card flotante derecha ---- */
 
-/* PASO 1: Reset global — todos los scrolledwindows comienzan transparentes.
-   Esto evita que scrolledwindows anidados (por ej. dentro del sidebar)
-   reciban estilos de card accidentalmente. */
+/* PASO 1: Reset global — todos los scrolledwindows comienzan transparentes */
 scrolledwindow {
     background-color: transparent;
     background-image: none;
@@ -171,16 +169,35 @@ scrolledwindow > viewport {
     background-color: transparent;
 }
 
-/* PASO 2: Solo aplicar la card al scrolledwindow del área principal.
-   En Nautilus el paned divide sidebar (izquierda) y contenido (derecha).
-   El scrolledwindow hijo directo del paned es el área de archivos. */
-paned > scrolledwindow,
-paned > box > scrolledwindow,
-paned > stack > scrolledwindow {
+/* PASO 2: Aplicar UNA card de cristal a todos los scrolledwindows
+   dentro de la ventana. Esto captura el área principal de archivos
+   sin importar cómo Libadwaita/Nautilus estructure el árbol de widgets. */
+window scrolledwindow {
     background-color: rgba(18, 22, 35, 0.38);
     border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 18px;
     margin: 10px 10px 10px 4px;
+}
+
+/* PASO 3: Los scrolledwindows DENTRO del sidebar tienen mayor especificidad
+   (class selector > tag selector) así que prevalecen automáticamente:
+   .sidebar scrolledwindow (0,1,1) > window scrolledwindow (0,0,2) */
+.sidebar scrolledwindow,
+.navigation-sidebar scrolledwindow,
+placessidebar scrolledwindow,
+.sidebar-pane scrolledwindow {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+.sidebar scrolledwindow > viewport,
+.navigation-sidebar scrolledwindow > viewport,
+placessidebar scrolledwindow > viewport {
+    background-color: transparent;
 }
 
 /* ---- ICONOS / GRID DE ARCHIVOS ---- */
