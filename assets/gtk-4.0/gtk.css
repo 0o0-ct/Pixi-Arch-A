@@ -388,3 +388,213 @@ menuitem image {
     color: rgba(255, 255, 255, 0.65);
     margin-right: 4px;
 }
+
+
+/* ============================================================
+   🗂️ DIÁLOGO DE ARCHIVOS DEL SISTEMA (Guardar / Abrir / Subir)
+   GtkFileChooserDialog — aplica a nivel GLOBAL en todas las apps
+   ============================================================ */
+
+/* Ventana del diálogo — transparente para el blur de Hyprland */
+dialog,
+dialog.background,
+dialog.filechooser,
+filechooserdialog {
+    background-color: transparent;
+    background-image: none;
+}
+
+/* Todos los contenedores internos del diálogo — transparentes */
+dialog > box,
+dialog > box > * {
+    background-color: transparent;
+    background-image: none;
+}
+
+/* ---- HeaderBar del diálogo (Cancelar | Título | Seleccionar) ---- */
+dialog headerbar {
+    background-color: rgba(18, 22, 35, 0.60);
+    background-image: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06),
+                0 4px 16px rgba(0, 0, 0, 0.30);
+    padding: 4px 10px;
+    min-height: 42px;
+}
+
+dialog headerbar label,
+dialog headerbar .title {
+    color: rgba(255, 255, 255, 0.90);
+    font-weight: 600;
+}
+
+dialog headerbar button {
+    background-color: transparent;
+    border: none;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.75);
+    padding: 5px 10px;
+    transition: background-color 150ms ease;
+}
+
+dialog headerbar button:hover {
+    background-color: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+}
+
+/* Botón principal de acción (Seleccionar / Guardar / Abrir) — carmesí */
+dialog headerbar button.suggested-action,
+dialog button.suggested-action {
+    background-color: rgba(220, 50, 47, 0.85);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 5px 14px;
+    box-shadow: 0 2px 8px rgba(220, 50, 47, 0.30);
+    transition: background-color 150ms ease;
+}
+
+dialog headerbar button.suggested-action:hover,
+dialog button.suggested-action:hover {
+    background-color: rgba(220, 50, 47, 1.0);
+    box-shadow: 0 4px 16px rgba(220, 50, 47, 0.45);
+}
+
+/* ---- Sidebar del diálogo (Recientes, Carpeta personal, etc.) ---- */
+dialog placessidebar,
+dialog .sidebar,
+dialog .navigation-sidebar,
+dialog .sidebar-pane {
+    background-color: rgba(14, 18, 28, 0.50);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 14px;
+    margin: 8px 4px 8px 8px;
+    padding: 4px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Scrolledwindows dentro del sidebar del diálogo — transparentes */
+dialog placessidebar scrolledwindow,
+dialog .sidebar scrolledwindow,
+dialog .navigation-sidebar scrolledwindow {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* Items del sidebar del diálogo */
+dialog placessidebar list row,
+dialog .sidebar list row,
+dialog .navigation-sidebar list row {
+    background-color: transparent;
+    border-radius: 10px;
+    margin: 2px 3px;
+    padding: 4px 6px;
+    color: rgba(255, 255, 255, 0.70);
+    min-height: 32px;
+    transition: background-color 120ms ease;
+}
+
+dialog placessidebar list row:hover,
+dialog .sidebar list row:hover,
+dialog .navigation-sidebar list row:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.90);
+}
+
+/* Seleccionado — acento carmesí (reemplaza el azul de GTK) */
+dialog placessidebar list row:selected,
+dialog .sidebar list row:selected,
+dialog .navigation-sidebar list row:selected {
+    background-color: rgba(220, 50, 47, 0.40);
+    color: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(220, 50, 47, 0.30);
+}
+
+dialog placessidebar separator,
+dialog .sidebar separator {
+    background-color: rgba(255, 255, 255, 0.07);
+    margin: 4px 10px;
+    min-height: 1px;
+}
+
+/* ---- Panel principal de archivos — card flotante derecha ---- */
+dialog paned > scrolledwindow,
+dialog paned > * > scrolledwindow,
+dialog > box > paned > scrolledwindow {
+    background-color: rgba(18, 22, 35, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    margin: 8px 8px 8px 4px;
+}
+
+dialog > box > scrolledwindow {
+    background-color: rgba(18, 22, 35, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    margin: 8px;
+}
+
+/* Lista / columnas de archivos — fondo transparente */
+dialog columnview,
+dialog listview,
+dialog treeview {
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Filas en hover */
+dialog columnview > row:hover,
+dialog listview > row:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+}
+
+/* Fila seleccionada — acento carmesí */
+dialog columnview > row:selected,
+dialog listview > row:selected {
+    background-color: rgba(220, 50, 47, 0.35);
+    border-radius: 8px;
+    color: #ffffff;
+}
+
+/* Cabeceras de columna (Nombre, Tamaño, Tipo, Modificado) */
+dialog columnview > header > button {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 10px;
+}
+
+/* Barra de ruta / breadcrumb */
+dialog .path-bar,
+dialog pathbar {
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 2px 4px;
+}
+
+dialog .path-bar button,
+dialog pathbar button {
+    background-color: transparent;
+    border: none;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.75);
+    padding: 4px 8px;
+}
+
+dialog .path-bar button:hover,
+dialog pathbar button:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
