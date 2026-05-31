@@ -307,25 +307,83 @@ tooltip {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.40);
 }
 
-/* ---- POPOVER / MENÚS CONTEXTUALES ---- */
+/* ---- POPOVER / MENÚS CONTEXTUALES (Click Derecho) ---- */
+
+/* Contenedor principal del menú contextual - cristal translúcido
+   La baja opacidad (0.60) permite que el blur de Hyprland se vea
+   a través del menú como una hoja de vidrio esmerilado real */
 popover,
 popover.menu {
-    background-color: rgba(16, 20, 32, 0.80);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 12px;
+    background-color: rgba(14, 18, 28, 0.60);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 16px;
     padding: 6px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55),
+                inset 0 1px 0 rgba(255, 255, 255, 0.10);
 }
 
+/* Contenido interno - transparente para no añadir capas */
+popover > contents,
+popover > contents > box {
+    background-color: transparent;
+    border-radius: 12px;
+}
+
+/* El widget menu dentro del popover */
+popover menu,
+popover > contents > menu {
+    background-color: transparent;
+    padding: 2px;
+}
+
+/* ---- Items individuales del menú ---- */
 popover modelbutton,
-popover > contents > box > modelbutton {
-    border-radius: 8px;
-    padding: 8px 14px;
-    color: rgba(255, 255, 255, 0.85);
-    transition: background-color 100ms;
+popover > contents > box > modelbutton,
+menuitem {
+    background-color: transparent;
+    border-radius: 10px;
+    padding: 7px 16px;
+    color: rgba(255, 255, 255, 0.88);
+    transition: background-color 120ms ease,
+                color 120ms ease;
+    min-height: 30px;
 }
 
-popover modelbutton:hover {
+/* Hover: cristal blanco sutil */
+popover modelbutton:hover,
+popover > contents > box > modelbutton:hover,
+menuitem:hover {
     background-color: rgba(255, 255, 255, 0.10);
     color: #ffffff;
+}
+
+/* Click activo: acento carmesí */
+popover modelbutton:active,
+popover > contents > box > modelbutton:active,
+menuitem:active {
+    background-color: rgba(220, 50, 47, 0.30);
+    color: #ffffff;
+}
+
+/* Atajos de teclado (Ctrl+V, Ctrl+A, etc.) */
+popover modelbutton accelerator,
+menuitem accelerator {
+    color: rgba(255, 255, 255, 0.38);
+    font-size: 12px;
+}
+
+/* Separadores dentro del menú */
+popover separator,
+popover menu separator,
+popover > contents separator {
+    background-color: rgba(255, 255, 255, 0.08);
+    min-height: 1px;
+    margin: 4px 10px;
+}
+
+/* Íconos dentro de los items */
+popover modelbutton image,
+menuitem image {
+    color: rgba(255, 255, 255, 0.65);
+    margin-right: 4px;
 }
