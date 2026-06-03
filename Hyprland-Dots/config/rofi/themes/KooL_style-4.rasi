@@ -109,9 +109,9 @@ inputbar {
     spacing:                     10px;
     margin:                      0px;
     padding:                     10px 16px;
-    border:                      1px solid rgba(255, 255, 255, 0.12);
+    border:                      1px;
     border-radius:               14px;
-    border-color:                @border-color;
+    border-color:                rgba(255, 255, 255, 0.12);
     background-color:            rgba(255, 255, 255, 0.05);
     text-color:                  @foreground;
     children:                    [ "textbox-prompt-colon", "entry" ];
@@ -180,9 +180,9 @@ listview {
     spacing:                     6px;
     margin:                      0px;
     padding:                     12px;
-    border:                      1px solid rgba(255, 255, 255, 0.10);
+    border:                      1px;
     border-radius:               16px;
-    border-color:                @border-color;
+    border-color:                rgba(255, 255, 255, 0.10);
     background-color:            rgba(255, 255, 255, 0.02);
     text-color:                  @foreground-color;
     cursor:                      "default";
@@ -223,17 +223,20 @@ element normal.active {
 element-text selected,
 element selected.normal {
     background-color:            @selected;
-    border:                      1px solid rgba(255, 255, 255, 0.20);
+    border:                      1px;
+    border-color:                rgba(255, 255, 255, 0.20);
     text-color:                  #ffffff;
 }
 element selected.urgent {
     background-color:            @selected;
-    border:                      1px solid rgba(255, 255, 255, 0.20);
+    border:                      1px;
+    border-color:                rgba(255, 255, 255, 0.20);
     text-color:                  #ffffff;
 }
 element selected.active {
     background-color:            @selected;
-    border:                      1px solid rgba(255, 255, 255, 0.20);
+    border:                      1px;
+    border-color:                rgba(255, 255, 255, 0.20);
     text-color:                  #ffffff;
 }
 element alternate.normal {
@@ -278,7 +281,7 @@ mode-switcher{
 }
 button {
     padding:                     0px 20px 0px 20px;
-    border:                      1px solid transparent;
+    border:                      1px;
     border-radius:               12px;
     border-color:                transparent;
     background-color:            transparent;
@@ -288,9 +291,9 @@ button {
     cursor:                      pointer;
 }
 button selected {
-    border:                      1px solid rgba(255, 255, 255, 0.20);
+    border:                      1px;
     border-radius:               12px;
-    border-color:                @border-color;
+    border-color:                rgba(255, 255, 255, 0.20);
     background-color:            @selected;
     text-color:                  #ffffff;
 }
