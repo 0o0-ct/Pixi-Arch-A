@@ -23,14 +23,14 @@ configuration {
 /*****----- Global Properties -----*****/
 * {
     /* --- Premium Dark Glassmorphism Variables --- */
-    background:                  rgba(15, 16, 21, 0.35);
-    background-alt:              rgba(255, 255, 255, 0.08);
+    background:                  rgba(10, 12, 18, 0.48);
+    background-alt:              rgba(255, 255, 255, 0.04);
     foreground:                  #ffffff;
-    selected:                    rgba(255, 255, 255, 0.2);
-    active:                      rgba(255, 255, 255, 0.25);
+    selected:                    rgba(255, 255, 255, 0.14);
+    active:                      rgba(255, 255, 255, 0.18);
     urgent:                      #cc3436;
     
-    border-color:                rgba(255, 255, 255, 0.15);
+    border-color:                rgba(255, 255, 255, 0.12);
     handle-color:                @selected;
     background-color:            @background;
     foreground-color:            @foreground;
@@ -47,7 +47,7 @@ configuration {
     selected-urgent-background:  @selected;
     selected-urgent-foreground:  #ffffff;
     selected-active-background:  @selected;
-    selected-active-foreground:  #ffffff;
+    selected-active-foreground:  @selected;
     
     alternate-normal-background: transparent;
     alternate-normal-foreground: @foreground;
@@ -74,8 +74,8 @@ window {
     margin:                      0px;
     padding:                     0px;
     border:                      1px solid;
-    border-radius:               12px;
-    border-color:                rgba(255, 255, 255, 0.15);
+    border-radius:               22px;
+    border-color:                rgba(255, 255, 255, 0.22);
     cursor:                      "default";
     /* Backgroud Colors */
     background-color:            @background-color;
@@ -84,11 +84,11 @@ window {
 /*****----- Main Box -----*****/
 mainbox {
     enabled:                     true;
-    spacing:                     10px;
+    spacing:                     14px;
     margin:                      0px;
-    padding:                     20px;
+    padding:                     24px;
     border:                      0px solid;
-    border-radius:               0px 0px 0px 0px;
+    border-radius:               0px;
     border-color:                @border-color;
     background-color:            inherit;
     children:                    [ "inputbar", "message", "custombox" ];
@@ -108,11 +108,11 @@ inputbar {
     enabled:                     true;
     spacing:                     10px;
     margin:                      0px;
-    padding:                     8px 12px;
-    border:                      0px solid;
-    border-radius:               8px;
+    padding:                     10px 16px;
+    border:                      1px solid rgba(255, 255, 255, 0.12);
+    border-radius:               14px;
     border-color:                @border-color;
-    background-color:            @alternate-background;
+    background-color:            rgba(255, 255, 255, 0.05);
     text-color:                  @foreground;
     children:                    [ "textbox-prompt-colon", "entry" ];
 }
@@ -133,11 +133,11 @@ textbox-prompt-colon {
 entry {
     enabled:                     true;
     padding:                     5px 0px;
-    background-color:            @alternate-background;
+    background-color:            transparent;
     text-color:                  @foreground;
     cursor:                      text;
     placeholder:                 "Search...";
-    placeholder-color:           inherit;
+    placeholder-color:           rgba(255, 255, 255, 0.40);
 }
 num-filtered-rows {
     enabled:                     true;
@@ -177,13 +177,13 @@ listview {
     fixed-height:                true;
     fixed-columns:               true;
     
-    spacing:                     5px;
+    spacing:                     6px;
     margin:                      0px;
-    padding:                     10px;
-    border:                      2px 2px 2px 2px;
-    border-radius:               8px;
+    padding:                     12px;
+    border:                      1px solid rgba(255, 255, 255, 0.10);
+    border-radius:               16px;
     border-color:                @border-color;
-    background-color:            transparent;
+    background-color:            rgba(255, 255, 255, 0.02);
     text-color:                  @foreground-color;
     cursor:                      "default";
 }
@@ -197,11 +197,11 @@ scrollbar {
 /*****----- Elements -----*****/
 element {
     enabled:                     true;
-    spacing:                     10px;
-    margin:                      0px;
-    padding:                     10px;
+    spacing:                     12px;
+    margin:                      2px 0px;
+    padding:                     8px 12px;
     border:                      0px solid;
-    border-radius:               8px;
+    border-radius:               12px;
     border-color:                @border-color;
     background-color:            transparent;
     text-color:                  @foreground-color;
@@ -223,14 +223,17 @@ element normal.active {
 element-text selected,
 element selected.normal {
     background-color:            @selected;
+    border:                      1px solid rgba(255, 255, 255, 0.20);
     text-color:                  #ffffff;
 }
 element selected.urgent {
     background-color:            @selected;
+    border:                      1px solid rgba(255, 255, 255, 0.20);
     text-color:                  #ffffff;
 }
 element selected.active {
     background-color:            @selected;
+    border:                      1px solid rgba(255, 255, 255, 0.20);
     text-color:                  #ffffff;
 }
 element alternate.normal {
@@ -264,20 +267,20 @@ mode-switcher{
     enabled:                     true;
     expand:                      false;
     orientation:                 vertical;
-    spacing:                     0px;
-    margin:                      0px;
-    padding:                     0px 0px;
+    spacing:                     8px;
+    margin:                      0px 10px 0px 0px;
+    padding:                     8px 0px;
     border:                      0px solid;
-    border-radius:               8px 0px 0px 8px;
+    border-radius:               16px 0px 0px 16px;
     border-color:                @border-color;
-    background-color:            @alternate-background;
+    background-color:            rgba(255, 255, 255, 0.03);
     text-color:                  @foreground-color;
 }
 button {
     padding:                     0px 20px 0px 20px;
-    border:                      0px 0px 0px 0px;
-    border-radius:               8px;
-    border-color:                @border-color;
+    border:                      1px solid transparent;
+    border-radius:               12px;
+    border-color:                transparent;
     background-color:            transparent;
     text-color:                  inherit;
     vertical-align:              0.5;
@@ -285,8 +288,8 @@ button {
     cursor:                      pointer;
 }
 button selected {
-    border:                      2px 0px 2px 2px;
-    border-radius:               6px;
+    border:                      1px solid rgba(255, 255, 255, 0.20);
+    border-radius:               12px;
     border-color:                @border-color;
     background-color:            @selected;
     text-color:                  #ffffff;
