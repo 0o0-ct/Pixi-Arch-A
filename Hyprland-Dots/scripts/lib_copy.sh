@@ -110,7 +110,7 @@ copy_waybar() {
 
 copy_phase2() {
   local log="$1"
-  local DIR="btop cava hypr Kvantum qt5ct qt6ct swappy wallust wlogout"
+  local DIR="ags btop cava hypr Kvantum qt5ct qt6ct swappy wallust wlogout"
   for DIR_NAME in $DIR; do
     local DIRPATH="$HOME/.config/$DIR_NAME"
     if [ -d "$DIRPATH" ]; then

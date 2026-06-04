@@ -132,11 +132,9 @@ else
 EOF
 fi
 
-# relaunch swaync
+# relaunch ags
 sleep 0.3
-swaync >/dev/null 2>&1 &
-# reload swaync
-swaync-client --reload-config
+ags run >/dev/null 2>&1 &
 
 # Relaunching rainbow borders if the script exists
 sleep 1
