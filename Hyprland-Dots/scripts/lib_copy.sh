@@ -125,6 +125,26 @@ copy_phase2() {
       echo "${ERROR:-[ERROR]} - El directorio config/$DIR_NAME no existe para ser copiado." 2>&1 | tee -a "$log"
     fi
   done
+  
+  # Copiar configuraciones de GTK3 y GTK4 (Nautilus & Portal Glass style)
+  for GTK_DIR in gtk-3.0 gtk-4.0; do
+    local GTK_PATH="$HOME/.config/$GTK_DIR"
+    local SRC_GTK="../assets/$GTK_DIR" # Si se ejecuta desde Hyprland-Dots
+    if [ ! -d "$SRC_GTK" ]; then
+      SRC_GTK="assets/$GTK_DIR" # Si se ejecuta desde el directorio raíz
+    fi
+    if [ -d "$SRC_GTK" ]; then
+      if [ -d "$GTK_PATH" ]; then
+        echo -e "${NOTE:-[NOTE]} - Respaldando GTK config existente en $GTK_PATH."
+        local BACK_DIR
+        BACK_DIR=$(get_backup_dirname)
+        mv "$GTK_PATH" "$GTK_PATH-backup-$BACK_DIR" 2>&1 | tee -a "$log"
+      fi
+      cp -r "$SRC_GTK/" "$HOME/.config/$GTK_DIR" 2>&1 | tee -a "$log"
+      echo "${OK:-[OK]} - ¡Copia de personalización para $GTK_DIR completada!" 2>&1 | tee -a "$log"
+    fi
+  done
+
   install_terminal_configs "$log"
 }
 
