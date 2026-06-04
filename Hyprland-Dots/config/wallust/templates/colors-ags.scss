@@ -1,0 +1,67 @@
+$background: rgba({{background | rgb}}, 1);
+$fg: rgba({{foreground | rgb}}, 1);
+$primary: rgba({{color2 | rgb}}, 1);
+$primary_container: rgba({{color1 | rgb}}, 1);
+$secondary: rgba({{color3 | rgb}}, 1);
+$secondary_container: rgba({{color4 | rgb}}, 1);
+$tertiary: rgba({{color5 | rgb}}, 1);
+$tertiary_container: rgba({{color6 | rgb}}, 1);
+$surface: rgba({{color0 | rgb}}, 1);
+$surface_bright: rgba({{color8 | rgb}}, 1);
+$on_background: rgba({{foreground | rgb}}, 1);
+$on_primary: rgba({{background | rgb}}, 1);
+$on_secondary: rgba({{background | rgb}}, 1);
+$on_surface: rgba({{foreground | rgb}}, 1);
+$surface_dim: rgba({{color0 | rgb}}, 1);
+$on_surface_variant: rgba({{color7 | rgb}}, 1);
+$on_primary_container: rgba({{color15 | rgb}}, 1);
+$primary_fixed_dim: rgba({{color10 | rgb}}, 1);
+$on_primary_fixed_variant: rgba({{color11 | rgb}}, 1);
+$tertiary_fixed_dim: rgba({{color12 | rgb}}, 1);
+$on_tertiary_fixed_variant: rgba({{color13 | rgb}}, 1);
+
+/* general color variables */
+$red: #e53935;
+$accent_green: #afbea2;
+$tooltipBg: $background;
+$fg: $on_background;
+$bg: rgba({{background | rgb}}, 0.5);
+$barBg: rgba({{background | rgb}}, 0.5);
+$surface: rgba({{color8 | rgb}}, 0.6);
+$overlay: rgba({{foreground | rgb}}, 0.25);
+$accent: $primary;
+
+/* os icon colors */
+$os: $on_surface_variant;
+
+/* workspaces colors */
+$primaryMon: $primary;
+$primaryMonHover: $primary_container;
+$secondaryMon: $secondary;
+$secondaryMonHover: $secondary_container;
+$tertiaryMon: $tertiary;
+$tertiaryMonHover: $tertiary_container;
+$fourthMon: $primary;
+$fourthMonHover: $primary_container;
+
+/* button colors */
+$buttonEnabled: rgba({{color2 | rgb}}, 0.2);
+$buttonEnabledHover: rgba({{color2 | rgb}}, 0.3);
+
+$buttonDisabled: $surface;
+$buttonDisabledHover: rgba({{color8 | rgb}}, 0.7);
+
+/* hw circular proc colors */
+$ramProc: $primary;
+$cpuProc: $secondary;
+$procBg: $surface_dim;
+
+/* numeric variables */
+$round: 12px;
+$round2: 20px;
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.4rem;
+$spacing-md: 0.75rem;
+$border-width: 1px;
+$scale: 0.5rem;
+$font: 1.1rem;

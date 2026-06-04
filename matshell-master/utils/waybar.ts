@@ -13,6 +13,7 @@ export function getWaybarLayout(): WaybarLayout {
   let positionY: "top" | "bottom" = "top";
   let width = 450;
   let height = 720;
+  let isHorizontal = false;
 
   try {
     const configPath = `${GLib.get_home_dir()}/.config/waybar/config`;
@@ -38,9 +39,11 @@ export function getWaybarLayout(): WaybarLayout {
     } else if (layout_name.includes("[LEFT]")) {
       positionX = "left";
       positionY = "bottom";
+      isHorizontal = true;
     } else if (layout_name.includes("[RIGHT]")) {
       positionX = "right";
       positionY = "bottom";
+      isHorizontal = true;
     } else if (layout_name.includes("[BOT]")) {
       positionX = "right";
       positionY = "bottom";
@@ -48,14 +51,44 @@ export function getWaybarLayout(): WaybarLayout {
       positionX = "right";
       positionY = "top";
     }
+
+    // Parse config content to dynamically locate the notify module placement
+    const [, content] = GLib.file_get_contents(target);
+    const text = new TextDecoder("utf-8").decode(content);
+    const cleanText = text.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1');
+    
+    const leftIndex = cleanText.indexOf("modules-left");
+    const rightIndex = cleanText.indexOf("modules-right");
+    const notifyIndex = cleanText.indexOf("group/notify");
+    const swayncIndex = cleanText.indexOf("custom/swaync");
+    
+    const indexToUse = notifyIndex !== -1 ? notifyIndex : swayncIndex;
+    
+    if (indexToUse !== -1) {
+      if (leftIndex !== -1 && rightIndex !== -1) {
+        if (leftIndex < rightIndex) {
+          if (indexToUse > leftIndex && indexToUse < rightIndex) {
+            positionX = "left";
+          } else if (indexToUse > rightIndex) {
+            positionX = "right";
+          }
+        } else {
+          if (indexToUse > rightIndex && indexToUse < leftIndex) {
+            positionX = "right";
+          } else if (indexToUse > leftIndex) {
+            positionX = "left";
+          }
+        }
+      } else if (leftIndex !== -1) {
+        positionX = "left";
+      } else if (rightIndex !== -1) {
+        positionX = "right";
+      }
+    }
   } catch (e) {
     console.error("Error reading waybar config link:", e);
   }
 
-  // Determine size (width/height) based on positionX and if the bar is a side bar
-  // User: horizontal/wide (e.g. 720x450) when on the left/right, and vertical/tall (e.g. 450x720) when on top/bottom
-  const isHorizontal = positionX === "left" || (positionX === "right" && GLib.file_read_link(`${GLib.get_home_dir()}/.config/waybar/config`).includes("[RIGHT]"));
-  
   if (isHorizontal) {
     width = 720;
     height = 450;
