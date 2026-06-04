@@ -145,6 +145,23 @@ copy_phase2() {
     fi
   done
 
+  # Copiar configuración global de KDE (kdeglobals) para forzar modo oscuro en apps Qt Quick (ej. KDE Connect)
+  local KDE_PATH="$HOME/.config/kdeglobals"
+  local SRC_KDE="config/kdeglobals"
+  if [ ! -f "$SRC_KDE" ]; then
+    SRC_KDE="../config/kdeglobals" # Si se ejecuta desde subcarpeta
+  fi
+  if [ -f "$SRC_KDE" ]; then
+    if [ -f "$KDE_PATH" ]; then
+      echo -e "${NOTE:-[NOTE]} - Respaldando kdeglobals existente."
+      local BACK_DIR
+      BACK_DIR=$(get_backup_dirname)
+      mv "$KDE_PATH" "$KDE_PATH-backup-$BACK_DIR" 2>&1 | tee -a "$log"
+    fi
+    cp "$SRC_KDE" "$KDE_PATH" 2>&1 | tee -a "$log"
+    echo "${OK:-[OK]} - ¡Copia de kdeglobals para modo oscuro completada!" 2>&1 | tee -a "$log"
+  fi
+
   install_terminal_configs "$log"
 }
 
