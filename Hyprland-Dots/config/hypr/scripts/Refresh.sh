@@ -43,9 +43,11 @@ done
 sleep 0.1
 waybar &
 
-# Dynamically adjust swaync position based on active Waybar layout
+# Dynamically adjust swaync position and size based on active Waybar layout
 positionX="right"
 positionY="top"
+width=450
+height=720
 
 if [ -L "$HOME/.config/waybar/config" ]; then
   layout_name=$(basename "$(readlink -f "$HOME/.config/waybar/config")")
@@ -53,35 +55,53 @@ if [ -L "$HOME/.config/waybar/config" ]; then
   if [[ "$layout_name" == *"[TOP & BOT]"* ]]; then
     positionX="right"
     positionY="bottom"
+    width=450
+    height=720
   elif [[ "$layout_name" == *"[BOT & Left]"* || "$layout_name" == *"[BOT & LEFT]"* ]]; then
     positionX="left"
     positionY="bottom"
+    width=450
+    height=720
   elif [[ "$layout_name" == *"[BOT & Right]"* || "$layout_name" == *"[BOT & RIGHT]"* ]]; then
     positionX="right"
     positionY="bottom"
+    width=450
+    height=720
   elif [[ "$layout_name" == *"[TOP & Left]"* || "$layout_name" == *"[TOP & LEFT]"* ]]; then
     positionX="left"
     positionY="top"
+    width=450
+    height=720
   elif [[ "$layout_name" == *"[TOP & Right]"* || "$layout_name" == *"[TOP & RIGHT]"* ]]; then
     positionX="right"
     positionY="top"
+    width=450
+    height=720
   elif [[ "$layout_name" == *"[LEFT]"* ]]; then
     positionX="left"
     positionY="bottom"
+    width=720
+    height=450
   elif [[ "$layout_name" == *"[RIGHT]"* ]]; then
     positionX="right"
     positionY="bottom"
+    width=720
+    height=450
   elif [[ "$layout_name" == *"[BOT]"* ]]; then
     positionX="right"
     positionY="bottom"
+    width=450
+    height=720
   elif [[ "$layout_name" == *"[TOP]"* ]]; then
     positionX="right"
     positionY="top"
+    width=450
+    height=720
   fi
 fi
 
 if [ -f "$HOME/.config/swaync/config.json" ] && which jq >/dev/null 2>&1; then
-  jq --arg px "$positionX" --arg py "$positionY" '.positionX = $px | .positionY = $py' "$HOME/.config/swaync/config.json" > "$HOME/.config/swaync/config.json.tmp" && mv "$HOME/.config/swaync/config.json.tmp" "$HOME/.config/swaync/config.json"
+  jq --arg px "$positionX" --arg py "$positionY" --argjson w "$width" --argjson h "$height" '.positionX = $px | .positionY = $py | ."control-center-width" = $w | ."control-center-height" = $h' "$HOME/.config/swaync/config.json" > "$HOME/.config/swaync/config.json.tmp" && mv "$HOME/.config/swaync/config.json.tmp" "$HOME/.config/swaync/config.json"
 fi
 
 # relaunch swaync
