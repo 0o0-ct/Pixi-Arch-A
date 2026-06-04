@@ -135,6 +135,7 @@ fi
 # relaunch ags
 sleep 0.3
 ags run >/dev/null 2>&1 &
+disown
 
 # Relaunching rainbow borders if the script exists
 sleep 1

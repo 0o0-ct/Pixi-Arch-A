@@ -20,6 +20,19 @@ $on_primary_fixed_variant: rgba({{color11 | rgb}}, 1);
 $tertiary_fixed_dim: rgba({{color12 | rgb}}, 1);
 $on_tertiary_fixed_variant: rgba({{color13 | rgb}}, 1);
 
+/* outline and error scheme variables required by matshell */
+$outline: rgba({{color11 | rgb}}, 1);
+$outline_variant: rgba({{color12 | rgb}}, 1);
+$error: rgba({{color1 | rgb}}, 1);
+$error_container: rgba({{color9 | rgb}}, 1);
+$on_error: rgba({{color15 | rgb}}, 1);
+$on_error_container: rgba({{color15 | rgb}}, 1);
+$scrim: rgba(0, 0, 0, 1);
+$shadow: rgba(0, 0, 0, 1);
+$source_color: rgba({{color2 | rgb}}, 1);
+$surface_tint: rgba({{color2 | rgb}}, 1);
+$surface_variant: rgba({{color8 | rgb}}, 1);
+
 /* general color variables */
 $red: #e53935;
 $accent_green: #afbea2;
