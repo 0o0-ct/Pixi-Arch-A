@@ -26,7 +26,6 @@ export default function SystemMenu() {
       name="system-menu"
       application={app}
       layer={Astal.Layer.OVERLAY}
-      anchor={finalAnchor}
       keymode={Astal.Keymode.ON_DEMAND}
       // Fixes gtk4-layer-shell bug
       // https://github.com/Aylur/astal/issues/258
