@@ -23,10 +23,10 @@ configuration {
 /*****----- Global Properties -----*****/
 * {
     /* --- Premium Dark Glassmorphism Variables --- */
-    background:                  rgba(10, 12, 18, 0.48);
+    background:                  rgba(10, 12, 18, 0.38);
     background-alt:              rgba(255, 255, 255, 0.04);
     foreground:                  #ffffff;
-    selected:                    rgba(255, 255, 255, 0.14);
+    selected:                    rgba(255, 255, 255, 0.18);
     active:                      rgba(255, 255, 255, 0.18);
     urgent:                      #cc3436;
     

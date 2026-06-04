@@ -25,7 +25,7 @@ window {
     border            : 1px;
     border-radius     : 22px;
     border-color      : rgba(255, 255, 255, 0.22);
-    background-color  : rgba(10, 12, 18, 0.48);
+    background-color  : rgba(10, 12, 18, 0.38);
 }
 
 mainbox {
@@ -86,7 +86,7 @@ element selected.normal {
     border-color      : rgba(255, 255, 255, 0.25);
     border-radius     : 12px;
     text-color        : #ffffff;
-    background-color  : rgba(255, 255, 255, 0.14);
+    background-color  : rgba(255, 255, 255, 0.18);
 }
 element selected.urgent {
     border            : 1px;
