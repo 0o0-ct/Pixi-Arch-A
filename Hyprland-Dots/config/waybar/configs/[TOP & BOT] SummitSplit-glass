@@ -84,7 +84,7 @@
 
 "modules-right": [
 	"tray",
-	"group/notify",
+	"custom/swaync", "custom/dot_update",
 	"pulseaudio",
 	//"wireplumber", 
 	"pulseaudio#microphone",	  

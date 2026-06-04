@@ -28,7 +28,7 @@
 "modules-left": [
 	"hyprland/workspaces#roman", 
 	"mpris", 
-	"group/notify", 
+	"custom/swaync", "custom/dot_update", 
 	"tray"
 	],
   

@@ -83,7 +83,7 @@
     
 "modules-right": [
 	"mpris",
-	"group/notify",
+	"custom/swaync", "custom/dot_update",
     "tray",
     "custom/light_dark",
     ],

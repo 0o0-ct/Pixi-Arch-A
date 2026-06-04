@@ -33,7 +33,7 @@
 "modules-center": [
 	"custom/separator#blank",
   "group/app_drawer",
-	"group/notify",
+	"custom/swaync", "custom/dot_update",
 	"hyprland/workspaces#rw",
 	"clock",
 	"custom/weather",

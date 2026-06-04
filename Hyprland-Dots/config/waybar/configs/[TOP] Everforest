@@ -28,7 +28,7 @@
 	"hyprland/workspaces#rw",
 	"custom/separator#blank_2",
 //	"mpris",
-	"group/notify",
+	"custom/swaync", "custom/dot_update",
 	"tray",
 	],
 "modules-center": [

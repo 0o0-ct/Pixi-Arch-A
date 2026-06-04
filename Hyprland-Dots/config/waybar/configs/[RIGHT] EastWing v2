@@ -23,7 +23,7 @@
 //"gtk-layer-shell": true,
   
 "modules-left": [
-	"group/notify",	
+	"custom/swaync", "custom/dot_update",	
   "clock#vertical",
     
 	"custom/menu",

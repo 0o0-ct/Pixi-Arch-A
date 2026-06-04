@@ -35,54 +35,39 @@ export default function SystemMenu() {
       visible={visible}
       gdkmonitor={gdkmonitor}
     >
-      {layout.isHorizontal ? (
+      <box
+        cssClasses={["system-menu", "system-menu-horizontal"]}
+        widthRequest={720}
+        heightRequest={450}
+        orientation={Gtk.Orientation.HORIZONTAL}
+        spacing={16}
+      >
+        {/* Column 1: Toggles and other controls */}
         <box
-          cssClasses={["system-menu", "system-menu-horizontal"]}
-          widthRequest={720}
-          heightRequest={450}
-          orientation={Gtk.Orientation.HORIZONTAL}
-          spacing={16}
-        >
-          {/* Column 1: Toggles and other controls */}
-          <box
-            orientation={Gtk.Orientation.VERTICAL}
-            spacing={8}
-            hexpand={true}
-            valign={Gtk.Align.CENTER}
-          >
-            <Toggles showTogglesOnly={true} />
-            {hasProfiles && <PowerProfileBox />}
-            <Sliders />
-            <BatteryBox />
-          </box>
-          
-          {/* Vertical Separator */}
-          <Gtk.Separator orientation={Gtk.Orientation.VERTICAL} />
-
-          {/* Column 2: Notifications List */}
-          <box
-            orientation={Gtk.Orientation.VERTICAL}
-            spacing={8}
-            hexpand={true}
-            cssClasses={["notification-column"]}
-          >
-            <Toggles showNotificationsOnly={true} />
-          </box>
-        </box>
-      ) : (
-        <box
-          cssClasses={["system-menu"]}
-          widthRequest={450}
-          heightRequest={720}
           orientation={Gtk.Orientation.VERTICAL}
           spacing={8}
+          hexpand={true}
+          valign={Gtk.Align.CENTER}
         >
-          <Toggles />
+          <Toggles showTogglesOnly={true} />
           {hasProfiles && <PowerProfileBox />}
           <Sliders />
           <BatteryBox />
         </box>
-      )}
+        
+        {/* Vertical Separator */}
+        <Gtk.Separator orientation={Gtk.Orientation.VERTICAL} />
+
+        {/* Column 2: Notifications List */}
+        <box
+          orientation={Gtk.Orientation.VERTICAL}
+          spacing={8}
+          hexpand={true}
+          cssClasses={["notification-column"]}
+        >
+          <Toggles showNotificationsOnly={true} />
+        </box>
+      </box>
     </window>
   );
 }

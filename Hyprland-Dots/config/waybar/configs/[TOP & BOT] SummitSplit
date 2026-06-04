@@ -83,7 +83,7 @@
 "modules-right": [
 	"hyprland/window",
 	"tray",
-	"group/notify",
+	"custom/swaync", "custom/dot_update",
 	"mpris",
 	"keyboard-state",
 	"pulseaudio",

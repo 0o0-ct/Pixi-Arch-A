@@ -26,7 +26,7 @@
   "custom/arch",
 	"hyprland/workspaces#rw",
 //	"mpris",
-	"group/notify",
+	"custom/swaync", "custom/dot_update",
 	"tray",
 	],
 "modules-center": [
