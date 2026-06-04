@@ -55,46 +55,40 @@ if [ -L "$HOME/.config/waybar/config" ]; then
   if [[ "$layout_name" == *"[TOP & BOT]"* ]]; then
     positionX="right"
     positionY="bottom"
-    width=450
-    height=720
   elif [[ "$layout_name" == *"[BOT & Left]"* || "$layout_name" == *"[BOT & LEFT]"* ]]; then
     positionX="left"
     positionY="bottom"
-    width=450
-    height=720
   elif [[ "$layout_name" == *"[BOT & Right]"* || "$layout_name" == *"[BOT & RIGHT]"* ]]; then
     positionX="right"
     positionY="bottom"
-    width=450
-    height=720
   elif [[ "$layout_name" == *"[TOP & Left]"* || "$layout_name" == *"[TOP & LEFT]"* ]]; then
     positionX="left"
     positionY="top"
-    width=450
-    height=720
   elif [[ "$layout_name" == *"[TOP & Right]"* || "$layout_name" == *"[TOP & RIGHT]"* ]]; then
     positionX="right"
     positionY="top"
-    width=450
-    height=720
   elif [[ "$layout_name" == *"[LEFT]"* ]]; then
     positionX="left"
     positionY="bottom"
-    width=720
-    height=450
   elif [[ "$layout_name" == *"[RIGHT]"* ]]; then
     positionX="right"
     positionY="bottom"
-    width=720
-    height=450
   elif [[ "$layout_name" == *"[BOT]"* ]]; then
     positionX="right"
     positionY="bottom"
-    width=450
-    height=720
   elif [[ "$layout_name" == *"[TOP]"* ]]; then
     positionX="right"
     positionY="top"
+  fi
+
+  # Determine size (width/height) based on the final positionX and layout style
+  if [[ "$positionX" == "left" ]]; then
+    width=720
+    height=450
+  elif [[ "$positionX" == "right" ]] && [[ "$layout_name" == *"[RIGHT]"* ]]; then
+    width=720
+    height=450
+  else
     width=450
     height=720
   fi
@@ -102,6 +96,40 @@ fi
 
 if [ -f "$HOME/.config/swaync/config.json" ] && which jq >/dev/null 2>&1; then
   jq --arg px "$positionX" --arg py "$positionY" --argjson w "$width" --argjson h "$height" '.positionX = $px | .positionY = $py | ."control-center-width" = $w | ."control-center-height" = $h' "$HOME/.config/swaync/config.json" > "$HOME/.config/swaync/config.json.tmp" && mv "$HOME/.config/swaync/config.json.tmp" "$HOME/.config/swaync/config.json"
+fi
+
+# Write dynamic CSS layout configuration for SwayNC columns
+LAYOUT_CSS="$HOME/.config/swaync/layout.css"
+if [ "$width" -eq 720 ]; then
+  cat <<EOF > "$LAYOUT_CSS"
+/* Horizontal Layout - Two Columns */
+.control-center, .control-center > box {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 410px;
+}
+.widget-dnd, .widget-buttons-grid, .widget-mpris, .widget-volume, .widget-backlight, .widget-title, .control-center-list {
+    width: 330px;
+    min-width: 330px;
+    max-width: 330px;
+}
+EOF
+else
+  cat <<EOF > "$LAYOUT_CSS"
+/* Vertical Layout - Single Column */
+.control-center, .control-center > box {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    height: auto;
+}
+.widget-dnd, .widget-buttons-grid, .widget-mpris, .widget-volume, .widget-backlight, .widget-title, .control-center-list {
+    width: auto;
+    min-width: 0;
+    max-width: none;
+}
+EOF
 fi
 
 # relaunch swaync
