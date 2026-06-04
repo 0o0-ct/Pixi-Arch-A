@@ -11,7 +11,10 @@ configuration {
 window {
   width: 75%;
   height: inherit;
-  background-color: transparent;
+  border: 1px;
+  border-radius: 22px;
+  border-color: rgba(255, 255, 255, 0.22);
+  background-color: rgba(10, 12, 18, 0.38);
   transparency: "real";
 }
 
@@ -20,6 +23,7 @@ mainbox {
   children:
     [ "inputbar", "listview"];
   background-color: transparent;
+  padding: 24px;
 }
 
 entry {
@@ -47,16 +51,18 @@ listview {
 /* ---- Element ---- */
 element {
   orientation: vertical;
-  padding: 0px;
-  spacing: 0px;
-  border-radius: 10px;
-  padding: 0px;
+  padding: 10px;
+  spacing: 6px;
+  border-radius: 14px;
   margin: 0px;
   background-color: transparent;
 }
 
 element selected.normal {
-  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.18);
+  border: 1px;
+  border-color: rgba(255, 255, 255, 0.25);
+  border-radius: 14px;
 }
 
 element-icon {
