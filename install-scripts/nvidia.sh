@@ -8,6 +8,7 @@ nvidia_pkg=(
   nvidia-utils
   libva
   libva-nvidia-driver
+  nvidia-prime
 )
 
 
