@@ -37,20 +37,18 @@ if [ -d "$theme_name" ]; then
   echo -e "\e[1A\e[K${OK} - Se eliminó el directorio existente de $theme_name de la ubicación actual." 2>&1 | tee -a "$LOG"
 fi
 
-# Clonar el repositorio
-if git clone --depth=1 "$source_theme" "$theme_name"; then
-  if [ ! -d "$theme_name" ]; then
-    echo "${ERROR} Error al clonar el repositorio." | tee -a "$LOG"
-  fi
+# Copiar el tema personalizado desde el repositorio de dotfiles
+local_theme_path="Hyprland-Dots/assets/sddm_theme/$theme_name"
 
+if [ -d "$local_theme_path" ]; then
   # Crear el directorio de temas si no existe
   if [ ! -d "/usr/share/sddm/themes" ]; then
     sudo mkdir -p /usr/share/sddm/themes
     echo "${OK} - Directorio '/usr/share/sddm/themes' creado." | tee -a "$LOG"
   fi
 
-  # Mover el tema clonado al directorio de temas
-  sudo mv "$theme_name" "/usr/share/sddm/themes/$theme_name" 2>&1 | tee -a "$LOG"
+  # Copiar el tema al directorio de temas
+  sudo cp -r "$local_theme_path" "/usr/share/sddm/themes/" 2>&1 | tee -a "$LOG"
 
   # Configurar el tema en SDDM
   sddm_conf="/etc/sddm.conf"
@@ -108,7 +106,7 @@ if git clone --depth=1 "$source_theme" "$theme_name"; then
 
 else
 
-  echo "${ERROR} - No se pudo clonar el repositorio del tema SDDM. Por favor, comprueba tu conexión a Internet." | tee -a "$LOG" >&2
+  echo "${ERROR} - No se encontró el tema local en $local_theme_path." | tee -a "$LOG" >&2
 fi
 
 printf "\n%.0s" {1..2}
