@@ -27,8 +27,10 @@ ColumnLayout {
     Rectangle {
         id: loginBox
         Layout.alignment: Qt.AlignHCenter
-        width: 420
-        height: input.implicitHeight + 40
+        Layout.preferredWidth: 420
+        Layout.preferredHeight: input.implicitHeight + 40
+        width: Layout.preferredWidth
+        height: Layout.preferredHeight
         color: Qt.rgba(15/255, 20/255, 30/255, 0.45)
         border.color: Qt.rgba(1, 1, 1, 0.15)
         border.width: 1
@@ -45,8 +47,10 @@ ColumnLayout {
     Rectangle {
         id: systemButtonsBox
         Layout.alignment: Qt.AlignHCenter
-        width: systemButtons.implicitWidth + 30
-        height: systemButtons.implicitHeight + 25
+        Layout.preferredWidth: systemButtons.implicitWidth + 30
+        Layout.preferredHeight: systemButtons.implicitHeight + 25
+        width: Layout.preferredWidth
+        height: Layout.preferredHeight
         color: Qt.rgba(15/255, 20/255, 30/255, 0.45)
         border.color: Qt.rgba(1, 1, 1, 0.15)
         border.width: 1
