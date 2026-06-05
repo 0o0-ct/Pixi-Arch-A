@@ -63,6 +63,8 @@ hypr_package_2=(
   mousepad 
   mpv
   mpv-mpris 
+  power-profiles-daemon
+  thermald
   nvtop
   nwg-look
   nwg-displays
