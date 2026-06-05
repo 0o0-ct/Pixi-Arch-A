@@ -55,6 +55,8 @@ ColumnLayout {
 
         SystemButtons {
             id: systemButtons
+            width: implicitWidth
+            height: implicitHeight
             anchors.centerIn: parent
             exposedSession: input.exposeSession
         }
