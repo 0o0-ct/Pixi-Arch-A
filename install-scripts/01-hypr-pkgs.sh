@@ -126,4 +126,9 @@ for PKG1 in "${hypr_package[@]}" "${hypr_package_2[@]}" "${Extra[@]}"; do
   install_package "$PKG1" "$LOG"
 done
 
+# Enable thermal and power profiles services
+printf "\n%s - Habilitando servicios ${SKY_BLUE}thermald y power-profiles-daemon${RESET}...\n" "${NOTE}"
+sudo systemctl enable --now thermald.service 2>&1 | tee -a "$LOG" || true
+sudo systemctl enable --now power-profiles-daemon.service 2>&1 | tee -a "$LOG" || true
+
 printf "\n%.0s" {1..2}
