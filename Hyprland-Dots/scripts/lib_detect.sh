@@ -4,22 +4,13 @@
 # Nvidia tweaks: uncomments envs and adjusts hardware cursor setting.
 detect_nvidia_adjust() {
   local log="$1"
+  # Run GPU detection script to write envs to ~/.config/uwsm/env and ~/.config/hypr/configs/ENVariables_GPU.conf
+  echo "${INFO:-[INFO]} Ejecutando detección automática de GPU..." 2>&1 | tee -a "$log" || true
+  chmod +x config/hypr/scripts/detect-gpu.sh
+  ./config/hypr/scripts/detect-gpu.sh 2>&1 | tee -a "$log" || true
+
   if lspci -k | grep -A 2 -E "(VGA|3D)" | grep -iq nvidia; then
-    echo "${INFO:-[INFO]} GPU Nvidia detectada. Configurando variables de entorno y parámetros" 2>&1 | tee -a "$log" || true
-    
-    # Check if there is also an integrated GPU (Intel or AMD)
-    if lspci -k | grep -A 2 -E "(VGA|3D)" | grep -iq -E "intel|amd|ati"; then
-      echo "${INFO:-[INFO]} Sistema híbrido (Intel/AMD + Nvidia) detectado. Se mantiene VA-API en la iGPU para optimizar el consumo de batería y temperatura en navegadores." 2>&1 | tee -a "$log" || true
-      # On hybrid systems, we don't uncomment nvidia variables for VA-API, letting libva auto-detect iGPU.
-      # But we still enable GSK_RENDERER,ngl for Nvidia UI stability.
-      sed -i '/env = GSK_RENDERER,ngl/s/^#//' config/hypr/configs/ENVariables.conf
-    else
-      # Dedicated Nvidia-only system
-      sed -i '/env = LIBVA_DRIVER_NAME,nvidia/s/^#//' config/hypr/configs/ENVariables.conf
-      sed -i '/env = __GLX_VENDOR_LIBRARY_NAME,nvidia/s/^#//' config/hypr/configs/ENVariables.conf
-      sed -i '/env = NVD_BACKEND,direct/s/^#//' config/hypr/configs/ENVariables.conf
-      sed -i '/env = GSK_RENDERER,ngl/s/^#//' config/hypr/configs/ENVariables.conf
-    fi
+    echo "${INFO:-[INFO]} GPU Nvidia detectada. Ajustando parámetros de cursor..." 2>&1 | tee -a "$log" || true
     sed -i 's/^\([[:space:]]*no_hardware_cursors[[:space:]]*=[[:space:]]*\)2/\1 1/' config/hypr/configs/SystemSettings.conf
   fi
 }
