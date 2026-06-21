@@ -76,10 +76,14 @@ fi
 
 # NVIDIA Power Management
 printf "${YELLOW} Configuring NVIDIA Dynamic Power Management...${RESET}\n"
-sudo echo -e "options nvidia NVreg_DynamicPowerManagement=0x02" | sudo tee /etc/modprobe.d/nvidia-power.conf 2>&1 | tee -a "$LOG"
+sudo echo -e "options nvidia NVreg_DynamicPowerManagement=0x02\noptions nvidia NVreg_EnableS0ixPowerManagement=1" | sudo tee /etc/modprobe.d/nvidia-power.conf 2>&1 | tee -a "$LOG"
 sudo systemctl enable nvidia-suspend.service nvidia-resume.service nvidia-hibernate.service 2>&1 | tee -a "$LOG"
 echo 'ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x030000", ATTR{power/control}="auto"' | sudo tee /etc/udev/rules.d/80-nvidia-pm.rules 2>&1 | tee -a "$LOG"
-printf "${OK} NVIDIA Dynamic Power Management configured.\n"
+
+# Enable nvidia-powerd for Dynamic Boost (critical for laptops with RTX 4000+)
+printf "${YELLOW} Enabling NVIDIA Dynamic Boost (nvidia-powerd)...${RESET}\n"
+sudo systemctl enable nvidia-powerd.service 2>&1 | tee -a "$LOG"
+printf "${OK} NVIDIA Dynamic Power Management and Dynamic Boost configured.\n"
 
 
 # Additional for GRUB users
