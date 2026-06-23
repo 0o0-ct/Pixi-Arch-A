@@ -60,7 +60,7 @@ class ImageMagickStrategy implements ThemeAnalysisStrategy {
 
     try {
       const bashCommand = `bash -c '
-        BRIGHTNESS=$(${magick} "${imagePath}" -colorspace Gray -format "%[fx:mean]" info:)
+        BRIGHTNESS=$(${magick} "${imagePath}" -scale 1x1! -colorspace Gray -format "%[fx:mean]" info:)
         COLOR=$(${magick} "${imagePath}" -scale 1x1! -format "%[pixel:u.p{0,0}]" info:)
         echo "brightness:$BRIGHTNESS"
         echo "color:$COLOR"

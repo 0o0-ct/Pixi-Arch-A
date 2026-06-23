@@ -78,7 +78,7 @@ fi
 detect_wallpaper_mean() {
   local img="$1"
   if command -v magick >/dev/null 2>&1; then
-    magick identify -format '%[fx:mean]' "$img" 2>/dev/null || true
+    magick "$img" -scale 1x1 -format '%[fx:mean]' info: 2>/dev/null || true
   fi
 }
 
