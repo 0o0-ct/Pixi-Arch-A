@@ -18,21 +18,30 @@ for ((i = 0; i < bar_length; i++)); do
   dict+=";s/$i/${bar:$i:1}/g"
 done
 
-# Single-instance guard (only kill our previous instance if it’s still alive)
+# Clean up any leftover waybar-cava config files and their corresponding cava processes from past runs
 RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}"
-pidfile="$RUNTIME_DIR/waybar-cava.pid"
-if [[ -f "$pidfile" ]]; then
-  oldpid="$(cat "$pidfile" || true)"
-  if [[ -n "$oldpid" ]] && kill -0 "$oldpid" 2>/dev/null; then
-    kill "$oldpid" 2>/dev/null || true
-    sleep 0.1 || true
+for conf in "$RUNTIME_DIR"/waybar-cava.*.conf; do
+  if [[ -f "$conf" ]]; then
+    # Find and kill the cava process running with this specific config file
+    pid=$(pgrep -f "cava -p $conf" || true)
+    if [[ -n "$pid" ]]; then
+      kill -9 "$pid" 2>/dev/null || true
+    fi
+    rm -f "$conf"
   fi
-fi
-printf '%d' $$ >"$pidfile"
+done
 
-# Unique temp config + cleanup on exit
+# Unique temp config
 config_file="$(mktemp "$RUNTIME_DIR/waybar-cava.XXXXXX.conf")"
-cleanup() { rm -f "$config_file" "$pidfile"; }
+
+# Cleanup function to kill the child cava process when this script exits
+cava_pid=""
+cleanup() {
+  if [[ -n "$cava_pid" ]]; then
+    kill "$cava_pid" 2>/dev/null || true
+  fi
+  rm -f "$config_file"
+}
 trap cleanup EXIT INT TERM
 
 cat >"$config_file" <<EOF
@@ -52,4 +61,9 @@ ascii_max_range = 7
 EOF
 
 # Stream cava output and translate digits 0..7 to bar glyphs
-exec cava -p "$config_file" | sed -u "$dict"
+cava -p "$config_file" | sed -u "$dict" &
+cava_pid=$!
+
+# Wait for the background job to finish
+wait "$cava_pid"
+
