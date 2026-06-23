@@ -46,8 +46,7 @@
 	"on-update": "",
 	"on-scroll-up": "$HOME/.config/hypr/scripts/Brightness.sh --inc",
 	"on-scroll-down": "$HOME/.config/hypr/scripts/Brightness.sh --dec",
-	"smooth-scrolling-threshold": 1,
-},
+	"smooth-scrolling-threshold": 1},
 
 "backlight#2": {
   "device": "intel_backlight",
@@ -81,8 +80,7 @@
 	"tooltip": true,
 	"tooltip-format": "{timeTo} {power}w",
 	"on-click-middle": "$HOME/.config/hypr/scripts/ChangeBlur.sh",
-	"on-click-right": "$HOME/.config/hypr/scripts/Wlogout.sh",
-},
+	"on-click-right": "$HOME/.config/hypr/scripts/Wlogout.sh"},
 
 "bluetooth": {
 	"format": " ",
@@ -92,8 +90,7 @@
 	"tooltip-format-connected": "{device_enumerate}",
 	"tooltip-format-enumerate-connected": " {device_alias} 󰂄{device_battery_percentage}%",
 	"tooltip": true,
-	"on-click": "blueman-manager",
-},
+	"on-click": "blueman-manager"},
 
 "clock": {
 	"interval": 1,
@@ -142,15 +139,13 @@
     //"format": "{:L%B | %a %d, %Y | %I:%M %p}", // AM PM format
     "format": "{:L%B | %a %d, %Y | %H:%M}", // 24H
 	"format-alt": "{:L%a %b %d, %G}",
-	"tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
-},
+	"tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>"},
 
 "clock#5": {
     "format": "{:%A, %I:%M %P}",// AM PM format
     //"format": "{:%a %d | %H:%M}",// 24H
 	"format-alt": "{:L%A, %d %B, %Y (%R)}",
-	"tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
-},
+	"tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>"},
 
 "cpu": {
 	"format": "{usage}% 󰍛",
@@ -161,8 +156,7 @@
 	"format-icons": [
 		"▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"
 	],
-	"on-click-right": "gnome-system-monitor",
-},
+	"on-click-right": "gnome-system-monitor"},
 
 "disk": {
 	"interval": 30,
@@ -171,8 +165,7 @@
 	//"format-alt-click": "click",
 	"format": "{percentage_used}% 󰋊",
 	//"tooltip": true,
-	"tooltip-format": "{used} used out of {total} on {path} ({percentage_used}%)",
-},
+	"tooltip-format": "{used} used out of {total} on {path} ({percentage_used}%)"},
 
 "hyprland/language": {
 	"format": "Lang: {}",
@@ -184,8 +177,7 @@
 
 "hyprland/submap": {
 	"format": "<span style=\"italic\">  {}</span>", // Icon: expand-arrows-alt
-	"tooltip": false,
-},
+	"tooltip": false},
 
 "hyprland/window": {
 	"format": "{}",
@@ -197,9 +189,7 @@
 		"(.*) — Mozilla Firefox": " $1",
 		"(.*) - fish": "> [$1]",
 		"(.*) - zsh": "> [$1]",
-		"(.*) - $term": "> [$1]",
-	},
-},
+		"(.*) - $term": "> [$1]"}},
 
 "idle_inhibitor": {
 	"tooltip": true,
@@ -208,8 +198,7 @@
 	"format": "{icon}",
 	"format-icons": {
 		"activated": " ",
-		"deactivated": " ",
-	}
+		"deactivated": " "}
 },
 
 "keyboard-state": {
@@ -217,13 +206,11 @@
 	"capslock": true,
 	"format": {
 		"numlock": "N {icon}",
-		"capslock": "󰪛 {icon}",
-	},
+		"capslock": "󰪛 {icon}"},
 	"format-icons": {
 		"locked": "",
 		"unlocked": ""
-	},
-},
+	}},
 
 "memory": {
 	"interval": 10,
@@ -256,16 +243,13 @@
 		"mopidy": "",
 		"mpv": "󰐹",
 		"spotify": "",
-		"vlc": "󰕼",
-	},
+		"vlc": "󰕼"},
 	"status-icons": {
 		"paused": "󰐎",
 		"playing": "",
-		"stopped": "",
-	},
+		"stopped": ""},
 	// "ignored-players": ["firefox"]
-	"max-length": 30,
-},
+	"max-length": 30},
 
 "network": {
 	"format": "{ifname}",
@@ -330,16 +314,14 @@
 		],
 		"ignored-sinks": [
 			"Easy Effects Sink"
-		],
-	},
+		]},
 	"scroll-step": 5.0,
 	"on-click": "$HOME/.config/hypr/scripts/Volume.sh --toggle",
 	"on-click-right": "pavucontrol -t 3",
 	"on-scroll-up": "$HOME/.config/hypr/scripts/Volume.sh --inc",
 	"on-scroll-down": "$HOME/.config/hypr/scripts/Volume.sh --dec",
 	"tooltip-format": "{icon} {desc} | {volume}%",
-	"smooth-scrolling-threshold": 1,
-},
+	"smooth-scrolling-threshold": 1},
 
 "pulseaudio#1": {
   "format": "{icon} {volume}%",
@@ -358,8 +340,7 @@
   "on-click": "pamixer --toggle-mute",
   "on-click-right": "pavucontrol -t 3",
   "tooltip": true,
-  "tooltip-format": "{icon} {desc} | {volume}%",
-},
+  "tooltip-format": "{icon} {desc} | {volume}%"},
 
 "pulseaudio#microphone": {
 	"format": "{format_source}",
@@ -370,13 +351,11 @@
 	"on-scroll-up": "$HOME/.config/hypr/scripts/Volume.sh --mic-inc",
 	"on-scroll-down": "$HOME/.config/hypr/scripts/Volume.sh --mic-dec",
 	"tooltip-format": "{source_desc} | {source_volume}%",
-	"scroll-step": 5,
-},
+	"scroll-step": 5},
 
 "tray": {
 	"icon-size": 20,
-	"spacing": 4,
-},
+	"spacing": 4},
 
 "wireplumber": {
 	"format": "{icon} {volume} %",
@@ -387,8 +366,7 @@
 	"on-scroll-down": "$HOME/.config/hypr/scripts/Volume.sh --dec",
 	"format-icons": [
 		"", "", "󰕾", ""
-	],
-},
+	]},
 
 "wlr/taskbar": {
 	"format": "{icon} {name}",
@@ -402,6 +380,4 @@
 		"rofi",
 		"kitty",
     "kitty-dropterm"
-		],
-},
-}
+		]}}

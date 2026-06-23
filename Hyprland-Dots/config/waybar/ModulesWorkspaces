@@ -19,9 +19,7 @@
 	},
 	"format-icons": {
 		"active": "",
-		"default": "",
-	},
-},
+		"default": ""}},
 // ROMAN Numerals style
 "hyprland/workspaces#roman": {
 	"active-only": false,
@@ -44,9 +42,7 @@
 		"7": "VII",
 		"8": "VIII",
 		"9": "IX",
-		"10": "X",
-	},
-},
+		"10": "X"}},
 // PACMAN Style
 "hyprland/workspaces#pacman": {
 	"active-only": false,
@@ -63,9 +59,7 @@
 	"format-icons": {
             "active": "<span font='12'>󰮯</span>",
             "empty": "<span font='8'></span>",
-            "default": "󰊠",
-	},
-},
+            "default": "󰊠"}},
 // Kanji / Japanese style
 "hyprland/workspaces#kanji": {
 	"disable-scroll": true,
@@ -85,8 +79,7 @@
 		"7": "七",
 		"8": "八",
 		"9": "九",
-		"10": "十",
-	}
+		"10": "十"}
 },
 // for Camilla or Spanish
 "hyprland/workspaces#cam": {
@@ -137,9 +130,7 @@
 		"9": "",
 		"10": "10",
 		"focused": "",
-		"default": "",
-	},
-},
+		"default": ""}},
 // numbers styles
 "hyprland/workspaces#numbers": {
 	"active-only": false,
@@ -162,9 +153,7 @@
 		"7": "7",
 		"8": "8",
 		"9": "9",
-		"10": "10",
-	},
-},
+		"10": "10"}},
 // NUMBERS and ICONS style with window rewrite 
 "hyprland/workspaces#rw": {
 	"disable-scroll": true,
@@ -291,7 +280,5 @@
 		"title<Documentation Viewer>": " ",
 		"title<^Wallpapers$>": " ",
 		"title<^Video Wallpapers$>": " ",
-		"title<^qs-wlogout$>": " ",
-		}
-	},
-}
+		"title<^qs-wlogout$>": " "}
+	}}

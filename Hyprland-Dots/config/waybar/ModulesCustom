@@ -15,43 +15,37 @@
 	//"exec": "$HOME/.config/hypr/UserScripts/Weather.sh",
 	"exec": "$HOME/.config/hypr/UserScripts/WeatherWrap.sh",
 	//"exec-if": "ping wttr.in -c1",
-	"tooltip": true,
-},
+	"tooltip": true},
 
 "custom/hyprpicker": {
 	"format": "",
 	"on-click": "hyprpicker | wl-copy",
 	"tooltip": true,
-	"tooltip-format": "Hyprpicker",
-},
+	"tooltip-format": "Hyprpicker"},
 
 "custom/file_manager": {
 	"format": " ",
 	"on-click": "$HOME/.config/hypr/scripts/WaybarScripts.sh --files",
 	"tooltip": true,
-	"tooltip-format": "File Manager",
-},
+	"tooltip-format": "File Manager"},
 
 "custom/tty": {
 	"format": " ",
 	"on-click": "$HOME/.config/hypr/scripts/WaybarScripts.sh --term",
 	"tooltip": true,
-	"tooltip-format": "Launch Terminal",
-},
+	"tooltip-format": "Launch Terminal"},
 
 "custom/browser": {
 	"format": " ",
 	"on-click": "xdg-open https://",
 	"tooltip": true,
-	"tooltip-format": "Launch Browser",
-},
+	"tooltip-format": "Launch Browser"},
 
 "custom/settings": {
 	"format": " ",
 	"on-click": "$HOME/.config/hypr/scripts/Kool_Quick_Settings.sh",
 	"tooltip": true,
-	"tooltip-format": "Launch KooL Hyprland Settings Menu",
-},
+	"tooltip-format": "Launch KooL Hyprland Settings Menu"},
 
 "custom/cycle_wall": {
 	"format": " ",
@@ -59,23 +53,20 @@
 	"on-click-right": "$HOME/.config/hypr/UserScripts/WallpaperRandom.sh",
 	"on-click-middle": "$HOME/.config/hypr/scripts/WaybarStyles.sh",
 	"tooltip": true,
-	"tooltip-format": "Left Click: Wallpaper Menu\nMiddle Click: Random wallpaper\nRight Click: Waybar Styles Menu",
-},
+	"tooltip-format": "Left Click: Wallpaper Menu\nMiddle Click: Random wallpaper\nRight Click: Waybar Styles Menu"},
 
 "custom/hint": {
 	"format": "󰺁 HINT!",
 	"on-click": "$HOME/.config/hypr/scripts/KeyHints.sh",
 	"on-click-right": "$HOME/.config/hypr/scripts/KeyBinds.sh",
 	"tooltip": true,
-	"tooltip-format": "Left Click: Quick Tips\nRight Click: Keybinds",
-},
+	"tooltip-format": "Left Click: Quick Tips\nRight Click: Keybinds"},
 
 "custom/dot_update": {
 	"format": " 󰁈 ",
 	"on-click": "$HOME/.config/hypr/scripts/KooLsDotsUpdate.sh",
 	"tooltip": true,
-	"tooltip-format": "Check KooL Dots update\nIf available",
-},
+	"tooltip-format": "Check KooL Dots update\nIf available"},
 
 // Hypridle inhibitor
 "custom/hypridle": {
@@ -93,8 +84,7 @@
 	"exec": "$HOME/.config/hypr/scripts/KeyboardLayout.sh status",
 	"interval": 1,
 	"format": " {}",
-	"on-click": "$HOME/.config/hypr/scripts/KeyboardLayout.sh switch",
-},
+	"on-click": "$HOME/.config/hypr/scripts/KeyboardLayout.sh switch"},
 
 "custom/light_dark": {
 	"format": "󰏘 ",
@@ -102,8 +92,7 @@
 	"on-click-right": "$HOME/.config/hypr/scripts/WaybarStyles.sh",
 	"on-click-middle": "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh",
 	"tooltip": true,
-	"tooltip-format": "Clic Izquierdo: Cambiar Fondo Oscuro Aleatorio\nClic Central: Menú de Fondos\nClic Derecho: Menú de Estilos Waybar",
-},
+	"tooltip-format": "Clic Izquierdo: Cambiar Fondo Oscuro Aleatorio\nClic Central: Menú de Fondos\nClic Derecho: Menú de Estilos Waybar"},
 
 // Night light (Hyprsunset)
 "custom/nightlight": {
@@ -122,8 +111,7 @@
 	"format": "󰌾",
 	"on-click": "$HOME/.config/hypr/scripts/LockScreen.sh",
 	"tooltip": true,
-	"tooltip-format": "󰷛 Screen Lock",
-},
+	"tooltip-format": "󰷛 Screen Lock"},
 
 "custom/menu": {
 	"format": "  ",
@@ -131,8 +119,7 @@
 	"on-click-middle": "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh",
 	"on-click-right": "$HOME/.config/hypr/scripts/WaybarLayout.sh",
 	"tooltip": true,
-	"tooltip-format": "Left Click: Rofi Menu\nMiddle Click: Wallpaper Menu\nRight Click: Waybar Layout Menu",
-},
+	"tooltip-format": "Left Click: Rofi Menu\nMiddle Click: Wallpaper Menu\nRight Click: Waybar Layout Menu"},
 // This is a custom cava visualizer
 "custom/cava_mviz": {
 	"exec": "$HOME/.config/hypr/scripts/WaybarCava.sh",
@@ -150,38 +137,33 @@
 	"scroll-step": 5.0,
 	"on-scroll-up": "$HOME/.config/hypr/scripts/Volume.sh --inc",
 	"on-scroll-down": "$HOME/.config/hypr/scripts/Volume.sh --dec",
-	"smooth-scrolling-threshold": 1,
-},
+	"smooth-scrolling-threshold": 1},
     
 "custom/power": {
 	"format": " ⏻ ",
 	"on-click": "$HOME/.config/hypr/scripts/Wlogout.sh",
 	"on-click-right": "$HOME/.config/hypr/scripts/ChangeBlur.sh",
 	"tooltip": true,
-	"tooltip-format": "Left Click: Logout Menu\nRight Click: Change Blur",
-},
+	"tooltip-format": "Left Click: Logout Menu\nRight Click: Change Blur"},
 
 "custom/reboot": {
     "format": "󰜉",
     "on-click": "systemctl reboot",
     "tooltip": true,
-	"tooltip-format": "Left Click: Reboot",
-},
+	"tooltip-format": "Left Click: Reboot"},
     
 "custom/quit": {
     "format": "󰗼",
     "on-click": "hyprctl dispatch exit",
     "tooltip": true,
-	"tooltip-format": "Left Click: Exit Hyprland",
-},
+	"tooltip-format": "Left Click: Exit Hyprland"},
 
 "custom/swaync": {
 	"tooltip": true,
 	"tooltip-format": "Left Click: Launch Quick Settings & Notification Center\nRight Click: Launch Logout Menu",
 	"format": "",
 	"on-click": "ags request -i matshell 'system-menu'",
-	"on-click-right": "ags request -i matshell 'logout'",
-},
+	"on-click-right": "ags request -i matshell 'logout'"},
 // NOTE:! This is mainly for Arch and Arch Based Distros  depend: pacman-contrib
 // Other Distro dont have notifications but can use to check for update for any other distro
 "custom/updater": {
@@ -191,8 +173,7 @@
 	"interval": 43200, // (Arch Linux will try to check 12 hrs interval only
 	"on-click": "$HOME/.config/hypr/scripts/Distro_update.sh",
 	"tooltip": true,
-	"tooltip-format": "Left Click: Update System\nArch (w/ notification)\nFedora, OpenSuse, Debian/Ubuntu click to update",
-},
+	"tooltip-format": "Left Click: Update System\nArch (w/ notification)\nFedora, OpenSuse, Debian/Ubuntu click to update"},
 // Separators
 "custom/separator#dot": {
 	"format": "",
