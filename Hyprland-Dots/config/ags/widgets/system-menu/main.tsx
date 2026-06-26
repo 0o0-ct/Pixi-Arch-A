@@ -26,7 +26,7 @@ export default function SystemMenu() {
       name="system-menu"
       application={app}
       layer={Astal.Layer.OVERLAY}
-      keymode={Astal.Keymode.ON_DEMAND}
+      keymode={Astal.Keymode.EXCLUSIVE}
       // Fixes gtk4-layer-shell bug
       // https://github.com/Aylur/astal/issues/258
       $={(self) => {
@@ -44,7 +44,7 @@ export default function SystemMenu() {
       />
       <box
         cssClasses={["system-menu", "system-menu-horizontal"]}
-        widthRequest={720}
+        widthRequest={960}
         heightRequest={450}
         orientation={Gtk.Orientation.HORIZONTAL}
         spacing={16}
