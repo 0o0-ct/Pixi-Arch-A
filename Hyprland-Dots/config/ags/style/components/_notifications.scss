@@ -72,8 +72,9 @@
     .action-button {
       @include window-box;
       @include animate;
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 1.5rem;
       font-size: 0.9rem;
+      min-width: 10rem;
 
       &:hover {
         background: $buttonDisabledHover;

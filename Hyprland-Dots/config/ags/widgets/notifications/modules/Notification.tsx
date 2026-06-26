@@ -179,17 +179,15 @@ export function BaseNotification({
 
         {/* Actions */}
         {notification.actions.length > 0 && (
-          <box cssClasses={["actions"]}>
+          <box cssClasses={["actions"]} halign={CENTER} spacing={12}>
             {notification.actions.map(({ label, action }) => (
               <button
-                hexpand
                 cssClasses={["action-button"]}
                 onClicked={() => onAction?.(notification.id, action)}
               >
                 <label
                   label={label}
                   halign={CENTER}
-                  hexpand
                   ellipsize={Pango.EllipsizeMode.END}
                 />
               </button>
