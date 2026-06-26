@@ -1,30 +1,30 @@
 declare module "gi://*" { const _: any; export default _; }
 
-namespace Notifd {
+declare namespace Notifd {
   type Notification = any;
   type Urgency = any;
 }
 
-namespace Mpris {
+declare namespace Mpris {
   type Player = any;
 }
 
-namespace Gio {
+declare namespace Gio {
   type File = any;
   type FileInfo = any;
   type Cancellable = any;
   type Subprocess = any;
 }
 
-namespace GLib {
+declare namespace GLib {
   type Bytes = any;
   type DateTime = any;
 }
 
-namespace Adw {
+declare namespace Adw {
   type Clamp = any;
 }
 
-namespace Pango {
+declare namespace Pango {
   type EllipsizeMode = any;
 }
