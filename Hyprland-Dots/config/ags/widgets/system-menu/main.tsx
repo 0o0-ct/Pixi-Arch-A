@@ -1,4 +1,4 @@
-import { Astal, Gtk } from "ags/gtk4";
+import { Astal, Gtk, Gdk } from "ags/gtk4";
 import app from "ags/gtk4/app";
 import PowerProfiles from "gi://AstalPowerProfiles";
 import { createState, onCleanup } from "ags";
@@ -35,6 +35,13 @@ export default function SystemMenu() {
       visible={visible}
       gdkmonitor={gdkmonitor}
     >
+      <Gtk.EventControllerKey
+        onKeyPressed={({ widget }, keyval: number) => {
+          if (keyval === Gdk.KEY_Escape) {
+            widget.hide();
+          }
+        }}
+      />
       <box
         cssClasses={["system-menu", "system-menu-horizontal"]}
         widthRequest={720}
