@@ -40,19 +40,7 @@ get_icon() {
 
 # Notify
 notify_user() {
-    local muted="$(pamixer --get-mute)"
-    local level="$(pamixer --get-volume)"
-
-    if [[ "$muted" == "true" || "$level" -eq 0 ]]; then
-        notify-send -e -h string:x-canonical-private-synchronous:volume_notif \
-            -h boolean:SWAYNC_BYPASS_DND:true -u low -i "$(get_icon)" \
-            " Volumen:" " Silenciadod"
-    else
-        notify-send -e -h int:value:"$level" -h string:x-canonical-private-synchronous:volume_notif \
-            -h boolean:SWAYNC_BYPASS_DND:true -u low -i "$(get_icon)" \
-            " Volume Level:" " ${level}%" &&
-            "$sDIR/Sounds.sh" --volume
-    fi
+    "$sDIR/Sounds.sh" --volume
 }
 
 # Increase Volume
@@ -76,18 +64,18 @@ dec_volume() {
 # Toggle Silenciado
 toggle_mute() {
 	if [ "$(pamixer --get-mute)" == "false" ]; then
-		pamixer -m && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$iDIR/volume-mute.png" " Silenciado"
+		pamixer -m
 	elif [ "$(pamixer --get-mute)" == "true" ]; then
-		pamixer -u && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$(get_icon)" " Volumen:" " Encendido"
+		pamixer -u
 	fi
 }
 
 # Toggle Mic
 toggle_mic() {
 	if [ "$(pamixer --default-source --get-mute)" == "false" ]; then
-		pamixer --default-source -m && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$iDIR/microphone-mute.png" " Micrófono:" " Apagado"
+		pamixer --default-source -m
 	elif [ "$(pamixer --default-source --get-mute)" == "true" ]; then
-		pamixer --default-source -u && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$iDIR/microphone.png" " Micrófono:" " Encendido"
+		pamixer --default-source -u
 	fi
 }
 # Get Mic Icon
@@ -119,21 +107,7 @@ get_mic_volume() {
 
 # Notify for Microphone
 notify_mic_user() {
-    local muted="$(pamixer --default-source --get-mute)"
-    local level="$(pamixer --default-source --get-volume)"
-    local icon message
-
-    if [[ "$muted" == "true" || "$level" -eq 0 ]]; then
-        icon="$iDIR/microphone-mute.png"
-        notify-send -e -h "string:x-canonical-private-synchronous:volume_notif" \
-            -h boolean:SWAYNC_BYPASS_DND:true -u low -i "$icon" \
-            " Mic Level:" " Silenciadod"
-    else
-        icon="$iDIR/microphone.png"
-        notify-send -e -h int:value:"$level" -h "string:x-canonical-private-synchronous:volume_notif" \
-            -h boolean:SWAYNC_BYPASS_DND:true -u low -i "$icon" \
-            " Mic Level:" " ${level}%"
-    fi
+    : # Disabled redundant notifications
 }
 
 # Increase MIC Volume
