@@ -22,6 +22,7 @@ export const MonitorConfig = {
     criticalGpuTemp: options["hardware-monitor.thresholds.gpu-temp"],
     highMemoryThreshold: options["hardware-monitor.thresholds.memory"],
     notificationsEnabled: options["hardware-monitor.notifications.enable"],
+    tempNotificationsEnabled: options["hardware-monitor.notifications.temp.enable"],
   },
 };
 
@@ -137,6 +138,10 @@ export default class SystemMonitor extends GObject.Object {
     replaceId: number,
   ): Promise<void> {
     if (!MonitorConfig.settings.notificationsEnabled.get()) {
+      return;
+    }
+
+    if (type === "temperature" && !MonitorConfig.settings.tempNotificationsEnabled.get()) {
       return;
     }
 

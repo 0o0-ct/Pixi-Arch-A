@@ -33,6 +33,7 @@ const options = initializeConfig(
     "bar.modules.os-icon.type": defineOption("nix-symbolic"), // "nix-symbolic" or "arch-symbolic"
     "bar.modules.os-icon.enable": defineOption(true),
     "hardware-monitor.notifications.enable": defineOption(true),
+    "hardware-monitor.notifications.temp.enable": defineOption(false),
     "hardware-monitor.thresholds.cpu-temp": defineOption(96),
     "hardware-monitor.thresholds.gpu-temp": defineOption(95),
     "hardware-monitor.thresholds.memory": defineOption(0.95),
