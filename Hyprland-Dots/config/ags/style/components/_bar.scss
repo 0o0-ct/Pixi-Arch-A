@@ -146,11 +146,13 @@
       background: transparent;
       border: none;
       box-shadow: none;
-      color: $fg;
-      padding: 0rem 0.3rem;
-      font-size: $font;
+      color: $primary; /* Highlight by default with theme primary color */
+      padding: 0rem 0.4rem;
+      font-size: 1.15rem; /* Make it slightly larger */
+      font-weight: bold;
+      transition: all 0.3s ease;
       &:hover {
-        color: $primary;
+        color: $fg; /* Light up on hover */
       }
     }
   }

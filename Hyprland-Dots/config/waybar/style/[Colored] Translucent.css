@@ -360,3 +360,15 @@ label:focus {
 	min-height: 10px;
 	border-radius: 5px;
 }
+
+#custom-tray_toggle {
+	color: @accent1;
+	font-size: 110%;
+	font-weight: bold;
+	transition: all 0.3s ease;
+}
+
+#custom-tray_toggle:hover {
+	color: @accent3;
+	background-color: rgba(255, 255, 255, 0.1);
+}
