@@ -37,6 +37,7 @@ config_file="$(mktemp "$RUNTIME_DIR/waybar-cava.XXXXXX.conf")"
 # Cleanup function to kill the child cava process when this script exits
 cava_pid=""
 cleanup() {
+  pkill -f "cava -p $config_file" 2>/dev/null || true
   if [[ -n "$cava_pid" ]]; then
     kill "$cava_pid" 2>/dev/null || true
   fi

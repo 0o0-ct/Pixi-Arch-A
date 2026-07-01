@@ -85,7 +85,7 @@
 		"custom/power",
 		"custom/lock",
 		"keyboard-state",
-		"custom/keyboard"]
+		"hyprland/language"]
 },
 "group/notify": {
 	"orientation": "inherit",
