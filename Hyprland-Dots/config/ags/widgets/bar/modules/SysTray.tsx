@@ -11,19 +11,38 @@ export const hasTrayItems = createBinding(
 
 function SysTrayItem({ item }) {
   return (
-    <menubutton
+    <button
       cssClasses={["tray-item"]}
       tooltipMarkup={createBinding(item, "tooltipMarkup")}
       $={(self) => {
-        self.menuModel = item.menuModel;
+        // Create popover menu for right-click context menu
+        const popover = new Gtk.PopoverMenu({
+          menu_model: item.menuModel,
+        });
+        popover.set_parent(self);
+
         self.insert_action_group("dbusmenu", item.actionGroup);
         item.connect("notify::action-group", () => {
           self.insert_action_group("dbusmenu", item.actionGroup);
         });
+
+        // Click gesture controller
+        const gesture = new Gtk.GestureClick();
+        gesture.connect("released", (g, n, x, y) => {
+          const button = gesture.get_current_button();
+          if (button === 1) {
+            // Left click: activate the app
+            item.activate(0, 0);
+          } else if (button === 3) {
+            // Right click: open context menu popover
+            popover.popup();
+          }
+        });
+        self.add_controller(gesture);
       }}
     >
       <image gicon={createBinding(item, "gicon")} />
-    </menubutton>
+    </button>
   );
 }
 
