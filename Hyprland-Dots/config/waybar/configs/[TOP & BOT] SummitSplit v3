@@ -20,7 +20,7 @@
       "modules-left": [
         "idle_inhibitor",
         "custom/separator#blank",
-        "tray",
+        "group/tray_drawer",
         "connections",
         "clock",
         "network#speed",

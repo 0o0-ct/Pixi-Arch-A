@@ -253,5 +253,10 @@
 "custom/arrow10": {
 	"format": "",
 	"tooltip": false
+},
+
+"custom/tray_toggle": {
+	"format": "",
+	"tooltip": false
 }
 }

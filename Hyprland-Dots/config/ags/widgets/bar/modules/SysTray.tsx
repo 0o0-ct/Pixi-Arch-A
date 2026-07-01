@@ -1,5 +1,6 @@
 import Tray from "gi://AstalTray";
-import { For, createBinding } from "ags";
+import { For, createBinding, createState } from "ags";
+import { Gtk } from "ags/gtk4";
 
 const tray = Tray.get_default();
 
@@ -27,11 +28,41 @@ function SysTrayItem({ item }) {
 }
 
 export function SysTray() {
+  const [revealed, setRevealed] = createState(false);
+
   return (
-    <box cssClasses={["SysTray", "module"]}>
-      <For each={createBinding(tray, "items")}>
-        {(item) => <SysTrayItem item={item} />}
-      </For>
+    <box
+      cssClasses={["SysTray-container"]}
+      visible={hasTrayItems}
+      $={(self) => {
+        const motionController = new Gtk.EventControllerMotion();
+
+        motionController.connect("enter", () => {
+          setRevealed(true);
+        });
+
+        motionController.connect("leave", () => {
+          setRevealed(false);
+        });
+
+        self.add_controller(motionController);
+      }}
+    >
+      <button cssClasses={["tray-arrow-btn", "module"]}>
+        <label label={createBinding(revealed)((rev) => (rev ? "" : ""))} />
+      </button>
+      <revealer
+        transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
+        transitionDuration={300}
+        revealChild={revealed}
+      >
+        <box cssClasses={["SysTray", "module"]}>
+          <For each={createBinding(tray, "items")}>
+            {(item) => <SysTrayItem item={item} />}
+          </For>
+        </box>
+      </revealer>
     </box>
   );
 }
+

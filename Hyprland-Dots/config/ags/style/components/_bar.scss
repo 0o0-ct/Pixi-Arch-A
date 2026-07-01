@@ -141,6 +141,20 @@
     }
   }
 
+  .SysTray-container {
+    .tray-arrow-btn {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      color: $fg;
+      padding: 0rem 0.3rem;
+      font-size: $font;
+      &:hover {
+        color: $primary;
+      }
+    }
+  }
+
   /* hw-monitor */
   .bar-hw-ram-box {
     @include hw-monitor-box($ramProc);
