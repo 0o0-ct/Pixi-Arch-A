@@ -60,6 +60,7 @@ hypr_package_2=(
   loupe
   fastfetch
   gnome-system-monitor
+  resources
   mousepad 
   mpv
   mpv-mpris 
