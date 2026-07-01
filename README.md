@@ -1,4 +1,4 @@
-# 󰣇  Pixi-Arch-A
+# Pixi-Arch-A
 
 > [!IMPORTANT]
 > **Pixi-Arch-A** es una evolución y ramificación personalizada de alto rendimiento diseñada para ofrecer una experiencia estética fuera de serie. Combina la velocidad de Arch Linux con el dinamismo del compositor Hyprland, fusionando un diseño de **Cristal Esmerilado (Frosted Glassmorphism)** coherente con colores oscuros e iluminación carmesí.
@@ -15,7 +15,7 @@
 ![Shell](https://img.shields.io/badge/Shell-Zsh%20%2B%20OhMyZsh-4BF?style=for-the-badge&logo=gnu-bash&logoColor=white)
 ![Version](https://img.shields.io/badge/Version-v1.0.0--Antigravity-white?style=for-the-badge)
 
-### 💫 Un entorno de escritorio ultra-premium de cristal esmerilado impulsado por Hyprland y Arch Linux 💫
+### Un entorno de escritorio de cristal esmerilado impulsado por Hyprland y Arch Linux
 
 <p align="center">
   <img src="./Hyprland-Dots/assets/screenshot.jpg" width="100%" style="border-radius: 12px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);" />
@@ -26,20 +26,20 @@
 </div>
 
 > [!TIP]
-> **🎨 Ciclador de Temas Dark Glass Integrado:** ¡Olvídate de los fondos claros y aburridos! **Pixi-Arch-A** está blindado al 100% en Modo Oscuro. Haz clic en el botón de la paleta (`󰏘 `) en tu barra superior para ciclar fondos oscuros aleatorios y regenerar de forma instantánea todo tu tema de cristal translúcido con **Wallust** de forma totalmente automática y cohesiva.
+> **Ciclador de Temas Dark Glass Integrado:** ¡Olvídate de los fondos claros y aburridos! **Pixi-Arch-A** está blindado al 100% en Modo Oscuro. Haz clic en el botón de la paleta (󰏘) en tu barra superior para ciclar fondos oscuros aleatorios y regenerar de forma instantánea todo tu tema de cristal translúcido con **Wallust** de forma totalmente automática y cohesiva.
 
 ---
 
-## 💻 Compatibilidad y Requisitos del Sistema
+## Compatibilidad y Requisitos del Sistema
 
 Para garantizar una experiencia ultra fluida, rápida y sin interrupciones con las animaciones avanzadas de cristal esmerilado, ten en cuenta lo siguiente:
 
-### 🐧 Distribuciones Compatibles
+### Distribuciones Compatibles
 * **Compatibilidad Principal:** Arch Linux (Instalación base o archinstall).
 * **Derivados de Arch:** EndeavourOS, ArcoLinux, CachyOS, Garuda Linux (Se recomienda una instalación mínima/limpia de estos derivados para evitar conflictos con entornos preexistentes).
 * **NO Compatible:** Debian, Ubuntu, Fedora, Linux Mint, o cualquier distribución que no esté basada en pacman/Arch.
 
-### ⚡ Recomendaciones de Hardware (Para máxima fluidez)
+### Recomendaciones de Hardware (Para máxima fluidez)
 * **GPU:** 
   * **AMD Radeon:** ¡Muy recomendado! Funciona de manera nativa y perfecta con Wayland/Hyprland.
   * **Intel Graphics:** Totalmente compatible y fluido de forma nativa.
@@ -49,7 +49,7 @@ Para garantizar una experiencia ultra fluida, rápida y sin interrupciones con l
 
 ---
 
-## 🚀 Guía de Instalación Rápida
+## Guía de Instalación Rápida
 
 Para instalar **Pixi-Arch-A** en tu sistema Arch Linux de manera automática y sin complicaciones, sigue estos pasos:
 
@@ -77,7 +77,7 @@ Inicia el instalador oficial interactivo en español y sigue las amigables instr
 ./install.sh
 ```
 
-### 🔄 Mantener el Sistema Actualizado
+### Mantener el Sistema Actualizado
 Si ya tienes instalado el sistema y deseas actualizarlo con las últimas mejoras, parches y personalizaciones de **Pixi-Arch-A**, ejecuta los siguientes comandos:
 ```bash
 # 1. Acceder al directorio del proyecto
@@ -95,7 +95,7 @@ git pull origin main
 
 ---
 
-## 🛠️ Atajos de Teclado Clave y Uso
+## Atajos de Teclado Clave y Uso
 
 * **Bloqueo del Sistema instantáneo:** Presiona **`SUPER + L`** para bloquear tu pantalla con un efecto de desenfoque e información en tiempo real a través de `hyprlock` y `hypridle`.
 * **Lanzador de Aplicaciones Rofi:** Presiona **`SUPER + D`** para abrir un menú flotante de cristal esmerilado que se adapta de forma inteligente a la paleta de colores de tu fondo.
@@ -108,16 +108,34 @@ git pull origin main
 
 ---
 
-## ⚙️ Gestión de Bloqueo e Inactividad (Timeout)
+## Gestión de Bloqueo e Inactividad (Timeout)
 Toda la inactividad de tu pantalla se gestiona de forma centralizada en `hypridle.conf`:
 * **Aviso de inactividad:** A los **9 minutos** (`timeout = 540`) recibirás una notificación de aviso en el sistema.
 * **Bloqueo de seguridad:** A los **10 minutos** (`timeout = 600`) el sistema bloqueará la sesión automáticamente mediante el comando `loginctl lock-session`, el cual ejecuta el protector de pantalla seguro `hyprlock`.
 
 ---
 
+## Optimización del Sistema y Modo de Juego
+
+Para mantener tu sistema ligero, rápido y con la menor temperatura posible, cuentas con herramientas de optimización dedicadas:
+
+### Script de Optimización del Sistema
+Puedes ejecutar nuestro script automatizado para limpiar cachés, eliminar paquetes huérfanos de depuración, limpiar logs del sistema y optimizar la gestión de memoria RAM:
+```bash
+bash ~/.config/hypr/scripts/system-optimize.sh
+```
+
+### Modo de Juego (GameMode)
+Para exprimir hasta el último FPS y tener la menor latencia al jugar:
+* **Alternar Modo de Juego:** Presiona **`SUPER + SHIFT + G`** (o selecciónalo en el menú de configuraciones rápidas). Esto desactivará las animaciones, las sombras de las ventanas y el fondo animado de pantalla de forma temporal para liberar memoria VRAM y CPU.
+* **Forzar GPU Nvidia dedicada:** Si tienes un portátil híbrido, añade en las opciones de lanzamiento de tus juegos en Steam o Lutris: `prime-run %command%`.
+* **Feral GameMode:** Si juegas a títulos exigentes, configúralos con `gamemoderun %command%` para forzar al CPU y a la GPU a funcionar a la máxima frecuencia posible.
+
+---
+
 <div align="center">
 
-## 🤝 Créditos y Agradecimiento Original
+## Créditos y Agradecimiento Original
 
 > [!NOTE]
 > **Reconocimiento:** Este proyecto es un fork y personalización profunda basada en el excelente instalador y dotfiles de **JaKooLit** ([Arch-Hyprland](https://github.com/JaKooLit/Arch-Hyprland)). Agradecemos enormemente la gran base, la arquitectura del script y la inspiración original que nos ha permitido construir este entorno de escritorio único y adaptado.
