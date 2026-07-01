@@ -23,7 +23,8 @@ export class BaseGpuMonitor extends HardwareMonitor {
   @property(String) memoryTotalFormatted = "0 B";
 
   initialize(): void {
-    this.startMonitoring(MonitorConfig.UPDATE_INTERVAL);
+    const interval = this.constructor.name === "NvidiaGpuMonitor" ? 5000 : MonitorConfig.UPDATE_INTERVAL;
+    this.startMonitoring(interval);
   }
 
   async update(): Promise<void> {}

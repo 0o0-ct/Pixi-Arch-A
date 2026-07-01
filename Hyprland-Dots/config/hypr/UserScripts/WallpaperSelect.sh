@@ -94,7 +94,12 @@ menu() {
       fi
       printf "%s\x00icon\x1f%s\n" "$pic_name" "$cache_preview_image"
     else
-      printf "%s\x00icon\x1f%s\n" "$pic_name" "$pic_path"
+      cache_image="$HOME/.cache/wallpaper_preview/${pic_name}"
+      if [[ ! -f "$cache_image" ]]; then
+        mkdir -p "$HOME/.cache/wallpaper_preview"
+        magick "$pic_path" -resize 240x135 "$cache_image" 2>/dev/null || cp "$pic_path" "$cache_image"
+      fi
+      printf "%s\x00icon\x1f%s\n" "$pic_name" "$cache_image"
     fi
   done
 }

@@ -19,15 +19,24 @@ export class HardwareMonitor extends GObject.Object {
   protected startMonitoring(interval: number): void {
     if (this.intervalId !== null) return;
 
-    this.intervalId = GLib.timeout_add(GLib.PRIORITY_LOW, interval, () => {
-      if (this.destroyed) return GLib.SOURCE_REMOVE;
+    const run = () => {
+      if (this.destroyed) return;
 
-      this.update().catch((error) => {
-        console.error(`${this.constructor.name} update failed:`, error);
-      });
+      this.update()
+        .catch((error) => {
+          console.error(`${this.constructor.name} update failed:`, error);
+        })
+        .finally(() => {
+          if (!this.destroyed) {
+            this.intervalId = GLib.timeout_add(GLib.PRIORITY_LOW, interval, () => {
+              run();
+              return GLib.SOURCE_REMOVE;
+            });
+          }
+        });
+    };
 
-      return GLib.SOURCE_CONTINUE;
-    });
+    run();
   }
 
   destroy(): void {
