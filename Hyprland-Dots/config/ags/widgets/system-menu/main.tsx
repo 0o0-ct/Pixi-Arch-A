@@ -45,7 +45,7 @@ export default function SystemMenu() {
       <box
         cssClasses={["system-menu", "system-menu-horizontal"]}
         widthRequest={960}
-        heightRequest={450}
+        heightRequest={520}
         orientation={Gtk.Orientation.HORIZONTAL}
         spacing={16}
       >
