@@ -16,15 +16,19 @@ fi
 
 # GitHub URL - KooL's dots
 branch="main"
-github_url="https://github.com/0o0-ct/Pixi-Arch-A/tree/$branch/config/hypr/"
-# Check for required tools (curl)
+
+# Check for required tools (curl and jq)
 if ! command -v curl &> /dev/null; then
   notify-send -i "$iDIR/error.png" "Se necesita curl:" "curl no encontrado. Por favor instala curl."
   exit 1
 fi
+if ! command -v jq &> /dev/null; then
+  notify-send -i "$iDIR/error.png" "Se necesita jq:" "jq no encontrado. Por favor instala jq."
+  exit 1
+fi
 
-# Fetch the version from GitHub URL - KooL's dots
-github_version=$(curl -fsSL -A "Mozilla/5.0" "$github_url" | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+' | sort -V | tail -n 1 | sed 's/v//')
+# Fetch the version from GitHub API - KooL's dots
+github_version=$(curl -fsSL "https://api.github.com/repos/0o0-ct/Pixi-Arch-A/contents/Hyprland-Dots/config/hypr?ref=$branch" | jq -r '.[] | select(.name | startswith("v")) | .name' 2>/dev/null | sort -V | tail -n 1 | sed 's/^v//')
 
 # Cant find  GitHub URL - KooL's dots version
 if [ -z "$github_version" ]; then
