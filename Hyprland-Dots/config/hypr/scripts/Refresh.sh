@@ -14,33 +14,36 @@ file_exists() {
   fi
 }
 
-# Kill already running processes
-_ps=(waybar rofi swaync ags)
+# Kill already running processes cleanly
+_ps=(waybar rofi swaync ags qs)
 for _prs in "${_ps[@]}"; do
   if pidof "${_prs}" >/dev/null; then
     pkill "${_prs}"
   fi
 done
 
-# added since wallust sometimes not applying
-killall -SIGUSR2 waybar
-# Added sleep for GameMode causing multiple waybar
-sleep 0.1
-
-# quit ags & relaunch ags
-#ags -q && ags &
-
-# quit quickshell & relaunch quickshell
-pkill qs && qs &
-
-# some process to kill
-for pid in $(pidof waybar rofi swaync ags swaybg); do
-  kill -SIGUSR1 "$pid"
+# Wait up to 1 second for clean exit (allows cleanup traps to run)
+for i in {1..10}; do
+  still_running=false
+  for _prs in "${_ps[@]}"; do
+    if pidof "${_prs}" >/dev/null; then
+      still_running=true
+    fi
+  done
+  if [ "$still_running" = false ]; then
+    break
+  fi
   sleep 0.1
 done
 
-# Restart waybar
-sleep 0.1
+# Force kill any remaining stubborn processes
+for _prs in "${_ps[@]}"; do
+  if pidof "${_prs}" >/dev/null; then
+    pkill -9 "${_prs}"
+  fi
+done
+
+# Relaunch waybar
 waybar &
 
 # Dynamically adjust swaync position and size based on active Waybar layout
