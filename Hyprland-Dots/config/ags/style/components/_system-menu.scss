@@ -6,15 +6,20 @@
 
 .system-menu {
   -gtk-icon-size: $font;
-  @include window;
-  @include border;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(20, 20, 30, 0.55), rgba(15, 15, 20, 0.25));
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   margin-top: $spacing-md;
   margin-right: $spacing-md;
+  padding: $spacing-sm;
 
   & > box {
-    @include window-box;
-    @include light-mode-shadow;
-    @include border;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
   }
 }
 
@@ -77,10 +82,11 @@
   transform: rotate(90deg);
 }
 .system-menu-list {
-  @include window;
-  @include light-mode-shadow;
-  @include border;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   margin: $spacing-sm;
+  padding: $spacing-sm;
 }
 
 .network-item {
