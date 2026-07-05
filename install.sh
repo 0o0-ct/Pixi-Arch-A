@@ -403,6 +403,58 @@ else
     echo "$WARN - No se encontró lib_prompts.sh, omitiendo configuración del teclado" | tee -a "$LOG"
 fi
 
+# Configurar fondos de pantalla automáticamente
+echo "${INFO} Configurando el sistema de fondos de pantalla...${RESET}" | tee -a "$LOG"
+
+# Si la carpeta de wallpapers existe, copiar los wallpapers predeterminados
+if [ -d "Hyprland-Dots/wallpapers" ]; then
+    PICTURES_DIR="$HOME/Pictures"
+    SYSTEM_WALLPAPERS_DIR="$PICTURES_DIR/wallpapers"
+
+    echo "$NOTE - Usando la colección de wallpapers predeterminados de Pixi-Arch-A..." | tee -a "$LOG"
+
+    # Asegurar que las carpetas existan
+    mkdir -p "$SYSTEM_WALLPAPERS_DIR"
+
+    # Contar el número total de wallpapers disponibles
+    TOTAL_WALLPAPERS=$(find "Hyprland-Dots/wallpapers" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) | wc -l)
+
+    if [ "$TOTAL_WALLPAPERS" -gt 0 ]; then
+        # Seleccionar un wallpaper aleatorio
+        RANDOM_WALLPAPER=$(find "Hyprland-Dots/wallpapers" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) | shuf -n 1)
+        echo "$INFO - Seleccionado wallpaper aleatorio: $(basename "$RANDOM_WALLPAPER")" | tee -a "$LOG"
+
+        # Copiar el wallpaper al directorio del sistema
+        cp -f "$RANDOM_WALLPAPER" "$SYSTEM_WALLPAPERS_DIR/"
+
+        # Guardar el path del wallpaper actual en .wallpaper_current
+        WALLPAPER_PATH="$SYSTEM_WALLPAPERS_DIR/$(basename "$RANDOM_WALLPAPER")"
+        echo "$WALLPAPER_PATH" > "Hyprland-Dots/config/hypr/wallpaper_effects/.wallpaper_current"
+
+        echo "$OK - Wallpaper copiado a $WALLPAPER_PATH" | tee -a "$LOG"
+
+        # Ejecutar Wallust para generar el tema de color si wallust está instalado
+        if command -v wallust >/dev/null 2>&1; then
+            echo "$INFO - Generando tema de color con Wallust..." | tee -a "$LOG"
+            wallust run -s "$WALLPAPER_PATH" > /dev/null 2>&1
+
+            # Ejecutar WallustSwww.sh para actualizar swww/awww si existe
+            if [ -f "Hyprland-Dots/config/hypr/scripts/WallustSwww.sh" ]; then
+                echo "$INFO - Aplicando cambios al wallpaper daemon..." | tee -a "$LOG"
+                "$HOME/.config/hypr/scripts/WallustSwww.sh" "$WALLPAPER_PATH" > /dev/null 2>&1 &
+            fi
+
+            echo "$OK - Tema de color generado y aplicado" | tee -a "$LOG"
+        else
+            echo "$WARN - wallust no está instalado, omitiendo la generación de temas de color" | tee -a "$LOG"
+        fi
+    else
+        echo "$WARN - No se encontraron wallpapers en Hyprland-Dots/wallpapers/" | tee -a "$LOG"
+    fi
+else
+    echo "$WARN - No se encontró la carpeta de wallpapers, omitiendo configuración de fondos de pantalla" | tee -a "$LOG"
+fi
+
 sleep 1
 
 # Ejecutar los scripts relacionados con Hyprland
