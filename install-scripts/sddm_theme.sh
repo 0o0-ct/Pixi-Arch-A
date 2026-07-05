@@ -146,25 +146,24 @@ if [[ ! -d "$SDDM_THEME_DIR" ]]; then
     exit 1
 fi
 
-# Copy wallpaper
-TARGET_BG="$SDDM_THEME_DIR/Backgrounds/default"
-mkdir -p "$(dirname "$TARGET_BG")"
-cp -f "$WALLPAPER_PATH" "$TARGET_BG"
-chmod 644 "$TARGET_BG"
+# Copy wallpaper retaining the extension so QML loader does not fail
+EXT="${WALLPAPER_PATH##*.}"
+if [[ "$EXT" == "$WALLPAPER_PATH" ]]; then
+    EXT="png"
+fi
 
-# If fallback files exist, update them too
-for ext in jpg png jpeg webp; do
-    if [[ -e "$SDDM_THEME_DIR/Backgrounds/default.$ext" ]]; then
-        cp -f "$WALLPAPER_PATH" "$SDDM_THEME_DIR/Backgrounds/default.$ext"
-        chmod 644 "$SDDM_THEME_DIR/Backgrounds/default.$ext"
-    fi
-done
+TARGET_BG_DIR="$SDDM_THEME_DIR/Backgrounds"
+mkdir -p "$TARGET_BG_DIR"
+rm -f "$TARGET_BG_DIR"/default*
+
+cp -f "$WALLPAPER_PATH" "$TARGET_BG_DIR/default.$EXT"
+chmod 644 "$TARGET_BG_DIR/default.$EXT"
 
 # Set wallpaper parameter in theme.conf
 THEME_CONF="$SDDM_THEME_DIR/theme.conf"
 if [[ -f "$THEME_CONF" ]]; then
-    sed -i 's|^wallpaper=".*"|wallpaper="Backgrounds/default"|' "$THEME_CONF"
-    sed -i 's|^Background=".*"|Background="Backgrounds/default"|' "$THEME_CONF"
+    sed -i "s|^wallpaper=\".*\"|wallpaper=\"Backgrounds/default.$EXT\"|" "$THEME_CONF"
+    sed -i "s|^Background=\".*\"|Background=\"Backgrounds/default.$EXT\"|" "$THEME_CONF"
 fi
 
 # If colors-rofi.rasi exists, extract and apply colors

@@ -4,6 +4,19 @@
 
 set -euo pipefail
 
+# Detect if the system is a laptop
+is_laptop() {
+    if [ -d /sys/class/power_supply/BAT0 ] || [ -d /sys/class/power_supply/BAT1 ]; then
+        return 0
+    fi
+    if command -v hostnamectl >/dev/null 2>&1; then
+        if hostnamectl | grep -q -i 'Chassis: laptop'; then
+            return 0
+        fi
+    fi
+    return 1
+}
+
 # Buscar tarjetas gráficas en el sistema
 intel_card=""
 nvidia_card=""
@@ -43,7 +56,7 @@ fi
 uwsm_content="# GPU_DETECT_START\n"
 hypr_content="# Configuración de GPU dinámica para Hyprland\n"
 
-if [ -n "$nvidia_card" ] && [ -n "$intel_card" ]; then
+if [ -n "$nvidia_card" ] && [ -n "$intel_card" ] && is_laptop; then
     # LAPTOP HÍBRIDO (Intel + NVIDIA)
     hypr_content+="env = WLR_DRM_DEVICES,$intel_card:$nvidia_card\n"
     hypr_content+="env = LIBVA_DRIVER_NAME,iHD\n"
@@ -54,7 +67,7 @@ if [ -n "$nvidia_card" ] && [ -n "$intel_card" ]; then
     uwsm_content+="export __GLX_VENDOR_LIBRARY_NAME=mesa\n"
     echo "[GPU] Sistema híbrido (Intel + NVIDIA) configurado."
 
-elif [ -n "$nvidia_card" ] && [ -n "$amd_card" ]; then
+elif [ -n "$nvidia_card" ] && [ -n "$amd_card" ] && is_laptop; then
     # LAPTOP HÍBRIDO (AMD + NVIDIA)
     hypr_content+="env = WLR_DRM_DEVICES,$amd_card:$nvidia_card\n"
     hypr_content+="env = LIBVA_DRIVER_NAME,radeonsi\n"
