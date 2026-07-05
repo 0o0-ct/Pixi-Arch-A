@@ -98,11 +98,133 @@ if [ -d "$local_theme_path" ]; then
     fi
   fi
 
-  # Reemplazar el fondo actual desde la carpeta assets
-  sudo cp -r assets/sddm.png "/usr/share/sddm/themes/$theme_name/Backgrounds/default" 2>&1 | tee -a "$LOG"
-  sudo sed -i 's|^wallpaper=".*"|wallpaper="Backgrounds/default"|' "/usr/share/sddm/themes/$theme_name/theme.conf" 2>&1 | tee -a "$LOG"
+  # Reemplazar el fondo actual por uno de la colección de wallpapers para evitar el fondo aburrido por defecto
+  sddm_bg=""
+  if [ -d "Hyprland-Dots/wallpapers" ]; then
+    sddm_bg=$(find "Hyprland-Dots/wallpapers" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) 2>/dev/null | shuf -n 1)
+  fi
+  if [ -z "$sddm_bg" ] && [ -d "wallpapers" ]; then
+    sddm_bg=$(find "wallpapers" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) 2>/dev/null | shuf -n 1)
+  fi
 
-  echo "${OK} - Tema adicional de SDDM ${YELLOW}$theme_name${RESET} instalado con éxito." | tee -a "$LOG"
+  if [ -n "$sddm_bg" ] && [ -f "$sddm_bg" ]; then
+    echo "Aplicando wallpaper inicial para SDDM: $sddm_bg" | tee -a "$LOG"
+    sudo cp -f "$sddm_bg" "/usr/share/sddm/themes/$theme_name/Backgrounds/default" 2>&1 | tee -a "$LOG"
+  else
+    sudo cp -f assets/sddm.png "/usr/share/sddm/themes/$theme_name/Backgrounds/default" 2>&1 | tee -a "$LOG"
+  fi
+  sudo sed -i 's|^wallpaper=".*"|wallpaper="Backgrounds/default"|' "/usr/share/sddm/themes/$theme_name/theme.conf" 2>&1 | tee -a "$LOG"
+  sudo sed -i 's|^Background=".*"|Background="Backgrounds/default"|' "/usr/share/sddm/themes/$theme_name/theme.conf" 2>&1 | tee -a "$LOG"
+
+  # --- Instalar el ayudante seguro de fondos de pantalla de SDDM para evitar peticiones de contraseña ---
+  HELPER_PATH="/usr/local/bin/sddm-wallpaper-helper"
+  SUDOERS_PATH="/etc/sudoers.d/sddm-wallpaper-helper"
+
+  echo "Instalando sddm-wallpaper-helper en $HELPER_PATH..." | tee -a "$LOG"
+  sudo tee "$HELPER_PATH" > /dev/null << 'EOF'
+#!/usr/bin/env bash
+# Secures and automates SDDM wallpaper and color updates without prompts.
+set -euo pipefail
+
+if [[ $# -lt 1 ]]; then
+    echo "Usage: $0 <wallpaper_path> [theme_name]" >&2
+    exit 1
+fi
+
+WALLPAPER_PATH="$1"
+THEME_NAME="${2:-simple_sddm_2}"
+
+if [[ ! -f "$WALLPAPER_PATH" ]]; then
+    echo "Error: Wallpaper file $WALLPAPER_PATH does not exist." >&2
+    exit 1
+fi
+
+# Ensure target theme exists
+SDDM_THEME_DIR="/usr/share/sddm/themes/$THEME_NAME"
+if [[ ! -d "$SDDM_THEME_DIR" ]]; then
+    echo "Error: SDDM theme directory $SDDM_THEME_DIR does not exist." >&2
+    exit 1
+fi
+
+# Copy wallpaper
+TARGET_BG="$SDDM_THEME_DIR/Backgrounds/default"
+mkdir -p "$(dirname "$TARGET_BG")"
+cp -f "$WALLPAPER_PATH" "$TARGET_BG"
+chmod 644 "$TARGET_BG"
+
+# If fallback files exist, update them too
+for ext in jpg png jpeg webp; do
+    if [[ -e "$SDDM_THEME_DIR/Backgrounds/default.$ext" ]]; then
+        cp -f "$WALLPAPER_PATH" "$SDDM_THEME_DIR/Backgrounds/default.$ext"
+        chmod 644 "$SDDM_THEME_DIR/Backgrounds/default.$ext"
+    fi
+done
+
+# Set wallpaper parameter in theme.conf
+THEME_CONF="$SDDM_THEME_DIR/theme.conf"
+if [[ -f "$THEME_CONF" ]]; then
+    sed -i 's|^wallpaper=".*"|wallpaper="Backgrounds/default"|' "$THEME_CONF"
+    sed -i 's|^Background=".*"|Background="Backgrounds/default"|' "$THEME_CONF"
+fi
+
+# If colors-rofi.rasi exists, extract and apply colors
+USER_HOME="/home/${SUDO_USER:-c0o0c}"
+ROFI_WALLUST="$USER_HOME/.config/rofi/wallust/colors-rofi.rasi"
+
+if [[ -f "$ROFI_WALLUST" && -f "$THEME_CONF" ]]; then
+    extract_color() {
+        local key="$1"
+        grep -oP "$key:\s*\K#[A-Fa-f0-9]+" "$ROFI_WALLUST" | head -n1 || echo ""
+    }
+
+    color0=$(extract_color "color1")
+    color1=$(extract_color "color0")
+    color7=$(extract_color "color14")
+    color10=$(extract_color "color10")
+    color12=$(extract_color "color12")
+    color13=$(extract_color "color13")
+
+    if [[ -n "$color13" ]]; then
+        sed -i "s/HeaderTextColor=\"#.*\"/HeaderTextColor=\"$color13\"/" "$THEME_CONF"
+        sed -i "s/DateTextColor=\"#.*\"/DateTextColor=\"$color13\"/" "$THEME_CONF"
+        sed -i "s/TimeTextColor=\"#.*\"/TimeTextColor=\"$color13\"/" "$THEME_CONF"
+        sed -i "s/DropdownSelectedBackgroundColor=\"#.*\"/DropdownSelectedBackgroundColor=\"$color13\"/" "$THEME_CONF"
+        sed -i "s/SystemButtonsIconsColor=\"#.*\"/SystemButtonsIconsColor=\"$color13\"/" "$THEME_CONF"
+        sed -i "s/SessionButtonTextColor=\"#.*\"/SessionButtonTextColor=\"$color13\"/" "$THEME_CONF"
+        sed -i "s/VirtualTecladoButtonTextColor=\"#.*\"/VirtualTecladoButtonTextColor=\"$color13\"/" "$THEME_CONF"
+        sed -i "s/VirtualKeyboardButtonTextColor=\"#.*\"/VirtualKeyboardButtonTextColor=\"$color13\"/" "$THEME_CONF"
+    fi
+
+    if [[ -n "$color12" ]]; then
+        sed -i "s/HighlightBackgroundColor=\"#.*\"/HighlightBackgroundColor=\"$color12\"/" "$THEME_CONF"
+        sed -i "s/LoginFieldTextColor=\"#.*\"/LoginFieldTextColor=\"$color12\"/" "$THEME_CONF"
+        sed -i "s/PasswordFieldTextColor=\"#.*\"/PasswordFieldTextColor=\"$color12\"/" "$THEME_CONF"
+    fi
+
+    if [[ -n "$color1" ]]; then
+        sed -i "s/DropdownBackgroundColor=\"#.*\"/DropdownBackgroundColor=\"$color1\"/" "$THEME_CONF"
+    fi
+
+    if [[ -n "$color10" ]]; then
+        sed -i "s/HighlightTextColor=\"#.*\"/HighlightTextColor=\"$color10\"/" "$THEME_CONF"
+    fi
+
+    if [[ -n "$color7" ]]; then
+        sed -i "s/PlaceholderTextColor=\"#.*\"/PlaceholderTextColor=\"$color7\"/" "$THEME_CONF"
+        sed -i "s/UserIconColor=\"#.*\"/UserIconColor=\"$color7\"/" "$THEME_CONF"
+        sed -i "s/PasswordIconColor=\"#.*\"/PasswordIconColor=\"$color7\"/" "$THEME_CONF"
+    fi
+fi
+
+echo "SDDM colors and wallpaper updated successfully."
+EOF
+  sudo chmod 755 "$HELPER_PATH"
+
+  echo "Configurando regla sudoers sin contraseña para el ayudante..." | tee -a "$LOG"
+  echo "ALL ALL=(ALL) NOPASSWD: $HELPER_PATH" | sudo tee "$SUDOERS_PATH" > /dev/null
+  sudo chmod 440 "$SUDOERS_PATH"
+
+  echo "${OK} - Tema adicional de SDDM ${YELLOW}$theme_name${RESET} instalado con éxito con ayudante seguro." | tee -a "$LOG"
 
 else
 

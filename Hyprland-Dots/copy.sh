@@ -558,32 +558,15 @@ printf "\n%.0s" {1..1}
 
 # for SDDM (simple_sddm_2)
 sddm_simple_sddm_2="/usr/share/sddm/themes/simple_sddm_2"
-if [ -d "$sddm_simple_sddm_2" ] && [ "$EXPRESS_MODE" -eq 1 ]; then
-  echo "${NOTE} Modo exprés: omitiendo la pregunta del fondo de SDDM." 2>&1 | tee -a "$LOG"
-elif [ -d "$sddm_simple_sddm_2" ]; then
-  while true; do
-    echo -n "${CAT} ¡Tema SDDM simple_sddm_2 detectado! ¿Aplicar el fondo de pantalla actual como fondo de SDDM? (s/n): "
-    read SDDM_WALL
-
-    # Remove any leading/trailing whitespace or newlines from input
-    SDDM_WALL=$(echo "$SDDM_WALL" | tr -d '\n' | tr -d ' ')
-
-    case $SDDM_WALL in
-    [SsYy])
-      # Copy the wallpaper, ignore errors if the file exists or fails
-      sudo -n cp -r "config/hypr/wallpaper_effects/.wallpaper_current" "/usr/share/sddm/themes/simple_sddm_2/Backgrounds/default" || true
-      echo "${NOTE} Fondo de pantalla actual aplicado como fondo predeterminado de SDDM" 2>&1 | tee -a "$LOG"
-      break
-      ;;
-    [Nn]*)
-      echo "${NOTE} Elegiste no aplicar el fondo de pantalla actual a SDDM." 2>&1 | tee -a "$LOG"
-      break
-      ;;
-    *)
-      echo "Por favor introduce 's' o 'n' para continuar."
-      ;;
-    esac
-  done
+if [ -d "$sddm_simple_sddm_2" ]; then
+  echo "${NOTE} Aplicando automáticamente el fondo de pantalla actual a SDDM..." 2>&1 | tee -a "$LOG"
+  if command -v sddm-wallpaper-helper >/dev/null 2>&1; then
+    sudo sddm-wallpaper-helper "config/hypr/wallpaper_effects/.wallpaper_current" >/dev/null 2>&1 || true
+  else
+    sudo cp -f "config/hypr/wallpaper_effects/.wallpaper_current" "$sddm_simple_sddm_2/Backgrounds/default" >/dev/null 2>&1 || true
+    sudo sed -i 's|^wallpaper=".*"|wallpaper="Backgrounds/default"|' "$sddm_simple_sddm_2/theme.conf" >/dev/null 2>&1 || true
+    sudo sed -i 's|^Background=".*"|Background="Backgrounds/default"|' "$sddm_simple_sddm_2/theme.conf" >/dev/null 2>&1 || true
+  fi
 fi
 
 # additional wallpapers

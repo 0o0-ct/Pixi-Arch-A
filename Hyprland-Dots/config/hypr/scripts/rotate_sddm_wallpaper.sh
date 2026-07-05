@@ -24,9 +24,18 @@ fi
 RANDOM_PIC="${PICS[$((RANDOM % ${#PICS[@]}))]}"
 
 # Copy the selected wallpaper to the SDDM background path
-if cp -f "$RANDOM_PIC" "$sddm_target"; then
-    echo "Successfully set SDDM background to: $(basename "$RANDOM_PIC")"
+if command -v sddm-wallpaper-helper >/dev/null 2>&1; then
+    if sudo sddm-wallpaper-helper "$RANDOM_PIC"; then
+        echo "Successfully set SDDM background to: $(basename "$RANDOM_PIC")"
+    else
+        echo "Failed to copy wallpaper to SDDM target via helper."
+        exit 1
+    fi
 else
-    echo "Failed to copy wallpaper to SDDM target. Check permissions."
-    exit 1
+    if cp -f "$RANDOM_PIC" "$sddm_target"; then
+        echo "Successfully set SDDM background to: $(basename "$RANDOM_PIC")"
+    else
+        echo "Failed to copy wallpaper to SDDM target. Check permissions."
+        exit 1
+    fi
 fi

@@ -336,6 +336,32 @@ while true; do
     break  
 done
 
+# Función para comprobar si hay un navegador web instalado en el sistema
+check_browser_installed() {
+    local browsers=("firefox" "chromium" "google-chrome-stable" "google-chrome" "brave" "brave-browser" "librewolf" "waterfox" "zen" "zen-browser" "thorium-browser" "opera" "vivaldi")
+    for browser in "${browsers[@]}"; do
+        if command -v "$browser" >/dev/null 2>&1; then
+            return 0 # Browser is installed
+        fi
+    done
+    return 1 # No browser detected
+}
+
+install_browser=false
+if [ -d "$HOME/.config/hypr" ]; then
+    # Es una actualización de los dotfiles
+    if ! check_browser_installed; then
+        if whiptail --title "Instalar Navegador Web" --yesno "No se detectó ningún navegador web instalado en tu sistema.\n\n¿Deseas instalar Firefox ahora?" 10 70; then
+            install_browser=true
+        fi
+    fi
+else
+    # Es una instalación limpia del sistema
+    if whiptail --title "Instalar Navegador Web" --yesno "¿Deseas instalar un navegador web (Firefox por defecto)?" 10 70; then
+        install_browser=true
+    fi
+fi
+
 printf "\n%.0s" {1..1}
 
 # Asegurando que base-devel esté instalado
@@ -343,6 +369,13 @@ execute_script "00-base.sh"
 sleep 1
 execute_script "pacman.sh"
 sleep 1
+
+# Instalar Firefox si se seleccionó en los prompts anteriores
+if [ "$install_browser" = true ]; then
+    echo "${INFO} Instalando Firefox como navegador predeterminado..." | tee -a "$LOG"
+    sudo pacman -S --needed --noconfirm firefox 2>&1 | tee -a "$LOG"
+fi
+
 
 # Ejecutar AUR helper
 if [ "$aur_helper" == "paru" ]; then
@@ -379,15 +412,9 @@ if [ -f "Hyprland-Dots/scripts/lib_prompts.sh" ]; then
 
     echo "$INFO - La distribución de teclado detectada es: $LAYOUT" | tee -a "$LOG"
 
-    # Seleccionar si se desea agregar el español además de inglés
-    echo "$CAT Preguntando si desea configurar más distribuciones de teclado..." | tee -a "$LOG"
-
-    if whiptail --title "Distribución de teclado" --yesno "¿Desea agregar el español (es) además del inglés (us) como distribución alternativa para el teclado?" 10 80; then
-        LAYOUT="es,us"
-        echo "$OK - Teclado configurado con las distribuciones: es,us" | tee -a "$LOG"
-    else
-        echo "$OK - Teclado configurado solo con la distribución: us" | tee -a "$LOG"
-    fi
+    # Configurar automáticamente distribución español e inglés (es,us) sin preguntar
+    LAYOUT="es,us"
+    echo "$OK - Teclado configurado automáticamente con las distribuciones: es,us" | tee -a "$LOG"
 
     # Asegurar que el archivo SystemSettings.conf existe y actualizar el kb_layout
     if [ -f "Hyprland-Dots/config/hypr/configs/SystemSettings.conf" ]; then
