@@ -322,20 +322,26 @@ ensure_keybinds_init "$LOG"
 printf "\n%.0s" {1..1}
 
 choose_default_editor "$LOG"
-resolution=""
-while true; do
-  echo "${INFO} Selecciona la resolución del monitor para el escalado:"
-  echo "  1) < 1440p   (DPI bajo; pantallas más pequeñas)"
-  echo "  2) ≥ 1440p   (predeterminado; 1440p/2k/4k)"
-  echo -n "${CAT} Introduce el número de tu elección (1 o 2): "
-  read -r choice
-  case "$choice" in
-    1) resolution="< 1440p"; break ;;
-    2) resolution="≥ 1440p"; break ;;
-    *) echo "${ERROR} Elección no válida. Por favor, introduce 1 o 2.";;
-  esac
+# Auto-detect resolution
+max_res_y=0
+for f in /sys/class/drm/*/modes; do
+  [ -f "$f" ] || continue
+  while read -r m; do
+    h=$(echo "$m" | cut -d'x' -f2)
+    if [ -n "$h" ] && [ "$h" -eq "$h" ] 2>/dev/null; then
+      if [ "$h" -gt "$max_res_y" ]; then
+        max_res_y="$h"
+      fi
+    fi
+  done < "$f"
 done
-echo "${OK} Has elegido la resolución $resolution." 2>&1 | tee -a "$LOG"
+
+if [ "$max_res_y" -ge 1440 ]; then
+  resolution="≥ 1440p"
+else
+  resolution="< 1440p"
+fi
+echo "${OK} Se detectó automáticamente la resolución: $resolution." 2>&1 | tee -a "$LOG"
 if [ "$resolution" == "< 1440p" ]; then
   # kitty font size
   sed -i 's/font_size 16.0/font_size 14.0/' config/kitty/kitty.conf
@@ -392,24 +398,7 @@ if command -v ags >/dev/null 2>&1; then
       cp -r "config/ags/" "$DIRPATH_AGS" 2>&1 | tee -a "$LOG"
     fi
   else
-    read -p "${CAT} ¿Deseas sobrescribir tu configuración existente de ${YELLOW}ags${RESET}? [s/N] " answer_ags
-    case "$answer_ags" in
-    [SsYy]*)
-      BACKUP_DIR=$(get_backup_dirname)
-      mv "$DIRPATH_AGS" "$DIRPATH_AGS-backup-$BACKUP_DIR" 2>&1 | tee -a "$LOG"
-      echo -e "${NOTE} - Se respaldó la configuración de ags en $DIRPATH_AGS-backup-$BACKUP_DIR"
-
-      if cp -r "config/ags/" "$DIRPATH_AGS" 2>&1 | tee -a "$LOG"; then
-        echo "${OK} - Configuración de ${YELLOW}ags${RESET} sobrescrita con éxito."
-      else
-        echo "${ERROR} - Error al copiar la configuración de ${YELLOW}ags${RESET}."
-        exit 1
-      fi
-      ;;
-    *)
-      echo "${NOTE} - Omitiendo la sobrescritura de la configuración de ags."
-      ;;
-    esac
+    echo "${NOTE} - Se detectó configuración existente de ${YELLOW}ags${RESET}. Omitiendo la sobrescritura por defecto." 2>&1 | tee -a "$LOG"
   fi
 fi
 
@@ -440,27 +429,7 @@ if command -v qs >/dev/null 2>&1; then
       rm "$DIRPATH_QS/shell.qml"
     fi
     
-    read -p "${CAT} ¿Deseas sobrescribir tu configuración existente de ${YELLOW}quickshell${RESET}? [s/N] " answer_qs
-    case "$answer_qs" in
-    [SsYy]*)
-      BACKUP_DIR=$(get_backup_dirname)
-      mv "$DIRPATH_QS" "$DIRPATH_QS-backup-$BACKUP_DIR" 2>&1 | tee -a "$LOG"
-      echo -e "${NOTE} - Se respaldó quickshell en $DIRPATH_QS-backup-$BACKUP_DIR"
-
-      cp -r "config/quickshell/" "$DIRPATH_QS" 2>&1 | tee -a "$LOG"
-      if [ $? -eq 0 ]; then
-        echo "${OK} - Configuración de ${YELLOW}quickshell${RESET} sobrescrita con éxito."
-        # Remove default shell.qml from new copy to enable overview detection
-        rm -f "$DIRPATH_QS/shell.qml" 2>&1 | tee -a "$LOG"
-      else
-        echo "${ERROR} - Error al copiar la configuración de ${YELLOW}quickshell${RESET}."
-        exit 1
-      fi
-      ;;
-    *)
-      echo "${NOTE} - Omitiendo la sobrescritura de la configuración de quickshell."
-      ;;
-    esac
+    echo "${NOTE} - Se detectó configuración existente de ${YELLOW}quickshell${RESET}. Omitiendo la sobrescritura por defecto." 2>&1 | tee -a "$LOG"
   fi
   
   # Ensure overview subdirectory exists and is up to date
@@ -572,43 +541,11 @@ fi
 # additional wallpapers
 printf "\n%.0s" {1..1}
 echo "${MAGENTA}Por defecto, solo se copian unos pocos fondos de pantalla${RESET}..."
-
-if [ "$EXPRESS_MODE" -eq 1 ]; then
-  echo "${NOTE} Modo exprés: omitiendo la pregunta de descarga de fondos de pantalla adicionales." 2>&1 | tee -a "$LOG"
-else
-  while true; do
-    echo "${NOTE} Descargaremos tus fondos de pantalla personales curados en 4K y HD."
-    echo -n "${CAT} ¿Te gustaría descargar tus nuevos fondos de pantalla de alta calidad? (s/n): "
-    read WALL
-
-    case $WALL in
-    [SsYy])
-      echo "${NOTE} Ejecutando el script de descarga de fondos de pantalla personalizados..."
-      chmod +x "$SCRIPT_DIR/wallpapers/download_wallpapers.sh" 2>&1 | tee -a "$LOG"
-      if "$SCRIPT_DIR/wallpapers/download_wallpapers.sh" 2>&1 | tee -a "$LOG"; then
-        echo "${OK} Fondos de pantalla personalizados descargados y sincronizados con éxito." 2>&1 | tee -a "$LOG"
-        break
-      else
-        echo "${ERROR} Error al descargar los fondos de pantalla personalizados." 2>&1 | tee -a "$LOG"
-      fi
-      ;;
-    [Nn]*)
-      echo "${NOTE} Elegiste no descargar fondos de pantalla adicionales." 2>&1 | tee -a "$LOG"
-      break
-      ;;
-    *)
-      echo "Por favor introduce 's' o 'n' para continuar."
-      ;;
-    esac
-  done
-fi
+echo "${NOTE} Omitiendo la descarga de fondos de pantalla adicionales por defecto para una instalación autónoma." 2>&1 | tee -a "$LOG"
+echo "${NOTE} Puedes descargarlos manualmente ejecutando: $SCRIPT_DIR/wallpapers/download_wallpapers.sh" 2>&1 | tee -a "$LOG"
 
 # Execute the cleanup function
-if [ "$EXPRESS_MODE" -eq 1 ]; then
-  cleanup_backups auto "$LOG"
-else
-  cleanup_backups prompt "$LOG"
-fi
+cleanup_backups auto "$LOG"
 
 # Check if ~/.config/waybar/style.css does not exist or is a symlink
 if [ ! -e "$HOME/.config/waybar/style.css" ] || [ -L "$HOME/.config/waybar/style.css" ]; then

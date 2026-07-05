@@ -602,15 +602,18 @@ if pacman -Q hyprland &> /dev/null || pacman -Q hyprland-git &> /dev/null; then
     printf "\n${NOTE} Sin embargo, se ${YELLOW}recomienda encarecidamente reiniciar${RESET} el sistema.\n\n"
 
     while true; do
-        echo -n "${CAT} ¿Deseas reiniciar el sistema ahora? (s/n): "
-        read HYP
+        echo -n "${CAT} ¿Deseas reiniciar el sistema ahora? (s/n) [espera 10s]: "
+        if ! read -t 10 HYP; then
+            echo -e "\n${NOTE} Tiempo de espera agotado. Usando valor predeterminado (No reiniciar)."
+            HYP="n"
+        fi
         HYP=$(echo "$HYP" | tr '[:upper:]' '[:lower:]')
 
         if [[ "$HYP" == "s" || "$HYP" == "si" || "$HYP" == "sí" || "$HYP" == "y" || "$HYP" == "yes" ]]; then
             echo "${INFO} Reiniciando el sistema ahora..."
             systemctl reboot 
             break
-        elif [[ "$HYP" == "n" || "$HYP" == "no" ]]; then
+        elif [[ "$HYP" == "n" || "$HYP" == "no" || -z "$HYP" ]]; then
             echo "👌 ${OK} Elegiste NO reiniciar"
             printf "\n%.0s" {1..1}
             # Check if NVIDIA GPU is present

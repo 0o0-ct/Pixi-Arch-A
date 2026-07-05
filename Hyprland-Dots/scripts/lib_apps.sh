@@ -96,21 +96,13 @@ choose_default_editor() {
   }
   if command -v nvim &>/dev/null; then
     printf "${INFO:-[INFO]} Se detectó que ${MAGENTA:-}neovim${RESET:-} está instalado\n"
-    if ! read -r -p "${CAT:-[ACTION]} ¿Quieres que ${MAGENTA:-}neovim${RESET:-} sea el editor predeterminado? (s/N): " EDITOR_CHOICE </dev/tty; then
-      :
-    elif [[ "$EDITOR_CHOICE" == "s" || "$EDITOR_CHOICE" == "S" || "$EDITOR_CHOICE" == "y" || "$EDITOR_CHOICE" == "Y" ]]; then
-      update_editor "nvim"
-      editor_set=1
-    fi
+    update_editor "nvim"
+    editor_set=1
   fi
   printf "\n"
   if [[ "$editor_set" -eq 0 ]] && command -v vim &>/dev/null; then
     printf "${INFO:-[INFO]} Se detectó que ${MAGENTA:-}vim${RESET:-} está instalado\n"
-    if read -r -p "${CAT:-[ACTION]} ¿Quieres que ${MAGENTA:-}vim${RESET:-} sea el editor predeterminado? (s/N): " EDITOR_CHOICE </dev/tty; then
-      if [[ "$EDITOR_CHOICE" == "s" || "$EDITOR_CHOICE" == "S" || "$EDITOR_CHOICE" == "y" || "$EDITOR_CHOICE" == "Y" ]]; then
-        update_editor "vim"
-        editor_set=1
-      fi
-    fi
+    update_editor "vim"
+    editor_set=1
   fi
 }
