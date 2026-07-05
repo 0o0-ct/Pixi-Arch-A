@@ -93,7 +93,7 @@
 	"on-click": "blueman-manager"},
 
 "clock": {
-	"interval": 1,
+	"interval": 10,
     "format": " {:%I:%M %p}", // AM PM format
     //"format": " {:%H:%M:%S}",// 24H
 	"format-alt": " {:L%H:%M   %Y, %d %B, %A}",
