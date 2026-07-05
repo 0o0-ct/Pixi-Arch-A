@@ -353,6 +353,58 @@ fi
 
 sleep 1
 
+# Configurar el sistema de entrada por defecto (teclado)
+echo "${INFO} Configurando el sistema de entrada por defecto...${RESET}" | tee -a "$LOG"
+
+# Si la carpeta config/hypr/scripts existe, llamar a lib_prompts.sh para configurar el teclado
+if [ -f "Hyprland-Dots/scripts/lib_prompts.sh" ]; then
+    # Crear el archivo temporal "config" si no existe
+    mkdir -p "Hyprland-Dots/config/hypr/scripts"
+    # Usar la lógica de detección y configuración del teclado del lib_prompts.sh
+    echo "${NOTE} Detectando la distribución de teclado predeterminada..." | tee -a "$LOG"
+
+    # Detectar la distribución de teclado
+    if command -v localectl >/dev/null 2>&1; then
+        LAYOUT=$(localectl status --no-pager | awk '/X11 Layout/ {print $3}')
+    else
+        if command -v setxkbmap >/dev/null 2>&1; then
+            LAYOUT=$(setxkbmap -query | awk '/layout/ {print $2}')
+        fi
+    fi
+
+    if [ -z "$LAYOUT" ] || [ "$LAYOUT" = "(none)" ]; then
+        echo "$NOTE - No se pudo detectar la distribución de teclado por defecto. Se mantendrá us por defecto..." | tee -a "$LOG"
+        LAYOUT="us"
+    fi
+
+    echo "$INFO - La distribución de teclado detectada es: $LAYOUT" | tee -a "$LOG"
+
+    # Seleccionar si se desea agregar el español además de inglés
+    echo "$CAT Preguntando si desea configurar más distribuciones de teclado..." | tee -a "$LOG"
+
+    if whiptail --title "Distribución de teclado" --yesno "¿Desea agregar el español (es) además del inglés (us) como distribución alternativa para el teclado?" 10 80; then
+        LAYOUT="es,us"
+        echo "$OK - Teclado configurado con las distribuciones: es,us" | tee -a "$LOG"
+    else
+        echo "$OK - Teclado configurado solo con la distribución: us" | tee -a "$LOG"
+    fi
+
+    # Asegurar que el archivo SystemSettings.conf existe y actualizar el kb_layout
+    if [ -f "Hyprland-Dots/config/hypr/configs/SystemSettings.conf" ]; then
+        # Eliminar cualquier línea existente de kb_layout
+        sed -i '/kb_layout = /d' "Hyprland-Dots/config/hypr/configs/SystemSettings.conf"
+        # Añadir la nueva línea de kb_layout
+        echo "  kb_layout = $LAYOUT" >> "Hyprland-Dots/config/hypr/configs/SystemSettings.conf"
+        echo "$OK - Configuración del teclado actualizada en SystemSettings.conf" | tee -a "$LOG"
+    else
+        echo "$WARN - No se encontró SystemSettings.conf en config/hypr/configs/ - omitiendo configuración del teclado" | tee -a "$LOG"
+    fi
+else
+    echo "$WARN - No se encontró lib_prompts.sh, omitiendo configuración del teclado" | tee -a "$LOG"
+fi
+
+sleep 1
+
 # Ejecutar los scripts relacionados con Hyprland
 echo "${INFO} Instalando los paquetes adicionales de ${SKY_BLUE}Pixi-Arch-A...${RESET}" | tee -a "$LOG"
 sleep 1
