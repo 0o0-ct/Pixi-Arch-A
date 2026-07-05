@@ -185,3 +185,8 @@ if command -v waybar-msg >/dev/null 2>&1; then
 elif pidof waybar >/dev/null; then
   killall -SIGUSR2 waybar 2>/dev/null || true
 fi
+
+# Automatically sync SDDM wallpaper with the new desktop wallpaper
+if [ -f "$HOME/.config/hypr/scripts/sddm_wallpaper.sh" ]; then
+  "$HOME/.config/hypr/scripts/sddm_wallpaper.sh" --normal >/dev/null 2>&1 &
+fi
