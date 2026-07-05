@@ -56,7 +56,41 @@ prompt_resolution_choice() {
 # Prompt for 12H clock; sets waybar/hyprlock/SDDM changes when accepted.
 prompt_clock_12h() {
   local log="$1"
-  echo "${INFO} Manteniendo el formato de reloj de 24H por defecto (puedes cambiarlo más tarde)." 2>&1 | tee -a "$log"
+  echo "${INFO} Configurando automáticamente el formato de reloj de 12H (AM/PM)..." 2>&1 | tee -a "$log"
+
+  # waybar clocks
+  sed -i 's#^\(\s*\)//\("format": " {:%I:%M %p}",\) #\1\2 #g' config/waybar/Modules 2>&1 | tee -a "$log"
+  sed -i 's#^\(\s*\)\("format": " {:%H:%M:%S}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
+  sed -i 's#^\(\s*\)\("format": "  {:%H:%M}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
+  sed -i 's#^\(\s*\)//\("format": "{:%I:%M %p - %d/%b}",\) #\1\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
+  sed -i 's#^\(\s*\)\("format": "{:%H:%M - %d/%b}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
+  sed -i 's#^\(\s*\)//\("format": "{:%B | %a %d, %Y | %I:%M %p}",\) #\1\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
+  sed -i 's#^\(\s*\)\("format": "{:%B | %a %d, %Y | %H:%M}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
+  sed -i 's#^\(\s*\)//\("format": "{:%A, %I:%M %P}",\) #\1\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
+  sed -i 's#^\(\s*\)\("format": "{:%a %d | %H:%M}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
+
+  # hyprlock
+  local HYPRLOCK_FILE="config/hypr/hyprlock.conf"
+  if [ ! -f "$HYPRLOCK_FILE" ] && [ -f "config/hypr/hyprlock-1080p.conf" ]; then
+    HYPRLOCK_FILE="config/hypr/hyprlock-1080p.conf"
+  fi
+  if [ -f "$HYPRLOCK_FILE" ]; then
+    sed -i 's/^\s*text = cmd\[update:1000\] echo \"\$(date +\"%H\")\"/# &/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
+    sed -i 's/^\(\s*\)# *text = cmd\[update:1000\] echo \"\$(date +\"%I\")\" #AM\/PM/\1    text = cmd\[update:1000\] echo \"\$(date +\"%I\")\" #AM\/PM/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
+    sed -i 's/^\s*text = cmd\[update:1000\] echo \"\$(date +\"%S\")\"/# &/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
+    sed -i 's/^\(\s*\)# *text = cmd\[update:1000\] echo \"\$(date +\"%S %p\")\" #AM\/PM/\1    text = cmd\[update:1000\] echo \"\$(date +\"%S %p\")\" #AM\/PM/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
+  else
+    echo "${WARN} Plantilla de hyprlock no encontrada; omitiendo las ediciones del formato de reloj de 12H" 2>&1 | tee -a "$log"
+  fi
+
+  if [ "${EXPRESS_MODE:-0}" -eq 0 ]; then
+    apply_sddm_12h_format "/usr/share/sddm/themes/simple-sddm" "$log"
+    apply_sddm_12h_format "/usr/share/sddm/themes/simple_sddm_2" "$log"
+    apply_sddm_12h_format_sequoia "/usr/share/sddm/themes/sequoia_2" "$log"
+  else
+    echo "${NOTE:-[NOTE]} Modo exprés: omitiendo ediciones de SDDM 12H para evitar avisos de sudo." 2>&1 | tee -a "$log"
+  fi
+  echo "${OK} Formato de 12H configurado con éxito en los relojes de waybar y SDDM." 2>&1 | tee -a "$log"
 }
 
 apply_sddm_12h_format() {
