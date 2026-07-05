@@ -179,47 +179,17 @@ if [ "$EXPRESS_MODE" -eq 1 ] && [ "$EXPRESS_SUPPORTED" -eq 0 ]; then
 fi
 
 if [ -z "$RUN_MODE" ]; then
-  if declare -f show_copy_menu >/dev/null 2>&1; then
-    while [ -z "$RUN_MODE" ]; do
-      show_copy_menu "$EXPRESS_SUPPORTED"
-      choice_lower=$(echo "$COPY_MENU_CHOICE" | tr '[:upper:]' '[:lower:]')
-      case "$choice_lower" in
-      install)
-        RUN_MODE="install"
-        UPGRADE_MODE=0
-        EXPRESS_MODE=0
-        ;;
-      upgrade)
-        RUN_MODE="upgrade"
-        UPGRADE_MODE=1
-        EXPRESS_MODE=0
-        ;;
-      express)
-        if [ "$EXPRESS_SUPPORTED" -eq 0 ]; then
-          echo "${WARN} El modo exprés requiere dotfiles instalados v${MIN_EXPRESS_VERSION} o más recientes. Por favor, elige otra opción."
-          continue
-        fi
-        RUN_MODE="express"
-        UPGRADE_MODE=1
-        EXPRESS_MODE=1
-        ;;
-      update)
-        run_repo_update "$SCRIPT_DIR"
-        # After update, continue showing the menu without exiting
-        continue
-        ;;
-      quit)
-        echo "${NOTE} Saliendo según la selección del usuario."
-        exit 0
-        ;;
-      *)
-        echo "${WARN} Selección no válida."
-        ;;
-      esac
-    done
+  if [ -d "$HOME/.config/hypr" ]; then
+    echo "${NOTE} Se detectó una instalación previa de Hyprland en $HOME/.config/hypr."
+    echo "${NOTE} Configurando automáticamente el modo de actualización EXPRÉS silencioso."
+    RUN_MODE="express"
+    UPGRADE_MODE=1
+    EXPRESS_MODE=1
   else
-    echo "${NOTE} No se encontró el asistente de menú; usando por defecto el flujo de instalación."
+    echo "${NOTE} No se detectó ninguna instalación previa. Configurando instalación limpia automática."
     RUN_MODE="install"
+    UPGRADE_MODE=0
+    EXPRESS_MODE=0
   fi
 fi
 
