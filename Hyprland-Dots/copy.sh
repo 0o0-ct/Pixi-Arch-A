@@ -266,9 +266,7 @@ if [ "$EXPRESS_MODE" -eq 1 ]; then
   echo "${INFO} Modo exprés activado. Se omitirán las preguntas opcionales de restauración." 2>&1 | tee -a "$LOG"
 fi
 
-detect_nvidia_adjust "$LOG"
-detect_vm_adjust "$LOG"
-detect_nixos_adjust "$LOG"
+# Las detecciones de hardware se ejecutarán después de copiar los archivos de configuración
 
 # activating hyprcursor on env by checking if the directory ~/.icons/Bibata-Modern-Ice/hyprcursors exists
 if [ -d "$HOME/.icons/Bibata-Modern-Ice/hyprcursors" ]; then
@@ -354,6 +352,11 @@ printf "\n%.0s" {1..1}
 printf "${INFO} - Copiando la ${SKY_BLUE}segunda${RESET} parte de los dotfiles\n"
 copy_phase2 "$LOG"
 printf "\\n%.0s" {1..1}
+
+# Ejecutar las detecciones y ajustes de hardware sobre los archivos finales copiados
+detect_nvidia_adjust "$LOG"
+detect_vm_adjust "$LOG"
+detect_nixos_adjust "$LOG"
 
 # ags config
 # Check if ags is installed
