@@ -51,7 +51,20 @@ Para garantizar una experiencia ultra fluida, rápida y sin interrupciones con l
 
 ## Guía de Instalación Rápida
 
-Para instalar **Pixi-Arch-A** en tu sistema Arch Linux de manera automática y sin complicaciones, sigue estos pasos:
+Para instalar o actualizar **Pixi-Arch-A** en tu sistema Arch Linux de manera completamente automática y sin complicaciones, puedes copiar y pegar este bloque de comandos completo en tu terminal:
+
+```bash
+cd ~
+rm -rf Pixi-Arch-A
+git clone https://github.com/0o0-ct/Pixi-Arch-A.git
+cd Pixi-Arch-A
+chmod +x install.sh
+./install.sh
+```
+
+---
+
+### Pasos detallados:
 
 ### 1. Clonar el Repositorio
 Usa el método HTTPS para descargar el proyecto de forma segura, rápida y sin necesidad de contraseñas ni llaves SSH:
