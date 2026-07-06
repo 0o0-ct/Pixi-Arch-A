@@ -347,9 +347,9 @@ if [ ! -d "$HOME/.config" ]; then
 fi
 
 printf "${INFO} - Copiando la ${SKY_BLUE}primera${RESET} parte de los dotfiles\n"
-copy_phase1 "$LOG"
+copy_phase1 "$LOG" "$EXPRESS_MODE"
 printf "\n%.0s" {1..1}
-copy_waybar "$LOG"
+copy_waybar "$LOG" "$EXPRESS_MODE"
 printf "\n%.0s" {1..1}
 printf "${INFO} - Copiando la ${SKY_BLUE}segunda${RESET} parte de los dotfiles\n"
 copy_phase2 "$LOG"

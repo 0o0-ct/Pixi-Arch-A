@@ -3,41 +3,61 @@
 
 copy_phase1() {
   local log="$1"
+  local express_mode="${2:-0}"
   local dirs="fastfetch kitty rofi swaync"
   for DIR2 in $dirs; do
     local DIRPATH="$HOME/.config/$DIR2"
     if [ -d "$DIRPATH" ]; then
-      while true; do
-        printf "\n${INFO:-[INFO]} Found ${YELLOW:-}$DIR2${RESET:-} config found in ~/.config/\n"
-        echo -n "${CAT:-[ACTION]} ¿Quieres reemplazar ${YELLOW:-}$DIR2${RESET:-} la configuración? (s/n): "
-        read DIR1_CHOICE
-        case "$DIR1_CHOICE" in
-        [SsYy]*)
-          BACKUP_DIR=$(get_backup_dirname)
-          mv "$DIRPATH" "$DIRPATH-backup-$BACKUP_DIR" 2>&1 | tee -a "$log"
-          echo -e "${NOTE:-[NOTE]} - Se respaldó $DIR2 en $DIRPATH-backup-$BACKUP_DIR." 2>&1 | tee -a "$log"
-          cp -r "config/$DIR2" "$HOME/.config/$DIR2" 2>&1 | tee -a "$log"
-          echo -e "${OK:-[OK]} - ¡Se reemplazó $DIR2 con la nueva configuración!" 2>&1 | tee -a "$log"
-          if [ "$DIR2" = "rofi" ]; then
-            if [ -d "$DIRPATH-backup-$BACKUP_DIR/themes" ]; then
-              for file in "$DIRPATH-backup-$BACKUP_DIR/themes"/*; do
-                [ -e "$file" ] || continue
-                cp -n "$file" "$HOME/.config/rofi/themes/" >>"$log" 2>&1 || true
-              done || true
-            fi
-            if [ -f "$DIRPATH-backup-$BACKUP_DIR/0-shared-fonts.rasi" ]; then
-              cp "$DIRPATH-backup-$BACKUP_DIR/0-shared-fonts.rasi" "$HOME/.config/rofi/0-shared-fonts.rasi" >>"$log" 2>&1
-            fi
+      if [ "$express_mode" -eq 1 ]; then
+        BACKUP_DIR=$(get_backup_dirname)
+        mv "$DIRPATH" "$DIRPATH-backup-$BACKUP_DIR" 2>&1 | tee -a "$log"
+        echo -e "${NOTE:-[NOTE]} Modo exprés: Se respaldó $DIR2 en $DIRPATH-backup-$BACKUP_DIR." 2>&1 | tee -a "$log"
+        cp -r "config/$DIR2" "$HOME/.config/$DIR2" 2>&1 | tee -a "$log"
+        echo -e "${OK:-[OK]} Modo exprés: ¡Se reemplazó $DIR2 con la nueva configuración!" 2>&1 | tee -a "$log"
+        if [ "$DIR2" = "rofi" ]; then
+          if [ -d "$DIRPATH-backup-$BACKUP_DIR/themes" ]; then
+            for file in "$DIRPATH-backup-$BACKUP_DIR/themes"/*; do
+              [ -e "$file" ] || continue
+              cp -n "$file" "$HOME/.config/rofi/themes/" >>"$log" 2>&1 || true
+            done || true
           fi
-          break
-          ;;
-        [Nn]*)
-          echo -e "${NOTE:-[NOTE]} - Omitiendo ${YELLOW:-}$DIR2${RESET:-}" 2>&1 | tee -a "$log"
-          break
-          ;;
-        *) echo -e "${WARN:-[WARN]} - Elección no válida. Por favor introduce S o N." ;;
-        esac
-      done
+          if [ -f "$DIRPATH-backup-$BACKUP_DIR/0-shared-fonts.rasi" ]; then
+            cp "$DIRPATH-backup-$BACKUP_DIR/0-shared-fonts.rasi" "$HOME/.config/rofi/0-shared-fonts.rasi" >>"$log" 2>&1
+          fi
+        fi
+      else
+        while true; do
+          printf "\n${INFO:-[INFO]} Found ${YELLOW:-}$DIR2${RESET:-} config found in ~/.config/\n"
+          echo -n "${CAT:-[ACTION]} ¿Quieres reemplazar ${YELLOW:-}$DIR2${RESET:-} la configuración? (s/n): "
+          read DIR1_CHOICE
+          case "$DIR1_CHOICE" in
+          [SsYy]*)
+            BACKUP_DIR=$(get_backup_dirname)
+            mv "$DIRPATH" "$DIRPATH-backup-$BACKUP_DIR" 2>&1 | tee -a "$log"
+            echo -e "${NOTE:-[NOTE]} - Se respaldó $DIR2 en $DIRPATH-backup-$BACKUP_DIR." 2>&1 | tee -a "$log"
+            cp -r "config/$DIR2" "$HOME/.config/$DIR2" 2>&1 | tee -a "$log"
+            echo -e "${OK:-[OK]} - ¡Se reemplazó $DIR2 con la nueva configuración!" 2>&1 | tee -a "$log"
+            if [ "$DIR2" = "rofi" ]; then
+              if [ -d "$DIRPATH-backup-$BACKUP_DIR/themes" ]; then
+                for file in "$DIRPATH-backup-$BACKUP_DIR/themes"/*; do
+                  [ -e "$file" ] || continue
+                  cp -n "$file" "$HOME/.config/rofi/themes/" >>"$log" 2>&1 || true
+                done || true
+              fi
+              if [ -f "$DIRPATH-backup-$BACKUP_DIR/0-shared-fonts.rasi" ]; then
+                cp "$DIRPATH-backup-$BACKUP_DIR/0-shared-fonts.rasi" "$HOME/.config/rofi/0-shared-fonts.rasi" >>"$log" 2>&1
+              fi
+            fi
+            break
+            ;;
+          [Nn]*)
+            echo -e "${NOTE:-[NOTE]} - Omitiendo ${YELLOW:-}$DIR2${RESET:-}" 2>&1 | tee -a "$log"
+            break
+            ;;
+          *) echo -e "${WARN:-[WARN]} - Elección no válida. Por favor introduce S o N." ;;
+          esac
+        done
+      fi
     else
       cp -r "config/$DIR2" "$HOME/.config/$DIR2" 2>&1 | tee -a "$log"
       echo -e "${OK:-[OK]} - Copia completada para ${YELLOW:-}$DIR2${RESET:-}" 2>&1 | tee -a "$log"
@@ -47,61 +67,103 @@ copy_phase1() {
 
 copy_waybar() {
   local log="$1"
+  local express_mode="${2:-0}"
   local DIRW="waybar"
   local DIRPATHw="$HOME/.config/$DIRW"
   if [ -d "$DIRPATHw" ]; then
-    while true; do
-      echo -n "${CAT:-[ACTION]} ¿Quieres reemplazar ${YELLOW:-}$DIRW${RESET:-} la configuración? (s/n): "
-      read DIR1_CHOICE
-      case "$DIR1_CHOICE" in
-      [SsYy]*)
-        BACKUP_DIR=$(get_backup_dirname)
-        cp -r "$DIRPATHw" "$DIRPATHw-backup-$BACKUP_DIR" 2>&1 | tee -a "$log"
-        echo -e "${NOTE:-[NOTE]} - Se respaldó $DIRW en $DIRPATHw-backup-$BACKUP_DIR." 2>&1 | tee -a "$log"
-        rm -rf "$DIRPATHw" && cp -r "config/$DIRW" "$DIRPATHw" 2>&1 | tee -a "$log"
-        for file in "config" "style.css"; do
-          symlink="$DIRPATHw-backup-$BACKUP_DIR/$file"
-          target_file="$DIRPATHw/$file"
-          if [ -L "$symlink" ]; then
-            symlink_target=$(readlink "$symlink")
-            if [ -f "$symlink_target" ]; then
-              rm -f "$target_file" && cp -f "$symlink_target" "$target_file"
+    if [ "$express_mode" -eq 1 ]; then
+      BACKUP_DIR=$(get_backup_dirname)
+      cp -r "$DIRPATHw" "$DIRPATHw-backup-$BACKUP_DIR" 2>&1 | tee -a "$log"
+      echo -e "${NOTE:-[NOTE]} Modo exprés: Se respaldó $DIRW en $DIRPATHw-backup-$BACKUP_DIR." 2>&1 | tee -a "$log"
+      rm -rf "$DIRPATHw" && cp -r "config/$DIRW" "$DIRPATHw" 2>&1 | tee -a "$log"
+      for file in "config" "style.css"; do
+        symlink="$DIRPATHw-backup-$BACKUP_DIR/$file"
+        target_file="$DIRPATHw/$file"
+        if [ -L "$symlink" ]; then
+          symlink_target=$(readlink "$symlink")
+          if [ -f "$symlink_target" ]; then
+            rm -f "$target_file" && cp -f "$symlink_target" "$target_file"
+          fi
+        fi
+      done
+      for dir in "$DIRPATHw-backup-$BACKUP_DIR/configs"/*; do
+        [ -e "$dir" ] || continue
+        if [ -d "$dir" ]; then
+          target_dir="$HOME/.config/waybar/configs/$(basename "$dir")"
+          [ -d "$target_dir" ] || cp -r "$dir" "$HOME/.config/waybar/configs/"
+        fi
+      done
+      for file in "$DIRPATHw-backup-$BACKUP_DIR/configs"/*; do
+        [ -e "$file" ] || continue
+        target_file="$HOME/.config/waybar/configs/$(basename "$file")"
+        [ -e "$target_file" ] || cp "$file" "$HOME/.config/waybar/configs/"
+      done || true
+      for file in "$DIRPATHw-backup-$BACKUP_DIR/style"/*; do
+        [ -e "$file" ] || continue
+        if [ -d "$file" ]; then
+          target_dir="$HOME/.config/waybar/style/$(basename "$file")"
+          [ -d "$target_dir" ] || cp -r "$file" "$HOME/.config/waybar/style/"
+        else
+          target_file="$HOME/.config/waybar/style/$(basename "$file")"
+          [ -e "$target_file" ] || cp "$file" "$HOME/.config/waybar/style/"
+        fi
+      done || true
+      BACKUP_FILEw="$DIRPATHw-backup-$BACKUP_DIR/UserModules"
+      [ -f "$BACKUP_FILEw" ] && cp -f "$BACKUP_FILEw" "$DIRPATHw/UserModules"
+    else
+      while true; do
+        echo -n "${CAT:-[ACTION]} ¿Quieres reemplazar ${YELLOW:-}$DIRW${RESET:-} la configuración? (s/n): "
+        read DIR1_CHOICE
+        case "$DIR1_CHOICE" in
+        [SsYy]*)
+          BACKUP_DIR=$(get_backup_dirname)
+          cp -r "$DIRPATHw" "$DIRPATHw-backup-$BACKUP_DIR" 2>&1 | tee -a "$log"
+          echo -e "${NOTE:-[NOTE]} - Se respaldó $DIRW en $DIRPATHw-backup-$BACKUP_DIR." 2>&1 | tee -a "$log"
+          rm -rf "$DIRPATHw" && cp -r "config/$DIRW" "$DIRPATHw" 2>&1 | tee -a "$log"
+          for file in "config" "style.css"; do
+            symlink="$DIRPATHw-backup-$BACKUP_DIR/$file"
+            target_file="$DIRPATHw/$file"
+            if [ -L "$symlink" ]; then
+              symlink_target=$(readlink "$symlink")
+              if [ -f "$symlink_target" ]; then
+                rm -f "$target_file" && cp -f "$symlink_target" "$target_file"
+              fi
             fi
-          fi
-        done
-        for dir in "$DIRPATHw-backup-$BACKUP_DIR/configs"/*; do
-          [ -e "$dir" ] || continue
-          if [ -d "$dir" ]; then
-            target_dir="$HOME/.config/waybar/configs/$(basename "$dir")"
-            [ -d "$target_dir" ] || cp -r "$dir" "$HOME/.config/waybar/configs/"
-          fi
-        done
-        for file in "$DIRPATHw-backup-$BACKUP_DIR/configs"/*; do
-          [ -e "$file" ] || continue
-          target_file="$HOME/.config/waybar/configs/$(basename "$file")"
-          [ -e "$target_file" ] || cp "$file" "$HOME/.config/waybar/configs/"
-        done || true
-        for file in "$DIRPATHw-backup-$BACKUP_DIR/style"/*; do
-          [ -e "$file" ] || continue
-          if [ -d "$file" ]; then
-            target_dir="$HOME/.config/waybar/style/$(basename "$file")"
-            [ -d "$target_dir" ] || cp -r "$file" "$HOME/.config/waybar/style/"
-          else
-            target_file="$HOME/.config/waybar/style/$(basename "$file")"
-            [ -e "$target_file" ] || cp "$file" "$HOME/.config/waybar/style/"
-          fi
-        done || true
-        BACKUP_FILEw="$DIRPATHw-backup-$BACKUP_DIR/UserModules"
-        [ -f "$BACKUP_FILEw" ] && cp -f "$BACKUP_FILEw" "$DIRPATHw/UserModules"
-        break
-        ;;
-      [Nn]*)
-        echo -e "${NOTE:-[NOTE]} - Omitiendo el reemplazo de configuración de ${YELLOW:-}$DIRW${RESET:-}." 2>&1 | tee -a "$log"
-        break
-        ;;
-      *) echo -e "${WARN:-[WARN]} - Elección no válida. Por favor introduce S o N." ;;
-      esac
-    done
+          done
+          for dir in "$DIRPATHw-backup-$BACKUP_DIR/configs"/*; do
+            [ -e "$dir" ] || continue
+            if [ -d "$dir" ]; then
+              target_dir="$HOME/.config/waybar/configs/$(basename "$dir")"
+              [ -d "$target_dir" ] || cp -r "$dir" "$HOME/.config/waybar/configs/"
+            fi
+          done
+          for file in "$DIRPATHw-backup-$BACKUP_DIR/configs"/*; do
+            [ -e "$file" ] || continue
+            target_file="$HOME/.config/waybar/configs/$(basename "$file")"
+            [ -e "$target_file" ] || cp "$file" "$HOME/.config/waybar/configs/"
+          done || true
+          for file in "$DIRPATHw-backup-$BACKUP_DIR/style"/*; do
+            [ -e "$file" ] || continue
+            if [ -d "$file" ]; then
+              target_dir="$HOME/.config/waybar/style/$(basename "$file")"
+              [ -d "$target_dir" ] || cp -r "$file" "$HOME/.config/waybar/style/"
+            else
+              target_file="$HOME/.config/waybar/style/$(basename "$file")"
+              [ -e "$target_file" ] || cp "$file" "$HOME/.config/waybar/style/"
+            fi
+          done || true
+          BACKUP_FILEw="$DIRPATHw-backup-$BACKUP_DIR/UserModules"
+          [ -f "$BACKUP_FILEw" ] && cp -f "$BACKUP_FILEw" "$DIRPATHw/UserModules"
+          break
+          ;;
+        [Nn]*)
+          echo -e "${NOTE:-[NOTE]} - Omitiendo el reemplazo de configuración de ${YELLOW:-}$DIRW${RESET:-}." 2>&1 | tee -a "$log"
+          break
+          ;;
+        *) echo -e "${WARN:-[WARN]} - Elección no válida. Por favor introduce S o N." ;;
+        esac
+      done
+    fi
   else
     cp -r "config/$DIRW" "$DIRPATHw" 2>&1 | tee -a "$log"
     echo -e "${OK:-[OK]} - Copia completada para ${YELLOW:-}$DIRW${RESET:-}" 2>&1 | tee -a "$log"
