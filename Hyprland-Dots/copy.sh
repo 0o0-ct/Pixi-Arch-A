@@ -543,6 +543,19 @@ fi
 
 printf "\n%.0s" {1..1}
 
+# Ensure swww and swww-daemon wrappers/symlinks exist if using awww
+if command -v awww >/dev/null 2>&1; then
+  mkdir -p "$HOME/.local/bin"
+  if [ ! -e "$HOME/.local/bin/swww" ]; then
+    echo "${NOTE} Creando enlace de compatibilidad swww -> awww en ~/.local/bin/..." 2>&1 | tee -a "$LOG"
+    ln -sf "$(command -v awww)" "$HOME/.local/bin/swww"
+  fi
+  if [ ! -e "$HOME/.local/bin/swww-daemon" ]; then
+    echo "${NOTE} Creando enlace de compatibilidad swww-daemon -> awww-daemon en ~/.local/bin/..." 2>&1 | tee -a "$LOG"
+    ln -sf "$(command -v awww-daemon)" "$HOME/.local/bin/swww-daemon"
+  fi
+fi
+
 # initialize wallust to avoid config error on hyprland
 wallust run -s $wallpaper 2>&1 | tee -a "$LOG"
 
