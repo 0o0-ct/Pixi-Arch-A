@@ -321,10 +321,10 @@ if [ "$resolution" == "< 1440p" ]; then
 
   # hyprlock matters
   if [ -f config/hypr/hyprlock.conf ]; then
-    mv config/hypr/hyprlock.conf config/hypr/hyprlock-2k.conf 2>&1 | tee -a "$LOG"
+    cp config/hypr/hyprlock.conf config/hypr/hyprlock-2k.conf 2>&1 | tee -a "$LOG"
   fi
   if [ -f config/hypr/hyprlock-1080p.conf ]; then
-    mv config/hypr/hyprlock-1080p.conf config/hypr/hyprlock.conf 2>&1 | tee -a "$LOG"
+    cp config/hypr/hyprlock-1080p.conf config/hypr/hyprlock.conf 2>&1 | tee -a "$LOG"
   fi
 
   # rofi fonts reduction
