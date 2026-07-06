@@ -147,10 +147,18 @@ if [[ ! -d "$SDDM_THEME_DIR" ]]; then
 fi
 
 # Copy wallpaper retaining the extension so QML loader does not fail
-EXT="${WALLPAPER_PATH##*.}"
-if [[ "$EXT" == "$WALLPAPER_PATH" ]]; then
-    EXT="png"
-fi
+MIME=$(file --mime-type -b "$WALLPAPER_PATH" 2>/dev/null || echo "")
+case "$MIME" in
+    image/jpeg) EXT="jpg" ;;
+    image/png) EXT="png" ;;
+    image/webp) EXT="webp" ;;
+    *)
+        EXT="${WALLPAPER_PATH##*.}"
+        if [[ "$EXT" == "$WALLPAPER_PATH" || "${#EXT}" -gt 5 ]]; then
+            EXT="png"
+        fi
+        ;;
+esac
 
 TARGET_BG_DIR="$SDDM_THEME_DIR/Backgrounds"
 mkdir -p "$TARGET_BG_DIR"
@@ -167,7 +175,11 @@ if [[ -f "$THEME_CONF" ]]; then
 fi
 
 # If colors-rofi.rasi exists, extract and apply colors
-USER_HOME="/home/${SUDO_USER:-c0o0c}"
+if [[ "$WALLPAPER_PATH" =~ ^/home/([^/]+)/ ]]; then
+    USER_HOME="/home/${BASH_REMATCH[1]}"
+else
+    USER_HOME="/home/${SUDO_USER:-c0o0c}"
+fi
 ROFI_WALLUST="$USER_HOME/.config/rofi/wallust/colors-rofi.rasi"
 
 if [[ -f "$ROFI_WALLUST" && -f "$THEME_CONF" ]]; then
