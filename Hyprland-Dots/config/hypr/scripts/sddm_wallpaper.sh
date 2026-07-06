@@ -38,14 +38,9 @@ elif [[ "$1" == "--effects" ]]; then
     mode="effects"
 fi
 
-# Abort if SDDM is not running (avoid errors on non-SDDM systems)
-if command -v systemctl >/dev/null 2>&1; then
-    if ! systemctl is-active --quiet sddm; then
-        notify-send -i "$iDIR/error.png" "SDDM" "SDDM is not running. Skipping SDDM wallpaper update."
-        exit 0
-    fi
-elif ! pidof sddm >/dev/null 2>&1; then
-    notify-send -i "$iDIR/error.png" "SDDM" "SDDM is not running. Skipping SDDM wallpaper update."
+# Abort if SDDM theme directory does not exist (avoid errors on non-SDDM systems)
+if [ ! -d "$sddm_simple" ]; then
+    notify-send -i "$iDIR/error.png" "SDDM" "SDDM theme 'simple_sddm_2' not found. Skipping SDDM wallpaper update."
     exit 0
 fi
 

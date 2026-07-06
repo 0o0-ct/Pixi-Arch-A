@@ -2,7 +2,8 @@
 # /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
 # Script to randomly select a wallpaper and set it as the SDDM login screen background
 
-wallDIR="$HOME/Imágenes/wallpapers"
+PICTURES_DIR="$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")"
+wallDIR="$PICTURES_DIR/wallpapers"
 sddm_target="/usr/share/sddm/themes/simple_sddm_2/Backgrounds/default"
 
 # Verify that wallpapers directory exists

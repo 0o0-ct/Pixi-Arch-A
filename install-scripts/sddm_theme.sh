@@ -178,7 +178,7 @@ fi
 if [[ "$WALLPAPER_PATH" =~ ^/home/([^/]+)/ ]]; then
     USER_HOME="/home/${BASH_REMATCH[1]}"
 else
-    USER_HOME="/home/${SUDO_USER:-c0o0c}"
+    USER_HOME="${HOME:-/home/${SUDO_USER:-$(whoami)}}"
 fi
 ROFI_WALLUST="$USER_HOME/.config/rofi/wallust/colors-rofi.rasi"
 

@@ -16,6 +16,7 @@ color_scheme="prefer-dark"
 gtk_theme="Flat-Remix-GTK-Blue-Dark"
 icon_theme="Flat-Remix-Blue-Dark"
 cursor_theme="Bibata-Modern-Ice"
+PICTURES_DIR="$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")"
 
 swww="swww img"
 effect="--transition-bezier .43,1.19,1,.4 --transition-fps 30 --transition-type grow --transition-pos 0.925,0.977 --transition-duration 2"
@@ -23,6 +24,16 @@ effect="--transition-bezier .43,1.19,1,.4 --transition-fps 30 --transition-type 
 # Check if a marker file exists.
 if [ ! -f "$HOME/.config/hypr/.initial_startup_done" ]; then
     sleep 1
+    # Ensure a wallpaper exists; pick one if not
+    if [ ! -f "$wallpaper" ]; then
+        mkdir -p "$(dirname "$wallpaper")"
+        if [ -d "$PICTURES_DIR/wallpapers" ]; then
+            random_wall=$(find "$PICTURES_DIR/wallpapers" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) 2>/dev/null | shuf -n 1)
+            if [ -n "$random_wall" ] && [ -f "$random_wall" ]; then
+                cp -f "$random_wall" "$wallpaper"
+            fi
+        fi
+    fi
     # Initialize wallust and wallpaper
 	if [ -f "$wallpaper" ]; then
 		wallust run -s $wallpaper > /dev/null 

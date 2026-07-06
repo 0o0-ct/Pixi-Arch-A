@@ -500,14 +500,27 @@ rm -rf "$HOME/.config/waybar/configs/[TOP] Default$config_remove" \
 
 printf "\n%.0s" {1..1}
 
+# Ensure wallpaper_current exists; if not, pick a random wallpaper
+if [ ! -f "$wallpaper" ]; then
+  echo "${NOTE} No se encontró fondo de pantalla actual. Seleccionando uno aleatorio..." 2>&1 | tee -a "$LOG"
+  mkdir -p "$(dirname "$wallpaper")"
+  if [ -d "$PICTURES_DIR/wallpapers" ]; then
+    random_wall=$(find "$PICTURES_DIR/wallpapers" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) 2>/dev/null | shuf -n 1)
+    if [ -n "$random_wall" ] && [ -f "$random_wall" ]; then
+      cp -f "$random_wall" "$wallpaper" 2>&1 | tee -a "$LOG"
+      echo "${OK} Fondo de pantalla aleatorio seleccionado: $(basename "$random_wall")" 2>&1 | tee -a "$LOG"
+    fi
+  fi
+fi
+
 # for SDDM (simple_sddm_2)
 sddm_simple_sddm_2="/usr/share/sddm/themes/simple_sddm_2"
 if [ -d "$sddm_simple_sddm_2" ]; then
   echo "${NOTE} Aplicando automáticamente el fondo de pantalla actual a SDDM..." 2>&1 | tee -a "$LOG"
   if command -v sddm-wallpaper-helper >/dev/null 2>&1; then
-    sudo sddm-wallpaper-helper "config/hypr/wallpaper_effects/.wallpaper_current" >/dev/null 2>&1 || true
+    sudo sddm-wallpaper-helper "$wallpaper" >/dev/null 2>&1 || true
   else
-    sudo cp -f "config/hypr/wallpaper_effects/.wallpaper_current" "$sddm_simple_sddm_2/Backgrounds/default" >/dev/null 2>&1 || true
+    sudo cp -f "$wallpaper" "$sddm_simple_sddm_2/Backgrounds/default" >/dev/null 2>&1 || true
     sudo sed -i 's|^wallpaper=".*"|wallpaper="Backgrounds/default"|' "$sddm_simple_sddm_2/theme.conf" >/dev/null 2>&1 || true
     sudo sed -i 's|^Background=".*"|Background="Backgrounds/default"|' "$sddm_simple_sddm_2/theme.conf" >/dev/null 2>&1 || true
   fi
