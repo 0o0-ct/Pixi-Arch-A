@@ -11,10 +11,8 @@
 	"format-alt-click": "click",
 	"interval": 3600,
 	"return-type": "json",
-	//"exec": "$HOME/.config/hypr/UserScripts/Weather.py",
-	//"exec": "$HOME/.config/hypr/UserScripts/Weather.sh",
 	"exec": "$HOME/.config/hypr/UserScripts/WeatherWrap.sh",
-	//"exec-if": "ping wttr.in -c1",
+	"exec-if": "test -f $HOME/.config/hypr/UserScripts/WeatherWrap.sh",
 	"tooltip": true},
 
 "custom/hyprpicker": {
@@ -76,21 +74,23 @@
 	"exec-on-event": true,
 	"interval": 60,
 	"exec": "$HOME/.config/hypr/scripts/Hypridle.sh status",
+	"exec-if": "test -f $HOME/.config/hypr/scripts/Hypridle.sh",
 	"on-click": "$HOME/.config/hypr/scripts/Hypridle.sh toggle",
 	"on-click-right": "hyprlock"
 },
 
 "custom/keyboard": {
 	"exec": "$HOME/.config/hypr/scripts/KeyboardLayout.sh status",
+	"exec-if": "test -f $HOME/.config/hypr/scripts/KeyboardLayout.sh",
 	"interval": 10,
 	"format": " {}",
 	"on-click": "$HOME/.config/hypr/scripts/KeyboardLayout.sh switch"},
 
 "custom/light_dark": {
 	"format": "󰏘 ",
-	"on-click": "$HOME/.config/hypr/scripts/DarkLight.sh",
-	"on-click-right": "$HOME/.config/hypr/scripts/WaybarStyles.sh",
-	"on-click-middle": "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh",
+	"on-click": "test -f $HOME/.config/hypr/scripts/DarkLight.sh && $HOME/.config/hypr/scripts/DarkLight.sh",
+	"on-click-right": "test -f $HOME/.config/hypr/scripts/WaybarStyles.sh && $HOME/.config/hypr/scripts/WaybarStyles.sh",
+	"on-click-middle": "test -f $HOME/.config/hypr/UserScripts/WallpaperSelect.sh && $HOME/.config/hypr/UserScripts/WallpaperSelect.sh",
 	"tooltip": true,
 	"tooltip-format": "Clic Izquierdo: Cambiar Fondo Oscuro Aleatorio\nClic Central: Menú de Fondos\nClic Derecho: Menú de Estilos Waybar"},
 
@@ -98,6 +98,7 @@
 "custom/nightlight": {
 	"return-type": "json",
 	"exec": "$HOME/.config/hypr/scripts/Hyprsunset.sh status",
+	"exec-if": "test -f $HOME/.config/hypr/scripts/Hyprsunset.sh",
 	"interval": 10,
 	"format": "{text}",
 	"min-length": 2,
@@ -123,6 +124,7 @@
 // This is a custom cava visualizer
 "custom/cava_mviz": {
 	"exec": "$HOME/.config/hypr/scripts/WaybarCava.sh",
+	"exec-if": "test -f $HOME/.config/hypr/scripts/WaybarCava.sh",
 	"format": "{}"
 },
 
@@ -131,6 +133,7 @@
 	"return-type": "json",
 	"max-length": 25,
 	"exec": "playerctl -a metadata --format '{\"text\": \"{{artist}}  {{markup_escape(title)}}\", \"tooltip\": \"{{playerName}} : {{markup_escape(title)}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F",
+	"exec-if": "command -v playerctl",
 	"on-click-middle": "playerctl play-pause",
 	"on-click": "playerctl previous",
 	"on-click-right": "playerctl next",
@@ -162,18 +165,17 @@
 	"tooltip": true,
 	"tooltip-format": "Left Click: Launch Quick Settings & Notification Center\nRight Click: Launch Logout Menu",
 	"format": "",
-	"on-click": "ags request -i matshell 'system-menu'",
-	"on-click-right": "ags request -i matshell 'logout'"},
+	"on-click": "command -v ags && ags request -i matshell 'system-menu' || swaync-client -t -sw",
+	"on-click-right": "command -v ags && ags request -i matshell 'logout' || ~/.config/hypr/scripts/Wlogout.sh"},
 // NOTE:! This is mainly for Arch and Arch Based Distros  depend: pacman-contrib
-// Other Distro dont have notifications but can use to check for update for any other distro
 "custom/updater": {
 	"format": " {}",
-	"exec": "checkupdates | wc -l",
-	"exec-if": "[[ $(checkupdates | wc -l) ]]",
-	"interval": 43200, // (Arch Linux will try to check 12 hrs interval only
-	"on-click": "$HOME/.config/hypr/scripts/Distro_update.sh",
+	"exec": "command -v checkupdates && checkupdates | wc -l || echo 0",
+	"exec-if": "command -v checkupdates",
+	"interval": 43200,
+	"on-click": "test -f $HOME/.config/hypr/scripts/Distro_update.sh && $HOME/.config/hypr/scripts/Distro_update.sh",
 	"tooltip": true,
-	"tooltip-format": "Left Click: Update System\nArch (w/ notification)\nFedora, OpenSuse, Debian/Ubuntu click to update"},
+	"tooltip-format": "Left Click: Update System"},
 // Separators
 "custom/separator#dot": {
 	"format": "",

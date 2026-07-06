@@ -27,9 +27,13 @@ prompt_keyboard_layout() {
   fi
 
   printf "${NOTE} Detectando la distribución de teclado para preparar la configuración adecuada de Hyprland\n"
-  awk -v layout="$layout" '/kb_layout/ {$0 = "  kb_layout = " layout} 1' config/hypr/configs/SystemSettings.conf >temp.conf
-  mv temp.conf config/hypr/configs/SystemSettings.conf
-  echo "${OK} kb_layout ${MAGENTA}$layout${RESET} configurada automáticamente en los ajustes." 2>&1 | tee -a "$log"
+  local sys_settings="config/hypr/configs/SystemSettings.conf"
+  if [ -f "$sys_settings" ]; then
+    awk -v layout="$layout" '/kb_layout/ {$0 = "  kb_layout = " layout} 1' "$sys_settings" >temp.conf && mv temp.conf "$sys_settings"
+    echo "${OK} kb_layout ${MAGENTA}$layout${RESET} configurada automáticamente en los ajustes." 2>&1 | tee -a "$log"
+  else
+    echo "${WARN} $sys_settings no encontrado, omitiendo configuración de teclado." 2>&1 | tee -a "$log"
+  fi
 }
 
 # Prompt for resolution choice; echoes "< 1440p" or "≥ 1440p".
@@ -59,15 +63,16 @@ prompt_clock_12h() {
   echo "${INFO} Configurando automáticamente el formato de reloj de 12H (AM/PM)..." 2>&1 | tee -a "$log"
 
   # waybar clocks
-  sed -i 's#^\(\s*\)//\("format": " {:%I:%M %p}",\) #\1\2 #g' config/waybar/Modules 2>&1 | tee -a "$log"
-  sed -i 's#^\(\s*\)\("format": " {:%H:%M:%S}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
-  sed -i 's#^\(\s*\)\("format": "  {:%H:%M}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
-  sed -i 's#^\(\s*\)//\("format": "{:%I:%M %p - %d/%b}",\) #\1\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
-  sed -i 's#^\(\s*\)\("format": "{:%H:%M - %d/%b}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
-  sed -i 's#^\(\s*\)//\("format": "{:%B | %a %d, %Y | %I:%M %p}",\) #\1\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
-  sed -i 's#^\(\s*\)\("format": "{:%B | %a %d, %Y | %H:%M}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
-  sed -i 's#^\(\s*\)//\("format": "{:%A, %I:%M %P}",\) #\1\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
-  sed -i 's#^\(\s*\)\("format": "{:%a %d | %H:%M}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log"
+  [ -f config/waybar/Modules ] || { echo "${WARN} config/waybar/Modules no encontrado, omitiendo reloj." 2>&1 | tee -a "$log"; return; }
+  sed -i 's#^\(\s*\)//\("format": " {:%I:%M %p}",\) #\1\2 #g' config/waybar/Modules 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)\("format": " {:%H:%M:%S}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)\("format": "  {:%H:%M}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)//\("format": "{:%I:%M %p - %d/%b}",\) #\1\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)\("format": "{:%H:%M - %d/%b}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)//\("format": "{:%B | %a %d, %Y | %I:%M %p}",\) #\1\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)\("format": "{:%B | %a %d, %Y | %H:%M}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)//\("format": "{:%A, %I:%M %P}",\) #\1\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)\("format": "{:%a %d | %H:%M}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
 
   # hyprlock
   local HYPRLOCK_FILE="config/hypr/hyprlock.conf"

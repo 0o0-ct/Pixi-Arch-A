@@ -1,15 +1,83 @@
 #!/bin/bash
 # 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
-# Nvidia Stuffs #
+# Nvidia Stuffs - Auto-detects GPU generation and installs correct driver #
+
+detect_nvidia_driver() {
+  local dev_id gpu_gen driver
+
+  dev_id=$(lspci -nn | grep -i nvidia | grep -iE "VGA|3D" | grep -oP '10de:\K[0-9a-f]+' | head -1)
+  gpu_desc=$(lspci -vnn | grep -i nvidia | grep -iE "VGA|3D" | sed 's/.*: //' | head -1)
+
+  if [ -z "$dev_id" ]; then
+    echo "nvidia-dkms"
+    return
+  fi
+
+  local dec=$((16#${dev_id}))
+
+  # Blackwell   (RTX 5000)  0x2800-0x29FF
+  # Ada Lovelace (RTX 4000)  0x2600-0x27FF
+  # Ampere      (RTX 3000)  0x2200-0x25FF
+  # Turing      (RTX 2000)  0x1E00-0x1FFF + 0x2180-0x21FF
+  if [ "$dec" -ge 7936 ] && [ "$dec" -le 8191 ] || [ "$dec" -ge 8576 ] && [ "$dec" -le 8703 ]; then
+    # Turing (0x1F00-0x1FFF + 0x2180-0x21FF)
+    gpu_gen="Turing (RTX 2000/GTX 1600)"
+    driver="nvidia-open-dkms"
+  elif [ "$dec" -ge 8704 ] && [ "$dec" -le 9727 ]; then
+    # Ampere (0x2200-0x25FF)
+    gpu_gen="Ampere (RTX 3000)"
+    driver="nvidia-open-dkms"
+  elif [ "$dec" -ge 9728 ] && [ "$dec" -le 10239 ]; then
+    # Ada Lovelace (0x2600-0x27FF)
+    gpu_gen="Ada Lovelace (RTX 4000)"
+    driver="nvidia-open-dkms"
+  elif [ "$dec" -ge 10240 ] && [ "$dec" -le 10751 ]; then
+    # Blackwell (0x2800-0x29FF)
+    gpu_gen="Blackwell (RTX 5000)"
+    driver="nvidia-open-dkms"
+  elif [ "$dec" -ge 6912 ] && [ "$dec" -le 7551 ]; then
+    # Pascal (0x1B00-0x1D7F)
+    gpu_gen="Pascal (GTX 1000)"
+    driver="nvidia-dkms"
+  elif [ "$dec" -ge 7168 ] && [ "$dec" -le 7423 ]; then
+    # Maxwell 2 (0x1C00-0x1CFF)
+    gpu_gen="Maxwell 2 (GTX 900)"
+    driver="nvidia-dkms"
+  elif [ "$dec" -ge 4032 ] && [ "$dec" -le 5119 ]; then
+    # Kepler (0x0FC0-0x13FF)
+    gpu_gen="Kepler (GTX 600-700)"
+    driver="nvidia-470xx-dkms"
+  else
+    gpu_gen="${gpu_desc:-Desconocida}"
+    driver="nvidia-dkms"
+  fi
+
+  echo "$driver|$gpu_gen"
+}
+
+detect_nvidia_driver_info=$(detect_nvidia_driver)
+NVIDIA_DRIVER="${detect_nvidia_driver_info%%|*}"
+GPU_GEN="${detect_nvidia_driver_info##*|}"
+
+echo "${INFO} GPU NVIDIA detectada: ${SKY_BLUE}${GPU_GEN}${RESET}"
+echo "${INFO} Controlador recomendado: ${SKY_BLUE}${NVIDIA_DRIVER}${RESET}"
 
 nvidia_pkg=(
-  nvidia-dkms
+  "$NVIDIA_DRIVER"
   nvidia-settings
   nvidia-utils
   libva
-  libva-nvidia-driver
   nvidia-prime
 )
+
+# Only add libva-nvidia-driver for supported GPUs
+case "$NVIDIA_DRIVER" in
+  nvidia-470xx-dkms|nvidia-390xx-dkms)
+    ;;
+  *)
+    nvidia_pkg+=(libva-nvidia-driver)
+    ;;
+esac
 
 
 ## ADVERTENCIA: ¡NO EDITES MÁS ALLÁ DE ESTA LÍNEA SI NO SABES LO QUE ESTÁS HACIENDO! ##

@@ -217,25 +217,10 @@ if check_services_running; then
         --msgbox "Los siguientes gestores de inicio están activos:\n\n$active_list\n\nSi deseas instalar SDDM y el tema de SDDM, detén y deshabilita los servicios de arriba y reinicia antes de ejecutar este script.\n\nTu opción de instalar SDDM ha sido removida\n\n- Pixi-Arch-A " 23 80
 fi
 
-# Comprobar si se detecta una GPU NVIDIA
-nvidia_detected=false
-if lspci | grep -i "nvidia" &> /dev/null; then
-    nvidia_detected=true
-    whiptail --title "GPU NVIDIA Detectada" --msgbox "GPU NVIDIA detectada en tu sistema.\n\nNOTA: El script instalará nvidia-dkms, nvidia-utils y nvidia-settings si decides configurarla." 12 60
-fi
-
 # Inicializar el arreglo de opciones para whiptail
 options_command=(
     whiptail --title "Seleccionar Opciones" --checklist "Elige qué instalar o configurar\nNOTA: 'ESPACIO' para seleccionar y 'TAB' para cambiar selección" 28 85 20
 )
-
-# Añadir opciones de NVIDIA si se detecta
-if [ "$nvidia_detected" == "true" ]; then
-    options_command+=(
-        "nvidia" "¿Quieres que el script configure la GPU NVIDIA?" "OFF"
-        "nouveau" "¿Quieres poner en lista negra a Nouveau?" "OFF"
-    )
-fi
 
 # Añadir opción 'input_group' si el usuario no está
 input_group_detected=false
@@ -501,6 +486,11 @@ echo "${INFO} Instalando ${SKY_BLUE}Hyprland...${RESET}"
 sleep 1
 execute_script "hyprland.sh"
 
+# Auto-detectar e instalar drivers para TODAS las GPUs del sistema
+echo "${INFO} Detectando GPUs e instalando ${SKY_BLUE}drivers${RESET} automáticamente..."
+sleep 1
+execute_script "gpu-drivers.sh"
+
 # Limpiar opciones seleccionadas
 selected_options=$(echo "$selected_options" | tr -d '"' | tr -s ' ')
 
@@ -519,14 +509,6 @@ for option in "${options[@]}"; do
                 echo "${INFO} Instalando y configurando ${SKY_BLUE}SDDM...${RESET}" | tee -a "$LOG"
                 execute_script "sddm.sh"
             fi
-            ;;
-        nvidia)
-            echo "${INFO} Configurando ${SKY_BLUE}cosas de nvidia${RESET}" | tee -a "$LOG"
-            execute_script "nvidia.sh"
-            ;;
-        nouveau)
-            echo "${INFO} poniendo ${SKY_BLUE}nouveau${RESET} en lista negra"
-            execute_script "nvidia_nouveau.sh" | tee -a "$LOG"
             ;;
         gtk_themes)
             echo "${INFO} Instalando ${SKY_BLUE}temas GTK...${RESET}" | tee -a "$LOG"

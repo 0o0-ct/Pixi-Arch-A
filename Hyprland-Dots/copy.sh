@@ -271,9 +271,11 @@ fi
 # activating hyprcursor on env by checking if the directory ~/.icons/Bibata-Modern-Ice/hyprcursors exists
 if [ -d "$HOME/.icons/Bibata-Modern-Ice/hyprcursors" ]; then
   HYPRCURSOR_ENV_FILE="config/hypr/configs/ENVariables.conf"
-  echo "${INFO} Directorio Bibata-Hyprcursor detectado. Activando Hyprcursor...." 2>&1 | tee -a "$LOG" || true
-  sed -i 's/^#env = HYPRCURSOR_THEME,Bibata-Modern-Ice/env = HYPRCURSOR_THEME,Bibata-Modern-Ice/' "$HYPRCURSOR_ENV_FILE"
-  sed -i 's/^#env = HYPRCURSOR_SIZE,24/env = HYPRCURSOR_SIZE,24/' "$HYPRCURSOR_ENV_FILE"
+  if [ -f "$HYPRCURSOR_ENV_FILE" ]; then
+    echo "${INFO} Directorio Bibata-Hyprcursor detectado. Activando Hyprcursor...." 2>&1 | tee -a "$LOG" || true
+    sed -i 's/^#env = HYPRCURSOR_THEME,Bibata-Modern-Ice/env = HYPRCURSOR_THEME,Bibata-Modern-Ice/' "$HYPRCURSOR_ENV_FILE"
+    sed -i 's/^#env = HYPRCURSOR_SIZE,24/env = HYPRCURSOR_SIZE,24/' "$HYPRCURSOR_ENV_FILE"
+  fi
 fi
 
 printf "\n%.0s" {1..1}
@@ -312,21 +314,23 @@ fi
 echo "${OK} Se detectó automáticamente la resolución: $resolution." 2>&1 | tee -a "$LOG"
 if [ "$resolution" == "< 1440p" ]; then
   # kitty font size
-  sed -i 's/font_size 16.0/font_size 14.0/' config/kitty/kitty.conf
+  if [ -f config/kitty/kitty.conf ]; then
+    sed -i 's/font_size 16.0/font_size 14.0/' config/kitty/kitty.conf 2>&1 | tee -a "$LOG"
+  fi
 
   # hyprlock matters
   if [ -f config/hypr/hyprlock.conf ]; then
-    mv config/hypr/hyprlock.conf config/hypr/hyprlock-2k.conf
+    mv config/hypr/hyprlock.conf config/hypr/hyprlock-2k.conf 2>&1 | tee -a "$LOG"
   fi
   if [ -f config/hypr/hyprlock-1080p.conf ]; then
-    mv config/hypr/hyprlock-1080p.conf config/hypr/hyprlock.conf
+    mv config/hypr/hyprlock-1080p.conf config/hypr/hyprlock.conf 2>&1 | tee -a "$LOG"
   fi
 
   # rofi fonts reduction
   rofi_config_file="config/rofi/0-shared-fonts.rasi"
   if [ -f "$rofi_config_file" ]; then
-    sed -i '/element-text {/,/}/s/[[:space:]]*font: "JetBrainsMono Nerd Font SemiBold 13"/font: "JetBrainsMono Nerd Font SemiBold 11"/' "$rofi_config_file" 2>&1 | tee -a "$LOG"
-    sed -i '/configuration {/,/}/s/[[:space:]]*font: "JetBrainsMono Nerd Font SemiBold 15"/font: "JetBrainsMono Nerd Font SemiBold 13"/' "$rofi_config_file" 2>&1 | tee -a "$LOG"
+    sed -i '/element-text {/,/}/s/[[:space:]]*font: "JetBrainsMono Nerd Font SemiBold 13"/font: "JetBrainsMono Nerd Font SemiBold 11"/' "$rofi_config_file" 2>&1 | tee -a "$LOG" || true
+    sed -i '/configuration {/,/}/s/[[:space:]]*font: "JetBrainsMono Nerd Font SemiBold 15"/font: "JetBrainsMono Nerd Font SemiBold 13"/' "$rofi_config_file" 2>&1 | tee -a "$LOG" || true
   fi
 fi
 
@@ -335,8 +339,6 @@ prompt_clock_12h "$LOG"
 printf "\n%.0s" {1..1}
 printf "\n%.0s" {1..1}
 prompt_express_upgrade "$EXPRESS_SUPPORTED" "$LOG"
-
-set -e
 
 # Check if the ~/.config/ directory exists
 if [ ! -d "$HOME/.config" ]; then

@@ -12,21 +12,19 @@
 		"/sys/class/hwmon/hwmon1/temp1_input",
 		"/sys/class/thermal/thermal_zone0/temp"
 	],
-	//"thermal-zone": 0,
 	"critical-threshold": 82,
 	"format-critical": "{temperatureC}°C {icon}",
 	"format": "{temperatureC}°C {icon}",
 	"format-icons": [
 		"󰈸"
 	],
-	"on-click-right": "$HOME/.config/hypr/scripts/WaybarScripts.sh --nvtop"
+	"on-click-right": "test -f $HOME/.config/hypr/scripts/WaybarScripts.sh && $HOME/.config/hypr/scripts/WaybarScripts.sh --nvtop || true"
 },
 
 "backlight": {
 	"interval": 2,
 	"align": 0,
 	"rotate": 0,
-	//"format": "{icon} {percent}%",
 	"format-icons": [
 		" ",
 		" ",
@@ -37,7 +35,6 @@
 		"󰃠 "
 	],
 	"format": "{icon}",
-	//"format-icons": ["","","","","","","","","","","","","","",""],
 	"tooltip-format": "backlight {percent}%",
 	"icon-size": 10,
 	"on-click": "",
@@ -58,8 +55,6 @@
 	//"interval": 5,
 	"align": 0,
 	"rotate": 0,
-	//"bat": "BAT1",
-	//"adapter": "ACAD",
 	"full-at": 100,
 	"design-capacity": false,
 	"states": {
@@ -90,7 +85,7 @@
 	"tooltip-format-connected": "{device_enumerate}",
 	"tooltip-format-enumerate-connected": " {device_alias} 󰂄{device_battery_percentage}%",
 	"tooltip": true,
-	"on-click": "blueman-manager"},
+	"on-click": "command -v blueman-manager && blueman-manager"},
 
 "clock": {
 	"interval": 10,
@@ -286,6 +281,7 @@
   "format": "{icon} ",
   "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
   "tooltip": true,
+  "exec-if": "command -v powerprofilesctl",
   "format-icons": {
     "default": "",
     "performance": "",
