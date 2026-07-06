@@ -170,8 +170,8 @@
 // NOTE:! This is mainly for Arch and Arch Based Distros  depend: pacman-contrib
 "custom/updater": {
 	"format": " {}",
-	"exec": "command -v checkupdates && checkupdates | wc -l || echo 0",
-	"exec-if": "command -v checkupdates",
+	"exec": "command -v checkupdates > /dev/null && checkupdates | wc -l || echo 0",
+	"exec-if": "command -v checkupdates > /dev/null",
 	"interval": 43200,
 	"on-click": "test -f $HOME/.config/hypr/scripts/Distro_update.sh && $HOME/.config/hypr/scripts/Distro_update.sh",
 	"tooltip": true,
