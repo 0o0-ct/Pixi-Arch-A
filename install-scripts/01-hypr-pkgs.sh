@@ -36,7 +36,7 @@ hypr_package=(
   qt5ct
   qt6ct
   qt6-svg
-  rofi
+  rofi-wayland
   slurp 
   swappy 
   swaync 

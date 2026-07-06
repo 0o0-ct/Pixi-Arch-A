@@ -383,7 +383,9 @@ restore_user_configs() {
   # the interactive restoration prompts so the workflow stays non-blocking.
   local SKIP_RESTORE_PROMPTS=0
   if [ -d "$BACKUP_DIR_PATH" ] && [ "$express_mode" -eq 1 ]; then
-    echo "${NOTE:-[NOTE]} Modo exprés: omitiendo las preguntas de restauración de UserConfigs." 2>&1 | tee -a "$log"
+    echo "${NOTE:-[NOTE]} Modo exprés: Restaurando automáticamente el directorio UserConfigs..." 2>&1 | tee -a "$log"
+    rsync -a "$BACKUP_DIR_PATH/" "$DIRPATH/UserConfigs/" 2>&1 | tee -a "$log"
+    echo "${OK:-[OK]} - Directorio UserConfigs restaurado con éxito." 2>&1 | tee -a "$log"
     SKIP_RESTORE_PROMPTS=1
   fi
 
@@ -488,7 +490,13 @@ restore_user_scripts() {
   local SCRIPTS_TO_RESTORE=("RofiBeats.sh" "Weather.py" "Weather.sh")
 
   if [ -d "$BACKUP_DIR_PATH_S" ] && [ "$express_mode" -eq 1 ]; then
-    echo "${NOTE:-[NOTE]} Modo exprés: omitiendo preguntas de restauración de UserScripts." 2>&1 | tee -a "$log"
+    echo "${NOTE:-[NOTE]} Modo exprés: Restaurando automáticamente los scripts de usuario..." 2>&1 | tee -a "$log"
+    for SCRIPT_NAME in "${SCRIPTS_TO_RESTORE[@]}"; do
+      local BACKUP_SCRIPT="$BACKUP_DIR_PATH_S/$SCRIPT_NAME"
+      if [ -f "$BACKUP_SCRIPT" ]; then
+        cp -f "$BACKUP_SCRIPT" "$DIRSHPATH/UserScripts/$SCRIPT_NAME" || true
+      fi
+    done
     return
   fi
 
@@ -526,7 +534,13 @@ restore_hypr_files() {
   local FILES_2_RESTORE=("hyprlock.conf" "hypridle.conf")
 
   if [ -d "$BACKUP_DIR_PATH_F" ] && [ "$express_mode" -eq 1 ]; then
-    echo "${NOTE:-[NOTE]} Modo exprés: omitiendo preguntas de restauración de archivos individuales de hypr." 2>&1 | tee -a "$log"
+    echo "${NOTE:-[NOTE]} Modo exprés: Restaurando automáticamente archivos individuales de hypr..." 2>&1 | tee -a "$log"
+    for FILE_RESTORE in "${FILES_2_RESTORE[@]}"; do
+      local BACKUP_FILE="$BACKUP_DIR_PATH_F/$FILE_RESTORE"
+      if [ -f "$BACKUP_FILE" ]; then
+        cp -f "$BACKUP_FILE" "$DIRPATH/$FILE_RESTORE" || true
+      fi
+    done
     return
   fi
 

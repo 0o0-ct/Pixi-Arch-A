@@ -94,6 +94,15 @@ fi
 
 echo "👌 ${OK} ${MAGENTA}¡Excelente!..${RESET} ${SKY_BLUE}comencemos con la instalación...${RESET}" | tee -a "$LOG"
 
+# Mantener las credenciales de sudo activas en segundo plano durante la instalación
+sudo -v
+while true; do
+  sudo -v
+  sleep 60
+done &
+SUDO_ALIVE_PID=$!
+trap 'kill $SUDO_ALIVE_PID 2>/dev/null' EXIT
+
 sleep 1
 printf "\n%.0s" {1..1}
 
