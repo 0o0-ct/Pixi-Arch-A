@@ -30,6 +30,7 @@
 #   - Consider modularizing remaining app-specific tweaks/prompts.
 
 clear
+export GLOBAL_BACKUP_DIR="back-up_$(date +"%m%d_%H%M")"
 wallpaper=$HOME/.config/hypr/wallpaper_effects/.wallpaper_current
 waybar_style="$HOME/.config/waybar/style/[Colored] Translucent.css"
 waybar_config="$HOME/.config/waybar/configs/[TOP] Default"

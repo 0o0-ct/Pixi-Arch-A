@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # Backup helper utilities shared by copy.sh (and future scripts).
 
-# Create a unique backup directory name with month, day, hours, and minutes.
 get_backup_dirname() {
-  echo "back-up_$(date +"%m%d_%H%M")"
+  if [ -n "${GLOBAL_BACKUP_DIR:-}" ]; then
+    echo "$GLOBAL_BACKUP_DIR"
+  else
+    echo "back-up_$(date +"%m%d_%H%M")"
+  fi
 }
 
 # Mueve un directorio a un respaldo con marca de tiempo junto al original.
