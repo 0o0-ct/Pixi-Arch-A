@@ -1,68 +1,45 @@
-#!/usr/bin/env bash
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
-# wlogout (Power, Screen Lock, Suspend, etc)
+#!/bin/bash
+# 💫 Rofi-based Power Menu replacement for wlogout 💫
 
-# Set variables for parameters. First numbers corresponts to Monitor Resolution
-# i.e 2160 means 2160p
-A_2160=600
-B_2160=600
-A_1600=400
-B_1600=400
-A_1440=400
-B_1440=400
-A_1080=200
-B_1080=200
-A_720=50
-B_720=50
+# Directories
+icon_dir="$HOME/.config/wlogout/icons"
+rasi_file="$HOME/.config/rofi/config-power.rasi"
 
-# Check if wlogout is already running
-if pgrep -x "wlogout" > /dev/null; then
-    pkill -x "wlogout"
+# Check if rofi is running, kill it if so
+if pgrep -x "rofi" > /dev/null; then
+    pkill -x "rofi"
     exit 0
 fi
 
-# Detect monitor resolution and scaling factor
-resolution=$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) | .height / .scale' | awk -F'.' '{print $1}')
-hypr_scale=$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) | .scale')
+# Options matching the icons exactly
+lock="Lock\0icon\x1f$icon_dir/lock.png"
+logout="Logout\0icon\x1f$icon_dir/logout.png"
+suspend="Suspend\0icon\x1f$icon_dir/sleep.png"
+shutdown="Shutdown\0icon\x1f$icon_dir/power.png"
+reboot="Reboot\0icon\x1f$icon_dir/restart.png"
+hibernate="Hibernate\0icon\x1f$icon_dir/hibernate.png"
 
-# Generate temporary layout with current user info
-USER_ICON=""
-cat > /tmp/wlogout-layout.json << EOF
-{"label": "lock", "action": "\$HOME/.config/hypr/scripts/LockScreen.sh", "text": "Lock", "keybind": "l"}
-{"label": "logout", "action": "hyprctl dispatch exit 0", "text": "Logout", "keybind": "e"}
-{"label": "suspend", "action": "systemctl suspend", "text": "Suspend", "keybind": "u"}
-{"label": "shutdown", "action": "systemctl poweroff", "text": "Shutdown", "keybind": "s"}
-{"label": "reboot", "action": "systemctl reboot", "text": "Reboot", "keybind": "r"}
-{"label": "hibernate", "action": "systemctl hibernate", "text": "Hibernate", "keybind": "h"}
-EOF
- 
-# Set parameters based on screen resolution and scaling factor
-if ((resolution >= 2160)); then
-    T_val=$(awk "BEGIN {printf \"%.0f\", $A_2160 * 2160 * $hypr_scale / $resolution}")
-    B_val=$(awk "BEGIN {printf \"%.0f\", $B_2160 * 2160 * $hypr_scale / $resolution}")
-    echo "Setting parameters for resolution >= 4k"
-    wlogout --protocol layer-shell -l /tmp/wlogout-layout.json -b 6 -T $T_val -B $B_val &
-elif ((resolution >= 1600 && resolution < 2160)); then
-    T_val=$(awk "BEGIN {printf \"%.0f\", $A_1600 * 1600 * $hypr_scale / $resolution}")
-    B_val=$(awk "BEGIN {printf \"%.0f\", $B_1600 * 1600 * $hypr_scale / $resolution}")
-    echo "Setting parameters for resolution >= 2.5k and < 4k"
-    wlogout --protocol layer-shell -l /tmp/wlogout-layout.json -b 6 -T $T_val -B $B_val &
-elif ((resolution >= 1440 && resolution < 1600)); then
-    T_val=$(awk "BEGIN {printf \"%.0f\", $A_1440 * 1440 * $hypr_scale / $resolution}")
-    B_val=$(awk "BEGIN {printf \"%.0f\", $B_1440 * 1440 * $hypr_scale / $resolution}")
-    echo "Setting parameters for resolution >= 2k and < 2.5k"
-    wlogout --protocol layer-shell -l /tmp/wlogout-layout.json -b 6 -T $T_val -B $B_val &
-elif ((resolution >= 1080 && resolution < 1440)); then
-    T_val=$(awk "BEGIN {printf \"%.0f\", $A_1080 * 1080 * $hypr_scale / $resolution}")
-    B_val=$(awk "BEGIN {printf \"%.0f\", $B_1080 * 1080 * $hypr_scale / $resolution}")
-    echo "Setting parameters for resolution >= 1080p and < 2k"
-    wlogout --protocol layer-shell -l /tmp/wlogout-layout.json -b 6 -T $T_val -B $B_val &
-elif ((resolution >= 720 && resolution < 1080)); then
-    T_val=$(awk "BEGIN {printf \"%.0f\", $A_720 * 720 * $hypr_scale / $resolution}")
-    B_val=$(awk "BEGIN {printf \"%.0f\", $B_720 * 720 * $hypr_scale / $resolution}")
-    echo "Setting parameters for resolution >= 720p and < 1080p"
-    wlogout --protocol layer-shell -l /tmp/wlogout-layout.json -b 6 -T $T_val -B $B_val &
-else
-    echo "Setting default parameters"
-    wlogout -l /tmp/wlogout-layout.json -b 6 &
-fi
+# Launch rofi dmenu
+selected_option=$(echo -e "$lock\n$logout\n$suspend\n$shutdown\n$reboot\n$hibernate" | rofi -dmenu -config "$rasi_file" -p "" -selected-row 0)
+
+# Execute actions based on selection
+case "$selected_option" in
+    *Lock*)
+        $HOME/.config/hypr/scripts/LockScreen.sh
+        ;;
+    *Logout*)
+        hyprctl dispatch exit 0
+        ;;
+    *Suspend*)
+        systemctl suspend
+        ;;
+    *Shutdown*)
+        systemctl poweroff
+        ;;
+    *Reboot*)
+        systemctl reboot
+        ;;
+    *Hibernate*)
+        systemctl hibernate
+        ;;
+esac

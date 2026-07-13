@@ -1,0 +1,116 @@
+/**
+ * 💫 Rofi Power Menu Theme (Glassmorphism + Card Layout) 💫
+ */
+
+@import "0-shared-fonts.rasi"
+@import "config-rofi-theme.rasi"
+
+configuration {
+    show-icons: true;
+}
+
+window {
+    transparency: "real";
+    location: center;
+    anchor: center;
+    fullscreen: false;
+    width: 800px;
+    x-offset: 0px;
+    y-offset: 0px;
+    enabled: true;
+    border-radius: 28px;
+    background-color: rgba(14, 14, 20, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: "default";
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+}
+
+mainbox {
+    enabled: true;
+    spacing: 0px;
+    margin: 0px;
+    padding: 30px;
+    background-color: transparent;
+    children: [ "inputbar", "listview" ];
+}
+
+inputbar {
+    enabled: true;
+    background-color: transparent;
+    margin: 0px 0px 30px 0px;
+    alignment: center;
+    children: [ "dummy", "prompt", "dummy" ];
+}
+
+prompt {
+    enabled: true;
+    content: "";
+    font: "FiraCode Nerd Font 36";
+    background-color: rgba(20, 20, 28, 0.75);
+    text-color: #52adf2; /* Arch blue */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 40px; /* circle for 80x80 */
+    min-width: 80px;
+    max-width: 80px;
+    min-height: 80px;
+    max-height: 80px;
+    padding: 10px;
+    x-align: 0.5;
+    y-align: 0.5;
+}
+
+dummy {
+    expand: true;
+    background-color: transparent;
+}
+
+listview {
+    enabled: true;
+    columns: 6;
+    lines: 1;
+    cycle: true;
+    dynamic: true;
+    scrollbar: false;
+    layout: horizontal;
+    reverse: false;
+    fixed-height: true;
+    fixed-columns: true;
+    spacing: 16px;
+    background-color: transparent;
+}
+
+element {
+    enabled: true;
+    spacing: 12px;
+    padding: 24px 10px;
+    border-radius: 20px;
+    background-color: rgba(46, 50, 74, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-color: @foreground;
+    orientation: vertical;
+    cursor: pointer;
+}
+
+element selected.normal {
+    background-color: rgba(70, 76, 110, 0.75);
+    border-color: @color13;
+    text-color: @color13;
+}
+
+element-icon {
+    background-color: transparent;
+    text-color: inherit;
+    size: 40px;
+    cursor: inherit;
+    horizontal-align: 0.5;
+    vertical-align: 0.5;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    font: "FiraCode Nerd Font 12";
+    cursor: inherit;
+    horizontal-align: 0.5;
+    vertical-align: 0.5;
+}
