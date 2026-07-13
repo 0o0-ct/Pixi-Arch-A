@@ -11,8 +11,8 @@ window {
 flowbox {
   background: rgba(14, 14, 20, 0.62);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 28px;
-  padding: 20px 24px;
+  border-radius: 24px;
+  padding: 16px 20px;
   margin-top: auto;
   margin-bottom: auto;
   margin-left: auto;
@@ -24,16 +24,16 @@ flowbox::before {
   background-image: url("./icons/arch.png");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 32px;
+  background-size: 26px;
   background-color: rgba(20, 20, 28, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 40px;
-  min-width: 80px;
-  min-height: 80px;
-  max-width: 80px;
-  max-height: 80px;
+  border-radius: 35px;
+  min-width: 70px;
+  min-height: 70px;
+  max-width: 70px;
+  max-height: 70px;
   position: absolute;
-  top: -110px;
+  top: -95px;
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -43,19 +43,19 @@ flowbox::before {
 button {
   background: rgba(46, 50, 74, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 20px;
-  margin: 130px 10px; /* 130px margin top/bottom to restrict the height! */
-  min-width: 110px;
-  max-width: 110px;
-  min-height: 200px;
-  max-height: 200px;
+  border-radius: 18px;
+  margin: 165px 8px; /* Restrict height to exactly 150px */
+  min-width: 90px;
+  max-width: 90px;
+  min-height: 150px;
+  max-height: 150px;
   color: @foreground;
   transition: all 0.2s ease-in-out;
   outline-style: none;
   background-repeat: no-repeat;
   background-position: center 25%;
-  background-size: 36px;
-  padding-top: 130px;
+  background-size: 32px;
+  padding-top: 95px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
@@ -70,7 +70,7 @@ button:focus {
 }
 
 button label {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 500;
   background: transparent;
   color: @foreground;
