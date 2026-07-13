@@ -51,7 +51,7 @@ prompt {
     border: 1px;
     border-color: #ffffff1a; /* rgba(255, 255, 255, 0.1) */
     border-radius: 20px; /* beautiful rounded rectangle card */
-    padding: 12px 28px 12px 34px;
+    padding: 12px 32px;
     horizontal-align: 0.5;
     vertical-align: 0.5;
 }
