@@ -15,7 +15,7 @@ window {
     location: center;
     anchor: center;
     fullscreen: false;
-    width: 800px;
+    width: 716px;
     x-offset: 0px;
     y-offset: 0px;
     enabled: true;
@@ -84,6 +84,7 @@ element {
     enabled: true;
     spacing: 12px;
     padding: 24px 10px;
+    width: 96px;
     border-radius: 20px;
     background-color: #2e324a72; /* rgba(46, 50, 74, 0.45) */
     border: 1px;
@@ -115,4 +116,5 @@ element-text {
     cursor: inherit;
     horizontal-align: 0.5;
     vertical-align: 0.5;
+    highlight: none;
 }
