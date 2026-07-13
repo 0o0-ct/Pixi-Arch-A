@@ -12,30 +12,42 @@ flowbox {
     background: transparent;
     border: none;
     padding: 0;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 button {
-    background: rgba(30, 30, 46, 0.8);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    border-left: none;
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    background: transparent;
+    border: none;
+    box-shadow: none;
     margin: 0;
     min-width: 90px;
+    max-width: 90px;
     min-height: 90px;
+    max-height: 90px;
     font-size: 30px;
     color: @foreground;
     transition: all 0.2s ease;
     outline-style: none;
 }
 
-button:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: @color13;
-}
-
 button:focus {
     outline-style: none;
+}
+
+#lock, #logout, #suspend, #shutdown, #reboot, #hibernate {
+    background: rgba(30, 30, 46, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#lock:hover, #logout:hover, #suspend:hover, #shutdown:hover, #reboot:hover, #hibernate:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: @color13;
 }
 
 #lock {
@@ -47,18 +59,30 @@ button:focus {
     border-radius: 0px 20px 20px 0px;
 }
 
+#spacer {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+#spacer:hover {
+    background: transparent;
+}
+
 #userinfo {
     background: transparent;
     border: none;
     box-shadow: none;
     min-width: unset;
+    max-width: unset;
     min-height: unset;
+    max-height: unset;
     margin: 0;
     padding: 0;
     color: @foreground;
     font-size: 24px;
     position: absolute;
-    top: 35%;
+    top: -60px;
     left: 0;
     right: 0;
     text-align: center;
