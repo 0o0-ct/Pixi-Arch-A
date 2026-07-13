@@ -28,12 +28,12 @@ hypr_scale=$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) | .scale'
 # Generate temporary layout with current user info
 USER_ICON=""
 cat > /tmp/wlogout-layout.json << EOF
-{"label": "lock", "action": "\$HOME/.config/hypr/scripts/LockScreen.sh", "text": "Lock", "keybind": "l"}
-{"label": "logout", "action": "hyprctl dispatch exit 0", "text": "Logout", "keybind": "e"}
-{"label": "suspend", "action": "systemctl suspend", "text": "Suspend", "keybind": "u"}
-{"label": "shutdown", "action": "systemctl poweroff", "text": "Shutdown", "keybind": "s"}
-{"label": "reboot", "action": "systemctl reboot", "text": "Reboot", "keybind": "r"}
-{"label": "hibernate", "action": "systemctl hibernate", "text": "Hibernate", "keybind": "h"}
+{"label": "lock", "action": "\$HOME/.config/hypr/scripts/LockScreen.sh", "text": "", "keybind": "l"}
+{"label": "logout", "action": "hyprctl dispatch exit 0", "text": "", "keybind": "e"}
+{"label": "suspend", "action": "systemctl suspend", "text": "", "keybind": "u"}
+{"label": "shutdown", "action": "systemctl poweroff", "text": "", "keybind": "s"}
+{"label": "reboot", "action": "systemctl reboot", "text": "", "keybind": "r"}
+{"label": "hibernate", "action": "systemctl hibernate", "text": "", "keybind": "h"}
 EOF
  
 # Set parameters based on screen resolution and scaling factor
