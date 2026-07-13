@@ -94,9 +94,24 @@ element {
     cursor: pointer;
 }
 
-element selected.normal {
-    background-color: #464c6ebf; /* rgba(70, 76, 110, 0.75) */
+element selected {
+    background-color: #464c6ebf;
     border-color: @color13;
+    text-color: @color13;
+}
+
+element selected.normal {
+    background-color: #464c6ebf;
+    border-color: @color13;
+    text-color: @color13;
+}
+
+element selected element-icon {
+    background-color: transparent;
+}
+
+element selected element-text {
+    background-color: transparent;
     text-color: @color13;
 }
 
@@ -116,6 +131,8 @@ element-icon {
     cursor: inherit;
     horizontal-align: 0.5;
     vertical-align: 0.5;
+    x-align: 0.5;
+    y-align: 0.5;
 }
 
 element-text {
@@ -125,5 +142,17 @@ element-text {
     cursor: inherit;
     horizontal-align: 0.5;
     vertical-align: 0.5;
+    x-align: 0.5;
+    y-align: 0.5;
     highlight: none;
+}
+
+element-text selected {
+    background-color: transparent;
+    text-color: @color13;
+}
+
+element-text selected.normal {
+    background-color: transparent;
+    text-color: @color13;
 }
