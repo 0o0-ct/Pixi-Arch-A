@@ -15,7 +15,7 @@ window {
     location: center;
     anchor: center;
     fullscreen: false;
-    width: 716px;
+    width: 830px;
     x-offset: 0px;
     y-offset: 0px;
     enabled: true;
@@ -45,19 +45,19 @@ inputbar {
 
 prompt {
     enabled: true;
-    font: "FiraCode Nerd Font 36";
+    font: "FiraCode Nerd Font 28";
     background-color: #14141cbf; /* rgba(20, 20, 28, 0.75) */
     text-color: #52adf2; /* Arch blue */
     border: 1px;
     border-color: #ffffff1a; /* rgba(255, 255, 255, 0.1) */
-    border-radius: 40px; /* circle for 80x80 */
-    min-width: 80px;
-    max-width: 80px;
-    min-height: 80px;
-    max-height: 80px;
-    padding: 10px;
-    x-align: 0.5;
-    y-align: 0.5;
+    border-radius: 35px; /* circle for 70x70 */
+    min-width: 70px;
+    max-width: 70px;
+    min-height: 70px;
+    max-height: 70px;
+    padding: 0px;
+    horizontal-align: 0.5;
+    vertical-align: 0.5;
 }
 
 dummy {
@@ -84,7 +84,7 @@ element {
     enabled: true;
     spacing: 12px;
     padding: 24px 10px;
-    width: 96px;
+    width: 115px;
     border-radius: 20px;
     background-color: #2e324a72; /* rgba(46, 50, 74, 0.45) */
     border: 1px;
@@ -97,6 +97,15 @@ element {
 element selected.normal {
     background-color: #464c6ebf; /* rgba(70, 76, 110, 0.75) */
     border-color: @color13;
+    text-color: @color13;
+}
+
+element selected.normal element-icon {
+    background-color: transparent;
+}
+
+element selected.normal element-text {
+    background-color: transparent;
     text-color: @color13;
 }
 
