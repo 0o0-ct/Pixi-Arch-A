@@ -50,12 +50,8 @@ prompt {
     text-color: #52adf2; /* Arch blue */
     border: 1px;
     border-color: #ffffff1a; /* rgba(255, 255, 255, 0.1) */
-    border-radius: 35px; /* circle for 70x70 */
-    min-width: 70px;
-    max-width: 70px;
-    min-height: 70px;
-    max-height: 70px;
-    padding: 0px;
+    border-radius: 20px; /* beautiful rounded rectangle card */
+    padding: 12px 32px;
     horizontal-align: 0.5;
     vertical-align: 0.5;
 }
