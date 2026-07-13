@@ -30,6 +30,33 @@
 
 ---
 
+## Tecnologías del Entorno
+
+| Tecnología | Propósito |
+|---|---|
+| **Arch Linux** | Distribución base |
+| **Hyprland** | Compositor Wayland (ventanas, animaciones) |
+| **Waybar** | Barra superior/inferior |
+| **Rofi** | Lanzador de aplicaciones / menús |
+| **Kitty / Ghostty / WezTerm** | Terminales (soporta múltiples) |
+| **Wallust** | Generación de paletas de colores desde el wallpaper |
+| **Swaync** | Notificaciones |
+| **Wlogout** | Menú de cierre de sesión |
+| **AGS (Aylur's GTK Shell)** | Widgets GTK personalizados |
+| **QuickShell** | Widgets/QML |
+| **Btop** | Monitor del sistema |
+| **Cava** | Visualizador de audio |
+| **Fastfetch** | Info del sistema |
+| **SDDM** | Display manager |
+| **PipeWire** | Audio |
+| **Zsh + Oh My Zsh** | Shell |
+| **Kvantum / qt5ct / qt6ct** | Temas Qt |
+| **Swappy** | Screenshots |
+| **Nautilus / Thunar** | Gestores de archivos |
+| **Yay / Paru** | AUR helpers |
+
+---
+
 ## Compatibilidad y Requisitos del Sistema
 
 Para garantizar una experiencia ultra fluida, rápida y sin interrupciones con las animaciones avanzadas de cristal esmerilado, ten en cuenta lo siguiente:
