@@ -12,12 +12,12 @@ if pgrep -x "rofi" > /dev/null; then
 fi
 
 # Options matching the icons exactly
-lock="Lock\0icon\x1f$icon_dir/lock.png"
-logout="Logout\0icon\x1f$icon_dir/logout.png"
-suspend="Suspend\0icon\x1f$icon_dir/sleep.png"
-shutdown="Shutdown\0icon\x1f$icon_dir/power.png"
-reboot="Reboot\0icon\x1f$icon_dir/restart.png"
-hibernate="Hibernate\0icon\x1f$icon_dir/hibernate.png"
+lock="Lock\x1ficon\x1f$icon_dir/lock.png"
+logout="Logout\x1ficon\x1f$icon_dir/logout.png"
+suspend="Suspend\x1ficon\x1f$icon_dir/sleep.png"
+shutdown="Shutdown\x1ficon\x1f$icon_dir/power.png"
+reboot="Reboot\x1ficon\x1f$icon_dir/restart.png"
+hibernate="Hibernate\x1ficon\x1f$icon_dir/hibernate.png"
 
 # Launch rofi dmenu
 selected_option=$(printf "%b\n" "$lock" "$logout" "$suspend" "$shutdown" "$reboot" "$hibernate" | rofi -dmenu -config "$rasi_file" -p "" -selected-row 0)
