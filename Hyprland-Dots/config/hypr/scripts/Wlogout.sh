@@ -20,7 +20,7 @@ reboot="Reboot\0icon\x1f$icon_dir/restart.png"
 hibernate="Hibernate\0icon\x1f$icon_dir/hibernate.png"
 
 # Launch rofi dmenu
-selected_option=$(echo -e "$lock\n$logout\n$suspend\n$shutdown\n$reboot\n$hibernate" | rofi -dmenu -config "$rasi_file" -p "" -selected-row 0)
+selected_option=$(printf "%b\n" "$lock" "$logout" "$suspend" "$shutdown" "$reboot" "$hibernate" | rofi -dmenu -config "$rasi_file" -p "" -selected-row 0)
 
 # Execute actions based on selection
 case "$selected_option" in
