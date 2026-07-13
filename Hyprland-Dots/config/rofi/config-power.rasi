@@ -15,7 +15,7 @@ window {
     location: center;
     anchor: center;
     fullscreen: false;
-    width: 810px;
+    width: 762px;
     x-offset: 0px;
     y-offset: 0px;
     enabled: true;
@@ -83,8 +83,8 @@ listview {
 element {
     enabled: true;
     spacing: 12px;
-    padding: 24px 10px;
-    width: 110px;
+    padding: 24px 5px;
+    width: 90px;
     border-radius: 20px;
     background-color: #2e324a72; /* rgba(46, 50, 74, 0.45) */
     border: 1px;
