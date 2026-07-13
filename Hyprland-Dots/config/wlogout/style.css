@@ -9,88 +9,117 @@ window {
 }
 
 flowbox {
-    background: transparent;
-    border: none;
-    padding: 0;
+    background: rgba(15, 15, 20, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 32px;
+    padding: 24px 32px;
     margin-top: auto;
     margin-bottom: auto;
     margin-left: auto;
     margin-right: auto;
 }
 
-button {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    margin: 0;
-    min-width: 90px;
-    max-width: 90px;
-    min-height: 90px;
-    max-height: 90px;
-    font-size: 30px;
+flowbox::before {
+    content: "";
+    font-family: "FiraCode Nerd Font", "JetBrainsMono Nerd Font", sans-serif;
+    font-size: 38px;
     color: @foreground;
-    transition: all 0.2s ease;
+    background: rgba(15, 15, 20, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    min-width: 80px;
+    min-height: 80px;
+    max-width: 80px;
+    max-height: 80px;
+    line-height: 80px;
+    text-align: center;
+    position: absolute;
+    top: -110px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+}
+
+button {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 40px;
+    margin: 0 12px;
+    min-width: 100px;
+    max-width: 100px;
+    min-height: 160px;
+    max-height: 160px;
+    color: @foreground;
+    transition: all 0.2s ease-in-out;
     outline-style: none;
+    background-repeat: no-repeat;
+    background-position: center 30%;
+    background-size: 40px;
+    padding-top: 105px;
+}
+
+button:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: @color13;
 }
 
 button:focus {
     outline-style: none;
 }
 
-#lock, #logout, #suspend, #shutdown, #reboot, #hibernate {
-    background: rgba(30, 30, 46, 0.8);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    border-left: none;
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+button label {
+    font-size: 13px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 4px 10px;
+    border-radius: 12px;
+    color: @foreground;
+    margin-bottom: 12px;
+    transition: all 0.2s ease-in-out;
 }
 
-#lock:hover, #logout:hover, #suspend:hover, #shutdown:hover, #reboot:hover, #hibernate:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: @color13;
+button:hover label {
+    background: @color13;
+    color: #11111b;
 }
 
 #lock {
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px 0px 0px 20px;
+    background-image: image(url("./icons/lock.png"));
+}
+#lock:hover {
+    background-image: image(url("./icons/lock-hover.png"));
+}
+
+#logout {
+    background-image: image(url("./icons/logout.png"));
+}
+#logout:hover {
+    background-image: image(url("./icons/logout-hover.png"));
+}
+
+#suspend {
+    background-image: image(url("./icons/sleep.png"));
+}
+#suspend:hover {
+    background-image: image(url("./icons/sleep-hover.png"));
+}
+
+#shutdown {
+    background-image: image(url("./icons/power.png"));
+}
+#shutdown:hover {
+    background-image: image(url("./icons/power-hover.png"));
+}
+
+#reboot {
+    background-image: image(url("./icons/restart.png"));
+}
+#reboot:hover {
+    background-image: image(url("./icons/restart-hover.png"));
 }
 
 #hibernate {
-    border-radius: 0px 20px 20px 0px;
+    background-image: image(url("./icons/hibernate.png"));
 }
-
-#spacer {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-}
-
-#spacer:hover {
-    background: transparent;
-}
-
-#userinfo {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    min-width: unset;
-    max-width: unset;
-    min-height: unset;
-    max-height: unset;
-    margin: 0;
-    padding: 0;
-    color: @foreground;
-    font-size: 24px;
-    position: absolute;
-    top: -60px;
-    left: 0;
-    right: 0;
-    text-align: center;
-}
-
-#userinfo:hover {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    color: @foreground;
+#hibernate:hover {
+    background-image: image(url("./icons/hibernate-hover.png"));
 }
