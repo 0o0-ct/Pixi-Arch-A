@@ -19,9 +19,9 @@
 </div>
 
 > [!IMPORTANT]
-> **Pixi-Arch-A** es una evolución y ramificación personalizada de alto rendimiento pensada para ofrecer una estética fuera de lo común. Combina la velocidad de **Arch Linux** con el dinamismo del compositor **Hyprland**, sobre un diseño de **Cristal Esmerilado (Frosted Glassmorphism)** coherente, con tonos oscuros e iluminación carmesí.
+> **Pixi-Arch-A** es una ramificación personalizada y de alto rendimiento de Arch Linux, diseñada para ofrecer una estética distintiva. Combina la velocidad de **Arch Linux** con el dinamismo del compositor **Hyprland**, sobre un diseño de **Cristal Esmerilado (Frosted Glassmorphism)** coherente, con tonos oscuros e iluminación carmesí.
 >
-> Este proyecto ha sido desarrollado y refinado por su creador con el apoyo de su asistente de IA **Antigravity**, con el objetivo de ofrecer una experiencia hispanohablante fluida y una propuesta visual cuidada al detalle.
+> Incluye un instalador completamente interactivo en español, pensado para ofrecer una experiencia hispanohablante fluida y un acabado visual cuidado al detalle en cada componente.
 
 ---
 
