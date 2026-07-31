@@ -17,7 +17,8 @@ source $ZSH/oh-my-zsh.sh
 # Check archlinux plugin commands here
 # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/archlinux
 
-# Display custom PIXI-ARCH Fastfetch (Adaptive Logo Layout)
+# Display custom PIXI-ARCH Fastfetch (Adaptive Logo Layout + Paleta Dinámica)
+python3 $HOME/.config/fastfetch/random-logo-colors.py
 cols=$(tput cols 2>/dev/null || echo 80)
 if [ "$cols" -lt 100 ]; then
     fastfetch -c $HOME/.config/fastfetch/config-pixi-micro.jsonc
