@@ -1,0 +1,630 @@
+/* ============================================================
+   💫 macOS Tahoe Glass — GTK4 / Libadwaita — Tema Global
+   Aplica a: Nautilus, Diálogos del sistema, todas las apps GTK4
+   Ubicación: ~/.config/gtk-4.0/gtk.css
+   ============================================================ */
+
+/* --- OVERRIDE LIBADWAITA CSS VARIABLES (la forma correcta en GTK4) ---
+   Libadwaita usa var(--window-bg-color) internamente.
+   Poner background-color directo no siempre funciona.
+   Definiendo las variables aquí afecta TODO el sistema GTK4. */
+:root {
+    /* Fondos semitransparentes para el efecto glass global */
+    --window-bg-color:        rgba(14, 18, 28, 0.55);
+    --dialog-bg-color:        rgba(14, 18, 28, 0.55);
+    --popover-bg-color:       rgba(14, 18, 28, 0.60);
+    --headerbar-bg-color:     rgba(18, 22, 35, 0.60);
+    --sidebar-bg-color:       rgba(14, 18, 28, 0.50);
+    --view-bg-color:          rgba(18, 22, 35, 0.38);
+    --card-bg-color:          rgba(255, 255, 255, 0.04);
+    /* Acento carmesí — reemplaza el azul de GTK en TODO el sistema */
+    --accent-color:           rgb(220, 50, 47);
+    --accent-bg-color:        rgba(220, 50, 47, 0.85);
+    --accent-fg-color:        #ffffff;
+}
+
+/* Ventana principal — SIN border-radius: Hyprland ya redondea con su
+   propio rounding. Si ponemos border-radius aquí también, se crean
+   dos marcos concéntricos visibles = el efecto "cebolla" que reportas. */
+window,
+window.background,
+.nautilus-window {
+    background-color: transparent;
+    background-image: none;
+}
+
+/* Todos los contenedores directos — transparentes */
+window > *,
+window box,
+window paned,
+window stack,
+window overlay,
+window viewport,
+window > box > stack,
+window > box > paned {
+    background-color: transparent;
+    background-image: none;
+}
+
+/* ---- HEADERBAR (barra superior) ---- */
+headerbar {
+    background-color: rgba(18, 22, 35, 0.55);
+    background-image: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06),
+                0 4px 16px rgba(0, 0, 0, 0.30);
+    border-radius: 16px 16px 0 0;
+    padding: 4px 12px;
+    min-height: 44px;
+}
+
+headerbar button {
+    background-color: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.75);
+    border-radius: 12px;
+    padding: 6px 10px;
+    transition: background-color 150ms ease;
+}
+headerbar button:hover {
+    background-color: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+}
+headerbar button:active {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+headerbar .title,
+headerbar label {
+    color: rgba(255, 255, 255, 0.90);
+    font-weight: 600;
+}
+
+/* ---- SIDEBAR — El panel izquierdo FLOTANTE ---- */
+/* Una sola capa de card. Sin border-radius en la ventana exterior,
+   este será el único marco redondeado visible en el lado izquierdo. */
+.sidebar,
+.navigation-sidebar,
+placessidebar,
+.sidebar-pane {
+    background-color: rgba(14, 18, 28, 0.50);
+    border: none;
+    border-radius: 18px;
+    margin: 10px 4px 10px 10px;
+    padding: 6px 4px;
+    box-shadow: none;
+}
+
+/* CRÍTICO: scrolledwindows DENTRO del sidebar deben ser completamente
+   transparentes y sin bordes — de lo contrario se crean capas anidadas */
+.sidebar scrolledwindow,
+.navigation-sidebar scrolledwindow,
+placessidebar scrolledwindow,
+.sidebar-pane scrolledwindow,
+.sidebar scrolledwindow > viewport,
+.navigation-sidebar scrolledwindow > viewport,
+placessidebar scrolledwindow > viewport {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+/* Items del sidebar */
+.sidebar list row,
+placessidebar list row,
+.navigation-sidebar list row {
+    background-color: transparent;
+    border-radius: 12px;
+    margin: 2px 4px;
+    padding: 4px 8px;
+    color: rgba(255, 255, 255, 0.70);
+    min-height: 36px;
+    transition: background-color 120ms ease;
+}
+
+.sidebar list row:hover,
+placessidebar list row:hover,
+.navigation-sidebar list row:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.90);
+}
+
+.sidebar list row:selected,
+placessidebar list row:selected,
+.navigation-sidebar list row:selected {
+    background-color: rgba(220, 50, 47, 0.40);
+    color: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(220, 50, 47, 0.30);
+}
+
+.sidebar list row label,
+placessidebar list row label {
+    color: inherit;
+    font-size: 13px;
+}
+
+.sidebar separator,
+placessidebar separator {
+    background-color: rgba(255, 255, 255, 0.07);
+    margin: 4px 12px;
+    min-height: 1px;
+}
+
+.sidebar list row.sidebar-row > label,
+placessidebar > box > revealer > list > row.sidebar-section-header label {
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* ---- ÁREA PRINCIPAL DE ARCHIVOS — Card flotante derecha ---- */
+
+/* PASO 1: Reset global — todos los scrolledwindows comienzan transparentes */
+scrolledwindow {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+scrolledwindow > viewport {
+    background-color: transparent;
+}
+
+/* PASO 2: Aplicar UNA card de cristal a todos los scrolledwindows
+   dentro de la ventana. Esto captura el área principal de archivos
+   sin importar cómo Libadwaita/Nautilus estructure el árbol de widgets. */
+window scrolledwindow {
+    background-color: rgba(18, 22, 35, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 18px;
+    margin: 10px 10px 10px 4px;
+}
+
+/* PASO 3: Los scrolledwindows DENTRO del sidebar tienen mayor especificidad
+   (class selector > tag selector) así que prevalecen automáticamente:
+   .sidebar scrolledwindow (0,1,1) > window scrolledwindow (0,0,2) */
+.sidebar scrolledwindow,
+.navigation-sidebar scrolledwindow,
+placessidebar scrolledwindow,
+.sidebar-pane scrolledwindow {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+.sidebar scrolledwindow > viewport,
+.navigation-sidebar scrolledwindow > viewport,
+placessidebar scrolledwindow > viewport {
+    background-color: transparent;
+}
+
+/* ---- ICONOS / GRID DE ARCHIVOS ---- */
+flowbox,
+iconview,
+.nautilus-window .view {
+    background-color: transparent;
+    padding: 8px;
+}
+
+flowboxchild,
+.nautilus-canvas-item {
+    background-color: transparent;
+    border-radius: 14px;
+    padding: 8px;
+    transition: background-color 120ms ease;
+}
+
+flowboxchild:hover,
+.nautilus-canvas-item:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+flowboxchild:selected,
+.nautilus-canvas-item:selected {
+    background-color: rgba(220, 50, 47, 0.35);
+    border-radius: 14px;
+}
+
+flowboxchild label,
+.nautilus-canvas-item label {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 12px;
+}
+
+/* ---- VISTA DE LISTA ---- */
+columnview,
+listview,
+treeview {
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.80);
+}
+
+columnview > row:hover,
+listview > row:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+}
+
+columnview > row:selected,
+listview > row:selected {
+    background-color: rgba(220, 50, 47, 0.35);
+    border-radius: 12px;
+    color: #ffffff;
+}
+
+columnview > header > button {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.50);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+}
+
+/* ---- BARRA DE BÚSQUEDA ---- */
+searchbar,
+searchentry {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    color: #ffffff;
+    padding: 6px 12px;
+    box-shadow: none;
+}
+
+searchentry:focus {
+    border-color: rgba(220, 50, 47, 0.60);
+    background-color: rgba(255, 255, 255, 0.11);
+}
+
+/* ---- SCROLLBARS ---- */
+scrollbar {
+    background-color: transparent;
+    border: none;
+}
+
+scrollbar slider {
+    background-color: rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    min-width: 5px;
+    min-height: 5px;
+}
+
+scrollbar slider:hover {
+    background-color: rgba(255, 255, 255, 0.30);
+}
+
+/* ---- TOOLTIPS ---- */
+tooltip {
+    background-color: rgba(20, 25, 38, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.90);
+    padding: 6px 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.40);
+}
+
+/* ---- POPOVER / MENÚS CONTEXTUALES (Click Derecho) ---- */
+
+/* Evitamos pintar el contenedor 'popover' padre para que no dibuje
+   una caja rectangular rígida alrededor y debajo de la burbuja */
+popover,
+popover.menu {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+/* La burbuja real del menú contextual - aquí aplicamos el glassmorphic.
+   Esto elimina por completo la capa ancha y tosca debajo de las opciones */
+popover > contents {
+    background-color: rgba(14, 18, 28, 0.60);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 14px;
+    padding: 6px;
+    /* Quitamos la sombra exterior para evitar que Hyprland la deforme/corrompa con el blur.
+       Mantenemos el reflejo blanco interno superior (inset) que da el toque de cristal. */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+/* Caja de contenido interno - transparente para no añadir capas */
+popover > contents > box {
+    background-color: transparent;
+    border-radius: 0;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* El widget menu dentro del popover */
+popover menu,
+popover > contents > menu {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* ---- Items individuales del menú ---- */
+popover modelbutton,
+popover > contents > box > modelbutton,
+menuitem {
+    background-color: transparent;
+    border-radius: 8px;
+    padding: 6px 10px;
+    color: rgba(255, 255, 255, 0.88);
+    transition: background-color 120ms ease,
+                color 120ms ease;
+    min-height: 28px;
+}
+
+/* Hover: cristal blanco sutil */
+popover modelbutton:hover,
+popover > contents > box > modelbutton:hover,
+menuitem:hover {
+    background-color: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+}
+
+/* Click activo: acento carmesí */
+popover modelbutton:active,
+popover > contents > box > modelbutton:active,
+menuitem:active {
+    background-color: rgba(220, 50, 47, 0.30);
+    color: #ffffff;
+}
+
+/* Atajos de teclado (Ctrl+V, Ctrl+A, etc.) */
+popover modelbutton accelerator,
+menuitem accelerator {
+    color: rgba(255, 255, 255, 0.38);
+    font-size: 12px;
+}
+
+/* Separadores dentro del menú */
+popover separator,
+popover menu separator,
+popover > contents separator {
+    background-color: rgba(255, 255, 255, 0.08);
+    min-height: 1px;
+    margin: 4px 10px;
+}
+
+/* Íconos dentro de los items */
+popover modelbutton image,
+menuitem image {
+    color: rgba(255, 255, 255, 0.65);
+    margin-right: 4px;
+}
+
+
+/* ============================================================
+   🗂️ DIÁLOGO DE ARCHIVOS DEL SISTEMA (Guardar / Abrir / Subir)
+   GtkFileChooserDialog — aplica a nivel GLOBAL en todas las apps
+   NOTA: el portal GNOME crea GtkWindow con clase .dialog,
+         por eso usamos window.dialog Y dialog como selectores.
+   ============================================================ */
+
+/* Ventana del diálogo — override de variables Libadwaita scoped al dialog
+   Esto asegura que el portal y cualquier app GTK4 use el fondo glass */
+dialog,
+window.dialog,
+.dialog {
+    --window-bg-color:    rgba(14, 18, 28, 0.55);
+    --dialog-bg-color:    rgba(14, 18, 28, 0.55);
+    --headerbar-bg-color: rgba(18, 22, 35, 0.60);
+    --view-bg-color:      rgba(18, 22, 35, 0.38);
+    --sidebar-bg-color:   rgba(14, 18, 28, 0.50);
+    background-color: rgba(14, 18, 28, 0.55);
+    background-image: none;
+}
+
+/* Todos los contenedores internos del diálogo — transparentes */
+dialog > box,
+window.dialog > box,
+dialog > box > * {
+    background-color: transparent;
+    background-image: none;
+}
+
+/* ---- HeaderBar del diálogo (Cancelar | Título | Seleccionar) ---- */
+dialog headerbar {
+    background-color: rgba(18, 22, 35, 0.60);
+    background-image: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06),
+                0 4px 16px rgba(0, 0, 0, 0.30);
+    padding: 4px 10px;
+    min-height: 42px;
+}
+
+dialog headerbar label,
+dialog headerbar .title {
+    color: rgba(255, 255, 255, 0.90);
+    font-weight: 600;
+}
+
+dialog headerbar button {
+    background-color: transparent;
+    border: none;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.75);
+    padding: 5px 10px;
+    transition: background-color 150ms ease;
+}
+
+dialog headerbar button:hover {
+    background-color: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+}
+
+/* Botón principal de acción (Seleccionar / Guardar / Abrir) — carmesí */
+dialog headerbar button.suggested-action,
+dialog button.suggested-action {
+    background-color: rgba(220, 50, 47, 0.85);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 5px 14px;
+    box-shadow: 0 2px 8px rgba(220, 50, 47, 0.30);
+    transition: background-color 150ms ease;
+}
+
+dialog headerbar button.suggested-action:hover,
+dialog button.suggested-action:hover {
+    background-color: rgba(220, 50, 47, 1.0);
+    box-shadow: 0 4px 16px rgba(220, 50, 47, 0.45);
+}
+
+/* ---- Sidebar del diálogo (Recientes, Carpeta personal, etc.) ---- */
+dialog placessidebar,
+dialog .sidebar,
+dialog .navigation-sidebar,
+dialog .sidebar-pane {
+    background-color: rgba(14, 18, 28, 0.50);
+    border: none;
+    border-radius: 14px;
+    margin: 8px 4px 8px 8px;
+    padding: 4px;
+    box-shadow: none;
+}
+
+/* Scrolledwindows dentro del sidebar del diálogo — transparentes */
+dialog placessidebar scrolledwindow,
+dialog .sidebar scrolledwindow,
+dialog .navigation-sidebar scrolledwindow {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* Items del sidebar del diálogo */
+dialog placessidebar list row,
+dialog .sidebar list row,
+dialog .navigation-sidebar list row {
+    background-color: transparent;
+    border-radius: 10px;
+    margin: 2px 3px;
+    padding: 4px 6px;
+    color: rgba(255, 255, 255, 0.70);
+    min-height: 32px;
+    transition: background-color 120ms ease;
+}
+
+dialog placessidebar list row:hover,
+dialog .sidebar list row:hover,
+dialog .navigation-sidebar list row:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.90);
+}
+
+/* Seleccionado — acento carmesí (reemplaza el azul de GTK) */
+dialog placessidebar list row:selected,
+dialog .sidebar list row:selected,
+dialog .navigation-sidebar list row:selected {
+    background-color: rgba(220, 50, 47, 0.40);
+    color: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(220, 50, 47, 0.30);
+}
+
+dialog placessidebar separator,
+dialog .sidebar separator {
+    background-color: rgba(255, 255, 255, 0.07);
+    margin: 4px 10px;
+    min-height: 1px;
+}
+
+/* ---- Panel principal de archivos — card flotante derecha ---- */
+dialog paned > scrolledwindow,
+dialog paned > * > scrolledwindow,
+dialog > box > paned > scrolledwindow {
+    background-color: rgba(18, 22, 35, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    margin: 8px 8px 8px 4px;
+}
+
+dialog > box > scrolledwindow {
+    background-color: rgba(18, 22, 35, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    margin: 8px;
+}
+
+/* Lista / columnas de archivos — fondo transparente */
+dialog columnview,
+dialog listview,
+dialog treeview {
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Filas en hover */
+dialog columnview > row:hover,
+dialog listview > row:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+}
+
+/* Fila seleccionada — acento carmesí */
+dialog columnview > row:selected,
+dialog listview > row:selected {
+    background-color: rgba(220, 50, 47, 0.35);
+    border-radius: 8px;
+    color: #ffffff;
+}
+
+/* Cabeceras de columna (Nombre, Tamaño, Tipo, Modificado) */
+dialog columnview > header > button {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 10px;
+}
+
+/* Barra de ruta / breadcrumb */
+dialog .path-bar,
+dialog pathbar {
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 2px 4px;
+}
+
+dialog .path-bar button,
+dialog pathbar button {
+    background-color: transparent;
+    border: none;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.75);
+    padding: 4px 8px;
+}
+
+dialog .path-bar button:hover,
+dialog pathbar button:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
