@@ -1,0 +1,40 @@
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  #
+# Commands and Apps to be executed at launch (vendor defaults)
+$scriptsDir = $HOME/.config/hypr/scripts
+$UserScripts = $HOME/.config/hypr/UserScripts
+$lock = $scriptsDir/LockScreen.sh
+$SwwwRandom = $UserScripts/WallpaperAutoChange.sh
+$livewallpaper=""
+$wallDIR = $HOME/Pictures/wallpapers  # change path manually here if needed
+
+### wallpaper stuff ###
+exec-once = bash -c 'command -v awww-daemon && exec awww-daemon; command -v swww-daemon && exec swww-daemon'
+# wallpaper random
+#exec-once = $SwwwRandom $wallDIR
+
+### Startup ###
+exec-once = $scriptsDir/detect-gpu.sh
+exec-once = command -v dbus-update-activation-environment && dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec-once = command -v systemctl && systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec-once = $HOME/.config/hypr/scripts/Dropterminal.sh kitty &
+exec-once = test -f $scriptsDir/Polkit.sh && $scriptsDir/Polkit.sh
+exec-once = command -v nm-applet && nm-applet --indicator
+exec-once = swaync
+exec-once = command -v ags && ags run
+exec-once = command -v blueman-applet && blueman-applet
+exec-once = command -v waybar && waybar
+exec-once = command -v qs && qs -c overview
+exec-once = command -v hypridle && hypridle
+exec-once = test -f $scriptsDir/Hyprsunset.sh && $scriptsDir/Hyprsunset.sh init
+
+# Clipboard manager
+exec-once = command -v wl-paste && command -v cliphist && wl-paste --type text --watch cliphist store
+exec-once = command -v wl-paste && command -v cliphist && wl-paste --type image --watch cliphist store
+
+exec-once = test -f $scriptsDir/KeybindsLayoutInit.sh && $scriptsDir/KeybindsLayoutInit.sh
+
+# Tray indicators for background apps
+exec-once = command -v kdeconnect-indicator && kdeconnect-indicator
+
+# Rotate SDDM wallpaper for next boot
+exec-once = test -f $scriptsDir/rotate_sddm_wallpaper.sh && $scriptsDir/rotate_sddm_wallpaper.sh

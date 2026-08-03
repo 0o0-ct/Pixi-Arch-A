@@ -1,0 +1,43 @@
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  #
+# Always refer to Hyprland wiki
+# https://wiki.hyprland.org/
+
+# Initial boot script enable to apply initial wallpapers, theming, new settings etc.
+# suggest not to change this or delete this including deleting referrence file in ~/.config/hypr/.initial_startup_done
+# as long as the referrence file is present, this initial-boot.sh will not execute
+exec-once = $HOME/.config/hypr/initial-boot.sh
+
+### Sourcing external config files ###
+$configs = $HOME/.config/hypr/configs # Default Configs directory path
+$UserConfigs = $HOME/.config/hypr/UserConfigs # User Configs directory path
+
+source = $configs/Keybinds.hl # Pre-configured keybinds
+
+# Load defaults, then user additions/overrides
+source = $configs/Startup_Apps.hl 
+source = $UserConfigs/Startup_Apps.hl
+
+source = $configs/ENVariables.hl # Environment variables (defaults)
+source = $UserConfigs/ENVariables.hl # Environment variables (user)
+source = $configs/ENVariables_GPU.hl # Dynamic GPU environment settings
+
+# For laptop related
+source = $configs/Laptops.hl 
+source = $UserConfigs/Laptops.hl 
+source = $UserConfigs/LaptopDisplay.hl 
+
+# Load defaults, then user additions
+source = $configs/WindowRules.hl # Window Rules and Layer Rules (defaults)
+source = $UserConfigs/WindowRules.hl # Window Rules and Layer Rules (user)
+
+source = $configs/SystemSettings.hl # Default config for hypr 
+
+source = $UserConfigs/UserDecorations.hl # Decorations config file
+source = $UserConfigs/UserAnimations.hl # Animation config file
+source = $UserConfigs/UserKeybinds.hl # Put your own keybinds here
+source = $UserConfigs/UserSettings.hl # Main Hyprland Settings.
+source = $UserConfigs/01-UserDefaults.hl # settings for User defaults apps
+
+# nwg-displays
+source = $HOME/.config/hypr/monitors.hl
+source = $HOME/.config/hypr/workspaces.hl
