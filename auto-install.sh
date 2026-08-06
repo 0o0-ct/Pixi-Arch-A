@@ -38,7 +38,8 @@ printf "\n%.0s" {1..1}
 if [ -d "$Distro_DIR" ]; then
     echo "${YELLOW}$Distro_DIR existe. Actualizando el repositorio... ${RESET}"
     cd "$Distro_DIR"
-    git stash && git pull
+    git checkout -B main 2>/dev/null || true
+    git fetch origin main:refs/remotes/origin/main && git reset --hard origin/main
     chmod +x install.sh
     ./install.sh
 else

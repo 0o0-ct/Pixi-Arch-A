@@ -158,7 +158,8 @@ Si ya tienes el sistema instalado y quieres aplicar las últimas mejoras, parche
 cd ~/Pixi-Arch-A
 
 # 2. Traer los últimos cambios desde el repositorio
-git pull origin main
+git fetch origin main
+git reset --hard origin/main
 
 # 3. Volver a ejecutar el instalador para aplicar las actualizaciones
 ./install.sh

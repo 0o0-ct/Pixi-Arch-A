@@ -35,34 +35,20 @@ run_repo_update() {
     }
   fi
 
-  local head_before stash_msg pull_status=0
+  local head_before pull_status=0
   head_before=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 
-  echo "${INFO} Comprobando el árbol de trabajo (working tree)..." | tee -a "$log_file"
-  if git diff --quiet && git diff --cached --quiet; then
-    stash_msg="Sin cambios locales; no se creó ningún stash."
-    echo "${NOTE} $stash_msg" | tee -a "$log_file"
-  else
-    echo "${INFO} Guardando cambios locales (stash)..." | tee -a "$log_file"
-    if stash_output=$(git stash push -u 2>&1); then
-      stash_msg="Stash creado: $(echo "$stash_output" | head -n1)"
-      echo "${OK} $stash_msg" | tee -a "$log_file"
-    else
-      echo "${ERROR} Error en git stash. Detalles:" | tee -a "$log_file"
-      echo "$stash_output" | tee -a "$log_file"
-      read -n1 -s -r -p "Presiona cualquier tecla para volver al menú..."
-      echo
-      return 1
-    fi
-  fi
+  echo "${INFO} Forzando la rama main..." | tee -a "$log_file"
+  git checkout -B main 2>&1 | tee -a "$log_file" || true
+  git switch main 2>&1 | tee -a "$log_file" || true
 
-  echo "${INFO} Descargando los últimos cambios (git pull)..." | tee -a "$log_file"
-  if git pull --ff-only 2>&1 | tee -a "$log_file"; then
+  echo "${INFO} Descargando los últimos cambios (git fetch + reset a origin/main)..." | tee -a "$log_file"
+  if git fetch origin main:refs/remotes/origin/main 2>&1 | tee -a "$log_file" && git reset --hard origin/main 2>&1 | tee -a "$log_file"; then
     pull_status=0
-    echo "${OK} Reposihaciario actualizado correctamente." | tee -a "$log_file"
+    echo "${OK} Repositorio actualizado correctamente." | tee -a "$log_file"
   else
     pull_status=$?
-    echo "${ERROR} Error en git pull (código de salida $pull_status)." | tee -a "$log_file"
+    echo "${ERROR} Error al actualizar (código de salida $pull_status)." | tee -a "$log_file"
   fi
 
   local head_after
@@ -73,7 +59,6 @@ run_repo_update() {
   echo "  Repositorio : $repo_dir" | tee -a "$log_file"
   echo "  HEAD anterior: $head_before" | tee -a "$log_file"
   echo "  HEAD nuevo   : $head_after" | tee -a "$log_file"
-  echo "  Stash       : $stash_msg" | tee -a "$log_file"
   echo "  Estado Pull : $( [ $pull_status -eq 0 ] && echo "éxito" || echo "fallo" )" | tee -a "$log_file"
   echo "----------------------------------------" | tee -a "$log_file"
 

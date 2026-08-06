@@ -26,25 +26,17 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   exit 1
 fi
 
-branch="$(git rev-parse --abbrev-ref HEAD)"
-if [[ "$branch" == "HEAD" ]]; then
-  warn "Detached HEAD state detected."
-fi
+branch="main"
+
+log "Forcing branch: ${BOLD}${branch}${RESET}"
+git checkout -B "$branch" 2>/dev/null || git switch "$branch" 2>/dev/null || true
 
 log "Fetching remote updates..."
-git fetch --tags --quiet
+git fetch origin "$branch":refs/remotes/origin/"$branch" --tags --quiet
 
-upstream=""
-if git rev-parse --abbrev-ref --symbolic-full-name "@{u}" >/dev/null 2>&1; then
-  upstream="$(git rev-parse --abbrev-ref --symbolic-full-name "@{u}")"
-else
-  if git show-ref --verify --quiet "refs/remotes/origin/${branch}"; then
-    upstream="origin/${branch}"
-  fi
-fi
-
-if [[ -z "$upstream" ]]; then
-  err "No upstream found for branch '${branch}'."
+upstream="origin/${branch}"
+if ! git show-ref --verify --quiet "refs/remotes/${upstream}"; then
+  err "No remote branch '${upstream}' found."
   exit 1
 fi
 
@@ -66,11 +58,8 @@ warn "Updates available: behind by ${behind_count} commit(s)."
 read -r -p "Update now? [y/N] " reply
 case "${reply:-}" in
   y|Y|yes|YES)
-    log "Stashing local changes..."
-    git stash -u
-
     log "Pulling latest changes from ${upstream}..."
-    git pull
+    git reset --hard "${upstream}"
 
     ok "Update complete."
     printf "%b\n" "${DIM}Next: run ./copy.sh to upgrade the Hyprland dotfiles.${RESET}"

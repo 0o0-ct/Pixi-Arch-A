@@ -559,6 +559,14 @@ fi
 # initialize wallust to avoid config error on hyprland
 wallust run -s $wallpaper 2>&1 | tee -a "$LOG"
 
+# Record the exact commit these dotfiles were copied from, so the
+# updater (KooLsDotsUpdate.sh) can detect changes by commit instead of
+# relying on the manually-bumped version file.
+if git -C "$SCRIPT_DIR" rev-parse HEAD >/dev/null 2>&1; then
+  git -C "$SCRIPT_DIR" rev-parse HEAD > "$HOME/.config/hypr/.version_commit" 2>/dev/null
+  echo "${OK} Commit instalado registrado: $(cat "$HOME/.config/hypr/.version_commit" 2>/dev/null)" 2>&1 | tee -a "$LOG"
+fi
+
 printf "\n%.0s" {1..2}
 printf "${OK} ¡GENIAL! ¡Los Dotfiles de Hyprland de Pixi-Arch-A ya están cargados y listos! "
 printf "\n%.0s" {1..1}

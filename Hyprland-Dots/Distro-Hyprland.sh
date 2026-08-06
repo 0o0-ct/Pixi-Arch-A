@@ -131,7 +131,8 @@ fi
 if [ -d "$Distro_DIR" ]; then
     echo "${YELLOW}$Distro_DIR exists. Updating the repository... ${RESET}"
     cd "$Distro_DIR"
-    git stash && git pull
+    git fetch origin
+    git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
     chmod +x install.sh
     ./install.sh
 else

@@ -18,7 +18,7 @@ show_copy_menu() {
   local install_desc="Copia limpia y nueva"
   local upgrade_desc="Respaldos + preguntas interacticas"
   local express_desc="Omite restauraciones y fondos adicionales"
-  local update_desc="Guardar cambios locales + git pull"
+  local update_desc="Forzar rama main + fetch/reset"
   local quit_desc="Salir sin realizar cambios"
 
   local choice=""
