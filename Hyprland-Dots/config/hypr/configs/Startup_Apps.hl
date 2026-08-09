@@ -33,6 +33,9 @@ exec-once = command -v wl-paste && command -v cliphist && wl-paste --type image 
 
 exec-once = test -f $scriptsDir/KeybindsLayoutInit.sh && $scriptsDir/KeybindsLayoutInit.sh
 
+# Automatic Background Update Check for Pixi-Arch-A
+exec-once = test -f $scriptsDir/KooLsDotsUpdate.sh && $scriptsDir/KooLsDotsUpdate.sh --startup &
+
 # Tray indicators for background apps
 exec-once = command -v kdeconnect-indicator && kdeconnect-indicator
 

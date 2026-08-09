@@ -562,9 +562,18 @@ wallust run -s $wallpaper 2>&1 | tee -a "$LOG"
 # Record the exact commit these dotfiles were copied from, so the
 # updater (KooLsDotsUpdate.sh) can detect changes by commit instead of
 # relying on the manually-bumped version file.
+installed_sha=""
 if git -C "$SCRIPT_DIR" rev-parse HEAD >/dev/null 2>&1; then
-  git -C "$SCRIPT_DIR" rev-parse HEAD > "$HOME/.config/hypr/.version_commit" 2>/dev/null
-  echo "${OK} Commit instalado registrado: $(cat "$HOME/.config/hypr/.version_commit" 2>/dev/null)" 2>&1 | tee -a "$LOG"
+  installed_sha=$(git -C "$SCRIPT_DIR" rev-parse HEAD 2>/dev/null)
+elif git -C "$SCRIPT_DIR/.." rev-parse HEAD >/dev/null 2>&1; then
+  installed_sha=$(git -C "$SCRIPT_DIR/.." rev-parse HEAD 2>/dev/null)
+else
+  installed_sha=$(curl -fsSL --connect-timeout 5 "https://api.github.com/repos/0o0-ct/Pixi-Arch-A/commits/main" | jq -r '.sha' 2>/dev/null)
+fi
+
+if [ -n "$installed_sha" ] && [ "$installed_sha" != "null" ]; then
+  echo "$installed_sha" > "$HOME/.config/hypr/.version_commit"
+  echo "${OK} Commit instalado registrado: $installed_sha" 2>&1 | tee -a "$LOG"
 fi
 
 printf "\n%.0s" {1..2}
