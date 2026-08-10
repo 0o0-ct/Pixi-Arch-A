@@ -4,6 +4,12 @@
 
 nautilus_pkg=(
   nautilus
+  nautilus-open-any-terminal
+  file-roller
+  ffmpegthumbnailer
+  gst-plugins-good
+  poppler-glib
+  papirus-icon-theme
 )
 
 ## ADVERTENCIA: ¡NO EDITES MÁS ALLÁ DE ESTA LÍNEA SI NO SABES LO QUE ESTÁS HACIENDO! ##

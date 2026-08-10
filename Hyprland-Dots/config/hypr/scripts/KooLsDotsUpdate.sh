@@ -81,20 +81,13 @@ if [ "$response" == "action1" ] || [ "$IS_STARTUP" -eq 0 ]; then
     fi
 
     kitty -e bash -c "
-        echo -e '\e[35m=== 💫 Actualizando Pixi-Arch-A a la versión ($github_short) 💫 ===\e[0m'
-        if [ -d \"$REPO_DIR\" ]; then
-            cd \"$REPO_DIR\" &&
-            git fetch origin $branch &&
-            git reset --hard origin/$branch
-        else
-            git clone --depth=1 $REPO_URL \"$REPO_DIR\" &&
-            cd \"$REPO_DIR\"
-        fi
-
-        cd Hyprland-Dots &&
+        echo -e '\e[35m=== 💫 Actualizando Pixi-Arch-A a la versión más reciente ($github_short) 💫 ===\e[0m'
+        rm -rf \"$REPO_DIR\"
+        git clone --depth=1 $REPO_URL \"$REPO_DIR\"
+        cd \"$REPO_DIR/Hyprland-Dots\" &&
         chmod +x copy.sh &&
         ./copy.sh --express-upgrade &&
         echo \"$github_commit\" > \"$HOME/.config/hypr/.version_commit\" &&
-        notify-send -u critical -i \"$iDIR/ja.png\" 'Actualización Completada:' 'Pixi-Arch-A ha sido actualizado al commit $github_short. Reinicia para aplicar todos los cambios.'
+        notify-send -u critical -i \"$iDIR/ja.png\" 'Actualización Completada:' 'Pixi-Arch-A ha sido actualizado al commit $github_short.'
     "
 fi

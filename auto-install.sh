@@ -36,16 +36,12 @@ fi
 printf "\n%.0s" {1..1}
 
 if [ -d "$Distro_DIR" ]; then
-    echo "${YELLOW}$Distro_DIR existe. Actualizando el repositorio... ${RESET}"
-    cd "$Distro_DIR"
-    git checkout -B main 2>/dev/null || true
-    git fetch origin main:refs/remotes/origin/main && git reset --hard origin/main
-    chmod +x install.sh
-    ./install.sh
-else
-    echo "${MAGENTA}$Distro_DIR no existe. Clonando el repositorio...${RESET}"
-    git clone --depth=1 "$Github_URL" "$Distro_DIR"
-    cd "$Distro_DIR"
-    chmod +x install.sh
-    ./install.sh
+    echo "${YELLOW}$Distro_DIR existe. Descargando la versión más reciente... ${RESET}"
+    rm -rf "$Distro_DIR"
 fi
+
+echo "${MAGENTA}Clonando el repositorio oficial de Pixi-Arch-A...${RESET}"
+git clone --depth=1 "$Github_URL" "$Distro_DIR"
+cd "$Distro_DIR"
+chmod +x install.sh
+./install.sh

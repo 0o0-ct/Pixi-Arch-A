@@ -16,9 +16,15 @@ hypr_package=(
   bc
   cliphist
   curl 
+  ffmpegthumbnailer
+  file-roller
   grim 
   gvfs 
+  gvfs-afc
+  gvfs-dnssd
+  gvfs-gphoto2
   gvfs-mtp
+  gvfs-smb
   hyprpolkitagent
   imagemagick
   inxi 
@@ -29,8 +35,10 @@ hypr_package=(
   nano  
   network-manager-applet 
   pamixer 
+  papirus-icon-theme
   pavucontrol
   playerctl
+  poppler-glib
   python-requests
   python-pyquery
   qt5ct

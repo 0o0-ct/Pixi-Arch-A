@@ -42,8 +42,8 @@ run_repo_update() {
   git checkout -B main 2>&1 | tee -a "$log_file" || true
   git switch main 2>&1 | tee -a "$log_file" || true
 
-  echo "${INFO} Descargando los últimos cambios (git fetch + reset a origin/main)..." | tee -a "$log_file"
-  if git fetch origin main:refs/remotes/origin/main 2>&1 | tee -a "$log_file" && git reset --hard origin/main 2>&1 | tee -a "$log_file"; then
+  echo "${INFO} Descargando los últimos cambios desde origin/main..." | tee -a "$log_file"
+  if git fetch origin main 2>&1 | tee -a "$log_file" && git reset --hard origin/main 2>&1 | tee -a "$log_file"; then
     pull_status=0
     echo "${OK} Repositorio actualizado correctamente." | tee -a "$log_file"
   else

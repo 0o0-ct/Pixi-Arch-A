@@ -347,6 +347,51 @@ if [ ! -d "$HOME/.config" ]; then
   mkdir -p "$HOME/.config" && echo "Directorio creado con éxito." || echo "No se pudo crear el directorio."
 fi
 
+check_and_install_essential_pkgs() {
+  local log_file="$1"
+  echo "${INFO} Verificando paquetes y dependencias esenciales de Pixi-Arch-A..." 2>&1 | tee -a "$log_file"
+
+  local pkgs=(
+    papirus-icon-theme
+    nautilus
+    ffmpegthumbnailer
+    file-roller
+    poppler-glib
+    wallust
+    swaync
+    rofi-wayland
+    waybar
+    kitty
+    slurp
+    grim
+    swappy
+    cliphist
+    wl-clipboard
+  )
+
+  local missing=()
+  for pkg in "${pkgs[@]}"; do
+    if ! pacman -Qi "$pkg" &>/dev/null && ! pacman -Qq "$pkg" &>/dev/null; then
+      missing+=("$pkg")
+    fi
+  done
+
+  if [ ${#missing[@]} -gt 0 ]; then
+    echo "${NOTE} Instalando dependencias faltantes: ${missing[*]}" 2>&1 | tee -a "$log_file"
+    if command -v paru &>/dev/null; then
+      paru -S --needed --noconfirm "${missing[@]}" 2>&1 | tee -a "$log_file" || true
+    elif command -v yay &>/dev/null; then
+      yay -S --needed --noconfirm "${missing[@]}" 2>&1 | tee -a "$log_file" || true
+    elif command -v pacman &>/dev/null; then
+      sudo pacman -S --needed --noconfirm "${missing[@]}" 2>&1 | tee -a "$log_file" || true
+    fi
+  else
+    echo "${OK} Todas las dependencias esenciales están instaladas." 2>&1 | tee -a "$log_file"
+  fi
+}
+
+check_and_install_essential_pkgs "$LOG"
+
 printf "${INFO} - Copiando la ${SKY_BLUE}primera${RESET} parte de los dotfiles\n"
 copy_phase1 "$LOG" "$EXPRESS_MODE"
 printf "\n%.0s" {1..1}
