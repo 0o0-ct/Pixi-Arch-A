@@ -1,4 +1,4 @@
-/* ML4W GLASS THEME - RGB PALETTE EDITION */
+/* ML4W GLASS THEME - ANIMATED RGB EDITION */
 
 * {
   background-color: transparent;
@@ -15,6 +15,16 @@
 
 @import "style/ML4W/glass.css";
 
+@keyframes ml4w-rgb-cycle {
+    0%   { border-color: #0D1E4C; }
+    16%  { border-color: #C48CB3; }
+    33%  { border-color: #E5C9D7; }
+    50%  { border-color: #83A6CE; }
+    66%  { border-color: #26415E; }
+    83%  { border-color: #0B1B32; }
+    100% { border-color: #0D1E4C; }
+}
+
 window#waybar {
   background: transparent;
   border: 0;
@@ -24,11 +34,10 @@ window#waybar {
 .modules-left,
 .modules-center,
 .modules-right {
-  background:
-    linear-gradient(135deg, rgba(13, 30, 76, 0.60), rgba(11, 27, 50, 0.60)) padding-box,
-    linear-gradient(135deg, #0D1E4C, #C48CB3, #E5C9D7, #83A6CE, #26415E, #0B1B32) border-box;
-  border: 2px solid transparent;
+  background: rgba(10, 15, 26, 0.65);
+  border: 2.5px solid #0D1E4C;
   border-radius: 16px;
+  animation: ml4w-rgb-cycle 6s linear infinite;
   padding: 4px 12px;
   margin: 4px;
   box-shadow: none;
