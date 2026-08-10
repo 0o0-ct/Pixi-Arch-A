@@ -34,7 +34,7 @@ tooltip {
 .modules-right {
 	border: 3px solid #11111b;
 	border-radius: 10px 10px 10px 10px;
-	background-color: #313244;
+	background-color: rgba(49, 50, 68, 0.55);
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 4px;

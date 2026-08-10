@@ -33,7 +33,7 @@ tooltip {
 .modules-right {
 	border: 3px solid #20052a;
 	border-radius: 100px 0px 0px 0px;
-	background-color: #3d174b;
+	background-color: rgba(61, 23, 75, 0.55);
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 5px;
@@ -48,10 +48,10 @@ tooltip {
 }
 
 .modules-left {
-	/*background-color: #1e1e2e;*/
+	/*background-color: rgba(30, 30, 46, 0.55);*/
 	border: 3px solid #20052a;
 	border-radius: 0px 0px 100px 0px;
-	background-color: #441a53;
+	background-color: rgba(68, 26, 83, 0.55);
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 5px;

@@ -33,7 +33,7 @@ tooltip label{
 }
 /*-----module groups----*/
 .modules-right {
-	background-color: black;
+	background-color: rgba(0, 0, 0, 0.55);
 	color: white;
 	border-bottom: 1px;
 	border-style: solid;
@@ -45,7 +45,7 @@ tooltip label{
 	padding-left: 4px;
 }
 .modules-center {
-	background-color: black;
+	background-color: rgba(0, 0, 0, 0.55);
 	color: white;
 	border-bottom: 1px;
 	border-style: solid;
@@ -57,7 +57,7 @@ tooltip label{
 	padding-left: 4px;
 }
 .modules-left {
-	background-color: black;
+	background-color: rgba(0, 0, 0, 0.55);
 	color: white;
 	border-bottom: 1px;
 	border-style: solid;
