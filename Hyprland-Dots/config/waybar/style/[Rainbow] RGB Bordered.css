@@ -75,7 +75,7 @@ window#waybar.empty #window {
   padding-right: 6px;
   padding-left: 6px;
   border-radius: 16px;
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: none;
 }
 
 #backlight, #battery, #bluetooth, #clock, #cpu, #disk, #idle_inhibitor, #keyboard-state, #memory, #mode, #mpris, #network, #pulseaudio, #taskbar, #temperature, #tray, #window, #workspaces, #custom-menu, #custom-power, #custom-weather {
