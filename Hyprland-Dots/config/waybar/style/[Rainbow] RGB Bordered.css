@@ -1,5 +1,5 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Catppuccin Mocha - Monochromatic Blue Bordered */
+/* Catppuccin Mocha - Monochromatic Blue RGB Bordered */
 
 * {
 	font-family: "JetBrainsMono Nerd Font";
@@ -65,16 +65,26 @@ window#waybar.empty #window {
     transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
+@keyframes rainbow-border-cycle {
+    0%   { border-color: #001D39; }
+    14%  { border-color: #0A4174; }
+    28%  { border-color: #49769F; }
+    42%  { border-color: #4E8EA2; }
+    57%  { border-color: #6EA2B3; }
+    71%  { border-color: #7BBDE8; }
+    85%  { border-color: #BDD8E9; }
+    100% { border-color: #001D39; }
+}
+
 .modules-left, .modules-center, .modules-right {
-  background:
-    linear-gradient(135deg, rgba(15, 20, 30, 0.55), rgba(10, 15, 26, 0.55)) padding-box,
-    linear-gradient(135deg, #001D39, #0A4174, #49769F, #4E8EA2, #6EA2B3, #7BBDE8, #BDD8E9) border-box;
-  border: 2px solid transparent;
+  background: alpha(@theme_base_color, 0.55);
+  border: 2.5px solid #001D39;
+  border-radius: 16px;
+  animation: rainbow-border-cycle 7s linear infinite;
   padding-top: 2px;
   padding-bottom: 2px;
   padding-right: 6px;
   padding-left: 6px;
-  border-radius: 16px;
   box-shadow: none;
 }
 
