@@ -14,11 +14,6 @@ layerrule = match:namespace swaync, ignore_alpha 0.1
 layerrule = match:namespace wlogout, ignore_alpha 0.1
 layerrule = match:namespace notifications, ignore_alpha 0.1
 
-# Legacy rules fallback
-layerrule = blur, waybar
-layerrule = blur, swaync
-layerrule = blur, rofi
-
 # --- 💫 GNOME Files (Nautilus) macOS Tahoe Glass Rules 💫 ---
 windowrule = match:class ^(org.gnome.Nautilus)$, float on
 windowrule = match:class ^(org.gnome.Nautilus)$, size 1100 700
