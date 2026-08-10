@@ -112,7 +112,7 @@ window#waybar.hidden {
   background-color: alpha(@red, 0.55); /* Keeps the original color */
   color: @white; /* Sets text color to white for better contrast */
   border: 2px solid @red; /* Adds a border with the same color */
-  box-shadow: 0 0 10px @red; /* Adds a glow effect */
+  box-shadow: none; /* Adds a glow effect */
   font-weight: bold; /* Makes text bold for more emphasis */
   transition:
     background-color 0.3s,
