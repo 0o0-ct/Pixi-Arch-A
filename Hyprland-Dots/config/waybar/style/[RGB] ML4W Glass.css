@@ -1,0 +1,67 @@
+/* ML4W GLASS THEME - RGB PALETTE EDITION */
+
+* {
+  background-color: transparent;
+  font-family: "JetBrainsMono Nerd Font";
+  border: none;
+  font-weight: bolder;
+  border-radius: 0px;
+  min-height: 0;
+  font-size: 97%;
+  font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+  margin-top: 3px;
+  padding-bottom: 2px;
+}
+
+@import "style/ML4W/glass.css";
+
+@keyframes ml4w-rgb-gradient {
+    0% {
+        border-image: linear-gradient(90deg, #0D1E4C, #C48CB3, #E5C9D7, #83A6CE, #26415E, #0B1B32) 1;
+    }
+    50% {
+        border-image: linear-gradient(270deg, #0B1B32, #26415E, #83A6CE, #E5C9D7, #C48CB3, #0D1E4C) 1;
+    }
+    100% {
+        border-image: linear-gradient(90deg, #0D1E4C, #C48CB3, #E5C9D7, #83A6CE, #26415E, #0B1B32) 1;
+    }
+}
+
+window#waybar {
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+  background: rgba(10, 15, 26, 0.55);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  border-image: linear-gradient(90deg, #0D1E4C, #C48CB3, #E5C9D7, #83A6CE, #26415E, #0B1B32) 1;
+  animation: ml4w-rgb-gradient 10s ease-in-out infinite;
+  padding: 4px 12px;
+  margin: 4px;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.18), 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+#taskbar button,
+#workspaces button {
+  color: #cdd6f4;
+  padding: 2px 6px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+#taskbar button:hover,
+#workspaces button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+#taskbar button.active,
+#workspaces button.active {
+  background: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+}
