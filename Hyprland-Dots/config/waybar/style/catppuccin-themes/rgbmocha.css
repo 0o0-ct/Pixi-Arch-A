@@ -1,4 +1,4 @@
-/* Catppuccin Mocha palette - Monochromatic Gradient */
+/* Catppuccin Mocha palette - Monochromatic Blue RGB */
 @define-color base   #1e1e2e;
 @define-color mantle #181825;
 @define-color crust  #11111b;
@@ -15,14 +15,20 @@
 @define-color overlay1 #7f849c;
 @define-color overlay2 #9399b2;
 
+@define-color blue      #7BBDE8;
+@define-color lavender  #BDD8E9;
+@define-color sapphire  #49769F;
+@define-color sky       #6EA2B3;
+@define-color teal      #4E8EA2;
+
 @keyframes rainbow-gradient {
     0% {
-        border-image: linear-gradient(90deg, #1A273A, #3E4A62, #8EB69B, #D9D9D7, #3E4A62, #1A273A) 1;
+        border-image: linear-gradient(90deg, #001D39, #0A4174, #49769F, #4E8EA2, #6EA2B3, #7BBDE8, #BDD8E9) 1;
     }
     50% {
-        border-image: linear-gradient(270deg, #D9D9D7, #8EB69B, #3E4A62, #1A273A, #3E4A62, #D9D9D7) 1;
+        border-image: linear-gradient(270deg, #BDD8E9, #7BBDE8, #6EA2B3, #4E8EA2, #49769F, #0A4174, #001D39) 1;
     }
     100% {
-        border-image: linear-gradient(90deg, #1A273A, #3E4A62, #8EB69B, #D9D9D7, #3E4A62, #1A273A) 1;
+        border-image: linear-gradient(90deg, #001D39, #0A4174, #49769F, #4E8EA2, #6EA2B3, #7BBDE8, #BDD8E9) 1;
     }
 }

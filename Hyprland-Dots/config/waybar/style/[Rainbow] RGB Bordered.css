@@ -1,5 +1,6 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Catppuccin Mocha - Monochromatic Bordered */
+/* Catppuccin Mocha - Monochromatic Blue Bordered */
+/* Designed by https://github.com/0xl30 */
 
 * {
 	font-family: "JetBrainsMono Nerd Font";
@@ -29,39 +30,138 @@ window#waybar.empty #window {
     border: 0px;
 }
 
-.modules-left,
-.modules-center,
-.modules-right {
-	background: rgba(10, 15, 26, 0.55);
-	border: 2px solid transparent;
-	border-radius: 12px;
-	animation: rainbow-gradient 8s linear infinite;
-	padding: 2px 8px;
-	margin: 3px;
-}
-
 #taskbar button,
 #workspaces button {
-	color: #cdd6f4;
+	color: @overlay1;
     box-shadow: none;
 	text-shadow: none;
     padding: 0px;
     border-radius: 9px;
     padding-left: 4px;
     padding-right: 4px;
-    transition: all 0.3s ease;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
 	border-radius: 10px;
 	color: #ffffff;
-	background-color: rgba(255, 255, 255, 0.2);
+	background-color: alpha(@surface0, 0.55);
+ 	padding-left: 2px;
+    padding-right: 2px;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#workspaces button.persistent {
+	color: @surface1;
+	border-radius: 10px;
 }
 
 #taskbar button.active,
 #workspaces button.active {
 	color: #ffffff;
-  	border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.28);
+	border-radius: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
+
+#workspaces button.urgent {
+	color: @red;
+	border-radius: 0px;
+}
+
+.modules-left, .modules-center, .modules-right {
+  background: alpha(@theme_base_color, 0.55);
+  border: 2px solid transparent;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-right: 4px;
+  padding-left: 4px;
+  border-radius: 12px;
+
+  border-image: linear-gradient(90deg, #001D39, #0A4174, #49769F, #4E8EA2, #6EA2B3, #7BBDE8, #BDD8E9) 1;
+  animation: rainbow-gradient 12s ease-in-out infinite;
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar button,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-right: 6px;
+	padding-left: 6px;
+}
+
+#bluetooth, #backlight { color: #7BBDE8; }
+#battery { color: #6EA2B3; }
+#clock { color: #BDD8E9; }
+#cpu { color: #4E8EA2; }
+#custom-keyboard, #memory { color: #7BBDE8; }
+#disk { color: #49769F; }
+#temperature { color: #6EA2B3; }
+#custom-menu { color: #BDD8E9; }
+#custom-power { color: #7BBDE8; }
+#pulseaudio { color: #7BBDE8; }
+#window { color: #BDD8E9; }
+#network { color: #6EA2B3; }
