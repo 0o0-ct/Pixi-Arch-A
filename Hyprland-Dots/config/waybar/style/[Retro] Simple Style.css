@@ -19,7 +19,7 @@
 }
 
 window#waybar {
-  background: @background;
+  background: alpha(@background, 0.55);
   color: @foreground;
   transition-property: background-color;
   transition-duration: 0.5s;
@@ -123,7 +123,7 @@ window#waybar {
 }
 
 #battery.critical:not(.charging) {
-  background-color: @red;
+  background-color: alpha(@red, 0.55);
   color: white;
   animation-name: blink;
   animation-duration: 3.0s;
@@ -149,7 +149,7 @@ window#waybar {
 }
 
 #temperature.critical {
-	background-color: red;
+	background-color: rgba(239, 68, 68, 0.55);
 }
 
 #battery.charging {
@@ -172,12 +172,12 @@ window#waybar {
 	min-width: 80px;  
 	min-height: 5px; 
 	border-radius: 5px;
-	background-color: @dim;
+	background-color: alpha(@dim, 0.55);
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
 	min-height: 10px; 
 	border-radius: 5px;
-	background-color: @green;
+	background-color: alpha(@green, 0.55);
 }

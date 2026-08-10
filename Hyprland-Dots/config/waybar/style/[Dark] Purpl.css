@@ -21,7 +21,7 @@ window#waybar.hidden {
 }
 
 tooltip {
-	background: #1e1e2e;
+	background: rgba(30, 30, 46, 0.55);
 	border-radius: 10px;
 	border-width: 2px;
 	border-style: solid;
@@ -74,7 +74,7 @@ tooltip {
 #workspaces button.active {
 	color: #cba6f7;
 	border-radius: 20%;
-	background-color: black;
+	background-color: rgba(0, 0, 0, 0.55);
     padding-left: 8px;
     padding-right: 8px;
     animation: gradient_f 20s ease-in infinite;
@@ -166,7 +166,7 @@ tooltip {
 }
 
 #temperature.critical {
-	background-color: #ff0000;
+	background-color: rgba(255, 0, 0, 0.55);
 }
 
 @keyframes blink {
@@ -221,7 +221,7 @@ tooltip {
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
-	background-color: #6E6A86;
+	background-color: rgba(110, 106, 134, 0.55);
 }
 
 #backlight-slider highlight,

@@ -30,7 +30,7 @@
 }
 
 window#waybar {
-	background: linear-gradient(0deg, @border-color, black);
+	background: rgba(15, 20, 30, 0.55);
 	/*background: rgba(1, 117, 84, 0.5);*/
 	/*background: @transparent;*/
 	border-bottom-right-radius: 20px;
@@ -47,7 +47,7 @@ window#waybar.empty #window {
 }
 
 tooltip {
-	background-color: @background-module;
+	background-color: alpha(@background-module, 0.55);
 	border-radius: 10px;
 	border-width: 2px;
 	border-style: solid;
@@ -115,7 +115,7 @@ tooltip {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-	background-color: @background-module;
+	background-color: alpha(@background-module, 0.55);
     border-radius: 25px;
     margin: 5px 5px 5px 5px;
     opacity:0.8;
@@ -223,7 +223,7 @@ tooltip {
 #taskbar button.active,
 #workspaces button.active {
     color: #FFFFFF;
-    background: @button-color;
+    background: alpha(@button-color, 0.55);
     border-radius: 15px;
     padding-left: 4px;
     padding-right: 4px;
@@ -240,7 +240,7 @@ tooltip {
 #taskbar button:hover,
 #workspaces button:hover {
     color: #FFFFFF;
-    background: @button-hover;
+    background: alpha(@button-hover, 0.55);
     border-radius: 15px;
     opacity:1.0;
     padding-left: 2px;
@@ -275,7 +275,7 @@ tooltip {
 }
 
 #temperature.critical {
-    background-color: red;
+    background-color: rgba(239, 68, 68, 0.55);
 }
 
 @keyframes blink {

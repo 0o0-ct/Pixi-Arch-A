@@ -97,7 +97,7 @@ window#waybar.hidden {
 }
 
 #temperature.critical {
-  background-color: red;
+  background-color: rgba(239, 68, 68, 0.55);
 }
 
 #tray > .passive {
@@ -146,7 +146,7 @@ window#waybar.hidden {
 #workspaces button:hover {
 	border-radius: 10px;
 	color: #a6adc8;
-	background-color: #ffeb8a;
+	background-color: rgba(255, 235, 138, 0.55);
  	padding-left: 2px;
     padding-right: 2px;
     animation: gradient_f 20s ease-in infinite;
@@ -161,7 +161,7 @@ window#waybar.hidden {
 #taskbar button.active,
 #workspaces button.active {
 	color: black;
-	background-color: #fcba03;
+	background-color: rgba(252, 186, 3, 0.55);
   	border-radius: 10px;
     padding-left: 8px;
     padding-right: 8px;
@@ -181,7 +181,7 @@ window#waybar.hidden {
 
 #network.disconnected,
 #network.disabled {
-  background-color: #fcba03;
+  background-color: rgba(252, 186, 3, 0.55);
   color: #cdd6f4;
 }
 

@@ -32,7 +32,7 @@ window#waybar {
 }
 
 .modules-left {
-  background-color: @surface;
+  background-color: alpha(@surface, 0.55);
   border-radius: 12px;
   background:
     radial-gradient(
@@ -50,7 +50,7 @@ window#waybar {
 }
 
 .modules-right {
-  background-color: @surface;
+  background-color: alpha(@surface, 0.55);
   border-radius: 12px;
   background:
     radial-gradient(
@@ -68,7 +68,7 @@ window#waybar {
 }
 
 .modules-center {
-  background-color: @surface;
+  background-color: alpha(@surface, 0.55);
   border-radius: 12px;
   background:
     radial-gradient(
@@ -151,7 +151,7 @@ label.module:hover {
  * ----------------------------------------------------- */
 
 tooltip {
-  background-color: @surface;
+  background-color: alpha(@surface, 0.55);
   border-radius: 12px;
   background:
     radial-gradient(circle at 50% 250%, @surface, @surface_dim) padding-box,
@@ -191,7 +191,7 @@ window#waybar.empty #window {
 }
 
 #taskbar button:hover {
-  background: @primary;
+  background: alpha(@primary, 0.55);
   color: @on_primary;
 }
 
@@ -199,7 +199,7 @@ window#waybar.empty #window {
   border-radius: 8px;
   margin: 5px 0px 5px 5px;
   padding: 0px 6px 0px 6px;
-  background-color: @secondary;
+  background-color: alpha(@secondary, 0.55);
   color: @on_secondary;
 }
 
@@ -207,7 +207,7 @@ window#waybar.empty #window {
   border-radius: 8px;
   margin: 6px 0px 6px 7px;
   padding: 0px 6px 0px 6px;
-  background-color: @error;
+  background-color: alpha(@error, 0.55);
   color: @on_error;
 }
 
@@ -222,7 +222,7 @@ window#waybar.empty #window {
 
 @keyframes blink {
   to {
-    background-color: @background;
+    background-color: alpha(@background, 0.55);
     color: @on_surface;
   }
 }

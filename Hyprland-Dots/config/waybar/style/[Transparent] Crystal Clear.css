@@ -132,7 +132,7 @@ window#waybar.empty #window {
 }
 	 
 #temperature.critical {
-	background-color: #ff0000;
+	background-color: rgba(255, 0, 0, 0.55);
 }
    
 @keyframes blink {
@@ -156,7 +156,7 @@ window#waybar.empty #window {
 }
    
 #taskbar button.active {
-	background-color: #7f849c;
+	background-color: rgba(127, 132, 156, 0.55);
     padding-left: 12px;
     padding-right: 12px;
     animation: gradient_f 20s ease-in infinite;
@@ -187,7 +187,7 @@ window#waybar.empty #window {
 	min-width: 80px;  
 	min-height: 10px; 
 	border-radius: 5px;
-	background-color: black;
+	background-color: rgba(0, 0, 0, 0.55);
 }
 
 #backlight-slider highlight,

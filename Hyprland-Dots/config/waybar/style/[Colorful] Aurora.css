@@ -167,7 +167,7 @@ tooltip label{
 	color: #cc3436;
 }
 #temperature.critical {
-	background: red;
+	background: rgba(239, 68, 68, 0.55);
 	color: black;
 }
 
@@ -198,7 +198,7 @@ tooltip label{
 
 #backlight-slider trough,
 #pulseaudio-slider trough {
-	background-color: #7f849c;
+	background-color: rgba(127, 132, 156, 0.55);
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;

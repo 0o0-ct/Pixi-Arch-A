@@ -40,7 +40,7 @@ window#waybar.hidden {
 #workspaces button:hover {
 	border-radius: 10px;
 	color: @overlay0;
-	background-color: @surface0;
+	background-color: alpha(@surface0, 0.55);
  	padding-left: 2px;
     padding-right: 2px;
     animation: gradient_f 20s ease-in infinite;
@@ -155,7 +155,7 @@ window#waybar.hidden {
 }
 
 #battery.critical:not(.charging) {
-  	background-color: @red;
+  	background-color: alpha(@red, 0.55);
   	color: @theme_text_color;
 	animation-name: blink;
 	animation-duration: 3.0s;
@@ -191,7 +191,7 @@ window#waybar.hidden {
 }
 
 #temperature.critical {
-  	background-color: @red;
+  	background-color: alpha(@red, 0.55);
 }
 
 #tray > .passive {
@@ -258,7 +258,7 @@ window#waybar.hidden {
 
 #network.disconnected,
 #network.disabled {
-  	background-color: @surface0;
+  	background-color: alpha(@surface0, 0.55);
   	color: @text;
 }
 

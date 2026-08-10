@@ -83,7 +83,7 @@ tooltip label {
 }
 
 #workspaces button.focused {
-    background: black;
+    background: rgba(0, 0, 0, 0.55);
 }
 
 #workspaces button.visible {
@@ -91,13 +91,13 @@ tooltip label {
 }
 
 #workspaces button.urgent {
-    background: red;
+    background: rgba(239, 68, 68, 0.55);
     color: black;
     padding: 0 5px;
 }
 
 #workspaces button:hover {
-    background: black;
+    background: rgba(0, 0, 0, 0.55);
     border: 1px solid transparent;
     border-image: linear-gradient(45deg, #FA8BFF, #2BD2FF) 1;
     padding: 0 5px;
@@ -109,14 +109,14 @@ tooltip label {
 }
 
 #taskbar button.active {
-    background: black;
+    background: rgba(0, 0, 0, 0.55);
     border-bottom: 2px solid transparent;
     /* border-top: 2px solid transparent; */
     border-image: linear-gradient(45deg, #FA8BFF, #2BD2FF) 1;
     padding: 0 5px;
 }
 #taskbar button:hover {
-    background: black;
+    background: rgba(0, 0, 0, 0.55);
     border: 1px solid transparent;
     border-image: linear-gradient(45deg, #FA8BFF, #2BD2FF) 1;
     padding: 0 5px;
@@ -186,12 +186,12 @@ window#waybar.empty {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.55);
     color: rgb(0, 238, 255);
 }
 
 #temperature.critical {
-    background-color: red;
+    background-color: rgba(239, 68, 68, 0.55);
 }
 
 #network.disconnected,
@@ -202,19 +202,19 @@ window#waybar.empty {
 #battery.charging,
 #battery.plugged {
     color: black;
-    background: linear-gradient(45deg, #FA8BFF 0%, #2BD2FF 52%, #FA8BFF 90%);
+    background: rgba(15, 20, 30, 0.55);
 }
 
 @keyframes blink {
     to {
-        background-color: black;
+        background-color: rgba(0, 0, 0, 0.55);
         color: red;
     }
 }
 
 #battery.warning:not(.charging),
 #battery.critical:not(.charging) {
-    background-color: red;
+    background-color: rgba(239, 68, 68, 0.55);
     color: black;
 }
 
@@ -227,7 +227,7 @@ window#waybar.empty {
 
 /* Focused Label Background */
 label:focus {
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.55);
 }
 
 /* Keyboard State Styles */
@@ -241,7 +241,7 @@ label:focus {
 
 /* Tray Styles */
 #tray {
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.55);
 }
 
 #tray>.passive {
@@ -251,14 +251,14 @@ label:focus {
 #tray>.needs-attention {
     -gtk-icon-effect: highlight;
     padding: 0 5px;
-    background-color: red;
+    background-color: rgba(239, 68, 68, 0.55);
 }
 
 /* Gradient Module Styles */
 #mpd,
 #mpris,
 #window {
-    background: linear-gradient(45deg, #FA8BFF 0%, #2BD2FF 52%, #FA8BFF 90%);
+    background: rgba(15, 20, 30, 0.55);
 }
 
 #backlight-slider slider,
@@ -276,7 +276,7 @@ label:focus {
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
-	background-color: #6E6A86;
+	background-color: rgba(110, 106, 134, 0.55);
 }
 
 #backlight-slider highlight,

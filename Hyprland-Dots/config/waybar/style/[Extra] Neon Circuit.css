@@ -21,11 +21,11 @@
 }
 
 window#waybar {
-    background: @bar-bg;
+    background: alpha(@bar-bg, 0.55);
 }
 
 tooltip {
-    background: @main-bg;
+    background: alpha(@main-bg, 0.55);
     color: @main-fg;
     border-radius: 12px;
     border-width: 0px;
@@ -47,7 +47,7 @@ tooltip {
     padding-right: 0px;
     margin-right: 0px;
     color: @wb-act-fg;
-    background-color: #b4befe;
+    background-color: rgba(180, 190, 254, 0.55);
     animation: ws_normal 2s ease-in-out 1;
 }
 
@@ -66,7 +66,7 @@ tooltip {
 
 #taskbar button:hover,
 #workspaces button:hover {
-    background: @wb-hvr-bg;
+    background: alpha(@wb-hvr-bg, 0.55);
     color: @wb-hvr-fg;
     animation: ws_hover 20s ease-in-out 1;
     transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
@@ -140,7 +140,7 @@ tooltip {
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
     color: @main-fg;
-    background: @main-bg;
+    background: alpha(@main-bg, 0.55);
     opacity: 1;
     margin: 3px 0px 3px 0px;
     padding-left: 4px;
@@ -215,7 +215,7 @@ tooltip {
 }
 
 #temperature.critical {
-    background-color: #ff0000;
+    background-color: rgba(255, 0, 0, 0.55);
 }
 
 @keyframes blink {

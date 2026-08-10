@@ -218,7 +218,7 @@ window#waybar.empty #window {
 }
 
 #temperature.critical {
-  background-color: #f7768e;
+  background-color: rgba(247, 118, 142, 0.55);
 }
 
 #tray > .passive {
@@ -301,7 +301,7 @@ window#waybar.empty #window {
 
 #network.disconnected,
 #network.disabled {
-  background-color: #c0caf5;
+  background-color: rgba(192, 202, 245, 0.55);
   color: #000000;
 }
 

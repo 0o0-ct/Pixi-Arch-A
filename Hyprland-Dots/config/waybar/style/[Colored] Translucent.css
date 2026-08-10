@@ -80,17 +80,17 @@ tooltip {
 }
 
 #workspaces button.focused {
-    background-color: #bbccdd;
+    background-color: rgba(187, 204, 221, 0.55);
     color: @accent2;
     /* box-shadow: inset 0 -3px #ffffff; */
 }
 
 #workspaces button.urgent {
-    background-color: #eb4d4b;
+    background-color: rgba(235, 77, 75, 0.55);
 }
 
 #mode {
-    background-color: #64727D;
+    background-color: rgba(100, 114, 125, 0.55);
     border-bottom: 3px solid #ffffff;
 }
 
@@ -189,12 +189,12 @@ tooltip {
 
 /* #battery.charging {
     color: #ffffff;
-    background-color: #26A65B;
+    background-color: rgba(38, 166, 91, 0.55);
 } */
 
 @keyframes blink {
     to {
-        background-color: #ffffff;
+        background-color: rgba(255, 255, 255, 0.55);
         color: #333333;
     }
 }
@@ -209,7 +209,7 @@ tooltip {
 }
 
 label:focus {
-    background-color: #000000;
+    background-color: rgba(0, 0, 0, 0.55);
 }
 
 #custom-menu{
@@ -272,7 +272,7 @@ label:focus {
     color: @accent3;
 }
 #custom-media {
-    background-color: #66cc99;
+    background-color: rgba(102, 204, 153, 0.55);
     color: #2a5c45;
     min-width: 100px;
 }
@@ -288,21 +288,21 @@ label:focus {
 #keyboard-state,
 #temperature {
     color: @accent6;
-    /* background-color: #f0932b; */
+    /* background-color: rgba(240, 147, 43, 0.55); */
 }
 
 #temperature.critical {
-    background-color: @critical;
+    background-color: alpha(@critical, 0.55);
 }
 
 #tray {
-    /* background-color: #505050; */
+    /* background-color: rgba(80, 80, 80, 0.55); */
 }
 
 #custom-hypridle,
 #idle_inhibitor {
 	color: #f9e2af;
-    /*background-color: #2d3436;
+    /*background-color: rgba(45, 52, 54, 0.55);
     border-bottom: 8px solid rgba(0, 0, 0, 0.2);*/
 }
 
@@ -318,15 +318,15 @@ label:focus {
 }
 
 #mpd.disconnected {
-    background-color: #f53c3c;
+    background-color: rgba(245, 60, 60, 0.55);
 }
 
 #mpd.stopped {
-    background-color: #90b1b1;
+    background-color: rgba(144, 177, 177, 0.55);
 }
 
 #mpd.paused {
-    background-color: #51a37a;
+    background-color: rgba(81, 163, 122, 0.55);
 }
 
 #custom-language {

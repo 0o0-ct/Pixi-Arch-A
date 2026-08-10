@@ -14,7 +14,7 @@
 }
 
 window#waybar {
-    background: @color0; /* Dark background */
+    background: alpha(@color0, 0.55); /* Dark background */
     border-radius: 12px;
     border-bottom: 2px;
     border-style: solid;
@@ -36,7 +36,7 @@ window#waybar {
     border-radius: 15px;
     border: 0px;
     color: @color7; /* Light text */
-    background: linear-gradient(45deg, @color5, @color6, @color7); /* Lighter gradient */
+    background: rgba(15, 20, 30, 0.55); /* Lighter gradient */
     opacity: 0.5;
     transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
@@ -47,7 +47,7 @@ window#waybar {
     border-radius: 15px;
     border: 0px;
     color: @color7; /* Light text */
-    background: linear-gradient(45deg, @color5, @color6); /* Lighter gradient */
+    background: rgba(15, 20, 30, 0.55); /* Lighter gradient */
     opacity: 1.0;
     min-width: 40px;
     transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
@@ -56,13 +56,13 @@ window#waybar {
 #workspaces button:hover {
     border-radius: 15px;
     color: @color7; /* Light text */
-    background: linear-gradient(45deg, @color6, @color7); /* Lighter gradient */
+    background: rgba(15, 20, 30, 0.55); /* Lighter gradient */
     opacity: 0.8;
     transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 tooltip {
-    background: @color1; /* Slightly darker tooltip background */
+    background: alpha(@color1, 0.55); /* Slightly darker tooltip background */
     opacity: 0.8;
     border-radius: 6px;
     color: @color7; /* Light text */
@@ -153,12 +153,12 @@ tooltip {
 @keyframes blink {
     to {
         color: @color4; /* Slightly lighter blink color */
-        background-color: @color7; /* Lightest */
+        background-color: alpha(@color7, 0.55); /* Lightest */
     }
 }
 
 #battery.critical:not(.charging) {
-    background: @color5; /* Lighter background */
+    background: alpha(@color5, 0.55); /* Lighter background */
     color: @color7; /* Lightest */
     animation-name: blink;
     animation-duration: 3.0s;
@@ -269,12 +269,12 @@ tooltip {
     min-width: 80px;
     min-height: 5px;
     border-radius: 5px;
-    background-color: @color2; /* Slightly darker trough */
+    background-color: alpha(@color2, 0.55); /* Slightly darker trough */
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
     min-height: 10px;
     border-radius: 5px;
-    background-color: @color6; /* Lighter highlight */
+    background-color: alpha(@color6, 0.55); /* Lighter highlight */
 }

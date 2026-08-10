@@ -31,7 +31,7 @@ window#waybar.empty #window {
 
 #taskbar,
 #workspaces {
-  background: #0F1419;
+  background: rgba(15, 20, 25, 0.55);
   margin: 5px;
   padding: 0px 1px;
   border-radius: 15px;
@@ -47,7 +47,7 @@ window#waybar.empty #window {
   border-radius: 15px;
   border: 0px;
   color: #0F1419;
-  background: linear-gradient(45deg, #95E6CB, #59C2FF, #D2A6FF);
+  background: rgba(15, 20, 30, 0.55);
   opacity: 0.5;
   transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
@@ -59,7 +59,7 @@ window#waybar.empty #window {
   border-radius: 15px;
   border: 0px;
   color: #0F1419;
-  background: linear-gradient(45deg, #59C2FF, #D2A6FF);
+  background: rgba(15, 20, 30, 0.55);
   opacity: 1.0;
   min-width: 40px;
   transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
@@ -68,7 +68,7 @@ window#waybar.empty #window {
 #workspaces button:hover {
   border-radius: 15px;
   color: #0F1419;
-  background: linear-gradient(45deg, #59C2FF, #D2A6FF);
+  background: rgba(15, 20, 30, 0.55);
   opacity: 0.8;
   transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 
@@ -95,7 +95,7 @@ window#waybar.empty #window {
 }
 
 tooltip {
-background: #0F1419;
+background: rgba(15, 20, 25, 0.55);
 border: 1px solid #D2A6FF;
 border-radius: 10px;
 }
@@ -106,7 +106,7 @@ color: #F3F4F5;
 
 #window {
 	color: #E6E1CF;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -115,7 +115,7 @@ color: #F3F4F5;
 #temperature,
 #memory {
 	color: #E6B673;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -129,7 +129,7 @@ color: #F3F4F5;
 #idle_inhibitor,
 #clock {
 	color: #B8CC52;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -144,7 +144,7 @@ color: #F3F4F5;
 
 #bluetooth {
 	color: blue;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -155,7 +155,7 @@ color: #F3F4F5;
 #custom-cycle_wall,
 #cpu {
 	color: #F3F4F5;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -163,7 +163,7 @@ color: #F3F4F5;
 
 #disk {
 	color: #B8CC52;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -172,7 +172,7 @@ color: #F3F4F5;
 #backlight,
 #battery {
 	color: #F07178;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -180,7 +180,7 @@ color: #F3F4F5;
 
 #mpris {
 	color: #F07178;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding-left: 8px;
@@ -189,7 +189,7 @@ color: #F3F4F5;
 
 #backlight {
 	color: white;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -197,7 +197,7 @@ color: #F3F4F5;
 
 #network {
 	color: #FF8F40;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -205,8 +205,8 @@ color: #F3F4F5;
 
 #custom-hyprbindings {
 	color: #D2A6FF;
-	background: #0F1419;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -214,7 +214,7 @@ color: #F3F4F5;
 
 #tray {
 	color: #E6E1CF;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -222,7 +222,7 @@ color: #F3F4F5;
 
 #pulseaudio {
 	color: #59C2FF;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -230,7 +230,7 @@ color: #F3F4F5;
 
 #custom-notification {
 	color: #95E6CB;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -244,12 +244,12 @@ color: #F3F4F5;
 	margin: 5px;
 	padding: 2px 15px;
 	color: #0F1419;
-    background: linear-gradient(45deg, #95E6CB, #59C2FF, #D2A6FF);
+    background: rgba(15, 20, 30, 0.55);
 }
 
 #custom-weather {
 	color: #59C2FF;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -257,7 +257,7 @@ color: #F3F4F5;
 
 #custom-menu {
 	color: #59C2FF;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 0px 15px 50px 0px;
 	margin: 5px 5px 5px 0px;
 	padding: 1px 15px;
@@ -265,7 +265,7 @@ color: #F3F4F5;
 
 #custom-power {
 	color: #D2A6FF;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 15px 0px 0px 50px;
 	margin: 5px 0px;
 	padding: 2px 5px 2px 15px;
@@ -273,7 +273,7 @@ color: #F3F4F5;
 
 #custom-lock {
 	color: red;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -282,7 +282,7 @@ color: #F3F4F5;
 #custom-power_vertical,
 #keyboard-state {
 	color: green;
-	background: #0F1419;
+	background: rgba(15, 20, 25, 0.55);
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -312,7 +312,7 @@ color: #F3F4F5;
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
-	background-color: #6E6A86;
+	background-color: rgba(110, 106, 134, 0.55);
 }
 
 #backlight-slider highlight,

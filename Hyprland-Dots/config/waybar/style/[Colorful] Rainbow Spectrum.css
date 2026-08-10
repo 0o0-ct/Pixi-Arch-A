@@ -28,7 +28,7 @@ window#waybar.empty #window {
 }
 
 tooltip {
-	background: #1e1e2e;
+	background: rgba(30, 30, 46, 0.55);
 	opacity: 0.8;
 	border-radius: 10px;
 	border-width: 2px;
@@ -42,7 +42,7 @@ tooltip label{
 
 #taskbar button,
 #workspaces button {
-  	background-color: #d9e0ee;
+  	background-color: rgba(217, 224, 238, 0.55);
   	color: #3A3B3C;
     box-shadow: none;
 	text-shadow: none;
@@ -56,7 +56,7 @@ tooltip label{
 
 #taskbar button.active,
 #workspaces button.active {
-  	background-color: #eba0ac;
+  	background-color: rgba(235, 160, 172, 0.55);
   	color: #3A3B3C;
     padding-left: 8px;
     padding-right: 8px;
@@ -66,7 +66,7 @@ tooltip label{
 
 #taskbar button:hover,
 #workspaces button:hover {
-    background: #eb6f92;
+    background: rgba(235, 111, 146, 0.55);
     color: #f6c177;
     padding-left: 3px;
     padding-right: 3px;
@@ -144,11 +144,11 @@ tooltip label{
 }
 
 #backlight {
-	background-color: #cba6f7;
+	background-color: rgba(203, 166, 247, 0.55);
 }
 
 #battery {
-	background-color: #f9e2af;
+	background-color: rgba(249, 226, 175, 0.55);
 }
 
 @keyframes blink {
@@ -158,7 +158,7 @@ tooltip label{
 }
 
 #battery.critical:not(.charging) {
-	background-color: #f38ba8;
+	background-color: rgba(243, 139, 168, 0.55);
 	color: #f38ba8;
 	animation-name: blink;
 	animation-duration: 3.0s;
@@ -168,11 +168,11 @@ tooltip label{
 }
 
 #clock {
-	background-color: #a6e3a1;
+	background-color: rgba(166, 227, 161, 0.55);
 }
 
 #mpris {
-	background-color: #fab387;
+	background-color: rgba(250, 179, 135, 0.55);
 	color: black;
 }
 #custom-keyboard,
@@ -180,19 +180,19 @@ tooltip label{
 #keyboard-state label,
 #keyboard-state label.locked,
 #cpu {
-	background-color: #89dceb;
+	background-color: rgba(137, 220, 235, 0.55);
 }
 
 #memory {
-	background-color: #eba0ac;
+	background-color: rgba(235, 160, 172, 0.55);
 }
 
 #disk {
-	background-color: #b4befe;
+	background-color: rgba(180, 190, 254, 0.55);
 }
 
 #tray {
-	background-color: #b4befe;
+	background-color: rgba(180, 190, 254, 0.55);
 }
 #tray > .passive {
 		-gtk-icon-effect: dim;
@@ -202,7 +202,7 @@ tooltip label{
 }
 
 #custom-menu {
-	background-color: #f5c2e7;
+	background-color: rgba(245, 194, 231, 0.55);
 	/*padding: 1px;*/
 	padding-right: 10px;
 	border-radius: 16px;
@@ -211,12 +211,12 @@ tooltip label{
 }
 
 #custom-power {
-	background-color: #f38ba8;
+	background-color: rgba(243, 139, 168, 0.55);
 	padding: 0px 0px 0px 6px;
 }
 
 #custom-updater {
-	background-color: #e6ed7b;
+	background-color: rgba(230, 237, 123, 0.55);
 }
 
 #custom-cava_mviz,
@@ -225,39 +225,39 @@ tooltip label{
 #custom-file_manager,
 #custom-tty,
 #custom-settings {
-    background: linear-gradient(45deg, #14e81e 10%, #017ed5 54%, #8d00c4 90%);
+    background: rgba(15, 20, 30, 0.55);
 }
 
 #custom-cycle_wall {
-	background-color: #94e2d5;
+	background-color: rgba(148, 226, 213, 0.55);
 }
 
 #custom-swaync,
 #custom-weather {
-	background-color: #cba6f7;
+	background-color: rgba(203, 166, 247, 0.55);
 }
 
 #custom-reboot,
 #wireplumber {
-	background-color: #a6e3a1;
+	background-color: rgba(166, 227, 161, 0.55);
 }
 
 #wireplumber.muted {
-	background-color: #313244;
+	background-color: rgba(49, 50, 68, 0.55);
 	color: #cdd6f4;
 }
 
 #custom-lock {
-	background-color: #89dceb;
+	background-color: rgba(137, 220, 235, 0.55);
 }
 
 #custom-quit,
 #temperature {
-  	background-color: #86b4fa;
+  	background-color: rgba(134, 180, 250, 0.55);
 }
 
 #temperature.critical {
-  background-color: red;
+  background-color: rgba(239, 68, 68, 0.55);
 }
 
 #custom-power_vertical,
@@ -265,7 +265,7 @@ tooltip label{
 #custom-nightlight,
 #custom-hypridle,
 #idle_inhibitor {
-  	background-color: #86b4fa;
+  	background-color: rgba(134, 180, 250, 0.55);
     border-bottom: 8px solid rgba(0, 0, 0, 0.2);
 }
 
@@ -277,31 +277,31 @@ tooltip label{
 }
 
 #bluetooth {
-	background-color: #89dceb;
+	background-color: rgba(137, 220, 235, 0.55);
 }
 #window {
-	background-color: #89dceb;
+	background-color: rgba(137, 220, 235, 0.55);
 }
 
 #custom-hint,
 #pulseaudio {
-	background-color: #fab387;
+	background-color: rgba(250, 179, 135, 0.55);
 }
 
 #pulseaudio.bluetooth {
-	background-color: #f5c2e7;
+	background-color: rgba(245, 194, 231, 0.55);
 }
 #pulseaudio.muted {
-	background-color: #313244;
+	background-color: rgba(49, 50, 68, 0.55);
 	color: #cdd6f4;
 }
 
 #network {
-	background-color: #89b4fa;
+	background-color: rgba(137, 180, 250, 0.55);
 	padding-right: 12px;
 }
 #network.disconnected,#network.disabled {
-	background-color: #313244;
+	background-color: rgba(49, 50, 68, 0.55);
 	color: #cdd6f4;
 }
 

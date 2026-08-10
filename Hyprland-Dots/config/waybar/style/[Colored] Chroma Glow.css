@@ -31,7 +31,7 @@ window#waybar.empty #window {
 
 tooltip {
 	color: #40a02b;
-    background: #1e1e2e;
+    background: rgba(30, 30, 46, 0.55);
     opacity: 0.8;
     border-radius: 10px;
     border-width: 2px;
@@ -78,16 +78,16 @@ tooltip label{
 }
 
 #workspaces button.focused {
-    background-color: #bbccdd;
+    background-color: rgba(187, 204, 221, 0.55);
     color: #323232;
 }
 
 #workspaces button.urgent {
-    background-color: #eb4d4b;
+    background-color: rgba(235, 77, 75, 0.55);
 }
 
 #mode {
-    background-color: #64727D;
+    background-color: rgba(100, 114, 125, 0.55);
     border-bottom: 3px solid #ffffff;
 }
 
@@ -178,12 +178,12 @@ tooltip label{
 
 /* #battery.charging {
     color: #ffffff;
-    background-color: #26A65B;
+    background-color: rgba(38, 166, 91, 0.55);
 } */
 
 @keyframes blink {
     to {
-        background-color: #ffffff;
+        background-color: rgba(255, 255, 255, 0.55);
         color: #333333;
     }
 }
@@ -198,7 +198,7 @@ tooltip label{
 }
 
 label:focus {
-    background-color: #000000;
+    background-color: rgba(0, 0, 0, 0.55);
 }
 
 #custom-keyboard,
@@ -273,11 +273,11 @@ label:focus {
 }
 
 #temperature.critical {
-    background-color: #ff0000;
+    background-color: rgba(255, 0, 0, 0.55);
 }
 
 #tray {
-    /* background-color: #505050; */
+    /* background-color: rgba(80, 80, 80, 0.55); */
 }
 
 /*-----Indicators----*/
@@ -292,15 +292,15 @@ label:focus {
 }
 
 #mpd.disconnected {
-    background-color: #f53c3c;
+    background-color: rgba(245, 60, 60, 0.55);
 }
 
 #mpd.stopped {
-    background-color: #90b1b1;
+    background-color: rgba(144, 177, 177, 0.55);
 }
 
 #mpd.paused {
-    background-color: #51a37a;
+    background-color: rgba(81, 163, 122, 0.55);
 }
 
 #custom-language {

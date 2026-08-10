@@ -20,7 +20,7 @@
 }
 
 window#waybar {
-    background: @bar-bg;
+    background: alpha(@bar-bg, 0.55);
 }
 
 window#waybar.empty,
@@ -31,7 +31,7 @@ window#waybar.empty #window {
 }
 
 tooltip {
-    background: @main-bg;
+    background: alpha(@main-bg, 0.55);
     color: @main-fg;
     border-radius: 8px;
     border-width: 0px;
@@ -48,14 +48,14 @@ tooltip {
 	border-radius: 10px;
     padding-left: 2px;
     padding-right: 4px;
-	background: @main-bg;
+	background: alpha(@main-bg, 0.55);
     color: @main-fg;
     animation: gradient_f 20s ease-in infinite;
     transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button.active {
-    background: @wb-act-bg;
+    background: alpha(@wb-act-bg, 0.55);
     color: @wb-act-fg;
     padding-left: 2px;
     padding-right: 4px;
@@ -64,7 +64,7 @@ tooltip {
 }
 
 #workspaces button:hover {
-    background: @wb-hvr-bg;
+    background: alpha(@wb-hvr-bg, 0.55);
     color: @wb-hvr-fg;
     padding-left: 2px;
     padding-right: 2px;
@@ -88,7 +88,7 @@ tooltip {
 }
 
 #taskbar button.active {
-    background: @wb-act-bg;
+    background: alpha(@wb-act-bg, 0.55);
     color: @wb-act-color;
     padding-left: 8px;
     padding-right: 8px;
@@ -97,7 +97,7 @@ tooltip {
 }
 
 #taskbar button:hover {
-    background: @wb-hvr-bg;
+    background: alpha(@wb-hvr-bg, 0.55);
     color: @wb-hvr-color;
     padding-left: 3px;
     padding-right: 3px;
@@ -163,7 +163,7 @@ tooltip {
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
     color: @main-fg;
-    background: @main-bg;
+    background: alpha(@main-bg, 0.55);
     opacity: 1;
 	border-bottom: 2px;
 	border-color: #2B5D34;
@@ -176,7 +176,7 @@ tooltip {
 }
 
 #temperature.critical {
-  	background-color: red;
+  	background-color: rgba(239, 68, 68, 0.55);
 }
 
 /*-----Indicators----*/
@@ -193,7 +193,7 @@ tooltip {
 }
 
 #battery.critical:not(.charging) {
-  background-color: red;
+  background-color: rgba(239, 68, 68, 0.55);
   color: white;
   animation-name: blink;
   animation-duration: 3.0s;
@@ -216,7 +216,7 @@ tooltip {
 #group-laptop,
 #group-audio {
     color: @main-fg;
-    background-color: @main-bg;
+    background-color: alpha(@main-bg, 0.55);
 }
 
 #backlight-slider slider,

@@ -22,7 +22,7 @@ window#waybar.hidden {
 } 
 
 tooltip {
-	background: #240303;
+	background: rgba(36, 3, 3, 0.55);
 	border-radius: 10px;
 	border-width: 2px;
 	border-style: solid;
@@ -54,7 +54,7 @@ tooltip {
 #taskbar button.active,	   
 #workspaces button.active {
 	color: rgb(108, 18, 18);
-	background-color: #000000;
+	background-color: rgba(0, 0, 0, 0.55);
 	border: 1px solid grey;
     border-radius: 15px 15px 15px 15px;
     padding-left: 8px;
@@ -75,7 +75,7 @@ tooltip {
 #taskbar button:hover,		   
 #workspaces button:hover {
 	color: rgb(71, 14, 14);
-	background-color: #000000;
+	background-color: rgba(0, 0, 0, 0.55);
     border-radius: 15px;
  	padding-left: 3px;
     padding-right: 3px;
@@ -150,7 +150,7 @@ tooltip {
 }
 		 
 #temperature.critical {
-	background-color: #ff0000;
+	background-color: rgba(255, 0, 0, 0.55);
 }
 	   
 @keyframes blink {
@@ -190,14 +190,14 @@ tooltip {
     min-width: 80px;
     min-height: 5px;
     border-radius: 5px;
-    background-color: #22252a;
+    background-color: rgba(34, 37, 42, 0.55);
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
     min-height: 10px;
     border-radius: 5px;
-    background-color: #ba5663;
+    background-color: rgba(186, 86, 99, 0.55);
 }
 	
 	

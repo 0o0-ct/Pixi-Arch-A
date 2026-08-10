@@ -35,7 +35,7 @@ window#waybar {
 	border-radius: 15px;
 	border: 0px;
 	color: #0F1419;
-	background: linear-gradient(45deg, #95E6CB, #59C2FF, #D2A6FF);
+	background: rgba(15, 20, 30, 0.55);
 	opacity: 0.5;
 	transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
@@ -46,7 +46,7 @@ window#waybar {
 	border-radius: 15px;
 	border: 0px;
 	color: #0F1419;
-	background: linear-gradient(45deg, #59C2FF, #D2A6FF);
+	background: rgba(15, 20, 30, 0.55);
 	opacity: 1.0;
 	min-width: 40px;
 	transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
@@ -55,14 +55,14 @@ window#waybar {
 #workspaces button:hover {
 	border-radius: 15px;
 	color: #0F1419;
-	background: linear-gradient(45deg, #59C2FF, #D2A6FF);
+	background: rgba(15, 20, 30, 0.55);
 	opacity: 0.8;
 	transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 
 }
 
 tooltip {
-	background: #1e1e2e;
+	background: rgba(30, 30, 46, 0.55);
 	opacity: 0.8;
 	border-radius: 6px;
 }
@@ -156,12 +156,12 @@ tooltip {
 @keyframes blink {
     to {
         color: #4c566a;
-        background-color: #eceff4;
+        background-color: rgba(236, 239, 244, 0.55);
     }
 }
 
 #battery.critical:not(.charging) {
-    background: #bf616a;
+    background: rgba(191, 97, 106, 0.55);
     color: #eceff4;
 	animation-name: blink;
 	animation-duration: 3.0s;

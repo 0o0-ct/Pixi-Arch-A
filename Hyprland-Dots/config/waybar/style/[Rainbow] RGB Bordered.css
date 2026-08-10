@@ -48,7 +48,7 @@ window#waybar.empty #window {
 #workspaces button:hover {
 	border-radius: 10px;
 	color: @peach;
-	background-color: @surface0;
+	background-color: alpha(@surface0, 0.55);
  	padding-left: 2px;
     padding-right: 2px;
     animation: gradient_f 20s ease-in infinite;
@@ -77,7 +77,7 @@ window#waybar.empty #window {
 
 /* This section can be use if you want to separate waybar modules */
 .modules-left, .modules-center, .modules-right {
-  background: @theme_base_color;
+  background: alpha(@theme_base_color, 0.55);
   border: 2px solid transparent;
   padding-top: 2px;
   padding-bottom: 2px;
@@ -178,7 +178,7 @@ window#waybar.empty #window {
 }
 
 #battery.critical:not(.charging) {
-  background-color: @red;
+  background-color: alpha(@red, 0.55);
   color: @theme_text_color;
   animation-name: blink;
   animation-duration: 3.0s;
@@ -210,7 +210,7 @@ window#waybar.empty #window {
 }
 
 #temperature.critical {
-  background-color: @red;
+  background-color: alpha(@red, 0.55);
 }
 
 #tray > .passive {
@@ -284,7 +284,7 @@ window#waybar.empty #window {
 }
 #network.disconnected,
 #network.disabled {
-  background-color: @surface0;
+  background-color: alpha(@surface0, 0.55);
   color: @text;
 }
 

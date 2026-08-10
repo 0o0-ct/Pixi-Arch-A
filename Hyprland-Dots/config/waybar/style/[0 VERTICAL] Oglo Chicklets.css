@@ -30,7 +30,7 @@ window#waybar.solo {
 
 button {
     all: unset;
-    background-color: #778f52;
+    background-color: rgba(119, 143, 82, 0.55);
     color: #2d353b;
     border: none;
     border-bottom: 8px solid #5d743e;
@@ -42,18 +42,18 @@ button {
 
 button:hover {
     background: inherit;
-    background-color: #92ab6c;
+    background-color: rgba(146, 171, 108, 0.55);
     border-bottom: 8px solid #788f57;
 }
 
 button.active {
     background: inherit;
-    background-color: #a5be7e;
+    background-color: rgba(165, 190, 126, 0.55);
     border-bottom: 8px solid #8aa168;
 }
 
 #mode {
-    background-color: #64727D;
+    background-color: rgba(100, 114, 125, 0.55);
     border-bottom: 3px solid #ffffff;
 }
 
@@ -140,57 +140,57 @@ button.active {
 }
 
 #window {
-    background-color: #343f44;
+    background-color: rgba(52, 63, 68, 0.55);
     color: #d3c6aa;
     border-bottom: 8px solid #2b3539;
 }
 
 #custom-swaync {
-    background-color: #778f52;
+    background-color: rgba(119, 143, 82, 0.55);
     color: #2d353b;
     border-bottom: 8px solid #5d743e;
 }
 
 #custom-menu {
-    background-color: #778f52;
+    background-color: rgba(119, 143, 82, 0.55);
     color: #2d353b;
     border-bottom: 8px solid #5d743e;
 }
 
 #custom-power {
-    background-color: #ee606a;
+    background-color: rgba(238, 96, 106, 0.55);
     color: #2d353b;
     border-bottom: 8px solid #ca4853;
     padding-left: 5px;
 }
 
 #custom-power_vertical{
-    background-color: #ee606a;
+    background-color: rgba(238, 96, 106, 0.55);
     color: #2d353b;
     border-bottom: 8px solid #ca4853;
 }
 
 #clock {
-    background-color: #96a84c;
+    background-color: rgba(150, 168, 76, 0.55);
     color: #2d353b;
     border-bottom: 8px solid #7a8c37;
 }
 
 #battery {
-    background-color: #3a998f;
+    background-color: rgba(58, 153, 143, 0.55);
     color: #2d353b;
     border-bottom: 8px solid #227d74;
 }
 
 @keyframes blink {
     to {
-        background-color: #ffffff;
+        background-color: rgba(255, 255, 255, 0.55);
         color: #000000;
     }
 }
 
 #battery.critical:not(.charging) {
-    background-color: #ee606a;
+    background-color: rgba(238, 96, 106, 0.55);
     color: #2d353b;
     border-bottom: 8px solid #ca4853;
     animation-name: blink;
@@ -201,23 +201,23 @@ button.active {
 }
 
 label:focus {
-    background-color: #000000;
+    background-color: rgba(0, 0, 0, 0.55);
 }
 
 #cpu {
-    background-color: #778f52;
+    background-color: rgba(119, 143, 82, 0.55);
     color: #2d353b;
     border-bottom: 8px solid #5d743e;
 }
 
 #memory {
-    background-color: #d980ad;
+    background-color: rgba(217, 128, 173, 0.55);
     color: #2d353b;
     border-bottom: 8px solid #b86790;
 }
 
 #disk {
-    background-color: #964B00;
+    background-color: rgba(150, 75, 0, 0.55);
     border-bottom: 8px solid #793300;
 }
 
@@ -225,65 +225,65 @@ label:focus {
 #custom-light_dark,
 #custom-nightlight,
 #backlight {
-    background-color: #64b6ac;
+    background-color: rgba(100, 182, 172, 0.55);
     color: #2d353b;
     border-bottom: 8px solid #4f9990;
     padding-left: 5px;
 }
 
 #network {
-    background-color: #2980b9;
+    background-color: rgba(41, 128, 185, 0.55);
 }
 
 #network.disconnected {
-    background-color: #f53c3c;
+    background-color: rgba(245, 60, 60, 0.55);
 }
 
 #pulseaudio {
-    background-color: #d8ac47;
+    background-color: rgba(216, 172, 71, 0.55);
     color: #2d353b;
     border-bottom: 8px solid #b78f30;
 }
 
 #pulseaudio.muted {
-    background-color: #90b1b1;
+    background-color: rgba(144, 177, 177, 0.55);
     color: #2a5c45;
 }
 
 #wireplumber {
-    background-color: #fff0f5;
+    background-color: rgba(255, 240, 245, 0.55);
     color: #000000;
 }
 
 #wireplumber.muted {
-    background-color: #f53c3c;
+    background-color: rgba(245, 60, 60, 0.55);
 }
 
 #custom-media {
-    background-color: #66cc99;
+    background-color: rgba(102, 204, 153, 0.55);
     color: #2a5c45;
     min-width: 100px;
 }
 
 #custom-media.custom-spotify {
-    background-color: #66cc99;
+    background-color: rgba(102, 204, 153, 0.55);
 }
 
 #custom-media.custom-vlc {
-    background-color: #ffa000;
+    background-color: rgba(255, 160, 0, 0.55);
 }
 
 #temperature {
-    background-color: #f0932b;
+    background-color: rgba(240, 147, 43, 0.55);
     border-bottom: 8px solid #b78f30;
 }
 
 #temperature.critical {
-    background-color: #eb4d4b;
+    background-color: rgba(235, 77, 75, 0.55);
 }
 
 #tray {
-    background-color: #e67f51;
+    background-color: rgba(230, 127, 81, 0.55);
     color: #2d353b;;
     border-bottom: 8px solid #c3653b;
 }
@@ -294,45 +294,45 @@ label:focus {
 
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
-    background-color: #eb4d4b;
+    background-color: rgba(235, 77, 75, 0.55);
 }
 
 #idle_inhibitor {
-    background-color: #2d3436;
+    background-color: rgba(45, 52, 54, 0.55);
     border-bottom: 8px solid #7a8c37;
 }
 
 #idle_inhibitor.activated {
-    background-color: #ecf0f1;
+    background-color: rgba(236, 240, 241, 0.55);
     border-bottom: 8px solid #7a8c37;
     color: #2d3436;
 }
 
 #mpd {
-    background-color: #66cc99;
+    background-color: rgba(102, 204, 153, 0.55);
     color: #2a5c45;
 }
 
 #mpd.disconnected {
-    background-color: #f53c3c;
+    background-color: rgba(245, 60, 60, 0.55);
 }
 
 #mpd.stopped {
-    background-color: #90b1b1;
+    background-color: rgba(144, 177, 177, 0.55);
 }
 
 #mpd.paused {
-    background-color: #51a37a;
+    background-color: rgba(81, 163, 122, 0.55);
 }
 
 #language {
-    background: #00b093;
+    background: rgba(0, 176, 147, 0.55);
     color: #740864;
     min-width: 16px;
 }
 
 #keyboard-state {
-    background: #97e1ad;
+    background: rgba(151, 225, 173, 0.55);
     color: #000000;
     min-width: 16px;
     border-bottom: 8px solid #78b48a;
@@ -355,7 +355,7 @@ label:focus {
 }
 
 tooltip {
-  background-color: #232a2e;
+  background-color: rgba(35, 42, 46, 0.55);
   border: none;
   border-bottom: 8px solid #1d2327;
 }
@@ -382,7 +382,7 @@ tooltip label {
   min-height: 7px;
   min-width: 15px;
   opacity: 0;
-  background-color: #ffa000;
+  background-color: rgba(255, 160, 0, 0.55);
   border-radius: 3px;
   box-shadow: 1px 5px 6px 1px #272727;
 }
@@ -392,12 +392,12 @@ tooltip label {
   min-height: 100px;
   min-width: 7px;
   border-radius: 5px;
-  background-color: #d8ac47;
+  background-color: rgba(216, 172, 71, 0.55);
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
   min-width: 5px;
   border-radius: 5px;
-  background-color: #64b6ac;
+  background-color: rgba(100, 182, 172, 0.55);
 }

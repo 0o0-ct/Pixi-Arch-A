@@ -26,7 +26,7 @@ window#waybar.empty #window {
 
 tooltip {
 	color: @color13;
-	background: @color10;
+	background: alpha(@color10, 0.55);
 	opacity: 1.0;
 	border-radius: 10px;
 }
@@ -35,7 +35,7 @@ tooltip {
 .modules-left,
 .modules-center,
 .modules-right {
-	background-color: @color0;
+	background-color: alpha(@color0, 0.55);
 	border: 0.5px solid @color15;
 	border-radius: 10px;
 	padding-top: 2px;
@@ -61,7 +61,7 @@ tooltip {
 #taskbar button.active,
 #workspaces button.active {
     color: @foreground;
-    background-color: @color2;
+    background-color: alpha(@color2, 0.55);
     padding-left: 8px;
     padding-right: 8px;
     animation: gradient_f 20s ease-in infinite;
@@ -176,7 +176,7 @@ tooltip {
 	color: #cc3436;
 }
 #temperature.critical {
-    background-color: #ff0000;
+    background-color: rgba(255, 0, 0, 0.55);
 }
 
 @keyframes blink {

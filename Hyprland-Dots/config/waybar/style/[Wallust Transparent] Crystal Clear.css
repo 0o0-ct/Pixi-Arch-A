@@ -53,7 +53,7 @@ window#waybar.empty #window {
 
 tooltip {
 	color: @color12;
-	background: @color10;
+	background: alpha(@color10, 0.55);
 	opacity: 0.8;
 	border-radius: 10px;
 	border-width: 1px;
@@ -165,7 +165,7 @@ tooltip {
 }
 	 
 #temperature.critical {
-	background-color: #ff0000;
+	background-color: rgba(255, 0, 0, 0.55);
 }
    
 @keyframes blink {
@@ -205,7 +205,7 @@ tooltip {
 	min-width: 80px;  
 	min-height: 10px; 
 	border-radius: 5px;
-	background-color: black;
+	background-color: rgba(0, 0, 0, 0.55);
 }
 
 #backlight-slider highlight,

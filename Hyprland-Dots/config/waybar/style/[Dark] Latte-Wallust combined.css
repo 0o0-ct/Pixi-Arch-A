@@ -40,7 +40,7 @@ window#waybar.hidden {
 }
 
 tooltip {
-    background: #1e1e2e;
+    background: rgba(30, 30, 46, 0.55);
     border-radius: 12px;
     border-width: 1px;
     border-style: solid;
@@ -52,7 +52,7 @@ tooltip {
 .modules-left,
 .modules-center,
 .modules-right {
-    background-color: @background-module;
+    background-color: alpha(@background-module, 0.55);
     border-radius:15px;
     border-bottom:2px solid @border-color;
 	padding-top: 2px;
@@ -87,7 +87,7 @@ tooltip {
 #workspaces button.active {
     color: #ffd700;
     border-radius: 50%;
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.55);
     border-radius: 15px 15px 15px 15px;
     padding-left: 8px;
     padding-right: 8px;
@@ -179,7 +179,7 @@ tooltip {
 }
 
 #temperature.critical {
-    background-color: #ff0000;
+    background-color: rgba(255, 0, 0, 0.55);
 }
 
 @keyframes blink {
@@ -203,14 +203,14 @@ tooltip {
     min-width: 80px;
     min-height: 5px;
     border-radius: 5px;
-    background-color: #22252a;
+    background-color: rgba(34, 37, 42, 0.55);
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
     min-height: 10px;
     border-radius: 5px;
-    background-color: #ba5663;
+    background-color: rgba(186, 86, 99, 0.55);
 }
 
 #pulseaudio-slider,
@@ -239,7 +239,7 @@ tooltip {
 }
 
 #temperature.critical {
-    background-color: @red;
+    background-color: alpha(@red, 0.55);
 }
 
 #battery.critical:not(.charging) {

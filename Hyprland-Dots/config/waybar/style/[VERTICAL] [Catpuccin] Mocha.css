@@ -14,12 +14,12 @@
 @import "../waybar/style/catppuccin-themes/mocha.css";
 
 window#waybar {
-  background-color: @base;
+  background-color: alpha(@base, 0.55);
   border-radius: 5px;
 }
 
 tooltip {
-  background: @base;
+  background: alpha(@base, 0.55);
   opacity: 1;
   border-radius: 10px;
   border-width: 2px;
@@ -149,7 +149,7 @@ tooltip label {
 
 @keyframes blink {
   to {
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.55);
     color: #333333;
   }
 }
@@ -210,7 +210,7 @@ tooltip label {
   min-height: 7px;
   min-width: 15px;
   opacity: 0;
-  background-color: @text;
+  background-color: alpha(@text, 0.55);
   border-radius: 3px;
   box-shadow: 1px 5px 6px 1px #272727;
 }
@@ -220,12 +220,12 @@ tooltip label {
   min-height: 100px;
   min-width: 7px;
   border-radius: 5px;
-  background-color: @surface0;
+  background-color: alpha(@surface0, 0.55);
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
   min-width: 5px;
   border-radius: 5px;
-  background-color: @blue;
+  background-color: alpha(@blue, 0.55);
 }

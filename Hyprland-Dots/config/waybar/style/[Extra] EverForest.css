@@ -42,8 +42,8 @@
 
 window#waybar {
   border: none;
-  /*background-color: @bg_green;*/
-  background-color: @bg_green;
+  /*background-color: alpha(@bg_green, 0.55);*/
+  background-color: alpha(@bg_green, 0.55);
   color: @fg;
   transition-property: background-color;
   transition-duration: 0.5s;
@@ -57,7 +57,7 @@ window#waybar.hidden {
   padding: 0px 10px;
   margin: 0px 10px;
   border-radius: 5px;
-  background-color: @bg0;
+  background-color: alpha(@bg0, 0.55);
 }
 
 .modules-left button:first-child {
@@ -74,7 +74,7 @@ window#waybar.hidden {
 
 #custom-menu,
 #custom-arch {
-  background-color: @bg;
+  background-color: alpha(@bg, 0.55);
   color: @red;
 }
 
@@ -85,13 +85,13 @@ window#waybar.hidden {
 #taskbar button,
 #workspaces button {
   padding: 0px 5px;
-  background-color: @orange;
+  background-color: alpha(@orange, 0.55);
   color: @black;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-  background-color: @grey0;
+  background-color: alpha(@grey0, 0.55);
   color: @black;
   animation: gradient_f 20s ease-in infinite;
   /*transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);*/
@@ -99,17 +99,17 @@ window#waybar.hidden {
 
 #taskbar button:hover,
 #workspaces button:hover {
-  background-color: @purple;
+  background-color: alpha(@purple, 0.55);
   color: @black;
 }
 
 #workspaces button.focused {
-  background-color: @green;
+  background-color: alpha(@green, 0.55);
   color: @bg0;
 }
 
 #workspaces button.urgent {
-  background-color: @red; /* Keeps the original color */
+  background-color: alpha(@red, 0.55); /* Keeps the original color */
   color: @white; /* Sets text color to white for better contrast */
   border: 2px solid @red; /* Adds a border with the same color */
   box-shadow: 0 0 10px @red; /* Adds a glow effect */
@@ -122,30 +122,30 @@ window#waybar.hidden {
 #cpu {
   border-radius: 5px 0px 0px 5px;
   padding: 0px 5px;
-  background-color: @yellow;
+  background-color: alpha(@yellow, 0.55);
   color: @bg_yellow;
 }
 
 #memory {
   padding: 0px 5px;
-  background-color: @yellow;
+  background-color: alpha(@yellow, 0.55);
   color: @bg_yellow;
 }
 
 #temperature {
   padding: 0px 5px;
-  background-color: @green;
+  background-color: alpha(@green, 0.55);
   color: @bg_yellow;
 }
 #temperature.critical {
-  background-color: @red;
+  background-color: alpha(@red, 0.55);
 }
 
 #disk {
   border-radius: 0px 5px 5px 0px;
   padding: 0px 5px;
   margin-right: 5px;
-  background-color: @green;
+  background-color: alpha(@green, 0.55);
   color: @bg_yellow;
 }
 
@@ -159,19 +159,19 @@ window#waybar.hidden {
 #battery {
   border-radius: 5px 0px 0px 5px;
   padding: 0px 5px;
-  background-color: @aqua;
+  background-color: alpha(@aqua, 0.55);
   color: @bg_yellow;
 }
 #battery.plugged {
   color: @fg;
-  background-color: @bg_green;
+  background-color: alpha(@bg_green, 0.55);
 }
 #battery.charging {
   color: @fg;
-  background-color: @bg_green;
+  background-color: alpha(@bg_green, 0.55);
 }
 #battery.critical:not(.charging) {
-  background-color: @red;
+  background-color: alpha(@red, 0.55);
   color: @fg;
   animation-name: blink;
   animation-duration: 3.0s;
@@ -181,7 +181,7 @@ window#waybar.hidden {
 }
 @keyframes blink {
   to {
-    background-color: @fg;
+    background-color: alpha(@fg, 0.55);
     color: @bg_dim;
   }
 }
@@ -190,7 +190,7 @@ window#waybar.hidden {
   border-radius: 5px 0px 0px 5px;
   padding: 0px 5px;
   margin-left: 5px;
-  background-color: @red;
+  background-color: alpha(@red, 0.55);
   color: @black;
 }
 
@@ -198,12 +198,12 @@ window#waybar.hidden {
 #pulseaudio {
   padding: 0px 5px;
   border-radius: 0px 5px 5px 0px;
-  background-color: @blue;
+  background-color: alpha(@blue, 0.55);
   color: @bg_yellow;
 }
 
 #pulseaudio.muted {
-  background-color: @grey1;
+  background-color: alpha(@grey1, 0.55);
   color: @bg_yellow;
 }
 
@@ -212,7 +212,7 @@ window#waybar.hidden {
   border-radius: 5px;
   margin-left: 5px;
   color: @fg;
-  background-color: @bg0;
+  background-color: alpha(@bg0, 0.55);
 }
 
 #custom-hypridle,
@@ -220,14 +220,14 @@ window#waybar.hidden {
   padding: 0px 5px;
   border-radius: 5px;
   margin-left: 5px;
-  background-color: @blue;
+  background-color: alpha(@blue, 0.55);
     border-bottom: 8px solid rgba(0, 0, 0, 0.2);
   color: @black;
 }
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-  background-color: @fg;
+  background-color: alpha(@fg, 0.55);
     border-bottom: 8px solid rgba(0, 0, 0, 0.2);
   color: @bg0;
 }
@@ -237,7 +237,7 @@ window#waybar.hidden {
   border-radius: 5px;
   margin: 0px 5px;
   color: @bg_yellow;
-  background-color: @aqua;
+  background-color: alpha(@aqua, 0.55);
 }
 
 #backlight-slider slider,
@@ -255,14 +255,14 @@ window#waybar.hidden {
     min-width: 80px;
     min-height: 5px;
     border-radius: 5px;
-    background-color: #22252a;
+    background-color: rgba(34, 37, 42, 0.55);
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
     min-height: 10px;
     border-radius: 5px;
-    background-color: #ba5663;
+    background-color: rgba(186, 86, 99, 0.55);
 }
 
 #backlight,

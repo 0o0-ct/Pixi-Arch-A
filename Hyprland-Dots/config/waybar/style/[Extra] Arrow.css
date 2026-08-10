@@ -151,14 +151,14 @@
 @keyframes blink-critical {
 	to {
 		/*color: @white;*/
-		background-color: @critical;
+		background-color: alpha(@critical, 0.55);
 	}
 }
 
 /* Current sway mode (resize etc) */
 #mode {
 	color: @white;
-	background: @mode;
+	background: alpha(@mode, 0.55);
 }
 
 /* Workspaces stuff */
@@ -167,30 +167,30 @@
 	padding-left: 2pt;
 	padding-right: 2pt;
 	color: @white;
-	background: @unfocused;
+	background: alpha(@unfocused, 0.55);
 }
 
 /* Inactive (on unfocused output) */
 #workspaces button.visible {
 	color: @white;
-	background: @inactive;
+	background: alpha(@inactive, 0.55);
 }
 
 /* Active (on focused output) */
 #workspaces button.focused {
 	color: @black;
-	background: @focused;
+	background: alpha(@focused, 0.55);
 }
 
 /* Contains an urgent window */
 #workspaces button.urgent {
 	color: @black;
-	background: @warning;
+	background: alpha(@warning, 0.55);
 }
 
 /* Style when cursor is on the button */
 #workspaces button:hover {
-	background: @black;
+	background: alpha(@black, 0.55);
 	color: @white;
 }
 
@@ -200,87 +200,87 @@
 }
 
 #pulseaudio {
-	background: @sound;
+	background: alpha(@sound, 0.55);
 	color: @black;
 }
 
 #network {
-	background: @network;
+	background: alpha(@network, 0.55);
 	color: @white;
 }
 
 #memory {
-	background: @memory;
+	background: alpha(@memory, 0.55);
 	color: @black;
 }
 
 #cpu {
-	background: @cpu;
+	background: alpha(@cpu, 0.55);
 	color: @white;
 }
 
 #temperature {
-	background: @temp;
+	background: alpha(@temp, 0.55);
 	color: @black;
 }
 
 #language {
-	background: @layout;
+	background: alpha(@layout, 0.55);
 	color: @black;
 }
 
 #battery {
-	background: @battery;
+	background: alpha(@battery, 0.55);
 	color: @white;
 }
 
 #tray {
-	background: @date;
+	background: alpha(@date, 0.55);
 }
 
 #clock {
-	background: @time;
+	background: alpha(@time, 0.55);
 	color: @black;
 }
 
 #custom-arrow1 {
 	color: @time;
-	background: @date;
+	background: alpha(@date, 0.55);
 }
 
 #custom-arrow2 {
 	color: @date;
-	background: @layout;
+	background: alpha(@layout, 0.55);
 }
 
 #custom-arrow3 {
 	color: @layout;
-	background: @battery;
+	background: alpha(@battery, 0.55);
 }
 
 #custom-arrow4 {
 	color: @battery;
-	background: @temp;
+	background: alpha(@temp, 0.55);
 }
 
 #custom-arrow5 {
 	color: @temp;
-	background: @cpu;
+	background: alpha(@cpu, 0.55);
 }
 
 #custom-arrow6 {
 	color: @cpu;
-	background: @memory;
+	background: alpha(@memory, 0.55);
 }
 
 #custom-arrow7 {
 	color: @memory;
-	background: @network;
+	background: alpha(@network, 0.55);
 }
 
 #custom-arrow8 {
 	color: @network;
-	background: @sound;
+	background: alpha(@sound, 0.55);
 }
 
 #custom-arrow9 {

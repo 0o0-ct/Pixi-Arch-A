@@ -20,7 +20,7 @@ window#waybar.empty #window {
 
 tooltip {
 	color: white;
-	background: #1e1e2e;
+	background: rgba(30, 30, 46, 0.55);
 	opacity: 0.8;
 	border-radius: 10px;
 	border-width: 2px;
@@ -35,7 +35,7 @@ tooltip label{
 .modules-left,
 .modules-center,
 .modules-right {
-	background-color: white;
+	background-color: rgba(255, 255, 255, 0.55);
 	color: black;
 	border-bottom: 2px;
 	border-style: solid;

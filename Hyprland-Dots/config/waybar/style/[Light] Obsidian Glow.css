@@ -11,7 +11,7 @@ font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
 window#waybar {
-	background: white;
+	background: rgba(255, 255, 255, 0.55);
 	border-radius: 12px;
 }
 
@@ -20,7 +20,7 @@ window#waybar.hidden {
 }
 
 tooltip {
-	background: white;
+	background: rgba(255, 255, 255, 0.55);
 	border-radius: 10px;
 }
 
@@ -44,7 +44,7 @@ tooltip label {
 }
 
 #workspaces button.active {
-	background-color: dimgrey;
+	background-color: rgba(105, 105, 105, 0.55);
 	color: #000000;
     border-radius: 15px 15px 15px 15px;
     padding-left: 8px;
@@ -139,7 +139,7 @@ tooltip label {
 }
 
 #temperature.critical {
-	background-color: #ff0000;
+	background-color: rgba(255, 0, 0, 0.55);
 }
 
 @keyframes blink {
@@ -156,7 +156,7 @@ tooltip label {
 }
 
 #taskbar button.active {
-	background-color: #585b70;
+	background-color: rgba(88, 91, 112, 0.55);
 	color: #cdd6f4;
     padding-left: 12px;
     padding-right: 12px;
@@ -202,5 +202,5 @@ tooltip label {
 #pulseaudio-slider highlight {
 	min-height: 10px; 
 	border-radius: 5px;
-	background-color: #ba5663;
+	background-color: rgba(186, 86, 99, 0.55);
 }
