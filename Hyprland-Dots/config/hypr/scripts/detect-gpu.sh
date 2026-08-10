@@ -38,6 +38,7 @@ done
 
 # Archivos de salida
 HYPR_GPU_CONF="$HOME/.config/hypr/configs/ENVariables_GPU.conf"
+HYPR_GPU_CONF_HL="$HOME/.config/hypr/configs/ENVariables_GPU.hl"
 UWSM_ENV_DIR="$HOME/.config/uwsm"
 UWSM_ENV_FILE="$UWSM_ENV_DIR/env"
 
@@ -47,6 +48,7 @@ mkdir -p "$UWSM_ENV_DIR"
 
 # Limpiar archivos anteriores si existen
 echo "# Variables de entorno de GPU generadas automáticamente" > "$HYPR_GPU_CONF"
+echo "# Variables de entorno de GPU generadas automáticamente" > "$HYPR_GPU_CONF_HL"
 # Si existe uwsm env, limpiamos las líneas viejas de GPU
 if [ -f "$UWSM_ENV_FILE" ]; then
     sed -i '/# GPU_DETECT_START/,/# GPU_DETECT_END/d' "$UWSM_ENV_FILE"
@@ -58,35 +60,41 @@ hypr_content="# Configuración de GPU dinámica para Hyprland\n"
 
 if [ -n "$nvidia_card" ] && [ -n "$intel_card" ] && is_laptop; then
     # LAPTOP HÍBRIDO (Intel + NVIDIA)
+    hypr_content+="env = AQ_DRM_DEVICES,$intel_card:$nvidia_card\n"
     hypr_content+="env = WLR_DRM_DEVICES,$intel_card:$nvidia_card\n"
     hypr_content+="env = LIBVA_DRIVER_NAME,iHD\n"
     hypr_content+="env = __GLX_VENDOR_LIBRARY_NAME,mesa\n"
 
+    uwsm_content+="export AQ_DRM_DEVICES=$intel_card:$nvidia_card\n"
     uwsm_content+="export WLR_DRM_DEVICES=$intel_card:$nvidia_card\n"
     uwsm_content+="export LIBVA_DRIVER_NAME=iHD\n"
     uwsm_content+="export __GLX_VENDOR_LIBRARY_NAME=mesa\n"
-    echo "[GPU] Sistema híbrido (Intel + NVIDIA) configurado."
+    echo "[GPU] Sistema híbrido (Intel + NVIDIA) configurado con AQ_DRM_DEVICES."
 
 elif [ -n "$nvidia_card" ] && [ -n "$amd_card" ] && is_laptop; then
     # LAPTOP HÍBRIDO (AMD + NVIDIA)
+    hypr_content+="env = AQ_DRM_DEVICES,$amd_card:$nvidia_card\n"
     hypr_content+="env = WLR_DRM_DEVICES,$amd_card:$nvidia_card\n"
     hypr_content+="env = LIBVA_DRIVER_NAME,radeonsi\n"
     hypr_content+="env = VDPAU_DRIVER,radeonsi\n"
     hypr_content+="env = __GLX_VENDOR_LIBRARY_NAME,mesa\n"
 
+    uwsm_content+="export AQ_DRM_DEVICES=$amd_card:$nvidia_card\n"
     uwsm_content+="export WLR_DRM_DEVICES=$amd_card:$nvidia_card\n"
     uwsm_content+="export LIBVA_DRIVER_NAME=radeonsi\n"
     uwsm_content+="export VDPAU_DRIVER=radeonsi\n"
     uwsm_content+="export __GLX_VENDOR_LIBRARY_NAME=mesa\n"
-    echo "[GPU] Sistema híbrido (AMD + NVIDIA) configurado."
+    echo "[GPU] Sistema híbrido (AMD + NVIDIA) configurado con AQ_DRM_DEVICES."
 
 elif [ -n "$nvidia_card" ]; then
     # DEDICADA NVIDIA SOLAMENTE
+    hypr_content+="env = AQ_DRM_DEVICES,$nvidia_card\n"
     hypr_content+="env = WLR_DRM_DEVICES,$nvidia_card\n"
     hypr_content+="env = LIBVA_DRIVER_NAME,nvidia\n"
     hypr_content+="env = GBM_BACKEND,nvidia-drm\n"
     hypr_content+="env = __GLX_VENDOR_LIBRARY_NAME,nvidia\n"
 
+    uwsm_content+="export AQ_DRM_DEVICES=$nvidia_card\n"
     uwsm_content+="export WLR_DRM_DEVICES=$nvidia_card\n"
     uwsm_content+="export LIBVA_DRIVER_NAME=nvidia\n"
     uwsm_content+="export GBM_BACKEND=nvidia-drm\n"
@@ -95,11 +103,13 @@ elif [ -n "$nvidia_card" ]; then
 
 elif [ -n "$amd_card" ]; then
     # INTEGRADA/DEDICADA AMD SOLAMENTE
+    hypr_content+="env = AQ_DRM_DEVICES,$amd_card\n"
     hypr_content+="env = WLR_DRM_DEVICES,$amd_card\n"
     hypr_content+="env = LIBVA_DRIVER_NAME,radeonsi\n"
     hypr_content+="env = VDPAU_DRIVER,radeonsi\n"
     hypr_content+="env = __GLX_VENDOR_LIBRARY_NAME,mesa\n"
 
+    uwsm_content+="export AQ_DRM_DEVICES=$amd_card\n"
     uwsm_content+="export WLR_DRM_DEVICES=$amd_card\n"
     uwsm_content+="export LIBVA_DRIVER_NAME=radeonsi\n"
     uwsm_content+="export VDPAU_DRIVER=radeonsi\n"
@@ -108,10 +118,12 @@ elif [ -n "$amd_card" ]; then
 
 elif [ -n "$intel_card" ]; then
     # INTEGRADA INTEL SOLAMENTE
+    hypr_content+="env = AQ_DRM_DEVICES,$intel_card\n"
     hypr_content+="env = WLR_DRM_DEVICES,$intel_card\n"
     hypr_content+="env = LIBVA_DRIVER_NAME,iHD\n"
     hypr_content+="env = __GLX_VENDOR_LIBRARY_NAME,mesa\n"
 
+    uwsm_content+="export AQ_DRM_DEVICES=$intel_card\n"
     uwsm_content+="export WLR_DRM_DEVICES=$intel_card\n"
     uwsm_content+="export LIBVA_DRIVER_NAME=iHD\n"
     uwsm_content+="export __GLX_VENDOR_LIBRARY_NAME=mesa\n"
@@ -124,4 +136,5 @@ uwsm_content+="# GPU_DETECT_END"
 
 # Escribir configuraciones
 printf "%b" "$hypr_content" >> "$HYPR_GPU_CONF"
+printf "%b" "$hypr_content" >> "$HYPR_GPU_CONF_HL"
 printf "%b\n" "$uwsm_content" >> "$UWSM_ENV_FILE"
