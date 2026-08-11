@@ -67,7 +67,7 @@ set_waybar_style() {
     
     # Forzar si o si nuestro estilo Glass translúcido premium
     ln -sf "$waybar_styles/[Colored] Translucent.css" "$waybar_style_link"
-    echo "Obligando al sistema a usar nuestro estilo Glass: [Colored] Translucent.css"
+    echo "Obligando al sistema a usar nuestro estilo Glass: RGB ML4W Glass.css"
 }
 
 # Call the function after determining the mode
