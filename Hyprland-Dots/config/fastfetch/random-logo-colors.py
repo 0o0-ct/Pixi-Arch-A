@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  #
-# Genera un logo ASCII de Arch con una PALETA ALEATORIA de 5 colores
-# cada vez que se abre la terminal. Hookeado desde ~/.zshrc antes de fastfetch.
+# /* ---- 💫 https://github.com/0o0c-ct/Pixi-Arch-A 💫 ---- */  #
+# Genera un logo ASCII de Arch con la paleta de coloresMONO.txt que
+# coincide con el tema kitty actual (índice compartido con KittyRotate.sh).
+# Hookeado desde ~/.zshrc antes de fastfetch.
 import colorsys
 import json
 import os
@@ -13,6 +14,9 @@ LOGO_REG = os.path.join(HOME_DIR, ".config/fastfetch/pixi-arch.txt")
 LOGO_MIC = os.path.join(HOME_DIR, ".config/fastfetch/pixi-arch-micro.txt")
 CONFIG_REG = os.path.join(HOME_DIR, ".config/fastfetch/config-pixi.jsonc")
 CONFIG_MIC = os.path.join(HOME_DIR, ".config/fastfetch/config-pixi-micro.jsonc")
+
+PALETTE_FILE = os.path.join(HOME_DIR, ".config/kitty/coloresMONO.txt")
+INDEX_FILE = os.path.join(HOME_DIR, ".config/kitty/.palette-index")
 
 REG_RAW = """                  -`
                  .o+`
@@ -90,6 +94,30 @@ def generate_palette():
     return palette
 
 
+def load_palettes(path):
+    palettes = []
+    current = []
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            if line[0].isdigit() and ":" in line:
+                if current:
+                    palettes.append(current)
+                    current = []
+            elif line.startswith("#") and len(line) >= 7:
+                current.append(line[:7])
+    if current:
+        palettes.append(current)
+    return palettes
+
+
+def hex_to_rgb(hex_color):
+    h = hex_color.lstrip("#")
+    return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
+
+
 def band_sizes(total_rows, num_colors):
     base = total_rows // num_colors
     remainder = total_rows % num_colors
@@ -134,7 +162,29 @@ def update_title(path, color):
 
 
 def main():
-    palette = generate_palette()
+    if not os.path.exists(PALETTE_FILE):
+        palette = generate_palette()
+    else:
+        palettes = load_palettes(PALETTE_FILE)
+        if not palettes:
+            palette = generate_palette()
+        else:
+            # Advance the shared index once per shell open: this rotates
+            # the fastfetch Arch logo through the monochrome palettes.
+            # The kitty theme is static (see kitty.conf).
+            index = 0
+            if os.path.exists(INDEX_FILE):
+                try:
+                    with open(INDEX_FILE, "r", encoding="utf-8") as f:
+                        index = int(f.read().strip() or 0)
+                except ValueError:
+                    index = 0
+            next_index = (index + 1) % len(palettes)
+            with open(INDEX_FILE, "w", encoding="utf-8") as f:
+                f.write(str(next_index))
+            hex_palette = palettes[next_index]
+            palette = [hex_to_rgb(c) for c in hex_palette]
+
     with open(LOGO_REG, "w", encoding="utf-8") as f:
         f.write(colorize(REG_RAW, palette))
     with open(LOGO_MIC, "w", encoding="utf-8") as f:
