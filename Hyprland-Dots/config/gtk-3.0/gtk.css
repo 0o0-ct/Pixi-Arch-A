@@ -1,0 +1,265 @@
+/* ---- 💫 Pixi-Arch-A Premium Super Glass GTK3 Stylesheet 💫 ---- */
+
+/* Style all standard GTK3 dropdown and popup menus */
+menu,
+.menu,
+.popup,
+menu window {
+    background-color: rgba(15, 15, 15, 0.60);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    color: #f5f5f5;
+    padding: 8px 6px;
+    margin: 4px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Style the individual items in the menu */
+menuitem,
+.menu menuitem {
+    padding: 6px 14px;
+    border-radius: 8px;
+    color: #e0e0e0;
+    margin: 2px 0;
+    font-weight: 500;
+}
+
+/* Hover and active states for menu items */
+menuitem:hover,
+menuitem:active,
+.menu menuitem:hover,
+.menu menuitem:active {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+/* Make selected/highlighted labels white and bright */
+menuitem label:selected {
+    color: #ffffff;
+}
+
+/* Style the separators inside menus */
+separator,
+.menu separator {
+    background-color: rgba(255, 255, 255, 0.1);
+    min-height: 1px;
+    margin: 6px 8px;
+}
+
+
+/* ============================================================
+   🗂️ DIÁLOGO DE ARCHIVOS DEL SISTEMA — GTK3 (xdg-desktop-portal-gtk)
+   Este es el que aparece al Guardar / Abrir / Subir archivos
+   desde cualquier app del sistema (VS Code, navegadores, etc.)
+   ============================================================ */
+
+/* ---- Ventana principal del diálogo — glass semi-transparente ---- */
+.background,
+GtkFileChooserDialog,
+GtkFileChooserDialog .background {
+    background-color: rgba(14, 18, 28, 0.55);
+    background-image: none;
+}
+
+/* ---- HeaderBar (Cancelar | Open Folder | Seleccionar) ---- */
+.titlebar,
+headerbar,
+.titlebar:backdrop,
+headerbar:backdrop {
+    background-color: rgba(18, 22, 35, 0.65);
+    background-image: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.titlebar label,
+headerbar label,
+.titlebar .title,
+headerbar .title {
+    color: rgba(255, 255, 255, 0.90);
+    font-weight: 600;
+}
+
+.titlebar button,
+headerbar button {
+    background-color: transparent;
+    background-image: none;
+    border-style: none;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.75);
+    padding: 4px 10px;
+}
+
+.titlebar button:hover,
+headerbar button:hover {
+    background-color: rgba(255, 255, 255, 0.10);
+    background-image: none;
+    color: #ffffff;
+}
+
+/* Botón de acción sugerida (Seleccionar / Guardar) — carmesí */
+.titlebar button.suggested-action,
+headerbar button.suggested-action,
+button.suggested-action {
+    background-color: rgba(220, 50, 47, 0.85);
+    background-image: none;
+    border-style: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(220, 50, 47, 0.30);
+}
+
+.titlebar button.suggested-action:hover,
+headerbar button.suggested-action:hover,
+button.suggested-action:hover {
+    background-color: rgba(220, 50, 47, 1.0);
+    background-image: none;
+    box-shadow: 0 4px 16px rgba(220, 50, 47, 0.45);
+}
+
+/* ---- Sidebar (Recientes, Carpeta personal, Descargas...) ---- */
+.sidebar,
+placessidebar,
+.places-sidebar {
+    background-color: rgba(14, 18, 28, 0.50);
+    border-right: 1px solid rgba(255, 255, 255, 0.07);
+    background-image: none;
+}
+
+.sidebar list,
+placessidebar list,
+.places-sidebar list {
+    background-color: transparent;
+}
+
+.sidebar row,
+placessidebar row,
+.places-sidebar row {
+    background-color: transparent;
+    border-radius: 8px;
+    margin: 1px 4px;
+    padding: 4px 6px;
+    color: rgba(255, 255, 255, 0.70);
+}
+
+.sidebar row:hover,
+placessidebar row:hover,
+.places-sidebar row:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.90);
+}
+
+/* Seleccionado — carmesí en vez del azul genérico de GTK */
+.sidebar row:selected,
+placessidebar row:selected,
+.places-sidebar row:selected {
+    background-color: rgba(220, 50, 47, 0.40);
+    color: #ffffff;
+}
+
+.sidebar row:selected label,
+placessidebar row:selected label,
+.places-sidebar row:selected label {
+    color: #ffffff;
+}
+
+.sidebar row label,
+placessidebar row label {
+    color: inherit;
+}
+
+.sidebar separator,
+placessidebar separator {
+    background-color: rgba(255, 255, 255, 0.07);
+    min-height: 1px;
+    margin: 4px 10px;
+}
+
+/* ---- Panel principal de archivos ---- */
+.view,
+treeview.view,
+iconview {
+    background-color: rgba(18, 22, 35, 0.38);
+    color: rgba(255, 255, 255, 0.85);
+    background-image: none;
+}
+
+/* Fila seleccionada — carmesí */
+.view:selected,
+treeview.view row:selected,
+row:selected {
+    background-color: rgba(220, 50, 47, 0.40);
+    color: #ffffff;
+}
+
+.view:hover,
+treeview.view row:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ---- Cabecera de columnas (Nombre, Tamaño, Tipo, Modificado) ---- */
+treeview.view header button {
+    background-color: rgba(255, 255, 255, 0.03);
+    background-image: none;
+    border-style: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 10px;
+}
+
+/* ---- Barra de ruta / breadcrumb (path bar) ---- */
+.path-bar button,
+.path-bar .slider-button {
+    background-color: rgba(255, 255, 255, 0.06);
+    background-image: none;
+    border-style: none;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.75);
+    padding: 4px 8px;
+}
+
+.path-bar button:hover {
+    background-color: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+}
+
+/* ---- Paned divider (la línea entre sidebar y archivos) ---- */
+paned separator {
+    background-color: rgba(255, 255, 255, 0.07);
+    min-width: 1px;
+}
+
+/* ---- Scrollbars del diálogo ---- */
+scrollbar {
+    background-color: transparent;
+    border-style: none;
+}
+
+scrollbar slider {
+    background-color: rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    min-width: 5px;
+    min-height: 5px;
+}
+
+scrollbar slider:hover {
+    background-color: rgba(255, 255, 255, 0.30);
+}
+
+/* ---- Entradas de texto (nombre de archivo al guardar) ---- */
+entry {
+    background-color: rgba(255, 255, 255, 0.08);
+    background-image: none;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: #ffffff;
+    padding: 6px 10px;
+}
+
+entry:focus {
+    border-color: rgba(220, 50, 47, 0.60);
+    background-color: rgba(255, 255, 255, 0.11);
+}

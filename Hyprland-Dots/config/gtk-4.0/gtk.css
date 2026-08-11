@@ -88,11 +88,12 @@ headerbar label {
 placessidebar,
 .sidebar-pane {
     background-color: rgba(14, 18, 28, 0.50);
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.09);
     border-radius: 18px;
     margin: 10px 4px 10px 10px;
     padding: 6px 4px;
-    box-shadow: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* CRÍTICO: scrolledwindows DENTRO del sidebar deben ser completamente
@@ -499,11 +500,12 @@ dialog .sidebar,
 dialog .navigation-sidebar,
 dialog .sidebar-pane {
     background-color: rgba(14, 18, 28, 0.50);
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.09);
     border-radius: 14px;
     margin: 8px 4px 8px 8px;
     padding: 4px;
-    box-shadow: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* Scrolledwindows dentro del sidebar del diálogo — transparentes */
