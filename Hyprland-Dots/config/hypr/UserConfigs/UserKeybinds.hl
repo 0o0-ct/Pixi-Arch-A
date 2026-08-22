@@ -50,3 +50,6 @@ bindd = CTRL SUPER, space, Cambiar distribucion de teclado, exec, $scriptsDir/Ke
 # Atajo personalizado para abrir Administrador de Archivos con carpetas dinámicas de colores
 unbind = $mainMod, E
 bindd = $mainMod, E, Administrador de archivos (Color dinámico), exec, $scriptsDir/DynamicFolderColor.sh
+
+# Atajo para la tecla N dedicada de Acer Nitro (DAMX - DIV Acer Manager Max)
+bindd = , XF86Launch7, Abrir Acer Manager Max (DAMX), exec, damx

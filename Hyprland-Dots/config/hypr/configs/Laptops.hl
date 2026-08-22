@@ -31,3 +31,7 @@ device {
   enabled = $TOUCHPAD_ENABLED
 }
 
+
+# Acer Nitro / Predator NitroSense key (N dedicated button)
+bind = , XF86Launch7, exec, damx # Tecla N dedicada Acer NitroSense (DAMX)
+bind = , XF86LaunchA, exec, damx # Tecla N variante Acer NitroSense
