@@ -1,6 +1,0 @@
-# Variables de entorno de GPU generadas automáticamente
-# Configuración de GPU dinámica para Hyprland
-env = AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1
-env = WLR_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1
-env = LIBVA_DRIVER_NAME,iHD
-env = __GLX_VENDOR_LIBRARY_NAME,mesa

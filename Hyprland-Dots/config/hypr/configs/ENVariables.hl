@@ -88,7 +88,6 @@ env = __GL_MaxFramesAllowed,1
 ### Aquamarine Environment Variables (Hyprland > 0.45) ###
 # https://wiki.hyprland.org/Configuring/Environment-variables/#aquamarine-environment-variables----ref-httpsgithubcomhyprwmaquamarineblobmaindocsenvmd---
 # env = AQ_TRACE,1 # Enables more verbose logging.
-# env = AQ_DRM_DEVICES,/dev/dri/card1:/dev/dri/card0 # Set an explicit list of DRM devices (GPUs) to use. It’s a colon-separated list of paths, with the first being the primary. E.g. /dev/dri/card1:/dev/dri/card0
 # env = AQ_MGPU_NO_EXPLICIT,1 # Disables explicit syncing on mgpu buffers
 # env = AQ_NO_MODIFIERS,1 # Disables modifiers for DRM buffers
 
