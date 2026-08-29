@@ -120,7 +120,7 @@ xwayland {
 }
 
 render {
-  direct_scanout = 2  # Apps fullscreen bypasean compositor (reduce GPU + latencia)
+  direct_scanout = 0  # Desactivado: evita parpadeo de cursor en YouTube/video fullscreen
 }
 
 cursor {
