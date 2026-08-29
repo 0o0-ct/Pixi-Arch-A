@@ -19,7 +19,6 @@ source = $UserConfigs/Startup_Apps.hl
 
 source = $configs/ENVariables.hl # Environment variables (defaults)
 source = $UserConfigs/ENVariables.hl # Environment variables (user)
-source = $configs/ENVariables_GPU.hl # Dynamic GPU environment settings
 
 # For laptop related
 source = $configs/Laptops.hl 
