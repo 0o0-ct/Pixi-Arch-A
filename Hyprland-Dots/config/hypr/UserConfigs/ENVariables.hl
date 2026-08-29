@@ -23,3 +23,7 @@ env = CLUTTER_BACKEND,wayland
 
 ### Aquamarine GPU Routing ###
 env = AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1 # Prioritize Intel integrated GPU (card2) as primary for laptop screen and Nvidia (card1) as secondary to eliminate rendering latency
+
+# Forzar card0 (Intel integrada) para el compositor - evita que NVIDIA esté siempre activa en reposo
+env = AQ_DRM_DEVICES,/dev/dri/card0
+env = WLR_DRM_DEVICES,/dev/dri/card0
