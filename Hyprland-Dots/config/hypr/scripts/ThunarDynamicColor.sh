@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Set Folder Color cleanly without race conditions
+# Dynamic Folder Color Switcher for Thunar
 
 PAPIRUS_BIN="$HOME/.local/bin/papirus-folders"
 if ! command -v "$PAPIRUS_BIN" &>/dev/null; then
@@ -12,13 +12,11 @@ if [ -f "$HOME/.config/gtk-3.0/settings.ini" ]; then
     sed -i 's/gtk-icon-theme-name=.*/gtk-icon-theme-name=Papirus-Dark/' "$HOME/.config/gtk-3.0/settings.ini" 2>/dev/null || true
 fi
 
-if [ -n "$1" ]; then
-    COLOR="$1"
-else
+if command -v "$PAPIRUS_BIN" &>/dev/null; then
     COLORS=("violet" "cyan" "indigo" "teal" "deeporange" "magenta" "red" "green" "pink" "nordic" "carmine" "yellow" "bluegrey")
-    COLOR=${COLORS[$RANDOM % ${#COLORS[@]}]}
+    RANDOM_COLOR=${COLORS[$RANDOM % ${#COLORS[@]}]}
+    "$PAPIRUS_BIN" -C "$RANDOM_COLOR" >/dev/null 2>&1
 fi
 
-if command -v "$PAPIRUS_BIN" &>/dev/null; then
-    "$PAPIRUS_BIN" -C "$COLOR" >/dev/null 2>&1
-fi
+# Launch Thunar
+exec thunar "$@"

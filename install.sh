@@ -257,7 +257,7 @@ fi
 options_command+=(
     "gtk_themes" "¿Instalar temas GTK? (necesario para Dark/Light)" "OFF"
     "bluetooth" "¿Quieres que el script configure el Bluetooth?" "OFF"
-    "nautilus" "¿Deseas instalar el gestor de archivos GNOME Files (Nautilus)?" "OFF"
+    "thunar" "¿Deseas instalar el gestor de archivos Thunar & Plugins?" "OFF"
     "quickshell" "¿Instalar quickshell para la Vista de Escritorio?" "OFF"
     "xdph" "¿Instalar XDG-DESKTOP-PORTAL-HYPRLAND (para compartir pantalla)?" "OFF"
     "zsh" "¿Instalar la shell zsh con personalización Pixi-Arch-A?" "OFF"
@@ -539,10 +539,9 @@ for option in "${options[@]}"; do
             echo "${INFO} Configurando ${SKY_BLUE}Bluetooth...${RESET}" | tee -a "$LOG"
             execute_script "bluetooth.sh"
             ;;
-        nautilus)
-            echo "${INFO} Instalando ${SKY_BLUE}el gestor de archivos GNOME Files (Nautilus)...${RESET}" | tee -a "$LOG"
-            execute_script "nautilus.sh"
-            execute_script "nautilus_default.sh"
+        thunar)
+            echo "${INFO} Instalando ${SKY_BLUE}el gestor de archivos Thunar & Plugins...${RESET}" | tee -a "$LOG"
+            execute_script "thunar.sh"
             ;;
         sddm_theme)
             echo "${INFO} Descargando e instalando ${SKY_BLUE}un tema adicional para SDDM...${RESET}" | tee -a "$LOG"
