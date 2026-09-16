@@ -324,3 +324,11 @@ entry:focus {
     color: #ffffff;
     border-radius: 8px;
 }
+
+/* Hide 'Recientes' in Thunar sidebar */
+.thunar .sidebar treeview cellrenderertext[text="Recientes"],
+.thunar .sidebar treeview row:has(cellrenderertext[text="Recientes"]),
+.thunar .sidebar treeview cellrenderertext[text="Recent"],
+.thunar .sidebar treeview row:has(cellrenderertext[text="Recent"]) {
+    display: none;
+}
