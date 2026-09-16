@@ -1,13 +1,60 @@
 /* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
 /* --- Extra - Neon Circuit - waybar style ---*/
 
-@define-color bar-bg rgba(0, 0, 0, 0);
-@define-color main-bg #313244;
-@define-color main-fg #b4befe;
-@define-color wb-act-bg #b4befe;
-@define-color wb-act-fg #1e1e2e;
-@define-color wb-hvr-bg #f5c2e7;
-@define-color wb-hvr-fg #313244;
+/* ---------------------------------------------------------------------------
+ * Frosted glass, coloured by the wallpaper.
+ *
+ * This style has no .modules-left/.modules-center/.modules-right panes: every
+ * module is its own outlined segment (that IS the neon-circuit look), so those
+ * segments are the glass surfaces here — wallpaper tint plus the @color15
+ * sheen — and their neon outlines now take their hues from wallust's light
+ * ramp instead of hardcoded catppuccin colours.
+ *
+ * The import path is the one trap: GTK resolves a relative @import against the
+ * path of the file waybar actually loads, and that file is the SYMLINK
+ * ~/.config/waybar/style.css — so the base directory is ~/.config/waybar/ and
+ * the path below is right. "../wallust/colors-waybar.css" resolves to
+ * ~/.config/wallust/... , fails to import, and on waybar 0.15.0 a failed import
+ * kills the bar outright.
+ * ------------------------------------------------------------------------- */
+@import url("wallust/colors-waybar.css");
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles:
+ *   @background  -> segment tint (the wallpaper's dominant dark = the hue)
+ *   @color15     -> accent: refraction sheen, active pill, lit outline
+ *   @foreground  -> primary text and the brightest outlines
+ *   @color13/6/7/8 -> the per-module hues, on the light half of the ramp so
+ *                     they stay readable as text on a dark pane
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);
+@define-color sheen_top     alpha(@color15, 0.20);
+@define-color sheen_bot     alpha(@color15, 0.12);
+@define-color ink           @foreground;
+@define-color accent        @color15;
+@define-color on_accent     #12141a;
+@define-color danger        #ffa8a8;   /* semantic: must stay red on any wallpaper */
+
+/* The names this style already used, now wallust-driven. */
+@define-color main-fg       @ink;
+@define-color wb-act-bg     @color15;
+@define-color wb-act-fg     @on_accent;
+@define-color wb-hvr-bg     @color13;
+@define-color wb-hvr-fg     @on_accent;
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window itself stays transparent so the space between the segments
+ * keeps alpha 0 and Hyprland's ignore_alpha leaves it unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
 
 * {
     border: none;
@@ -21,23 +68,22 @@
 }
 
 window#waybar {
-    background: alpha(@bar-bg, 0.55);
+    background: transparent;
 }
 
 tooltip {
-    background: alpha(@main-bg, 0.55);
-    color: @main-fg;
+    background-color: alpha(@background, 0.94);
+    color: @ink;
     border-radius: 12px;
     border-width: 0px;
 }
 
 #taskbar button,
 #workspaces button {
-    box-shadow: none;
 	text-shadow: none;
     padding: 2px;
     border: 2px;
-    border-color: #b4befe;
+    border-color: @accent;
     border-width: 5px;
     border-radius: 10px;
     margin-top: 2px;
@@ -47,29 +93,33 @@ tooltip {
     padding-right: 0px;
     margin-right: 0px;
     color: @wb-act-fg;
-    background-color: rgba(180, 190, 254, 0.55);
-    animation: ws_normal 2s ease-in-out 1;
+    background-color: alpha(@wb-act-bg, 0.55);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-    background-image: linear-gradient(45deg, #89b4fa 50%, #cba6f7 50%);
+    background-image: linear-gradient(45deg, @color13 50%, @color15 50%);
     color: @wb-act-fg;
     border-radius: 12px;
     margin-left: 4px;
     padding-left: 12px;
     padding-right: 12px;
     margin-right: 4px;
-    animation: ws_active 2s ease-in-out 1;
-    transition: all 0.4s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-    background: alpha(@wb-hvr-bg, 0.55);
+    background-color: alpha(@wb-hvr-bg, 0.55);
     color: @wb-hvr-fg;
-    animation: ws_hover 20s ease-in-out 1;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #tray menu * {
@@ -140,8 +190,8 @@ tooltip {
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
     color: @main-fg;
-    background: alpha(@main-bg, 0.55);
-    opacity: 1;
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
     margin: 3px 0px 3px 0px;
     padding-left: 4px;
     padding-right: 4px;
@@ -151,7 +201,7 @@ tooltip {
     border-radius: 20px;
     border-width: 2px;
     border-style: solid;
-    border-color: #b4befe;
+    border-color: @accent;
     padding-right: 8px;
     padding-left: 8px;
     margin-right: 5px;
@@ -159,20 +209,20 @@ tooltip {
 
 #taskbar {
     padding: 0px;
-    color: #b4befe;
+    color: @accent;
 }
 
 #window {
-    color: #F2CCCC;
+    color: @color8;
     border-radius: 20px;
     border-style: solid;
     border-width: 2px;
-    border-color: #F2CCCC;
+    border-color: @color8;
     margin-right: 5px;
 }
 
 #clock {
-    color: #F38BA8;
+    color: @color13;
     border-radius: 12px;
     border-top-left-radius: 0px;
     border-bottom-right-radius: 0px;
@@ -182,63 +232,57 @@ tooltip {
     border-right-style: none;
     border-left-width: 0px;
     border-width: 2px;
-    border-color: #F38BA8;
+    border-color: @color13;
     margin-right: 5px;
 }
 
 #idle_inhibitor {
-    color: #94e2d5;
+    color: @color6;
     border-radius: 12px;
     border-top-right-radius: 0px;
     border-bottom-left-radius: 0px;
     border-style: solid;
     border-right-style: none;
     border-width: 2px;
-    border-color: #F38BA8;
+    border-color: @color13;
     margin-right: 0px;
 }
 
 #idle_inhibitor.activated {
-	color: #39FF14;
+	color: @accent;
 }
 
 #temperature {
-    color: #cdd6f4;
+    color: @foreground;
     border-radius: 20px;
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
     border-style: solid;
     border-right-style: none;
     border-width: 2px;
-    border-color: #cdd6f4;
+    border-color: @foreground;
     margin-left: 5px;
 }
 
 #temperature.critical {
-    background-color: rgba(255, 0, 0, 0.55);
-}
-
-@keyframes blink {
-    to {
-        color: #000000;
-    }
+    color: @danger;
 }
 
 #cpu,
 #disk,
 #memory {
-    color: #cdd6f4;
+    color: @foreground;
     border-radius: 0px;
     border-style: solid;
     border-left-style: none;
     border-right-style: none;
     border-width: 2px;
-    border-color: #cdd6f4;
+    border-color: @foreground;
     margin-right: 0px;
 }
 
 #custom-menu {
-    color: #ff5a5a;
+    color: @danger;
     border-radius: 6px;
     border-top-right-radius: 0px;
     border-bottom-left-radius: 0px;
@@ -246,7 +290,7 @@ tooltip {
     border-left-style: none;
     border-right-style: none;
     border-width: 2px;
-    border-color: #cdd6f4;
+    border-color: @foreground;
     padding-right: 5px;
     padding-left: 5px;
 }
@@ -259,40 +303,40 @@ tooltip {
     border-left-style: none;
     border-left-width: 0px;
     border-width: 2px;
-    border-color: #cdd6f4;
+    border-color: @foreground;
     margin-right: 5px;
 }
 
 #backlight {
-    color: #F5E0DC;
+    color: @color7;
     border-radius: 12px;
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
     border-style: solid;
     border-right-style: none;
     border-width: 2px;
-    border-color: #F5E0DC;
+    border-color: @color7;
     margin-left: 5px;
 }
 
 #pulseaudio {
-    color: #F5E0DC;
+    color: @color7;
     border-radius: 20px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
     border-style: solid;
     border-left-style: none;
     border-width: 2px;
-    border-color: #F5E0DC;
+    border-color: @color7;
     margin-right: 0px;
 }
 
 #pulseaudio.muted {
-    color: red;
+    color: @danger;
 }
 
 #keyboard-state {    
-    color: #F5E0DC;
+    color: @color7;
     border-radius: 20px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
@@ -300,23 +344,23 @@ tooltip {
     border-left-style: none;
     border-left-width: 0px;
     border-width: 2px;
-    border-color: #F5E0DC;
+    border-color: @color7;
     margin-right: 5px;
 }
 
 #custom-updater {
-    color: #F5E0DC;
+    color: @color7;
     border-radius: 0px;
     border-style: solid;
     border-left-style: none;
     border-right-style: none;
     border-width: 2px;
-    border-color: #F5E0DC;
+    border-color: @color7;
     margin-right: 0px;
 }
 
 #custom-hint {
-    color: #F5E0DC;
+    color: @color7;
     border-radius: 12px;
     border-top-left-radius: 0px;
     border-bottom-right-radius: 0px;
@@ -325,12 +369,12 @@ tooltip {
     border-right-style: none;
     border-left-width: 0px;
     border-width: 2px;
-    border-color: #F5E0DC;
+    border-color: @color7;
     margin-right: 5px;
 }
 
 #tray {
-    color: #b4befe;
+    color: @accent;
     font-size: 16;
     border-radius: 12px;
     border-top-right-radius: 0px;
@@ -340,7 +384,7 @@ tooltip {
     border-left-style: none;
     border-right-style: none;
     border-width: 2px;
-    border-color: #b4befe;
+    border-color: @accent;
     margin-left: 5px;
     padding-left: 8px;
 }
@@ -348,7 +392,7 @@ tooltip {
 #tray > .active,
 #tray > .passive,
 #tray menu {
-    color: #b4befe;
+    color: @accent;
 }
 
 #custom-swaync {
@@ -359,7 +403,7 @@ tooltip {
     border-left-style: none;
     border-right-style: none;
     border-width: 2px;
-    border-color: #b4befe;
+    border-color: @accent;
     margin-right: 0px;
 }
 
@@ -371,7 +415,7 @@ tooltip {
     border-left-style: none;
     border-left-width: 0px;
     border-width: 2px;
-    border-color: #b4befe;
+    border-color: @accent;
     margin-right: 5px;
     padding-right: 8px;
 }
@@ -383,7 +427,7 @@ tooltip {
     border-style: solid;
     border-left-style: none;
     border-width: 2px;
-    border-color: #F38BA8;
+    border-color: @color13;
     padding-left: 0px;
     padding-right: 5px;
     margin-right: 5px;
@@ -407,19 +451,19 @@ tooltip {
     border-style: solid;
     border-left-style: none;
     border-right-style: none;
-    border-color: #E06C75;
-    color: #E06C75;
+    border-color: @color6;
+    color: @color6;
     margin-right: 5px;
 }
 
 #window {
-    background-image: linear-gradient(45deg, #89b4fa 50%, #cba6f7 50%);
-    color: black;
+    background-image: linear-gradient(45deg, @color13 50%, @color15 50%);
+    color: @on_accent;
     border-radius: 20px;
     border-width: 2px;
     border-style: solid;
     border-left-style: none;
     border-right-style: none;
-    border-color: #f5e0dc;
+    border-color: @color7;
     margin-right: 5px;
 }

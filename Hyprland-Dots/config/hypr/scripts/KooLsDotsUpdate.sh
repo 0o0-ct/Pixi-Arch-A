@@ -14,15 +14,12 @@ if [ "$1" == "--startup" ] || [ "$1" == "-s" ]; then
     sleep 15
 fi
 
-# Check for required tools (curl, jq, git)
-for tool in curl jq git; do
-  if ! command -v "$tool" &> /dev/null; then
-    if [ "$IS_STARTUP" -eq 0 ]; then
-      notify-send -i "$iDIR/error.png" "Se necesita $tool:" "$tool no encontrado. Por favor instala $tool."
-    fi
-    exit 1
-  fi
-done
+# If launched interactively from Waybar and not in Kitty terminal, open Kitty terminal window
+if [ "$IS_STARTUP" -eq 0 ] && [ -z "$IN_KITTY_UPDATER" ]; then
+    export IN_KITTY_UPDATER=1
+    exec kitty --title "Pixi-Arch-A Updater" bash -c "$0; echo ''; read -p 'Presiona Enter para salir...' key"
+    exit 0
+fi
 
 # Determine local commit SHA
 local_commit=""
@@ -37,57 +34,46 @@ if [ -z "$local_commit" ] && [ -d "$REPO_DIR/.git" ]; then
     fi
 fi
 
-# Get latest commit SHA from GitHub main branch
+echo -e "\e[35m=== 💫 Comprobando Actualizaciones de Pixi-Arch-A 💫 ===\e[0m\n"
+echo -e "\e[34m[INFO]\e[0m Obteniendo versión más reciente desde GitHub..."
+
 github_commit=$(curl -fsSL --connect-timeout 8 "https://api.github.com/repos/0o0-ct/Pixi-Arch-A/commits/$branch" | jq -r '.sha' 2>/dev/null | tr -d '[:space:]')
 
 if [ -z "$github_commit" ] || [ "$github_commit" == "null" ]; then
-  if [ "$IS_STARTUP" -eq 0 ]; then
-    notify-send -i "$iDIR/error.png" 'Pixi-Arch-A Update:' "No se pudo conectar a GitHub para comprobar actualizaciones."
-  fi
-  exit 1
+    echo -e "\e[31m[ERROR]\e[0m No se pudo conectar a GitHub. Comprueba tu conexión a red."
+    if [ "$IS_STARTUP" -eq 0 ]; then
+        notify-send -i "$iDIR/error.png" 'Pixi-Arch-A Update:' "No se pudo conectar a GitHub."
+    fi
+    exit 1
 fi
 
-# Compare SHA hashes (first 7 characters for brevity)
 local_short="${local_commit:0:7}"
 github_short="${github_commit:0:7}"
 
+echo -e "\e[32m[OK]\e[0m Versión Local:  \e[33m$local_short\e[0m"
+echo -e "\e[32m[OK]\e[0m Versión GitHub: \e[33m$github_short\e[0m"
+
 if [ -n "$local_commit" ] && [ "$local_commit" == "$github_commit" ]; then
-  if [ "$IS_STARTUP" -eq 0 ]; then
-    notify-send -i "$iDIR/nota.png" "Pixi-Arch-A:" "Tu sistema está al día con la versión más reciente ($local_short)."
-  fi
-  exit 0
-fi
-
-# An update is AVAILABLE!
-notify_title="✨ ¡Actualización de Pixi-Arch-A disponible!"
-notify_msg="Hay nuevas mejoras en GitHub (Commit $github_short).\n¿Deseas actualizar tu sistema ahora?"
-
-if [ "$IS_STARTUP" -eq 1 ]; then
-    # Background startup notification
-    notify-send -u critical -t 15000 -i "$iDIR/ja.png" "$notify_title" "$notify_msg\nHaz clic en la notificación o ejecuta update-dots.sh"
+    echo -e "\n\e[32m✨ ¡Tu personalización Pixi-Arch-A está 100% al día! ($local_short)\e[0m"
+    notify-send -i "$iDIR/nota.png" "Pixi-Arch-A:" "Tu sistema está al día ($local_short)."
     exit 0
 fi
 
-# Interactive update flow
-notify_cmd_base="notify-send -t 15000 -A action1=Actualizar -A action2=Luego -h string:x-canonical-private-synchronous:shot-notify"
-notify_cmd_shot="${notify_cmd_base} -i $iDIR/ja.png"
-
-response=$($notify_cmd_shot "$notify_title" "$notify_msg")
-
-if [ "$response" == "action1" ] || [ "$IS_STARTUP" -eq 0 ]; then
-    if ! command -v kitty &> /dev/null; then
-        notify-send -i "$iDIR/error.png" "E-R-R-O-R" "Terminal Kitty no encontrada."
-        exit 1
+# Update available
+echo -e "\n\e[33m🚀 ¡Nueva actualización disponible en GitHub! (Commit $github_short)\e[0m"
+read -p "¿Deseas descargar e instalar la actualización ahora? (s/N): " choice
+case "$choice" in
+  [sS][sS]*|[sS])
+    echo -e "\n\e[35m=== 💫 Instalando Actualizaciones 💫 ===\e[0m"
+    rm -rf "$REPO_DIR"
+    git clone --depth=1 $REPO_URL "$REPO_DIR"
+    if [ -d "$REPO_DIR/Hyprland-Dots" ]; then
+        cd "$REPO_DIR/Hyprland-Dots" && chmod +x copy.sh && ./copy.sh --express-upgrade
     fi
-
-    kitty -e bash -c "
-        echo -e '\e[35m=== 💫 Actualizando Pixi-Arch-A a la versión más reciente ($github_short) 💫 ===\e[0m'
-        rm -rf \"$REPO_DIR\"
-        git clone --depth=1 $REPO_URL \"$REPO_DIR\"
-        cd \"$REPO_DIR/Hyprland-Dots\" &&
-        chmod +x copy.sh &&
-        ./copy.sh --express-upgrade &&
-        echo \"$github_commit\" > \"$HOME/.config/hypr/.version_commit\" &&
-        notify-send -u critical -i \"$iDIR/ja.png\" 'Actualización Completada:' 'Pixi-Arch-A ha sido actualizado al commit $github_short.'
-    "
-fi
+    echo "$github_commit" > "$local_dir/.version_commit"
+    notify-send -u critical -i "$iDIR/ja.png" 'Actualización Completada:' "Pixi-Arch-A ha sido actualizado a $github_short."
+    ;;
+  *)
+    echo "Operación cancelada."
+    ;;
+esac

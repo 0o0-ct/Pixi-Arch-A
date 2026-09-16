@@ -179,14 +179,23 @@ if pidof ghostty >/dev/null; then
   for pid in $(pidof ghostty); do kill -SIGUSR2 "$pid" 2>/dev/null || true; done
 fi
 
-# Prompt Waybar to reload colors
-if command -v waybar-msg >/dev/null 2>&1; then
-  waybar-msg cmd reload >/dev/null 2>&1 || true
-elif pidof waybar >/dev/null; then
-  killall -SIGUSR2 waybar 2>/dev/null || true
+# Prompt Waybar to reload colours.
+# SIGUSR2 does NOT reload the stylesheet on Waybar 0.15.0, and `waybar-msg` is
+# not installed here, so the previous code changed nothing and the bar kept the
+# OLD palette in memory after every wallpaper change. Only a real restart
+# re-reads the CSS (and therefore re-resolves the wallust @import).
+if pidof waybar >/dev/null 2>&1; then
+  pkill -x waybar 2>/dev/null || true
+  sleep 0.3
+  setsid waybar >/dev/null 2>&1 </dev/null &
 fi
 
 # Automatically sync SDDM wallpaper with the new desktop wallpaper
 if [ -f "$HOME/.config/hypr/scripts/sddm_wallpaper.sh" ]; then
   "$HOME/.config/hypr/scripts/sddm_wallpaper.sh" --normal >/dev/null 2>&1 &
+fi
+
+# Update Papirus folder color cleanly when wallpaper changes
+if [ -f "$HOME/.config/hypr/scripts/SetFolderColor.sh" ]; then
+  "$HOME/.config/hypr/scripts/SetFolderColor.sh" >/dev/null 2>&1 &
 fi

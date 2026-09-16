@@ -2,6 +2,80 @@
 /* .....[Extra] Arrow Best to combine with [TOP] Arrow.... */
 /* --- 👍 taken from https://github.com/mxkrsv  👍 --- */
 
+/* [Extra] Arrow — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Arrow's whole identity is the seamless chain of coloured segments joined by
+ * the #custom-arrow1..10 notches: each arrow paints the colour of the segment
+ * to its left as its "colour" and the one to its right as its fill, which is
+ * what cuts the diagonal. That wiring is untouched — only what the colour
+ * names resolve to changed, from the hardcoded gruvbox palette to wallust.
+ *
+ * Because the notches must match their neighbours exactly, the segment fills
+ * stay at their original alpha (0.55) and the arrow rules keep referring to
+ * the same @define-color names. The original ink pairing is preserved too:
+ * the segments that were bright in gruvbox (br*) map onto the light end of
+ * wallust's ramp and keep the dark @black ink, the darker ones map onto the
+ * dark end and keep the light @white ink — and since @black is @background and
+ * @white is @foreground, that pairing automatically flips with the palette
+ * instead of relying on gruvbox's fixed hues.
+ *
+ * Layout untouched: `*` still zeroes the border radius / margin / padding, the
+ * module padding stays 8pt, the 35pt #window margins stay, and the islands stay
+ * square and flush so the chain does not break.
+ *
+ * The import path must be exactly "wallust/colors-waybar.css": GTK resolves a
+ * relative import against ~/.config/waybar/, because the file waybar loads is
+ * the symlink ~/.config/waybar/style.css.
+ *
+ * Performance: no box-shadow (the `*` shadow reset is gone — nothing sets a
+ * shadow any more), transitions only on background-color / border-color /
+ * color, and no animations: the blink-critical loop was a 1s infinite repaint
+ * and is now a static filled state.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window is fully transparent and the pane lives on the islands;
+ * the gaps between them keep alpha 0 for Hyprland's ignore_alpha.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);  /* hairline edge       */
+@define-color edge_top      alpha(@foreground, 0.32);  /* lit top edge        */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;                   /* dark ink on accent  */
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: stays red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
+
 * {
     font-family: "JetBrainsMono Nerd Font";
     font-weight: bold;
@@ -14,29 +88,27 @@
 	min-height: 0;
 	margin: 0;
 	padding: 0;
-	box-shadow: none;
-	text-shadow: none;
-	icon-shadow: none;
 }
 
-/* Colors (gruvbox) */
-@define-color black		#282828;
-@define-color red		#cc241d;
-@define-color green		#98971a;
-@define-color yellow	#d79921;
-@define-color blue		#458588;
-@define-color purple	#b16286;
-@define-color aqua		#689d6a;
-@define-color gray		#a89984;
-@define-color brgray	#928374;
-@define-color brred		#fb4934;
-@define-color brgreen	#b8bb26;
-@define-color bryellow	#fabd2f;
-@define-color brblue	#83a598;
-@define-color brpurple	#d3869b;
-@define-color braqua	#8ec07c;
-@define-color white		#ebdbb2;
-@define-color bg2		#504945;
+/* Segment palette — the gruvbox names are kept because every segment and
+ * arrow rule below is wired to them; only the values changed, to wallust. */
+@define-color black		@background;
+@define-color red		@danger;
+@define-color green		@color5;
+@define-color yellow	@color6;
+@define-color blue		@color8;
+@define-color purple	@color6;
+@define-color aqua		@color8;
+@define-color gray		@color8;
+@define-color brgray	@color9;
+@define-color brred		@danger;
+@define-color brgreen	@color13;
+@define-color bryellow	@color14;
+@define-color brblue	@color9;
+@define-color brpurple	@color7;
+@define-color braqua	@color15;
+@define-color white		@foreground;
+@define-color bg2		@color6;
 
 
 @define-color warning 	@bryellow;
@@ -55,10 +127,27 @@
 @define-color date		@black;
 @define-color time		@white;
 
-/* The whole bar */
+/* The whole bar — transparent; the glass is on the islands. */
 #waybar {
-	background: rgba(40, 40, 40, 0.8784313725); /* #282828e0 */
-	color: @white;
+	background: transparent;
+	color: @ink;
+}
+
+/* ----module groups----
+ * Square and flush, as the arrow chain requires (Arrow's `*` rule already
+ * zeroes radius / margin / padding).
+ * ------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
+	border-radius: 0;
+	margin: 0;
+	padding: 0;
 }
 
 #backlight,
@@ -113,7 +202,7 @@
 #custom-weather.clearNight,
 #custom-weather.cloudyFoggyDay,
 #custom-weather.cloudyFoggyNight,
-#custom-weather.default, 
+#custom-weather.default,
 #custom-weather.rainyDay,
 #custom-weather.rainyNight,
 #custom-weather.severe,
@@ -124,17 +213,15 @@
 	padding-right: 8pt;
 }
 
-/* Each critical module */
+/* Each critical module — was a 1s infinite blink; a static filled state
+ * says the same thing and never schedules a repaint. */
 #mode,
 #memory.critical,
 #cpu.critical,
 #temperature.critical,
 #battery.critical.discharging {
-	animation-timing-function: linear;
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
-	animation-name: blink-critical;
-	animation-duration: 1s;
+	color: @on_accent;
+	background: alpha(@danger, 0.88);
 }
 
 /* Each warning */
@@ -146,19 +233,10 @@
 	color: @warning;
 }
 
-/* Keyframes */
-
-@keyframes blink-critical {
-	to {
-		/*color: @white;*/
-		background-color: alpha(@critical, 0.55);
-	}
-}
-
 /* Current sway mode (resize etc) */
 #mode {
-	color: @white;
-	background: alpha(@mode, 0.55);
+	color: @ink;
+	background: @tile_hi;
 }
 
 /* Workspaces stuff */
@@ -166,32 +244,35 @@
 	/*font-weight: bold;*/
 	padding-left: 2pt;
 	padding-right: 2pt;
-	color: @white;
+	color: @ink;
 	background: alpha(@unfocused, 0.55);
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
 }
 
 /* Inactive (on unfocused output) */
 #workspaces button.visible {
-	color: @white;
+	color: @ink;
 	background: alpha(@inactive, 0.55);
 }
 
-/* Active (on focused output) */
+/* Active (on focused output) — the wallpaper's light accent with dark ink */
 #workspaces button.focused {
-	color: @black;
-	background: alpha(@focused, 0.55);
+	color: @on_accent;
+	background: @accent_pill;
 }
 
 /* Contains an urgent window */
 #workspaces button.urgent {
-	color: @black;
-	background: alpha(@warning, 0.55);
+	color: @on_accent;
+	background: alpha(@warning, 0.88);
 }
 
 /* Style when cursor is on the button */
 #workspaces button:hover {
-	background: alpha(@black, 0.55);
-	color: @white;
+	background: @tile_hi;
+	color: @ink;
 }
 
 #window {

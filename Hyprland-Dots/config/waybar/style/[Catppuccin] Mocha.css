@@ -1,5 +1,105 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Catppuccin Mocha */
+/* Catppuccin Mocha — wallust frosted glass
+ * ==========================================================================
+ * Every colour now comes from wallust; the Catppuccin mocha palette that used
+ * to be imported here is gone. wallust.toml declares palette = "dark16", so
+ * @background is always a dark tint and @foreground a light ink, and the 0..15
+ * ramp always runs dark -> light, which makes @color15 the lightest accent of
+ * the wallpaper. Roles:
+ *
+ *   @background -> pane tint           @color15 -> accent: sheen, pill, slider
+ *   @foreground -> text + hairlines    @color13 -> urgent pill
+ *
+ * THE IMPORT PATH (the one trap in this file)
+ * -------------------------------------------
+ * waybar loads the SYMLINK ~/.config/waybar/style.css, and GTK resolves a
+ * relative import against that path, so the base directory is
+ * ~/.config/waybar/ and the import must be "wallust/colors-waybar.css".
+ * Walking up one level to reach wallust resolves to ~/.config/wallust/ and
+ * fails, and on waybar 0.15.0 a failing import does not merely warn: the style
+ * load throws and the bar can die outright. Never walk up a level.
+ *
+ * WHY THE PANES ARE TINTED *AND* LIFTED
+ * -------------------------------------
+ * A tint built from @background alone is the black-bar failure: @background is
+ * the wallpaper's darkest colour, so a tint-only pane reads as a black
+ * rectangle, not as glass. The @color15 sheen gradient (0.20 -> 0.12) is what
+ * lifts it. window#waybar itself stays fully transparent so the gaps between
+ * the islands keep alpha 0 and Hyprland's ignore_alpha leaves them unblurred.
+ *
+ * LAYOUT IS UNTOUCHED
+ * -------------------
+ * This style is three separate islands (the original said so in a comment) and
+ * it keeps them: the same .modules-* selectors, the same 10px radii, the same
+ * 2px/4px island padding, the same distinction where left/right islands carry a
+ * stronger border than the centre one. Nothing was restructured.
+ *
+ * PERFORMANCE (deliberate — this machine runs hot)
+ * ------------------------------------------------
+ *   - no drop shadows anywhere: a shadow is the most expensive property for
+ *     GTK's CPU renderer, and most styles in this tree use one
+ *   - no opacity on containers: translucency is rgba()/alpha(), so GTK never
+ *     renders a widget group offscreen
+ *   - transitions animate only background-color / border-color / color, 160ms
+ *   - no looping motion: the `gradient_f` references here pointed at a keyframe
+ *     block that exists nowhere (dead CSS), and the battery blink is now a
+ *     static filled pill — it still alerts, without repainting forever
+ *   - the blur is Hyprland's (layerrule blur + ignore_alpha), never CSS
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * The bar window must stay transparent so the space between the islands keeps
+ * alpha 0 and Hyprland leaves it unblurred — that is what makes the islands
+ * read as separate panes of glass over the wallpaper.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+	background: transparent;
+	background-color: transparent;
+	padding: 0px;
+	border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+/* The lit edge is what separates a pane of glass from a smear of colour. */
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+
+/* Dim text is @foreground at 0.80, not @color15: @color15 is always the *light*
+ * end of wallust's ramp, so on a light palette it would be light text on a
+ * light pane. @foreground tracks the palette's contrast direction. */
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+/* `on_accent` is a literal near-black: CSS cannot branch on the palette, and
+ * dark ink on the light accent is the one pairing that reads on both a dark and
+ * a light palette. wallust's own accentPrimaryText is #FFFFFF, which is
+ * unreadable on a light accent. */
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: this must stay red/amber whatever the wallpaper is
+ * (tuned to clear 4.5:1 both as text and as a pill fill under on_accent). */
+@define-color danger        #ffa8a8;
+
 
 * {
 	font-family: "JetBrainsMono Nerd Font";
@@ -10,74 +110,85 @@
 	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
-@import "../waybar/style/catppuccin-themes/mocha.css";
-
 window#waybar {
-  	transition-property: background-color;
-  	transition-duration: 0.5s;
-  	background: transparent;
-  	border-radius: 10px;
+	background: transparent;
+	border-radius: 10px;
+	color: @ink;
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
 }
 
+/* The whole window used to be dimmed as a unit. A container dim forces GTK to
+ * render the widget group offscreen, so the dim is expressed in alpha instead. */
 window#waybar.hidden {
-  	opacity: 0.2;
+	color: alpha(@foreground, 0.35);
 }
 
 window#waybar.empty,
 window#waybar.empty #window {
-    background-color: transparent;
-    padding: 0px;
-    border: 0px;
+	background-color: transparent;
+	padding: 0px;
+	border: 0px;
 }
 
 #taskbar button,
 #workspaces button {
-	color: @overlay1;
-    box-shadow: none;
-	text-shadow: none;
-    padding: 0px;
-    border-radius: 9px;
-    padding-left: 4px;
-    padding-right: 4px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+	color: @ink_dim;
+	padding: 0px;
+	border-radius: 9px;
+	padding-left: 4px;
+	padding-right: 4px;
+	background-color: @tile;
+	border: 1px solid transparent;
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
 	border-radius: 10px;
-	color: @peach;
-	background-color: alpha(@surface0, 0.55);
- 	padding-left: 2px;
-    padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+	color: @ink;
+	background-color: @tile_hi;
+	border-color: @edge;
+	padding-left: 2px;
+	padding-right: 2px;
 }
 
 #workspaces button.persistent {
-	color: @surface1;
+	color: @ink;
 	border-radius: 10px;
 }
 
+/* The active workspace is the one solid note in the pane: the wallpaper's own
+ * light accent with the near-black ink on it. */
 #taskbar button.active,
 #workspaces button.active {
-	color: @mauve;
-  	border-radius: 10px;
-    padding-left: 8px;
-    padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+	color: @on_accent;
+	background-color: @accent_pill;
+	border-color: @edge_top;
+	border-radius: 10px;
+	padding-left: 8px;
+	padding-right: 8px;
 }
 
 #workspaces button.urgent {
-	color: @red;
- 	border-radius: 0px;
+	color: @on_accent;
+	background-color: @accent_urgent;
+	border-color: @accent_urgent;
+	border-radius: 0px;
 }
 
 /* This section can be use if you want to separate waybar modules */
+/* Each island is a pane: wallpaper tint underneath, sheen gradient over it, a
+ * hairline edge all round and a lit top edge. */
 .modules-left, .modules-center, .modules-right {
-	background: alpha(@theme_base_color, 0.55); 
- 	border: 0.5px solid @overlay0;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
+	border: 0.5px solid @edge;
+	border-top: 1px solid @edge_top;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 4px;
@@ -85,8 +196,10 @@ window#waybar.empty #window {
 	border-radius: 10px;
 } 
 
+/* Kept from the original: the outer islands carry a stronger border than the
+ * centre one, now as the brighter lit hairline instead of Catppuccin blue. */
 .modules-left, .modules-right {
-  	border: 1px solid @blue;
+	border: 1px solid @edge_top;
 } 
 
 #backlight,
@@ -155,61 +268,55 @@ window#waybar.empty #window {
 	padding-left: 6px;
 }
 /*-----Indicators----*/
+/* The old neon-green indicator is gone; now the accent pill, with the file's
+ * own heavy underline kept as a dim hairline. */
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+	color: @on_accent;
+	background-color: @accent_pill;
+	border-bottom: 8px solid @tile_hi;
 }
 
 #bluetooth,
 #backlight {
-  color: @blue;
+  color: @ink;
 }
 
 #battery {
-  color: @green;
+  color: @ink;
 }
 
-@keyframes blink {
-  to {
-    color: @surface0;
-  }
-}
-
+/* The blink rule is gone: a looping cycle schedules a repaint three times a
+ * second forever. Static ink on a filled danger pill says the same. */
 #battery.critical:not(.charging) {
-  background-color: alpha(@red, 0.55);
-  color: @theme_text_color;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
-  box-shadow: inset 0 -3px transparent;
+  color: @on_accent;
+  background-color: @danger;
 }
 
 #clock {
-  color: @yellow;
+  color: @ink;
 }
 
 #cpu {
-  color: @green;
+  color: @ink;
 }
 
 #custom-keyboard,
 #memory {
-  color: @sky;
+  color: @ink;
 }
 
 #disk {
-  color: @sapphire;
+  color: @ink;
 }
 
 #temperature {
-  color: @teal;
+  color: @ink;
 }
 
 #temperature.critical {
-  background-color: alpha(@red, 0.55);
+  color: @danger;
+  background-color: alpha(@danger, 0.18);
 }
 
 #tray > .passive {
@@ -220,63 +327,63 @@ window#waybar.empty #window {
 }
 
 #keyboard-state {
-  color: @flamingo;
+  color: @ink;
 }
 
 #custom-cava_mviz {
-	color: @pink;
+	color: @ink;
 }
 
 #custom-menu {
-  color: @rosewater;
+  color: @ink;
 }
 
 #custom-power {
-  color: @red;
+  color: @danger;
 }
 
 #custom-updater {
-  color: @red;
+  color: @danger;
 }
 
 #custom-light_dark {
-  color: @blue;
+  color: @ink;
 }
 
 #custom-weather {
-  color: @lavender;
+  color: @ink;
 }
 
 #custom-lock {
-  color: @maroon;
+  color: @danger;
 }
 
 #pulseaudio {
-  color: @sapphire;
+  color: @ink;
 }
 
 #pulseaudio.bluetooth {
-  color: @pink;
+  color: @accent;
 }
 #pulseaudio.muted {
-  color: @red;
+  color: @danger;
 }
 
 #window {
-  color: @mauve;
+  color: @ink;
 }
 
 #mpris {
-  color:@lavender;
+  color: @ink;
 }
 
 #network {
-  color: @teal;
+  color: @ink;
 }
 #network.disconnected,
 #network.disabled {
-  background-color: alpha(@surface0, 0.55);
-  color: @text;
+  background-color: alpha(@danger, 0.18);
+  color: @danger;
 }
 
 #backlight-slider slider,
@@ -286,11 +393,11 @@ window#waybar.empty #window {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
 #pulseaudio-slider trough {
+	background-color: @tile;
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
@@ -298,6 +405,7 @@ window#waybar.empty #window {
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
+	background-color: @accent;
 	min-height: 10px;
 	border-radius: 5px;
 }

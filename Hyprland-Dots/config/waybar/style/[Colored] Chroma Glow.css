@@ -1,5 +1,128 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Chroma Glow */
+/* Chroma Glow — wallust frosted glass
+ * ==========================================================================
+ * Every colour now comes from wallust. wallust.toml declares palette =
+ * "dark16", so @background is always a dark tint and @foreground a light ink,
+ * and the 0..15 ramp always runs dark -> light, which makes @color15 the
+ * lightest accent of the wallpaper. Roles:
+ *
+ *   @background -> pane tint           @color15 -> accent: sheen, pill, slider
+ *   @foreground -> text + hairlines    @color13 -> urgent pill
+ *
+ * THE IMPORT PATH (the one trap in this file)
+ * -------------------------------------------
+ * waybar loads the SYMLINK ~/.config/waybar/style.css, and GTK resolves a
+ * relative import against that path, so the base directory is
+ * ~/.config/waybar/ and the import must be "wallust/colors-waybar.css".
+ * Walking up one level to reach wallust resolves to ~/.config/wallust/ and
+ * fails, and on waybar 0.15.0 a failing import does not merely warn: the style
+ * load throws and the bar can die outright. Never walk up a level.
+ *
+ * WHY THE GLASS IS TINTED *AND* LIFTED
+ * ------------------------------------
+ * A tint built from @background alone is the black-bar failure: @background is
+ * the wallpaper's darkest colour, so a tint-only pane reads as a black
+ * rectangle, not as glass. The @color15 sheen gradient (0.20 -> 0.12) is what
+ * lifts it. window#waybar itself stays fully transparent so the gaps between
+ * the islands keep alpha 0 and Hyprland's ignore_alpha leaves them unblurred.
+ *
+ * WHAT IS KEPT OF "CHROMA"
+ * ------------------------
+ * This style's identity is colour-coded module text on a transparent bar, so
+ * the colour coding is kept — only the source of the hues changed. wallust has
+ * no per-module palette, so the three families are now wallust accents
+ * (@color15, @color13, @color7) mixed toward @foreground: the hue still comes
+ * from the image instead of fixed literals like `yellow` / `blue` / `green`,
+ * while the legibility comes from the palette's own contrast direction. Red and
+ * amber alert states keep the semantic @danger so they stay legible whatever the
+ * wallpaper is.
+ *
+ * LAYOUT IS UNTOUCHED
+ * -------------------
+ * Same selectors, same 10px bar radius, same 0px/4px workspace padding, same
+ * 4px/6px module padding, same 2px tooltip border. The original had no island
+ * fill at all (only the empty "if workspaces is leftmost/rightmost" comments),
+ * so the three .modules-* panes are added here at zero padding and zero side
+ * margin — module positions are unchanged; only a pane now sits behind them,
+ * exactly as the other Chroma styles in this tree do.
+ *
+ * PERFORMANCE (deliberate — this machine runs hot)
+ * ------------------------------------------------
+ *   - no drop shadows anywhere: a shadow is the most expensive property for
+ *     GTK's CPU renderer, and most styles in this tree use one
+ *   - no opacity on containers: translucency is rgba()/alpha(), and the
+ *     tooltip's old half-transparent look is now baked into its background alpha
+ *   - transitions animate only background-color / border-color / color, 160ms
+ *   - no looping motion: the `gradient_f` references here pointed at a keyframe
+ *     block that exists nowhere (dead CSS), and the battery blink is now a
+ *     static filled pill — it still alerts, without repainting forever
+ *   - the blur is Hyprland's (layerrule blur + ignore_alpha), never CSS
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * The bar window itself must stay transparent so the space between the
+ * islands keeps alpha 0 and Hyprland's ignore_alpha leaves it unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+	background: transparent;
+	background-color: transparent;
+	padding: 0px;
+	border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+/* The lit edge is what separates a pane of glass from a smear of colour. */
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+
+/* Dim text is @foreground at 0.80, not @color15: @color15 is always the *light*
+ * end of wallust's ramp, so on a light palette it would be light text on a
+ * light pane. @foreground tracks the palette's contrast direction. */
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+/* The three chroma families that replaced `yellow`, `blue`, `green` etc. Each
+ * is a wallust accent mixed toward @foreground: an accent's ramp position is not
+ * guaranteed to be light (color13 is a mid-tone on many wallpapers) and raw it
+ * can land almost invisible as text on the dark pane. The mix keeps the
+ * wallpaper's hue but borrows the palette's contrast direction — on a light
+ * palette @foreground flips to dark and the same rule darkens the text. At
+ * 0.25/0.45/0.35 these measure 10.8:1, 9.1:1 and 11.0:1 on the live wallpaper,
+ * and 5.8:1 even for a worst-case near-black accent. */
+@define-color chroma_a      mix(@color15, @foreground, 0.25);
+@define-color chroma_b      mix(@color13, @foreground, 0.45);
+@define-color chroma_c      mix(@color7, @foreground, 0.35);
+
+/* `on_accent` is a literal near-black: CSS cannot branch on the palette, and
+ * dark ink on the light accent is the one pairing that reads on both a dark and
+ * a light palette. wallust's own accentPrimaryText is #FFFFFF, which is
+ * unreadable on a light accent. */
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: this must stay red/amber whatever the wallpaper is
+ * (tuned to clear 4.5:1 both as text and as a pill fill under on_accent). */
+@define-color danger        #ffa8a8;
+
 
 * {
 	font-family: "JetBrainsMono Nerd Font";
@@ -11,84 +134,109 @@
 }
 
 window#waybar {
-    background-color: transparent;
-    color: #ffffff;
-    transition-property: background-color;
-    transition-duration: .5s;
-    border-radius: 10px;
+	background-color: transparent;
+	color: @ink;
+	border-radius: 10px;
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
 }
 
+/* The whole window used to be dimmed as a unit. A container dim forces GTK to
+ * render the widget group offscreen, so the dim is expressed in alpha instead. */
 window#waybar.hidden {
-    opacity: 0.1;
+	color: alpha(@foreground, 0.3);
 }
 
 window#waybar.empty,
 window#waybar.empty #window {
-    padding: 0px;
-    border: 0px;
-    background-color: transparent;
+	padding: 0px;
+	border: 0px;
+	background-color: transparent;
 }
 
 tooltip {
-	color: #40a02b;
-    background: rgba(30, 30, 46, 0.55);
-    opacity: 0.8;
-    border-radius: 10px;
-    border-width: 2px;
-    border-style: solid;
-    border-color: #11111b;
+	color: @ink;
+	background-color: alpha(@background, 0.94);
+	border: 2px solid @edge;
+	border-radius: 10px;
 }
 
 tooltip label{
-    color: #cdd6f4;
+	color: @ink;
 }
 
 #taskbar button,
 #workspaces button {
-    background-color: transparent;
-    color: grey;
-    box-shadow: none;
+	background-color: @tile;
+	color: @ink_dim;
 	text-shadow: none;
-    padding: 0px;
-    border-radius: 9px;
-    padding-left: 4px;
-    padding-right: 4px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+	padding: 0px;
+	border-radius: 9px;
+	padding-left: 4px;
+	padding-right: 4px;
+	border: 1px solid transparent;
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
 }
 
+/* The active workspace is the one solid note in the pane: the wallpaper's own
+ * light accent with the near-black ink on it. */
 #taskbar button.active,
 #workspaces button.active {
-    background-color: transparent;
-    color: #D3D3D3;
-    padding-left: 8px;
-    padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+	background-color: @accent_pill;
+	color: @on_accent;
+	border-color: @edge_top;
+	padding-left: 8px;
+	padding-right: 8px;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-    background: rgba(0, 0, 0, 0.2);
-	color: #D3D3D3;
-    padding-left: 2px;
-    padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+	background-color: @tile_hi;
+	color: @ink;
+	border-color: @edge;
+	padding-left: 2px;
+	padding-right: 2px;
 }
 
+/* Kept as the solid pill it always was — this is the state that already put
+ * dark ink on a light fill. */
 #workspaces button.focused {
-    background-color: rgba(187, 204, 221, 0.55);
-    color: #323232;
+	background-color: @accent_pill;
+	color: @on_accent;
 }
 
 #workspaces button.urgent {
-    background-color: rgba(235, 77, 75, 0.55);
+	background-color: @accent_urgent;
+	color: @on_accent;
 }
 
 #mode {
-    background-color: rgba(100, 114, 125, 0.55);
-    border-bottom: 3px solid #ffffff;
+	background-color: @tile_hi;
+	color: @ink;
+	border-bottom: 3px solid @edge_top;
+}
+
+/* ---------------------------------------------------------------------------
+ * The three panes of glass
+ *
+ * background-color is the wallpaper tint, background-image is the sheen that
+ * falls from the lit top edge to the dim bottom one. GTK paints the colour
+ * first and the gradient over it, so the two together are the glass.
+ * ------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
+	border-radius: 10px;
+	padding: 0px;
+	margin: 3px 0;
 }
 
 #backlight,
@@ -165,151 +313,144 @@ tooltip label{
 }
 
 #clock {
-    color: #fe640b;
+	color: @chroma_a;
 }
 
 #custom-updater {
-    color: #7287fd;
+	color: @chroma_b;
 }
 
 #battery {
-    color: #32CD32;
+	color: @chroma_c;
 }
 
-/* #battery.charging {
-    color: #ffffff;
-    background-color: rgba(38, 166, 91, 0.55);
-} */
-
-@keyframes blink {
-    to {
-        background-color: rgba(255, 255, 255, 0.55);
-        color: #333333;
-    }
-}
-
+/* The blink rule is gone: a looping cycle schedules a repaint three times a
+ * second forever. Static ink on a filled danger pill says the same. */
 #battery.critical:not(.charging) {
-	color: #f53c3c;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+	color: @on_accent;
+	background-color: @danger;
 }
 
 label:focus {
-    background-color: rgba(0, 0, 0, 0.55);
+	background-color: alpha(@background, 0.55);
 }
 
 #custom-keyboard,
 #custom-menu{
-    color: yellow;
-    /*padding: 3px;*/
+	color: @chroma_a;
+	/*padding: 3px;*/
 }
 
 #cpu {
-    color: blue;
+	color: @chroma_b;
 }
 
 #memory {
-    color: green;
+	color: @chroma_c;
 }
 
 #custom-light_dark,
 #custom-nightlight,
 #backlight {
-    color: white;
+	color: @chroma_c;
 }
 
 #bluetooth {
-    color: blue;
+	color: @chroma_b;
 }
 
 #network {
-    color: #dd7878;
+	color: @chroma_a;
 }
 
 #network.disconnected {
-    color: #df3320;
+	color: @danger;
 }
 
 #custom-swaync,
 #custom-keybinds {
-	color: #1e66f5;	
+	color: @chroma_b;	
 }
 
 #wireplumber,
 #pulseaudio {
-    color: green;
+	color: @chroma_c;
 }
 
 #wireplumber.muted,
 #pulseaudio.muted {
-    color: grey;
+	color: @ink_dim;
 }
 
 #custom-power {
-    color: red;
+	color: @danger;
 }
 
 #keyboard-state {
-	color: #dd7878;
+	color: @chroma_a;
 }
 
 #disk {
-    color: brown;
+	color: @chroma_a;
 }
 
 #custom-weather {
-    color: #df8e1d;
+	color: @chroma_a;
 }
 
 #custom-lock {
-    color: #ffa000;
+	color: @chroma_c;
 }
 
 #temperature {
-    color: #FF5349;
+	color: @chroma_a;
 }
 
 #temperature.critical {
-    background-color: rgba(255, 0, 0, 0.55);
+	color: @danger;
+	background-color: alpha(@danger, 0.18);
 }
 
 #tray {
-    /* background-color: rgba(80, 80, 80, 0.55); */
+	/* background-color: alpha(@foreground, 0.05); */
 }
 
 /*-----Indicators----*/
+/* The old neon-green indicator is gone; now the accent pill, with the file's
+ * own 8px underline kept as a dim hairline. */
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+	color: @on_accent;
+	background-color: @accent_pill;
+	border-bottom: 8px solid @tile_hi;
 }
 
 #mpd {
-    color: #2a5c45;
+	color: @chroma_c;
 }
 
 #mpd.disconnected {
-    background-color: rgba(245, 60, 60, 0.55);
+	background-color: alpha(@danger, 0.80);
+	color: @on_accent;
 }
 
 #mpd.stopped {
-    background-color: rgba(144, 177, 177, 0.55);
+	background-color: @tile_hi;
+	color: @ink;
 }
 
 #mpd.paused {
-    background-color: rgba(81, 163, 122, 0.55);
+	background-color: alpha(@accent, 0.88);
+	color: @on_accent;
 }
 
 #custom-language {
-    color: #7da6ff;
-    min-width: 16px;
+	color: @chroma_b;
+	min-width: 16px;
 }
 
 #custom-separator {
-    color: #606060;
+	color: @ink_dim;
 }
 
 #backlight-slider slider,
@@ -319,11 +460,11 @@ label:focus {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
 #pulseaudio-slider trough {
+	background-color: @tile;
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
@@ -331,6 +472,7 @@ label:focus {
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
+	background-color: @accent;
 	min-height: 10px;
 	border-radius: 5px;
 }

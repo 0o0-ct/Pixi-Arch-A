@@ -1,5 +1,109 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Catppuccin Mocha - Monochromatic Blue RGB Bordered */
+/* Catppuccin Mocha - Monochromatic Blue RGB Bordered
+ *   -> frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Layout untouched: the islands keep their 2.5px border, 16px radius and the
+ * exact padding trio from the original; every selector this file styled still
+ * styles it, at the same paddings and radii. Only the colour system changed.
+ *
+ * THE IMPORT PATH
+ * ---------------
+ * GTK resolves a relative @import against the file waybar actually loads,
+ * which is the SYMLINK ~/.config/waybar/style.css, so the base directory is
+ * ~/.config/waybar/ and wallust is imported as "wallust/colors-waybar.css".
+ * "../wallust/..." resolves to ~/.config/wallust/... and dies with
+ * "Failed to import", which on waybar 0.15.0 throws and can kill the bar.
+ *
+ * WHAT HAPPENED TO THE TWO CATPPUCCIN THINGS
+ * ------------------------------------------
+ * 1. `@import "../waybar/style/catppuccin-themes/rgbmocha.css"` is gone. It
+ *    supplied a fixed blue palette (@overlay1/@surface0/@surface1/
+ *    @theme_base_color) that cannot follow a wallpaper, and every one of those
+ *    tokens is now a wallust role, so the import had nothing left to do. The
+ *    catppuccin-themes directory itself is untouched and still imported by the
+ *    other styles that use it. (Note that its path was also fragile: it only
+ *    resolved because it walked out to ~/.config and back in through "waybar".)
+ *
+ * 2. The endless `rainbow-border-cycle` loop (7s linear, infinite) and its
+ *    @keyframes are gone. A looping animation repaints forever — exactly what
+ *    the user is fighting — and its seven hardcoded blues ignored the
+ *    wallpaper. The border survives at its original 2.5px width, now a static
+ *    wallust-lit edge (@edge on the sides, @edge_top on top so the pane still
+ *    reads as lit from above). That keeps the "bordered" half of this theme's
+ *    identity and drops only the part that could never be wallpaper-driven.
+ *
+ * PER-MODULE INKS — why the ramp stops at the light end
+ * -----------------------------------------------------
+ * The original tinted each module through a five-step blue ramp (#49769F ->
+ * #4E8EA2 -> #6EA2B3 -> #7BBDE8 -> #BDD8E9). The ramp is now wallust's and the
+ * grouping between modules is preserved one-for-one, but only the LIGHT end is
+ * usable as text: on this palette @color10 resolves to #2D6663, which sits at
+ * roughly 1.5:1 against the glass — invisible. So the four module inks are the
+ * three light accents plus the neutral dim ink.
+ *
+ * TOKEN ROLES (wallust.toml declares palette = "dark16")
+ * ------------------------------------------------------
+ *   @background  -> @pane: pane body tint (@color15 for the sheen over it).
+ *                   The sheen is what lifts the pane; @background alone is the
+ *                   wallpaper's darkest colour and reads as a black bar.
+ *   @color15     -> @accent / @accent_pill: active workspace pill, sliders
+ *   @color13     -> @accent_urgent: urgent state
+ *   @foreground  -> @ink and alpha variants: text, dim text, tile lift,
+ *                   hairline edge (@edge) and lit top edge (@edge_top)
+ *
+ * PERFORMANCE: no GTK shadow properties anywhere (the inert shadow resets are
+ * gone with the properties they reset), no dimmed containers (the
+ * window#waybar.hidden rule is removed — it faded the whole bar through a
+ * container property and forced GTK to render the widget group offscreen),
+ * transitions animate only background-color/border-color/color at 160ms (every
+ * blanket transition shorthand is gone), and no animations.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);  /* hairline            */
+@define-color edge_top      alpha(@foreground, 0.32);  /* lit top edge        */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic: alert red must stay red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
+/* Module inks — the light end of the ramp only, for legibility. */
+@define-color ink_a         @color15;                  /* was #BDD8E9 */
+@define-color ink_b         @color14;                  /* was #7BBDE8 */
+@define-color ink_c         @color13;                  /* was #6EA2B3/#4E8EA2 */
+@define-color ink_d         @ink_dim;                  /* was #49769F */
+
 
 * {
 	font-family: "JetBrainsMono Nerd Font";
@@ -9,18 +113,17 @@
 	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
-@import "../waybar/style/catppuccin-themes/rgbmocha.css";
-
 window#waybar {
-  	transition-property: background-color;
-  	transition-duration: 0.5s;
+  	transition-property: background-color, border-color, color;
+  	transition-duration: 160ms;
+  	transition-timing-function: ease-out;
   	background: transparent;
+  	color: @ink;
   	border-radius: 2px;
 }
 
-window#waybar.hidden {
-  	opacity: 0.2;
-}
+/* The window#waybar.hidden rule was dropped: dimming a whole container forces
+ * GTK to render the widget group offscreen, so translucency here is rgba(). */
 
 window#waybar.empty,
 window#waybar.empty #window {
@@ -31,76 +134,76 @@ window#waybar.empty #window {
 
 #taskbar button,
 #workspaces button {
-	color: @overlay1;
-    box-shadow: none;
-	text-shadow: none;
+	color: @ink_dim;
+	background-color: @tile;
+	border: 1px solid transparent;
     padding: 0px;
     border-radius: 9px;
     padding-left: 4px;
     padding-right: 4px;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
 	border-radius: 10px;
-	color: #ffffff;
-	background-color: alpha(@surface0, 0.55);
+	color: @ink;
+	background-color: @tile_hi;
+	border-color: @edge;
  	padding-left: 2px;
     padding-right: 2px;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button.persistent {
-	color: @surface1;
+	color: @ink_dim;
 	border-radius: 10px;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-	color: #ffffff;
+	color: @on_accent;
+	background-color: @accent_pill;
+	border-color: @edge_top;
 	border-radius: 10px;
     padding-left: 8px;
     padding-right: 8px;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
-@keyframes rainbow-border-cycle {
-    0%   { border-color: #001D39; }
-    14%  { border-color: #0A4174; }
-    28%  { border-color: #49769F; }
-    42%  { border-color: #4E8EA2; }
-    57%  { border-color: #6EA2B3; }
-    71%  { border-color: #7BBDE8; }
-    85%  { border-color: #BDD8E9; }
-    100% { border-color: #001D39; }
-}
+/* The `rainbow-border-cycle` @keyframes block and its infinite animation are
+ * removed: the border is now a static wallust-lit edge. */
 
+/* The islands. background-color is the tint, background-image is the sheen
+ * falling from the lit top edge to the dim bottom one; GTK paints the colour
+ * first and the gradient over it. Border width unchanged at 2.5px. */
 .modules-left, .modules-center, .modules-right {
-  background: alpha(@theme_base_color, 0.55);
-  border: 2.5px solid #001D39;
+  background-color: @pane;
+  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+  color: @ink;
+  border: 2.5px solid @edge;
+  border-top-color: @edge_top;
   border-radius: 16px;
-  animation: rainbow-border-cycle 7s linear infinite;
   padding-top: 2px;
   padding-bottom: 2px;
   padding-right: 6px;
   padding-left: 6px;
-  box-shadow: none;
 }
 
 #backlight, #battery, #bluetooth, #clock, #cpu, #disk, #idle_inhibitor, #keyboard-state, #memory, #mode, #mpris, #network, #pulseaudio, #taskbar, #temperature, #tray, #window, #workspaces, #custom-menu, #custom-power, #custom-weather {
+	color: @ink;
 	padding: 4px 6px;
 }
 
-#bluetooth, #backlight { color: #7BBDE8; }
-#battery { color: #6EA2B3; }
-#clock { color: #BDD8E9; }
-#cpu { color: #4E8EA2; }
-#custom-keyboard, #memory { color: #7BBDE8; }
-#disk { color: #49769F; }
-#temperature { color: #6EA2B3; }
-#custom-menu { color: #BDD8E9; }
-#custom-power { color: #7BBDE8; }
-#pulseaudio { color: #7BBDE8; }
-#window { color: #BDD8E9; }
-#network { color: #6EA2B3; }
+#bluetooth, #backlight { color: @ink_b; }
+#battery { color: @ink_c; }
+#clock { color: @ink_a; }
+#cpu { color: @ink_c; }
+#custom-keyboard, #memory { color: @ink_b; }
+#disk { color: @ink_d; }
+#temperature { color: @ink_c; }
+#custom-menu { color: @ink_a; }
+#custom-power { color: @ink_b; }
+#pulseaudio { color: @ink_b; }
+#window { color: @ink_a; }
+#network { color: @ink_c; }

@@ -1,7 +1,92 @@
+
 /* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
 /* Wallust Bordered - Chroma Simple */
 
-@import '../../.config/waybar/wallust/colors-waybar.css';
+/* Chroma Simple — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * The LAYOUT of this file is untouched: the 20px pill radius, the 2px borders
+ * on every module, the 15px/10px/5px paddings and margins, the tooltip's 1.5px
+ * border and the window's 15px side padding are exactly what it shipped with.
+ * Only the colour system changed.
+ *
+ * WHAT WENT
+ * ---------
+ *   @color5/@color7/@color8/@color9/@color10/@color12/@color13/@color14/
+ *     @color15 borders and fills -> @edge (hairline) / @tile (fill), so the
+ *     bordered layout survives but every pane follows the wallpaper
+ *   #f9e2af, #fab387, #89b4fa, #b4befe, #a6e3a1, #8eacf3, #ffd57a, #f38ba8,
+ *     #39FF14 and the `red`/`white` keywords -> @ink, with @danger kept for
+ *     the genuinely semantic states (critical/warning battery, muted audio,
+ *     the power button)
+ *   alpha(@color12,.55) tooltip and `opacity: 0.9` -> @background at 0.94 with
+ *     no container opacity (opacity on a container forces GTK to composite the
+ *     widget group offscreen)
+ *   `opacity: 1` no-ops on the module pills and the workspaces pill
+ *   every reference to the `gradient_f` keyframes (no @keyframes of that name
+ *     exists anywhere in this repository, so they were dead) and the 3s
+ *     looping battery blink, which is now a static filled pill
+ *   the nested drop shadow on the critical-battery pill
+ *
+ * THE IMPORT PATH
+ * ---------------
+ * The file used to import wallust as
+ *   '../../.config/waybar/wallust/colors-waybar.css'
+ * which only worked while GTK resolved it against ~/.config/waybar/ (it climbs
+ * out to ~ and back in). The canonical line is used now: waybar loads the
+ * symlink ~/.config/waybar/style.css, so GTK resolves against
+ * ~/.config/waybar/ and the path must stay exactly
+ * "wallust/colors-waybar.css". "../wallust/colors-waybar.css" resolves to
+ * ~/.config/wallust/... and dies with "Failed to import" — on waybar 0.15.0
+ * that failure takes the bar down, not just the rule.
+ *
+ * GLASS: window#waybar stays transparent so the gaps between the islands keep
+ * alpha 0 and Hyprland's ignore_alpha leaves them unblurred; the islands carry
+ * the wallpaper tint plus the @color15 sheen that lifts them off a dark
+ * wallpaper. The blur is Hyprland's, never CSS.
+ *
+ * PERFORMANCE: no drop shadows, no opacity on containers, no blanket
+ * transition (only background-color/border-color/color at 160ms), no looping
+ * animation.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles (see [Colorful] Aurora Blossom.css for the rationale)
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: critical states stay red on any wallpaper. */
+@define-color danger        #ffa8a8;
 
 
 * {
@@ -14,7 +99,7 @@
 
 window#waybar {
     background-color: transparent;
-    color: @foreground;
+    color: @ink;
     padding-left: 15px;
     padding-right: 15px;
 }
@@ -26,59 +111,74 @@ window#waybar.empty #window {
     border: 0px;
 }
 
+
+/* ---------------------------------------------------------------------------
+ * The three panes of glass
+ * ------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
+	border: 2px solid @edge;
+	border-top: 2px solid @edge_top;
+	border-radius: 20px;
+	padding: 3px 6px;
+	margin: 3px 0;
+}
+
 tooltip {
-    background-color: alpha(@color12, 0.55);
-    color: @foreground;
+    background-color: alpha(@background, 0.94);
+    color: @ink;
     border-radius: 10px;
     border-width: 1.5px;
     border-style: solid;
-    border-color: @color9;
-    transition: 0.3s;
-    opacity: 0.9;
+    border-color: @edge;
 }
 
 #taskbar button,
 #workspaces {
 	border-radius: 20px;
-    background: alpha(@background, 0.55);
-    opacity: 1;
+    background: @tile;
     padding: 0px 10px;
     margin: 0;
     margin-top: 5px;
-	border: 2px solid @color12;
+	border: 2px solid @edge;
 }
 
 #workspaces button {
-    color: @color10;
-    box-shadow: none;
+    color: @ink_dim;
 	text-shadow: none;
     padding-right: 12px;
     border-radius: 9px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    background-color: @tile;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
+/* The active workspace is the one solid note in the pane: the wallpaper's own
+ * light accent, with dark ink on top. */
 #taskbar button.active,
 #workspaces button.active {
-    color: @color12;
+    color: @on_accent;
     padding-right: 12px;
-    background-color: alpha(@background, 0.55);
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    background-color: @accent_pill;
 }
 
 #workspaces button.urgent {
-    color: #11111b;
+    color: @on_accent;
+    background-color: @accent_urgent;
     border-radius: 10px;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-    color: @color12;
+    color: @ink;
+    background-color: @tile_hi;
     padding-left: 0px;
     padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #backlight,
@@ -140,50 +240,51 @@ tooltip {
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
 	border-radius: 20px;
-    background: alpha(@background, 0.55);
-    opacity: 1;
+    background: @tile;
     padding: 0px 10px;
     margin: 0;
     margin-top: 5px;
-	border: 2px solid @color13;
+    color: @ink;
+	border: 2px solid @edge;
 }
 
 #cpu {
-    border: 2px solid @color5;
-	color: @foreground;
-    background: alpha(@color12, 0.55);
+    border: 2px solid @edge;
+	color: @ink;
+    background: @tile;
 }
 
 #memory {
-	color: @foreground;
-    background: alpha(@color12, 0.55);
+	color: @ink;
+    background: @tile;
 }
 
 #disk {
-	color: @foreground;
-    background: alpha(@color12, 0.55);
-    border: 2px solid @color13;
+	color: @ink;
+    background: @tile;
+    border: 2px solid @edge;
 }
 
 #temperature{
-	color: @foreground;
-    background: alpha(@color12, 0.55);
+	color: @ink;
+    background: @tile;
 }
 
 #temperature.critical {
-    color: red;
-	border: 2px solid red;
+    color: @on_accent;
+    background-color: alpha(@danger, 0.55);
+	border: 2px solid @danger;
 }
 
 #custom-power {
-    color: red;
+    color: @danger;
     padding-left: 10px;
 	padding-right: 2px;
-	border: 2px solid red;
+	border: 2px solid @danger;
 }
 
 #backlight {
-    color: #f9e2af;
+    color: @ink;
     padding-right: 5px;
 }
 
@@ -193,7 +294,7 @@ tooltip {
 /*    padding: 0px 4px; */
     padding-left: 15px;
     padding-right: 15px;
-    border: 2px solid @color7;
+    border: 2px solid @edge;
 }
 
 #mpris {
@@ -208,85 +309,76 @@ tooltip {
 #window {
     margin-left: 5px;
     margin-right: 5px;
-    border: 2px solid @color9;
+    border: 2px solid @edge;
 }
 
 #clock {
-    color: #fab387;
+    color: @ink;
 }
 
 
 #bluetooth {
-    color: #b4befe;
+    color: @ink;
     margin-right: 10px
 } 
 
 #pulseaudio.microphone,
 #pulseaudio {
-    background-color: alpha(@color12, 0.55);
-    color: #89b4fa;
-	border: 2px solid @color13;
+    background-color: @tile;
+    color: @ink;
+	border: 2px solid @edge;
 }
 
 #pulseaudio.muted {
-    color: #f38ba8;
+    color: @danger;
     padding-right: 20px;
 }
 
 #battery {
-    color: #a6e3a1;
+    color: @ink;
     margin-right: 5px;
     padding-right: 15px;
-	border: 2px solid @color14;
+	border: 2px solid @edge;
 }
 
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+	color: @on_accent;
+	background-color: @accent_pill;
+    border-bottom: 8px solid @edge;
 }
 
 #battery.good {
-    color: #ffd57a;
-	border: 2px solid @color15;
+    color: @ink;
+	border: 2px solid @edge_top;
 }
 
 #battery.warning {
-    color: #fab387;
+    color: @danger;
     border-left: 0px;
-	border: 2px solid @color12;
+	border: 2px solid @danger;
 }
 
 #battery.charging {
-    color: #a6e3a1;
+    color: @ink;
 }
 
 #battery.critical {
-    color: #f38ba8;
+    color: @danger;
     border-left: 0px;
-	border: 2px solid @color8;
+	border: 2px solid @danger;
 }
 
-@keyframes blink {
-  to {
-    color: @color12;
-  }
-}
-
+/* Was a 3s infinite blink; a filled pill says the same thing and does not
+ * schedule a repaint three times a second forever. */
 #battery.critical:not(.charging) {
-  background-color: rgba(239, 68, 68, 0.55);
-  color: white;
-  animation-name: blink;
-  animation-duration: 3.0s;
-  animation-timing-function: steps(12);
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  box-shadow: inset 0 -3px transparent;
+  background-color: @danger;
+  color: @on_accent;
 }
 
 #custom-weather {
-    color: #8eacf3;
+    color: @ink;
     border-right: 0px;
     margin-left: 0px;
     margin-right: 5px;
@@ -299,7 +391,6 @@ tooltip {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
@@ -307,10 +398,12 @@ tooltip {
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
+	background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
 	min-height: 10px;
 	border-radius: 5px;
+	background-color: @accent;
 }

@@ -2,6 +2,71 @@
 /* .............Purpl..................... */
 /* --- 👍 designed by https://github.com/Krautt  👍 --- */
 
+/* Purpl — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Colour system only. The layout is the original one: the two wings keep
+ * their 3px borders, their 100px rounded outer corners and every padding
+ * value; the module list and the slider rules are untouched.
+ *
+ * All colour comes from wallust (see [Colorful] Aurora Blossom.css for the
+ * full role reasoning). The import path must stay exactly
+ * "wallust/colors-waybar.css": GTK resolves it against ~/.config/waybar/,
+ * because the file waybar loads is the symlink ~/.config/waybar/style.css.
+ *
+ * The indicator states (#custom-hypridle.notactive, #idle_inhibitor.activated)
+ * lose their `border-bottom: 8px solid rgba(0, 0, 0, 0.2)` bar: that was a
+ * hardcoded black rectangle under the module, and the accent pill says
+ * "active" with far less paint.
+ *
+ * Performance: no box-shadow anywhere, no opacity on containers, transitions
+ * only on background-color / border-color / color (160ms), and no animations —
+ * the dead `gradient_f` references (no such @keyframes exists) and the 3s
+ * battery blink are gone.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The window stays fully transparent so the gaps between the islands keep
+ * alpha 0 and Hyprland's ignore_alpha leaves them unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);  /* hairline edge       */
+@define-color edge_top      alpha(@foreground, 0.32);  /* lit top edge        */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;                   /* dark ink on accent  */
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: stays red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
+
 * {
 	font-family: "JetBrainsMono Nerd Font";
 	font-weight: bold;
@@ -12,28 +77,23 @@
 }
 
 window#waybar {
-	background: rgba(16, 2, 20, 0.55);
-	color: #cba6f7;
+	background: transparent;
+	color: @ink;
 }
 
-window#waybar.hidden {
-	opacity: 0.5;
-}
 
-tooltip {
-	background: rgba(30, 30, 46, 0.55);
-	border-radius: 10px;
-	border-width: 2px;
-	border-style: solid;
-	border-color: #11111b;
-	color: #cba6f7;
-}
-
-/*-----module groups----*/
+/*-----module groups----
+ * The three islands: wallpaper tint + refraction sheen + a lit top edge.
+ * The wings keep the original 3px border width and the 100px outer corners;
+ * only the colours changed (#20052a -> @edge / @edge_top).
+ * ------------------------------------------------------------------------- */
 .modules-right {
-	border: 3px solid #20052a;
+	border: 3px solid @edge;
+	border-top: 3px solid @edge_top;
 	border-radius: 100px 0px 0px 0px;
-	background-color: rgba(61, 23, 75, 0.55);
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 5px;
@@ -41,6 +101,12 @@ tooltip {
 }
 
 .modules-center {
+	border: 3px solid transparent;
+	border-top: 3px solid @edge_top;
+	border-radius: 16px;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 4px;
@@ -48,10 +114,12 @@ tooltip {
 }
 
 .modules-left {
-	/*background-color: rgba(30, 30, 46, 0.55);*/
-	border: 3px solid #20052a;
+	border: 3px solid @edge;
+	border-top: 3px solid @edge_top;
 	border-radius: 0px 0px 100px 0px;
-	background-color: rgba(68, 26, 83, 0.55);
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 5px;
@@ -60,43 +128,47 @@ tooltip {
 
 #taskbar button,
 #workspaces button {
-	color: #6E6A86;
-    box-shadow: none;
+	color: @ink_dim;
 	text-shadow: none;
-    padding: 0px;
-    border-radius: 9px;
-    padding-left: 4px;
-    padding-right: 4px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+	padding: 0px;
+	border-radius: 9px;
+	padding-left: 4px;
+	padding-right: 4px;
+	background-color: @tile;
+	border: 1px solid transparent;
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
 }
 
+/* The active workspace is the one solid note in the pane. */
 #workspaces button.active {
-	color: #cba6f7;
+	color: @on_accent;
+	background-color: @accent_pill;
+	border-color: @edge_top;
 	border-radius: 20%;
-	background-color: rgba(0, 0, 0, 0.55);
-    padding-left: 8px;
-    padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+	padding-left: 8px;
+	padding-right: 8px;
 }
 
 #workspaces button.focused {
-	color: #d8dee9;
+	color: @ink;
 }
 
 #workspaces button.urgent {
-	color: #11111b;
+	color: @on_accent;
+	background-color: @accent_urgent;
+	border-color: @accent_urgent;
 	border-radius: 10px;
 }
 
 #workspaces button:hover {
-	color: #9CCFD8;
-    border-radius: 15px;
+	color: @ink;
+	background-color: @tile_hi;
+	border-color: @edge;
+	border-radius: 15px;
  	padding-left: 2px;
-    padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+	padding-right: 2px;
 }
 
 #backlight,
@@ -151,61 +223,76 @@ tooltip {
 #custom-weather.clearNight,
 #custom-weather.cloudyFoggyDay,
 #custom-weather.cloudyFoggyNight,
-#custom-weather.default, 
+#custom-weather.default,
 #custom-weather.rainyDay,
 #custom-weather.rainyNight,
 #custom-weather.severe,
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-	color: whitesmoke;
+	color: @ink;
 	padding-top: 4px;
 	padding-bottom: 4px;
 	padding-right: 6px;
 	padding-left: 6px;
+	background-color: transparent;
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
 }
 
 #temperature.critical {
-	background-color: rgba(255, 0, 0, 0.55);
+	color: @on_accent;
+	background-color: alpha(@danger, 0.80);
 }
 
-@keyframes blink {
-	to {
-		color: #000000;
-	}
+/* Was a blinking animation; a filled pill says the same thing without
+ * scheduling a repaint three times a second forever. */
+#battery.critical:not(.charging) {
+	color: @on_accent;
+	background-color: @danger;
 }
 
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+	color: @on_accent;
+	background-color: @accent_pill;
 }
 
 #taskbar button.active {
-	background-color: purple;
-    padding-left: 12px;
-    padding-right: 12px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+	color: @on_accent;
+	background-color: @accent_pill;
+	border-color: @edge_top;
+	padding-left: 12px;
+	padding-right: 12px;
 }
 
 #taskbar button:hover {
-    padding-left: 3px;
-    padding-right: 3px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+	color: @ink;
+	background-color: @tile_hi;
+	border-color: @edge;
+	padding-left: 3px;
+	padding-right: 3px;
 }
 
-#battery.critical:not(.charging) {
-	color: #f53c3c;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+
+/* ---------------------------------------------------------------------------
+ * Tooltips — the same glass, denser so the text always reads
+ * ------------------------------------------------------------------------- */
+tooltip {
+	background: alpha(@background, 0.94);
+	border-radius: 10px;
+	border-width: 2px;
+	border-style: solid;
+	border-color: @edge;
+	color: @ink;
 }
 
+
+/* ---------------------------------------------------------------------------
+ * Sliders
+ * ------------------------------------------------------------------------- */
 #backlight-slider slider,
 #pulseaudio-slider slider {
 	min-width: 0px;
@@ -213,7 +300,6 @@ tooltip {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
@@ -221,12 +307,12 @@ tooltip {
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
-	background-color: rgba(110, 106, 134, 0.55);
+	background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
 	min-height: 10px;
 	border-radius: 5px;
-	background-color: purple;
+	background-color: @accent;
 }

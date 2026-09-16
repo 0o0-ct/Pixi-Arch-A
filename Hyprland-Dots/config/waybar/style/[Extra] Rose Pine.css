@@ -1,14 +1,79 @@
+
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+
+/* Rose Pine — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Full rationale and the measurements live in [Colorful] Aurora Blossom.css,
+ * the reference implementation. The short version:
+ *
+ *   @background -> pane tint (hue carrier)      @color15 -> sheen + accent
+ *   @foreground -> text, dim text, lit edge     @color13 -> urgent pill
+ *
+ * The @import path is the one trap: GTK resolves it against the directory of
+ * the SYMLINK waybar actually loads (~/.config/waybar/style.css), so it must be
+ * "wallust/colors-waybar.css". "../wallust/..." resolves to ~/.config/wallust/
+ * and a failed import can kill the bar outright on waybar 0.15.0.
+ *
+ * The hardcoded Rose Pine palette (@main-bg #26233a, @wb-act-bg #31748f, the
+ * #2B5D34 green underline, @wb-hvr-bg #eb6f92) is gone: the wallpaper now
+ * supplies the hue. Layout is untouched — same selectors, same radii (12px on
+ * the base, 10px on panes and buttons), same paddings, same 2px border-bottom
+ * edge, only its colour moved to the wallust "lit edge" role.
+ *
+ * LAYOUT NOTE — this style has no .modules-* islands by design: every module is
+ * its own small pane, so the glass treatment (tint + sheen + edge) goes on the
+ * module panes themselves.
+ *
+ * PERFORMANCE (the user is fighting heat): no box-shadow, no opacity on
+ * containers, transitions only on background-color/border-color/color, the dead
+ * `gradient_f` animation removed and the infinite battery `blink` replaced by a
+ * static filled state.
+ *
+ * Also fixed while tokenizing: @wb-color, @wb-act-color and @wb-hvr-color were
+ * referenced by the taskbar buttons but never defined, so GTK dropped those
+ * `color:` declarations entirely. They are defined here.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * The bar window itself stays transparent so the space between the panes keeps
+ * alpha 0 and Hyprland's ignore_alpha leaves it unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
 /* Rose Pine */
 
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles (same mapping as the reference style)
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
 
-@define-color bar-bg rgba(0, 0, 0, 0);
-@define-color main-bg #26233a;
-@define-color main-fg #ebbcba;
-@define-color wb-act-bg #31748f;
-@define-color wb-act-fg #9ccfd8;
-@define-color wb-hvr-bg #eb6f92;
-@define-color wb-hvr-fg #f6c177;
+@define-color tile          alpha(@foreground, 0.05);  /* button fill         */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* hover fill          */
+
+@define-color edge          alpha(@foreground, 0.16);  /* hairline            */
+@define-color edge_top      alpha(@foreground, 0.32);  /* lit edge            */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;   /* near-black ink, readable on any accent */
+
+@define-color danger        #ffa8a8;   /* semantic red, wallpaper-independent  */
 
 * {
 	font-family: "JetBrainsMono Nerd Font";
@@ -20,7 +85,8 @@
 }
 
 window#waybar {
-    background: alpha(@bar-bg, 0.55);
+    background: transparent;
+    color: @ink;
 }
 
 window#waybar.empty,
@@ -31,80 +97,88 @@ window#waybar.empty #window {
 }
 
 tooltip {
-    background: alpha(@main-bg, 0.55);
-    color: @main-fg;
+    background-color: alpha(@background, 0.94);
+    color: @ink;
     border-radius: 8px;
-    border-width: 0px;
+    border: 1px solid @edge;
 }
 
 #taskbar button,
 #workspaces button {
-    box-shadow: none;
 	text-shadow: none;
     padding: 0px;
 	border-bottom: 2px;
-	border-color: #2B5D34;
+	border-color: @edge;
+	border-bottom-color: @edge_top;
 	border-style: solid;
 	border-radius: 10px;
     padding-left: 2px;
     padding-right: 4px;
-	background: alpha(@main-bg, 0.55);
-    color: @main-fg;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+	background-color: @tile;
+    color: @ink_dim;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #workspaces button.active {
-    background: alpha(@wb-act-bg, 0.55);
-    color: @wb-act-fg;
+    background-color: @accent_pill;
+    color: @on_accent;
+    border-bottom-color: @edge_top;
     padding-left: 2px;
     padding-right: 4px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #workspaces button:hover {
-    background: alpha(@wb-hvr-bg, 0.55);
-    color: @wb-hvr-fg;
+    background-color: @tile_hi;
+    color: @ink;
     padding-left: 2px;
     padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button {
-    box-shadow: none;
 	text-shadow: none;
     padding: 0px;
 	border-bottom: 2px;
-	border-color: #2B5D34;
+	border-color: @edge;
+	border-bottom-color: @edge_top;
 	border-style: solid;
 	border-radius: 10px;
     padding-left: 3px;
     padding-right: 3px;
-    color: @wb-color;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    color: @ink_dim;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button.active {
-    background: alpha(@wb-act-bg, 0.55);
-    color: @wb-act-color;
+    background-color: @accent_pill;
+    color: @on_accent;
     padding-left: 8px;
     padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button:hover {
-    background: alpha(@wb-hvr-bg, 0.55);
-    color: @wb-hvr-color;
+    background-color: @tile_hi;
+    color: @ink;
     padding-left: 3px;
     padding-right: 3px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
+/* ---- module panes of glass ---- */
 #backlight,
 #backlight-slider,
 #battery,
@@ -162,11 +236,12 @@ tooltip {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-    color: @main-fg;
-    background: alpha(@main-bg, 0.55);
-    opacity: 1;
+    color: @ink;
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
 	border-bottom: 2px;
-	border-color: #2B5D34;
+	border-color: @edge;
+	border-bottom-color: @edge_top;
 	border-style: solid;
 	border-radius: 10px;
 	padding-top: 4px;
@@ -176,31 +251,22 @@ tooltip {
 }
 
 #temperature.critical {
-  	background-color: rgba(239, 68, 68, 0.55);
+  	background-color: alpha(@danger, 0.55);
 }
 
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
+	color: @on_accent;
+	background-color: @accent_pill;
     border-bottom: 2px;
 }
 
-@keyframes blink {
-  to {
-    color: @main-bg;
-  }
-}
-
+/* Was an infinite blinking animation: a filled pill says the same thing
+ * without scheduling a repaint forever. */
 #battery.critical:not(.charging) {
-  background-color: rgba(239, 68, 68, 0.55);
-  color: white;
-  animation-name: blink;
-  animation-duration: 3.0s;
-  animation-timing-function: steps(12);
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  box-shadow: inset 0 -3px transparent;
+  background-color: @danger;
+  color: @on_accent;
 }
 
 #backlight {
@@ -215,8 +281,9 @@ tooltip {
 #group-motherboard,
 #group-laptop,
 #group-audio {
-    color: @main-fg;
-    background-color: alpha(@main-bg, 0.55);
+    color: @ink;
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
 }
 
 #backlight-slider slider,
@@ -226,7 +293,6 @@ tooltip {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
@@ -234,10 +300,12 @@ tooltip {
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
+	background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
 	min-height: 10px;
 	border-radius: 5px;
+	background-color: @accent;
 }

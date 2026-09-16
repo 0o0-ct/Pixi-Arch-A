@@ -1,5 +1,83 @@
-/* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
+
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+
+/* Prismatic Glow — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Full rationale and the measurements live in [Colorful] Aurora Blossom.css,
+ * the reference implementation. The short version:
+ *
+ *   @background -> pane tint (hue carrier)      @color15 -> sheen + accent
+ *   @foreground -> text, dim text, lit edge     @color13 -> urgent pill
+ *
+ * The @import path is the one trap: GTK resolves it against the directory of
+ * the SYMLINK waybar actually loads (~/.config/waybar/style.css), so it must be
+ * "wallust/colors-waybar.css". "../wallust/..." resolves to ~/.config/wallust/
+ * and a failed import can kill the bar outright on waybar 0.15.0.
+ *
+ * The blur is Hyprland's (`blur 1` + `ignore_alpha`); CSS only paints the tint,
+ * the refraction sheen and the lit edge. That is why window#waybar stays fully
+ * transparent: the gaps must keep alpha 0 so they are not blurred.
+ *
+ * LAYOUT NOTE — this style has no .modules-* islands by design: every module is
+ * its own small pane. The glass treatment therefore goes on the module tiles
+ * themselves (tint + sheen + 1px lit top edge) instead of on an island. Radii,
+ * paddings, margins and font sizes are exactly the originals, and the
+ * prismatic gradient-border motif is kept, re-hued from wallust.
+ *
+ * PERFORMANCE (the user is fighting heat): no box-shadow, no opacity on
+ * containers, transitions only on background-color/border-color/color, the dead
+ * `gradient_f` animation removed and the infinite battery `blink` replaced by a
+ * static filled state.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * The bar window itself stays transparent so the space between the tiles keeps
+ * alpha 0 and Hyprland's ignore_alpha leaves it unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
 /* .............Prismatic Glow............ */
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles (same mapping as the reference style)
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);  /* hairline            */
+@define-color edge_top      alpha(@foreground, 0.32);  /* lit top edge        */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+/* Near-black ink is a literal on purpose: CSS cannot branch on the palette and
+ * dark-on-light-accent is the one pairing that reads on dark *and* light
+ * palettes. wallust's own accentPrimaryText is #FFFFFF, unreadable here. */
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic: must stay red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
+@define-color prism_a       @color13;                  /* gradient border     */
+@define-color prism_b       @color15;
 
 * {
     font-family: "JetBrainsMono Nerd Font";
@@ -34,8 +112,9 @@
 /* Window Styling */
 window#waybar {
     background-color: transparent;
-    color: black;
-    transition: background-color 0.5s;
+    color: @ink;
+    transition-property: background-color;
+    transition-duration: 160ms;
 }
 
 /* Make window module transparent when no windows present */
@@ -44,62 +123,62 @@ window#waybar.empty #window {
     background: transparent;
 }
 
-window#waybar.hidden {
-    opacity: 0.2;
-}
-
-/* Tooltip styling */
+/* Tooltip styling — the same glass, denser so the text always reads.
+ * The 2px gradient frame is kept exactly as it was written (the original
+ * shorthand left border-style unset, so it paints nothing today too). */
 menu,
 tooltip {
-    background: rgba(0, 0, 0, 0.9);
+    background-color: alpha(@background, 0.94);
     border-radius: 10px;
     border: 2px transparent;
-    border-image: linear-gradient(45deg, #FA8BFF, #2BD2FF) 1;
+    border-image: linear-gradient(45deg, @prism_a, @prism_b) 1;
     padding: 5px;
-    box-shadow: none;
 }
 
 menu label,
 tooltip label {
-    color: rgb(0, 238, 255);
+    color: @ink;
 }
 
 /* Workspaces Button Styling */
 #workspaces button {
-    color: rgb(0, 238, 255);
-    background: transparent;
+    color: @ink_dim;
+    background-color: @tile;
+    border: 1px solid transparent;
     font-weight: bolder;
-    box-shadow: inset 0 -3px transparent;
-    transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
     padding: 2px 5px;
 }
 
 #workspaces button.active {
-    color: black;
+    color: @on_accent;
+    background-color: @accent_pill;
     border-bottom: 2px solid transparent;
     /* border-top: 2px solid transparent; */
-    border-image: linear-gradient(45deg, #FA8BFF, #2BD2FF) 1;
+    border-image: linear-gradient(45deg, @prism_a, @prism_b) 1;
     padding: 0 10px;
 }
 
 #workspaces button.focused {
-    background: rgba(0, 0, 0, 0.55);
+    background-color: @tile_hi;
 }
 
 #workspaces button.visible {
-    color: rgb(0, 238, 255);
+    color: @ink_dim;
 }
 
 #workspaces button.urgent {
-    background: rgba(239, 68, 68, 0.55);
-    color: black;
+    background-color: @accent_urgent;
+    color: @on_accent;
     padding: 0 5px;
 }
 
 #workspaces button:hover {
-    background: rgba(0, 0, 0, 0.55);
+    background-color: @tile_hi;
     border: 1px solid transparent;
-    border-image: linear-gradient(45deg, #FA8BFF, #2BD2FF) 1;
+    border-image: linear-gradient(45deg, @prism_a, @prism_b) 1;
     padding: 0 5px;
 }
 
@@ -109,16 +188,16 @@ tooltip label {
 }
 
 #taskbar button.active {
-    background: rgba(0, 0, 0, 0.55);
+    background-color: @tile_hi;
     border-bottom: 2px solid transparent;
     /* border-top: 2px solid transparent; */
-    border-image: linear-gradient(45deg, #FA8BFF, #2BD2FF) 1;
+    border-image: linear-gradient(45deg, @prism_a, @prism_b) 1;
     padding: 0 5px;
 }
 #taskbar button:hover {
-    background: rgba(0, 0, 0, 0.55);
+    background-color: @tile_hi;
     border: 1px solid transparent;
-    border-image: linear-gradient(45deg, #FA8BFF, #2BD2FF) 1;
+    border-image: linear-gradient(45deg, @prism_a, @prism_b) 1;
     padding: 0 5px;
 }
 
@@ -128,7 +207,7 @@ window#waybar.empty {
     background-color: transparent;
 }
 
-/* Specific Module Styles */
+/* Specific Module Styles — each module is its own pane of glass */
 #backlight,
 #backlight-slider,
 #battery,
@@ -186,48 +265,46 @@ window#waybar.empty {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-    background-color: rgba(0, 0, 0, 0.55);
-    color: rgb(0, 238, 255);
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
+    color: @ink;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #temperature.critical {
-    background-color: rgba(239, 68, 68, 0.55);
+    background-color: alpha(@danger, 0.55);
+    color: @ink;
 }
 
 #network.disconnected,
 #pulseaudio.muted {
-    color: red;
+    color: @danger;
 }
 
 #battery.charging,
 #battery.plugged {
-    color: black;
-    background: rgba(15, 20, 30, 0.55);
+    color: @ink;
+    background-color: @tile;
 }
 
-@keyframes blink {
-    to {
-        background-color: rgba(0, 0, 0, 0.55);
-        color: red;
-    }
-}
-
-#battery.warning:not(.charging),
-#battery.critical:not(.charging) {
-    background-color: rgba(239, 68, 68, 0.55);
-    color: black;
-}
-
+/* Was an infinite blinking animation: a filled pill says the same thing
+ * without scheduling a repaint forever. */
 #battery.warning:not(.charging) {
-    animation: blink 1s linear infinite alternate;
+    background-color: alpha(@danger, 0.55);
+    color: @ink;
 }
 #battery.critical:not(.charging) {
-    animation: blink 0.5s linear infinite alternate;
+    background-color: @danger;
+    color: @on_accent;
 }
 
 /* Focused Label Background */
 label:focus {
-    background-color: rgba(0, 0, 0, 0.55);
+    background-color: @tile_hi;
 }
 
 /* Keyboard State Styles */
@@ -236,12 +313,13 @@ label:focus {
 }
 
 #keyboard-state>label.locked {
-    background: rgba(0, 0, 0, 0.2);
+    background-color: @tile;
 }
 
 /* Tray Styles */
 #tray {
-    background-color: rgba(0, 0, 0, 0.55);
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
 }
 
 #tray>.passive {
@@ -251,14 +329,18 @@ label:focus {
 #tray>.needs-attention {
     -gtk-icon-effect: highlight;
     padding: 0 5px;
-    background-color: rgba(239, 68, 68, 0.55);
+    background-color: alpha(@danger, 0.55);
 }
 
 /* Gradient Module Styles */
 #mpd,
 #mpris,
 #window {
-    background: rgba(15, 20, 30, 0.55);
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
+    color: @ink;
 }
 
 #backlight-slider slider,
@@ -268,7 +350,6 @@ label:focus {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
@@ -276,12 +357,12 @@ label:focus {
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
-	background-color: rgba(110, 106, 134, 0.55);
+	background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
 	min-height: 10px;
 	border-radius: 5px;
-	background-color: purple;
+	background-color: @accent;
 }

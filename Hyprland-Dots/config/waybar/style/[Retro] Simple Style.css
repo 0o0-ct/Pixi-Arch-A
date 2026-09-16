@@ -1,12 +1,104 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Simple Style */
+/* Simple Style — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Layout untouched: every selector this file styled still styles it, with the
+ * same paddings, the same 1px/2px/3px bottom-border state markers and no
+ * radius added anywhere (this theme is a flat strip, and it stays one).
+ *
+ * THE IMPORT PATH
+ * ---------------
+ * GTK resolves a relative @import against the file waybar actually loads,
+ * which is the SYMLINK ~/.config/waybar/style.css, so the base directory is
+ * ~/.config/waybar/ and wallust is imported as "wallust/colors-waybar.css".
+ * "../wallust/..." resolves to ~/.config/wallust/... and dies with
+ * "Failed to import", which on waybar 0.15.0 throws and can kill the bar.
+ *
+ * THE LOCAL GRUVBOX PALETTE IS GONE
+ * ---------------------------------
+ * The file used to open with its own `@define-color background #1d2021;
+ * @foreground #ebdbb2; @dim …; @yellow …; @red …; @green …`. Those definitions
+ * shadowed wallust's own @background/@foreground, so they had to go: an
+ * @import cannot win against a later @define-color of the same name, and eight
+ * hardcoded colours cannot follow a wallpaper. Their five roles are now
+ * wallust's:
+ *
+ *   @background -> @pane, the glass body (the wallpaper's dark hue)
+ *   @color15    -> the sheen that LIFTS the pane, plus @accent: the active
+ *                  marker, the charging marker and the slider highlight.
+ *                  Without the sheen @background alone is the wallpaper's
+ *                  darkest colour and the strip reads as black, not glass.
+ *   @color13    -> @accent_urgent, which replaces `yellow` (warnings)
+ *   @foreground -> @ink and its alpha variants: text, dim text, tile lift,
+ *                  hairline edge (@edge) and lit top edge (@edge_top)
+ *
+ * The one literal colour left is @danger (#ffa8a8), which replaces `red`. It
+ * is semantic and not decorative: an alert must stay red whatever the
+ * wallpaper is, and a saturated red like #ff6b6b only reaches 3.7:1 on this
+ * glass.
+ *
+ * WHERE THE GLASS LIVES IN *THIS* FILE
+ * ------------------------------------
+ * This style has no .modules-left/.modules-center/.modules-right rules: its
+ * flat full-width strip *is* window#waybar (originally
+ * alpha(@background, 0.55)). Adding island rules here would replace this
+ * theme's layout with another theme's, so the window is the pane and gets the
+ * reference's treatment: the wallpaper tint, the vertical sheen, and a 1px
+ * lit top edge. No radius is added — a flat strip is this theme's identity.
+ *
+ * `border-top: 3px solid @background` on the warning/critical/charging states
+ * became `border-top: 3px solid transparent`. The original line was invisible
+ * against the fixed dark bar; transparent keeps it invisible against a
+ * translucent pane of any hue, at the same 3px so nothing moves.
+ *
+ * PERFORMANCE: no GTK shadow properties anywhere (including the inert inset
+ * shadow reset on the critical state), no dimmed containers, transitions
+ * animate only background-color/border-color/color, and the
+ * blinking battery state — an infinite animation — is now a static filled
+ * pill.
+ */
 
-@define-color background #1d2021;
-@define-color foreground #ebdbb2;
-@define-color dim        #928374;
-@define-color yellow     #fabd2f;
-@define-color red        #fb4934;
-@define-color green      #b8bb26;
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);  /* hairline            */
+@define-color edge_top      alpha(@foreground, 0.32);  /* lit top edge        */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic: alert red must stay red whatever the wallpaper is. Replaces the
+ * old `red`. Tuned light enough to clear 4.5:1 on this glass. */
+@define-color danger        #ffa8a8;
+
+
+/* Simple Style */
 
 * {
 	font-family: "JetBrainsMono Nerd Font";
@@ -18,30 +110,34 @@
 
 }
 
+/* The pane: wallpaper tint plus the sheen falling from the lit top edge. */
 window#waybar {
-  background: alpha(@background, 0.55);
-  color: @foreground;
-  transition-property: background-color;
-  transition-duration: 0.5s;
+  background-color: @pane;
+  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+  color: @ink;
+  border-top: 1px solid @edge_top;
+  transition-property: background-color, border-color, color;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
 }
 
 #taskbar button,
 #workspaces button {
-  color: @foreground;
+  color: @ink;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-  border-bottom: 1px solid green;
+  border-bottom: 1px solid @accent;
 }
 
 #taskbar button.urgent,
 #workspaces button.urgent {
-  border-bottom: 2px solid red;
+  border-bottom: 2px solid @danger;
 }
 
 #submap {
-  border-bottom: 1px solid red;
+  border-bottom: 1px solid @danger;
 }
 
 #backlight,
@@ -105,56 +201,48 @@ window#waybar {
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
   padding: 6px;
-  color: @foreground;
+  color: @ink;
 }
 
 #battery.warning,
 #disk.warning,
 #memory.warning,
 #cpu.warning {
-  border-top: 3px solid @background;
-  border-bottom: 3px solid yellow;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid @accent_urgent;
 }
 
-@keyframes blink {
-  to {
-    color: @background;
-  }
-}
-
+/* Was `animation-name: blink` on an infinite loop; a filled pill alerts just
+ * as well and does not schedule a repaint forever. */
 #battery.critical:not(.charging) {
-  background-color: alpha(@red, 0.55);
-  color: white;
-  animation-name: blink;
-  animation-duration: 3.0s;
-  animation-timing-function: steps(12);
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  box-shadow: inset 0 -3px transparent;
+  background-color: @danger;
+  color: @on_accent;
 }
 
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 3px solid yellow;
+	color: @on_accent;
+	background-color: @accent_pill;
+    border-bottom: 3px solid @accent_urgent;
 }
 
 #battery.critical,
 #disk.critical,
 #memory.critical,
 #cpu.critical {
-  border-top: 3px solid @background;
-  border-bottom: 3px solid red;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid @danger;
 }
 
 #temperature.critical {
-	background-color: rgba(239, 68, 68, 0.55);
+	color: @on_accent;
+	background-color: @danger;
 }
 
 #battery.charging {
-  border-top: 3px solid @background;
-  border-bottom: 3px solid green;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid @accent;
 }
 
 #backlight-slider slider,
@@ -164,7 +252,6 @@ window#waybar {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
@@ -172,12 +259,12 @@ window#waybar {
 	min-width: 80px;  
 	min-height: 5px; 
 	border-radius: 5px;
-	background-color: alpha(@dim, 0.55);
+	background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
 	min-height: 10px; 
 	border-radius: 5px;
-	background-color: alpha(@green, 0.55);
+	background-color: @accent;
 }

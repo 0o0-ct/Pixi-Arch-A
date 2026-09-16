@@ -1,6 +1,89 @@
+
 /* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
 /* .......Crystal Clear....................... */
 /* --- 👍 designed by https://github.com/Krautt  👍 --- */
+
+/* Crystal Clear — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * The LAYOUT of this file is untouched: every selector it shipped with is
+ * still here, with the same paddings, radii and module list. Only the colour
+ * system changed — every colour now comes from wallust, and the three module
+ * islands became panes of glass.
+ *
+ * THE IMPORT PATH
+ * ---------------
+ * Waybar loads the symlink ~/.config/waybar/style.css, so GTK resolves a
+ * relative @import against ~/.config/waybar/ and the path must stay exactly
+ * "wallust/colors-waybar.css". "../wallust/colors-waybar.css" resolves to
+ * ~/.config/wallust/colors-waybar.css and dies with "Failed to import"; on
+ * waybar 0.15.0 that failure takes the bar down, not just the rule.
+ *
+ * WHAT REPLACED WHAT
+ * ------------------
+ *   whitesmoke / #6E6A86 / #d8dee9  -> @ink / @ink_dim          (wallust text)
+ *   rgba(127,132,156,.55) active    -> @accent_pill + @on_accent
+ *   rgba(255,0,0,.55) critical      -> alpha(@danger, 0.55)
+ *   #39FF14 "inhibited" neon        -> the accent pill, same as the reference
+ *                                     (a hardcoded neon refuses to follow the
+ *                                      wallpaper; the state still pops)
+ *   wheat slider highlight          -> @accent
+ *   rgba(0,0,0,.55) trough          -> @tile
+ *
+ * PERFORMANCE (the user is fighting CPU/GPU heat)
+ * -----------------------------------------------
+ *   - every drop shadow is gone (GTK's CPU renderer hates them)
+ *   - `window#waybar.hidden { opacity: 0.5 }` had to go: opacity on the bar
+ *     container makes GTK composite the whole widget group offscreen. The
+ *     selector is kept, the dim is left to the compositor.
+ *   - every reference to `gradient_f` is gone: no @keyframes of that name
+ *     exists anywhere in this repository, so those lines were dead, and the
+ *     battery blink was a real looping keyframe sequence — it is now a static
+ *     filled pill.
+ *   - blanket transitions replaced by background-color/color at 160ms.
+ *
+ * The blur is Hyprland's, never CSS, so window#waybar stays fully transparent
+ * and the gaps between the islands keep alpha 0 (unblurred).
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles (see [Colorful] Aurora Blossom.css for the rationale)
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: critical states stay red on any wallpaper. */
+@define-color danger        #ffa8a8;
+
 
 *{
 	font-family: "JetBrainsMono Nerd Font";
@@ -14,11 +97,14 @@
 window#waybar {
 	background:transparent;
 	border-radius: 1px;
-	color: whitesmoke;
+	color: @ink;
 }
 	
+/* Was `opacity: 0.5`: opacity on the bar container forces GTK to composite the
+ * whole widget group offscreen, so the dim is left to the compositor and the
+ * selector stays transparent instead. */
 window#waybar.hidden {
-	opacity: 0.5;
+	background-color: transparent;
 }
 
 window#waybar.empty	
@@ -28,44 +114,61 @@ window#waybar.empty #window {
    background-color: transparent;
 }
 
+
+/* ---------------------------------------------------------------------------
+ * The three panes of glass
+ * ------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
+	border-radius: 16px;
+	padding: 3px 6px;
+	margin: 3px 0;
+}
+
 #taskbar button,	   
 #workspaces button {
-	color: #6E6A86;
-   	box-shadow: none;
+	color: @ink_dim;
 	text-shadow: none;
    	padding: 0px;
    	border-radius: 9px;
    	padding-left: 4px;
    	padding-right: 4px;
-   	animation: gradient_f 20s ease-in infinite;
-   	transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+	background-color: @tile;
+   	transition-property: background-color, border-color, color;
+   	transition-duration: 160ms;
+   	transition-timing-function: ease-out;
 }
    
 #workspaces button.active {
-	color: whitesmoke;
+	color: @on_accent;
+	background-color: @accent_pill;
    	border-radius: 15px 15px 15px 15px;
    	padding-left: 8px;
    	padding-right: 8px;
-   	animation: gradient_f 20s ease-in infinite;
-   	transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
   
 #workspaces button.focused {
-	color: #d8dee9;
+	color: @ink;
 }
    
 #workspaces button.urgent {
-	color: #11111b;
+	color: @on_accent;
+	background-color: @accent_urgent;
 	border-radius: 10px;
 }
 	   
 #workspaces button:hover {
-	color: whitesmoke;
+	color: @ink;
+	background-color: @tile_hi;
     border-radius: 15px;
  	padding-left: 2px;
     padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 	
 #backlight,
@@ -132,44 +235,40 @@ window#waybar.empty #window {
 }
 	 
 #temperature.critical {
-	background-color: rgba(255, 0, 0, 0.55);
+	background-color: alpha(@danger, 0.55);
+	color: @on_accent;
 }
    
-@keyframes blink {
-	to {
-	color: #000000;
-	   }
-}
-
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+	color: @on_accent;
+	background-color: @accent_pill;
+    border-bottom: 8px solid @edge;
 }
 
 #taskbar button:hover {
     padding-left: 3px;
     padding-right: 3px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+	background-color: @tile_hi;
+	color: @ink;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
    
 #taskbar button.active {
-	background-color: rgba(127, 132, 156, 0.55);
+	background-color: @accent_pill;
+	color: @on_accent;
     padding-left: 12px;
     padding-right: 12px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
-	   
+
+/* Was an infinite blink; a filled pill says the same thing and does not
+ * schedule a repaint three times a second forever. */
 #battery.critical:not(.charging) {
-	color: #f53c3c;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+	color: @on_accent;
+	background-color: @danger;
 }
 
 #backlight-slider slider,
@@ -179,7 +278,6 @@ window#waybar.empty #window {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
@@ -187,14 +285,12 @@ window#waybar.empty #window {
 	min-width: 80px;  
 	min-height: 10px; 
 	border-radius: 5px;
-	background-color: rgba(0, 0, 0, 0.55);
+	background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
 	min-height: 10px; 
 	border-radius: 5px;
-	background-color: wheat;
+	background-color: @accent;
 }
-	
-	

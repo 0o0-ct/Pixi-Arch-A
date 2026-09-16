@@ -1,5 +1,100 @@
 /* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
-/* ....[Colorful] Stolen ......... */
+/* ....[Colorful] Stolen — frosted glass, coloured by the wallpaper.........
+ * ==========================================================================
+ * The LAYOUT of this file is untouched: the selector set, the paddings, the
+ * outlined `border:` geometry and the module arrangement are exactly what it
+ * shipped with. Only the colour system changed — every label colour now comes
+ * from wallust, and the three module islands became panes of glass.
+ *
+ * THE IMPORT PATH (the one trap in this file)
+ * -------------------------------------------
+ * Waybar loads the symlink ~/.config/waybar/style.css, so GTK resolves a
+ * relative @import against ~/.config/waybar/ and the import must be
+ * "wallust/colors-waybar.css". "../wallust/" resolves to ~/.config/wallust,
+ * where there is no colours file; on waybar 0.15.0 a failed import throws and
+ * the style load dies rather than warning.
+ *
+ * A FILE MADE OF INK, NOT OF CHIPS
+ * --------------------------------
+ * This style never filled its modules — it drew outlined labels, so almost
+ * every colour here is a *text* colour, and text has to stay readable on the
+ * pane. That is why the ramp is used asymmetrically: the light end
+ * (@color13 - @color15, @foreground, @color8) carries the labels and the dark
+ * end is never used for text. The outlined `border: 2px solid #455a64` edges
+ * became the glass hairline `@edge`, and the two solid states (active
+ * workspace, urgent workspace) became the accent pill with the dark ink on it.
+ *
+ * WHY THE PANE IS TINTED *AND* LIFTED
+ * -----------------------------------
+ * @background is the wallpaper's darkest colour, so a tint built from it alone
+ * reads as a black rectangle on a dark wallpaper. The @color15 sheen gradient
+ * is what lifts the pane: the accent is both the hue and the light.
+ *
+ * THE GLASS IS NOT DONE IN CSS
+ * ----------------------------
+ * GTK3 has no backdrop-filter. The blur is Hyprland's (`blur 1` +
+ * `ignore_alpha`), which is why window#waybar stays fully transparent: the gaps
+ * between the islands must keep alpha 0 so they are not blurred.
+ *
+ * PERFORMANCE (the user is fighting heat; not stylistic choices)
+ * --------------------------------------------------------------
+ *   - box-shadow removed (3 uses here)
+ *   - no opacity on containers; translucency is rgba()/alpha()
+ *   - `transition: all` replaced with background-color / border-color / color
+ *     at 160ms
+ *   - the dead `animation: gradient_f ...` is gone: its @keyframes exists
+ *     nowhere in this repository, so it only cost a repaint budget
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window itself stays transparent so the space between the islands
+ * keeps alpha 0 and Hyprland's ignore_alpha leaves it unblurred. */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+/* The lit edge is what separates a pane of glass from a smear of colour. */
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+/* Secondary text is @foreground at 0.80, not @color15: @color15 is always the
+ * light end of wallust's ramp, so on a light palette it would be light text on
+ * a light pane. @foreground tracks the palette's contrast direction. */
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+/* `on_accent` is a literal near-black: CSS cannot branch on the palette, and
+ * dark ink on the light accent is the one pairing that stays readable on both
+ * a dark and a light palette. */
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: must stay red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
+
 * {
     font-family: "JetBrainsMono Nerd Font";
     font-weight: bold;
@@ -10,21 +105,37 @@
 }
 
 window#waybar {
-  transition-property: background-color;
-  transition-duration: 0.5s;
-  background: rgba(0, 0, 0, 0.8);
+  background: transparent;
   border-radius: 6px;
+  color: @ink;
 }
 
+/* Was `opacity: 0.2` on the whole window, which forces GTK to render the widget
+ * group offscreen. The bar is fully transparent here, so the dimming is dropped
+ * rather than faked with a banned property. */
 window#waybar.hidden {
-  opacity: 0.2;
+  background-color: transparent;
 }
 
 window#waybar.empty,
 window#waybar.empty #window {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: transparent;
   padding: 0px;
   border: 0px;
+}
+
+/* The three islands: wallpaper tint + sheen over Hyprland's blur. They carry no
+ * vertical margin of their own, so an auto-height bar does not grow. */
+.modules-left,
+.modules-center,
+.modules-right {
+  background-color: @pane;
+  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+  color: @ink;
+  border: 1px solid @edge;
+  border-top: 1px solid @edge_top;
+  border-radius: 16px;
+  padding: 2px 4px;
 }
 
 #backlight,
@@ -81,144 +192,156 @@ window#waybar.empty #window {
   padding-bottom: 2px;
   padding-right: 6px;
   padding-left: 6px;
+  transition-property: background-color, border-color, color;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
 }
 
 #workspaces button {
+  color: @ink_dim;
   padding-left: 10px;
   padding-right: 10px;
-  animation: gradient_f 20s ease-in infinite;
-  transition: all 0.1s linear;
+  transition-property: background-color, border-color, color;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
 }
 
 #workspaces button.persistent {
-  color: #faba4a;
+  color: @color7;
 }
 
 #workspaces button.empty {
-  color: #ffffed;
+  color: @ink;
 }
 
+/* The active workspace is the one solid note in the pane: the wallpaper's own
+ * light accent with the near-black ink on it. The 2px outline and the 16px
+ * radius are the file's own. */
 #workspaces button.active {
-  color: #00ffff;
-  border: 2px solid #455a64;
+  color: @on_accent;
+  background-color: @accent_pill;
+  border: 2px solid @edge_top;
   border-radius: 16px;
 }
 
 #workspaces button.urgent {
-  color: #f7768e;
-  border: 2px solid #f7768e;
+  color: @on_accent;
+  background-color: @accent_urgent;
+  border: 2px solid @accent_urgent;
   border-radius: 16px;
 }
 
 #workspaces button:hover {
-  border: 2px solid #455a64;
+  background-color: @tile_hi;
+  border: 2px solid @edge;
   border-radius: 16px;
 }
 
 #idle_inhibitor {
-  color: #7aa2f7;
-    border-bottom: 2px solid #455a64;
+  color: @color13;
+    border-bottom: 2px solid @edge;
 }
 
 #backlight {
-  color: #7aa2f7;
+  color: @color13;
 }
 
 #bluetooth {
-  color: #7aa2f7;
+  color: @color13;
 }
 
 #clock {
-  color: #9fe044;
+  color: @color15;
   padding-right: 7px;
 }
 
 #custom-swaync {
-  color: #9fe044;
-  border: 2px solid #455a64;
+  color: @color15;
+  border: 2px solid @edge;
   border-radius: 20px;
   padding-left: 13px;
   padding-right: 12px;
 }
 
 #custom-keyboard {
-  color: #e0af68;
-  border: 2px solid #455a64;
+  color: @color14;
+  border: 2px solid @edge;
   border-radius: 20px;
   padding-left: 14px;
   padding-right: 14px;
 }
 
 #custom-cycle_wall {
-  color: #c0caf5;
+  color: @ink;
   padding-left: 7px;
   padding-right: 4px;
 }
 
 #custom-hint {
-  color: #c0caf5;
+  color: @ink_dim;
   padding-left: 0px;
   padding-right: 4px;
 }
 
 #custom-github {
-  color: #c0caf5;
+  color: @ink_dim;
   padding-left: 0px;
   padding-right: 4px;
 }
 
 #custom-hyprWindowMode {
-  color: #c0caf5;
+  color: @ink;
   padding-left: 6px;
 }
 
 #custom-niflveil {
-  color: #7dcfff;
+  color: @color14;
   padding-left: 0px;
   padding-right: 10px;
 }
 
 #custom-niflveil.empty {
-  color: #c0caf5;
+  color: @ink_dim;
 
 }
 
 #cpu {
   padding-left: 10px;
   padding-right: 3px;
-  color: #ffffed;
-  border-top: 2px solid #455a64;
-  border-bottom: 2px solid #455a64;
-  border-left: 2px solid #455a64;
+  color: @ink;
+  border-top: 2px solid @edge;
+  border-bottom: 2px solid @edge;
+  border-left: 2px solid @edge;
   border-radius: 20px 0px 0px 20px;
 }
 
 #memory {
-  color: #ffffed;
+  color: @ink;
   padding-right: 8px;
-  border-bottom: 2px solid #455a64;
-  border-top: 2px solid #455a64;
+  border-bottom: 2px solid @edge;
+  border-top: 2px solid @edge;
   border-radius: 0px;
 }
 
 #temperature {
-  color: #ffffed;
-  border-bottom: 2px solid #455a64;
-  border-top: 2px solid #455a64;
+  color: @ink;
+  border-bottom: 2px solid @edge;
+  border-top: 2px solid @edge;
   border-radius: 0px;
 }
 
 #disk {
   padding-right: 16px;
-  color: #ffffed;
-  border-top: 2px solid #455a64;
-  border-bottom: 2px solid #455a64;
-  border-right: 2px solid #455a64;
+  color: @ink;
+  border-top: 2px solid @edge;
+  border-bottom: 2px solid @edge;
+  border-right: 2px solid @edge;
   border-radius: 0px 20px 20px 0px;
 }
 
 #temperature.critical {
-  background-color: rgba(247, 118, 142, 0.55);
+  background-color: alpha(@danger, 0.55);
+  color: @on_accent;
 }
 
 #tray > .passive {
@@ -230,30 +353,30 @@ window#waybar.empty #window {
 }
 
 #keyboard-state {
-  color: #c7a9ff;
+  color: @color8;
 }
 
 #custom-cava_mviz {
-  color: #c7a9ff;
+  color: @color8;
 }
 
 #custom-menu {
 
-  color: #7dcfff;
+  color: @color14;
   padding-left: 14px;
   padding-right: 12px;
 }
 
 #custom-power {
 
-  color: #f7768e;
+  color: @danger;
   padding-left: 8px;
   padding-right: 17px;
 }
 
 #custom-updater {
-  color: #f7768e;
-  border: 2px solid #455a64;
+  color: @danger;
+  border: 2px solid @edge;
   border-radius: 20px;
   padding-left: 10pt;
   padding-right: 12px;
@@ -261,48 +384,48 @@ window#waybar.empty #window {
 }
 
 #custom-light_dark {
-  color: #7aa2f7;
+  color: @color13;
 }
 
 #custom-weather {
-  color: #9fe044;
+  color: @color15;
 
 }
 
 #custom-speaker {
-  color: #faba4a;
+  color: @color7;
 }
 
 #pulseaudio {
-  color: #faba4a;
+  color: @color7;
 
 }
 
 #pulseaudio.bluetooth {
-  color: #c7a9ff;
+  color: @color8;
 }
 
 #pulseaudio.muted {
-  color: #f7768e;
+  color: @danger;
 }
 
 #window {
   font-size: 100%;
-  color: #ffffed;
+  color: @ink;
 }
 
 #mpris {
-  color: #bb9af7;
+  color: @color8;
 }
 
 #network {
-  color: #7dcfff;
+  color: @color14;
 }
 
 #network.disconnected,
 #network.disabled {
-  background-color: rgba(192, 202, 245, 0.55);
-  color: #000000;
+  background-color: alpha(@color15, 0.86);
+  color: @on_accent;
 }
 
 #pulseaudio-slider slider {
@@ -311,16 +434,17 @@ window#waybar.empty #window {
   opacity: 0;
   background-image: none;
   border: none;
-  box-shadow: none;
 }
 
 #pulseaudio-slider trough {
+  background-color: @tile;
   min-width: 80px;
   min-height: 5px;
   border-radius: 5px;
 }
 
 #pulseaudio-slider highlight {
+  background-color: @accent;
   min-height: 10px;
   border-radius: 5px;
 }
@@ -331,21 +455,22 @@ window#waybar.empty #window {
   opacity: 0;
   background-image: none;
   border: none;
-  box-shadow: none;
 }
 
 #backlight-slider trough {
+  background-color: @tile;
   min-width: 80px;
   min-height: 10px;
   border-radius: 5px;
 }
 
 #backlight-slider highlight {
+  background-color: @accent;
   min-width: 10px;
   border-radius: 5px;
 }
 
 #custom-separator {
   padding-left: 6px;
-  color: #f7768e;
+  color: @danger;
 }

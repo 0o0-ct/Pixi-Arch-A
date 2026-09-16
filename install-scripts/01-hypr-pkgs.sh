@@ -18,6 +18,8 @@ hypr_package=(
   curl 
   ffmpegthumbnailer
   file-roller
+  flatpak
+  gjs
   grim 
   gvfs 
   gvfs-afc
@@ -25,15 +27,20 @@ hypr_package=(
   gvfs-gphoto2
   gvfs-mtp
   gvfs-smb
+  hypridle
+  hyprlock
   hyprpolkitagent
+  hyprsunset
   imagemagick
   inxi 
   jq
   kitty
   kvantum
   libspng
+  matugen
   nano  
   network-manager-applet 
+  pacman-contrib
   pamixer 
   papirus-icon-theme
   pavucontrol
@@ -44,6 +51,7 @@ hypr_package=(
   qt5ct
   qt6ct
   qt6-svg
+  quickshell
   rofi-wayland
   slurp 
   swappy 

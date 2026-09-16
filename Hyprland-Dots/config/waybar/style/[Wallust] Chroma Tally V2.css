@@ -1,9 +1,72 @@
+
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
 /* Wallust - Chroma Tally v2 */
 
-/* edited by: https://github.com/prateekshukla1108 */ 
+/* edited by: https://github.com/prateekshukla1108 */
 
-@import '../../.config/waybar/wallust/colors-waybar.css';
+/* Frosted glass, coloured by the wallpaper. Tally v2's layout is kept as-is: a
+ * flat run of modules (5px/6px padding, no per-module tile) with 15px workspace
+ * pills, and the bar's signature 2px accent underline now sits under each
+ * island instead of under the whole window.
+ *
+ * The import below must stay the first rule, and its path is relative to
+ * ~/.config/waybar/ because waybar loads the symlink ~/.config/waybar/style.css
+ * and GTK resolves @import against the path of the file that was loaded.
+ * "../wallust/..." resolves to ~/.config/wallust/ and a failed import can kill
+ * waybar outright.
+ *
+ * Roles: @background = pane tint (the wallpaper's darkest colour, so the pane
+ * also needs the @color15 sheen to lift it or a dark wallpaper gives a black
+ * bar), @color15 = accent, @foreground = ink/edge, @color13 = urgent,
+ * @danger = the one semantic alert colour.
+ *
+ * Performance: no shadows, no container alpha, no looping animations.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * The bar window itself stays transparent so the space between the islands
+ * keeps alpha 0 and Hyprland's ignore_alpha leaves it unblurred. The blur is
+ * Hyprland's (layerrule blur + ignore_alpha); GTK3 cannot blur a backdrop.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);  /* hairline edge       */
+@define-color edge_top      alpha(@foreground, 0.32);  /* the lit top edge    */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+/* on_accent is a literal near-black: CSS cannot branch on the palette and dark
+ * ink on the light accent is the one pairing that reads on both a dark and a
+ * light palette. */
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: red stays red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
 
 * {
     font-family: "JetBrainsMono Nerd Font";
@@ -14,11 +77,32 @@
 }
 
 window#waybar {
-    background: alpha(@color0, 0.55); /* Dark background */
+    /* was alpha(@color0, 0.55) with a 12px radius and a 2px bottom border on the
+     * whole bar; the fill and the underline now live on the islands below. */
+    background: transparent;
+    color: @ink;
+}
+
+/* ---------------------------------------------------------------------------
+ * The three panes of glass
+ *
+ * background-color is the wallpaper tint, background-image is the sheen that
+ * falls from the lit top edge to the dim bottom one. GTK paints the colour
+ * first and the gradient over it, so the two together are the glass. Geometry
+ * echoes this file's 12px bar radius and keeps the 2px accent underline.
+ * ------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @ink;
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
+    border-bottom: 2px solid @accent;
     border-radius: 12px;
-    border-bottom: 2px;
-    border-style: solid;
-    border-color: @color7; /* Light border */
+    padding: 2px 6px;
+    margin: 2px 0;
 }
 
 #workspaces {
@@ -27,7 +111,7 @@ window#waybar {
     border-radius: 15px;
     border: 0px;
     font-style: normal;
-    color: @color7; /* Light text */
+    color: @ink;
 }
 
 #taskbar button,
@@ -35,37 +119,35 @@ window#waybar {
     padding: 0px 5px;
     border-radius: 15px;
     border: 0px;
-    color: @color7; /* Light text */
-    background: rgba(15, 20, 30, 0.55); /* Lighter gradient */
-    opacity: 0.5;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    color: @ink_dim;
+    background-color: @tile;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
+/* The active workspace is the one solid note in the pane: the wallpaper's own
+ * light accent with the near-black ink on it. */
 #taskbar button.active,
 #workspaces button.active {
     padding: 0px 5px;
     border-radius: 15px;
     border: 0px;
-    color: @color7; /* Light text */
-    background: rgba(15, 20, 30, 0.55); /* Lighter gradient */
-    opacity: 1.0;
+    color: @on_accent;
+    background-color: @accent_pill;
     min-width: 40px;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button:hover {
     border-radius: 15px;
-    color: @color7; /* Light text */
-    background: rgba(15, 20, 30, 0.55); /* Lighter gradient */
-    opacity: 0.8;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    color: @ink;
+    background-color: @tile_hi;
 }
 
 tooltip {
-    background: alpha(@color1, 0.55); /* Slightly darker tooltip background */
-    opacity: 0.8;
+    background-color: alpha(@background, 0.94);
     border-radius: 6px;
-    color: @color7; /* Light text */
+    color: @ink;
 }
 
 #backlight,
@@ -131,96 +213,87 @@ tooltip {
     padding-bottom: 5px;
     padding-right: 6px;
     padding-left: 6px;
-    color: @color6; /* Lighter - changed from color5 */
+    color: @ink;
 }
 
 #clock {
-    color: @color6; /* Lighter */
+    color: @ink;
 }
 
 #backlight {
-    color: @color5; /* Lighter */
+    color: @ink_dim;
 }
 
 #battery {
-    color: @color6; /* Lighter */
+    color: @ink;
 }
 
 #battery.charging {
-    color: @color7; /* Lightest */
+    color: @accent;
 }
 
-@keyframes blink {
-    to {
-        color: @color4; /* Slightly lighter blink color */
-        background-color: alpha(@color7, 0.55); /* Lightest */
-    }
-}
-
+/* Was a three-second looping blink; a filled alert pill says the same thing and
+ * does not schedule a repaint forever. */
 #battery.critical:not(.charging) {
-    background: alpha(@color5, 0.55); /* Lighter background */
-    color: @color7; /* Lightest */
-    animation-name: blink;
-    animation-duration: 3.0s;
-    animation-timing-function: steps(12);
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+    background-color: @danger;
+    color: @on_accent;
 }
 
 #cpu {
-    color: @color6; /* Lighter */
+    color: @ink;
 }
 
 #disk {
-    color: @color5; /* Lighter */
+    color: @ink_dim;
 }
 
 #custom-keyboard,
 #memory {
-    color: @color6; /* Lighter */
+    color: @ink_dim;
 }
 
 #network.disabled {
-    color: @color5; /* Lighter */
+    color: @danger;
 }
 
 #network{
-    color: @color6; /* Lighter */
+    color: @ink;
 }
 
 #network.disconnected {
-    color: @color5; /* Lighter */
+    color: @danger;
 }
 
 #pulseaudio {
-    color: @color7; /* Lightest */
+    color: @ink;
 }
 
 #pulseaudio.muted {
-    color: @color5; /* Lighter */
+    color: @ink_dim;
 }
 
 #custom-light_dark,
 #custom-nightlight,
 #temperature {
-    color: @color6; /* Lighter */
+    color: @ink;
 }
 
 #temperature.critical {
-    color: @color5; /* Lighter */
+    color: @danger;
 }
 
 #keyboard-state,
 #custom-hypridle,
 #idle_inhibitor {
-    color: @color5; /* Lighter */
+    color: @ink;
     border-bottom: 2px;
 }
 
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-    color: @color4; /* Slightly lighter */
+    color: @on_accent;
+    background-color: @accent_pill;
     border-bottom: 2px;
 }
 
@@ -229,12 +302,12 @@ tooltip {
 
 #custom-swaync,
 #custom-menu {
-    color: @color7; /* Lightest */
+    color: @accent;
     padding-left: 8px;
 }
 
 #custom-power{
-    color: @color6; /* Lighter */
+    color: @ink_dim;
 }
 
 #window{
@@ -243,38 +316,38 @@ tooltip {
 
 #custom-lock,    
 #bluetooth{
-    color: @color5; /* Lighter */
+    color: @ink_dim;
 }
 
 #custom-cava_mviz{
-    color: @color7; /* Lightest */
+    color: @accent;
 } 
  
 #custom-weather{
-    color: @color5; /* Lighter */
+    color: @ink_dim;
 }
 
 #backlight-slider slider,
 #pulseaudio-slider slider {
     min-width: 0px;
     min-height: 0px;
+    /* Slider thumbs are the one place container alpha is still allowed. */
     opacity: 0;
     background-image: none;
     border: none;
-    box-shadow: none;
 }
 
 #backlight-slider trough,
 #pulseaudio-slider trough {
+    background-color: @tile;
     min-width: 80px;
     min-height: 5px;
     border-radius: 5px;
-    background-color: alpha(@color2, 0.55); /* Slightly darker trough */
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
+    background-color: @accent;
     min-height: 10px;
     border-radius: 5px;
-    background-color: alpha(@color6, 0.55); /* Lighter highlight */
 }

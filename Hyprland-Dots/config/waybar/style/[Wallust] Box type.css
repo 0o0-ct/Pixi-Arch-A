@@ -1,7 +1,68 @@
-/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Wallust - Box type */
 
-@import "../../.config/waybar/wallust/colors-waybar.css";
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/* Wallust - Box type
+ * Frosted glass, coloured by the wallpaper. Box-type layout kept as-is: each
+ * module is still a box with a 5px accent underline under it.
+ *
+ * The import below must stay the first rule, and its path is relative to
+ * ~/.config/waybar/ because waybar loads the symlink ~/.config/waybar/style.css
+ * and GTK resolves @import against the path of the file that was loaded.
+ * "../wallust/..." resolves to ~/.config/wallust/ and a failed import can kill
+ * waybar outright.
+ *
+ * Roles: @background = pane tint (the wallpaper's darkest colour, so the pane
+ * also needs the @color15 sheen to lift it or a dark wallpaper gives a black
+ * bar), @color15 = accent, @foreground = ink/edge, @color13 = urgent,
+ * @danger = the one semantic alert colour.
+ *
+ * Performance: no shadows, no container alpha, no looping animations.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * The bar window itself stays transparent so the space between the islands
+ * keeps alpha 0 and Hyprland's ignore_alpha leaves it unblurred. The blur is
+ * Hyprland's (layerrule blur + ignore_alpha); GTK3 cannot blur a backdrop.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);  /* hairline edge       */
+@define-color edge_top      alpha(@foreground, 0.32);  /* the lit top edge    */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+/* on_accent is a literal near-black: CSS cannot branch on the palette and dark
+ * ink on the light accent is the one pairing that reads on both a dark and a
+ * light palette. */
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: red stays red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
 
 * {
   font-family: "JetBrainsMono Nerd Font";
@@ -14,17 +75,38 @@
 
 window#waybar {
   background: transparent;
+  color: @ink;
 }
 
-window#waybar.hidden {
-  opacity: 0.2;
-}
-
+/* The old `window#waybar.hidden { opacity: 0.2 }` fade is gone: alpha on a
+ * container makes GTK render the whole widget group offscreen. A hidden bar has
+ * nothing to show anyway. */
 window#waybar.empty,
 window#waybar.empty #window {
   background-color: transparent;
   padding: 0px;
   border: 0px;
+}
+
+/* ---------------------------------------------------------------------------
+ * The three panes of glass
+ *
+ * background-color is the wallpaper tint, background-image is the sheen that
+ * falls from the lit top edge to the dim bottom one. GTK paints the colour
+ * first and the gradient over it, so the two together are the glass. Geometry
+ * echoes this file's boxy 10px tiles.
+ * ------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+  background-color: @pane;
+  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+  color: @ink;
+  border: 1px solid @edge;
+  border-top: 1px solid @edge_top;
+  border-radius: 14px;
+  padding: 2px 5px;
+  margin: 2px 0;
 }
 
 #window {
@@ -38,44 +120,49 @@ window#waybar.empty #window {
 
 #taskbar button,
 #workspaces button {
-  color: @foreground;
-  box-shadow: none;
+  color: @ink_dim;
   text-shadow: none;
   padding: 0px;
   border-radius: 9px;
   padding-left: 4px;
   padding-right: 4px;
-  animation: gradient_f 20s ease-in infinite;
-  transition: all 0.5s cubic-bezier(0.55, -0.68, 0.48, 1.682);
+  background-color: @tile;
+  border: 1px solid transparent;
+  transition-property: background-color, border-color, color;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
 }
 
+/* The active workspace is the one solid note in the pane: the wallpaper's own
+ * light accent with the near-black ink on it. */
 #taskbar button.active,
 #workspaces button.active {
-  color: @color12;
-  background-color: alpha(@foreground, 0.55);
+  color: @on_accent;
+  background-color: @accent_pill;
+  border-color: @edge_top;
   padding-left: 4px;
   padding-right: 8px;
-  animation: gradient_f 20s ease-in infinite;
-  transition: all 0.3s cubic-bezier(0.55, -0.68, 0.48, 1.682);
 }
 
 #taskbar button.focused,
 #workspaces button.focused {
-  color: @color4;
+  color: @ink;
 }
 
 #workspaces button.urgent {
-  color: #11111b;
+  color: @on_accent;
+  background-color: @accent_urgent;
+  border-color: @accent_urgent;
   border-radius: 10px;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-  color: @color4;
+  color: @ink;
+  background-color: @tile_hi;
+  border-color: @edge;
   padding-left: 2px;
   padding-right: 8px;
-  animation: gradient_f 20s ease-in infinite;
-  transition: all 0.3s cubic-bezier(0.55, -0.68, 0.48, 1.682);
 }
 
 #backlight,
@@ -143,11 +230,12 @@ window#waybar.empty #window {
   padding-right: 10px;
   border-radius: 10px;
   transition: none;
-  color: @foreground;
-  background: alpha(@color0, 0.55);
+  color: @ink;
+  background-color: @tile;
+  /* The box-type signature: every module sits on a 5px accent underline. */
   border-bottom-width: 5px;
-  border-bottom-color: @color12;
   border-bottom-style: solid;
+  border-bottom-color: @accent;
 }
 
 #custom-power {
@@ -157,9 +245,10 @@ window#waybar.empty #window {
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-  color: #39ff14;
+  color: @on_accent;
+  background-color: @accent_pill;
     border-bottom-width: 5px;
-    border-bottom-color: @color12;
+    border-bottom-color: @accent;
     border-bottom-style: solid;
 }
 
@@ -168,8 +257,8 @@ window#waybar.empty #window {
 }
 
 #temperature.critical {
-  background-color: rgba(239, 68, 68, 0.55);
-  color: black;
+  background-color: alpha(@danger, 0.55);
+  color: @on_accent;
 }
 
 #mpris {
@@ -179,38 +268,30 @@ window#waybar.empty #window {
 #backlight {
   padding-right: 2px;
 }
-#battery.critical:not(.charging) {
-  background-color: rgba(255, 255, 255, 0.55);
-  color: #000000;
-  animation-name: blink;
-  animation-duration: 3s;
-  animation-timing-function: steps(12);
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  border-bottom-width: 5px;
-  border-bottom-color: @color12;
-  border-bottom-style: solid;
-}
 
-@keyframes blink {
-  to {
-    background-color: rgba(255, 255, 255, 0.55);
-    color: #000000;
-  }
+/* Was a three-second looping blink; a filled alert pill says the same thing
+ * and does not schedule a repaint forever. */
+#battery.critical:not(.charging) {
+  background-color: @danger;
+  color: @on_accent;
+  border-bottom-width: 5px;
+  border-bottom-color: @accent;
+  border-bottom-style: solid;
 }
 
 #backlight-slider slider,
 #pulseaudio-slider slider {
   min-width: 0px;
   min-height: 0px;
-  opacity: 10;
+  /* Slider thumbs are the one place container alpha is still allowed. */
+  opacity: 0;
   background-image: none;
   border: none;
-  box-shadow: @color12;
 }
 
 #backlight-slider trough,
 #pulseaudio-slider trough {
+  background-color: @tile;
   min-width: 80px;
   min-height: 5px;
   border-radius: 5px;
@@ -218,6 +299,7 @@ window#waybar.empty #window {
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
+  background-color: @accent;
   min-height: 10px;
   border-radius: 5px;
 }

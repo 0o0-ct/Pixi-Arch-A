@@ -1,5 +1,112 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Rainbow Spectrum */
+/* Rainbow Spectrum — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * The LAYOUT of this file is untouched: the selector set, the paddings, the
+ * radii and the module arrangement are exactly what it shipped with. Only the
+ * colour system changed — every chip now takes its fill from wallust's ramp
+ * instead of a fixed hex, and the three module islands became panes of glass.
+ *
+ * THE IMPORT PATH (the one trap in this file)
+ * -------------------------------------------
+ * Waybar loads the symlink ~/.config/waybar/style.css, so GTK resolves a
+ * relative @import against ~/.config/waybar/ and the import must be
+ * "wallust/colors-waybar.css". "../wallust/" resolves to ~/.config/wallust,
+ * where there is no colours file; on waybar 0.15.0 a failed import throws and
+ * the style load dies rather than warning.
+ *
+ * WHERE THE "SPECTRUM" WENT
+ * -------------------------
+ * The file used to hand out a fixed pastel per module, so the spectrum was the
+ * author's, not the wallpaper's. Each chip now takes one slot of wallust's
+ * light ramp (@color5 - @color15) and keeps the dark `on_accent` ink on it, so
+ * the variety is real but always in the wallpaper's key. The dark ramp
+ * (@color0 - @color4, @color9 - @color12) is deliberately unused for chips: a
+ * dark fill would swallow the label.
+ *
+ * WHY THE PANE IS TINTED *AND* LIFTED
+ * -----------------------------------
+ * @background is the wallpaper's darkest colour, so a tint built from it alone
+ * reads as a black rectangle on a dark wallpaper. The @color15 sheen gradient
+ * is what lifts the pane: the accent is both the hue and the light.
+ *
+ * THE GLASS IS NOT DONE IN CSS
+ * ----------------------------
+ * GTK3 has no backdrop-filter. The blur is Hyprland's (`blur 1` +
+ * `ignore_alpha`), which is why window#waybar stays fully transparent: the gaps
+ * between the islands must keep alpha 0 so they are not blurred.
+ *
+ * PERFORMANCE (the user is fighting heat; not stylistic choices)
+ * --------------------------------------------------------------
+ *   - box-shadow removed (3 uses here)
+ *   - no opacity on containers; translucency is rgba()/alpha()
+ *   - `transition: all` replaced with background-color / border-color / color
+ *     at 160ms
+ *   - the dead `animation: gradient_f ...` (its @keyframes exists nowhere) and
+ *     the looping `blink` battery animation are both gone; the critical state
+ *     is a static filled chip
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window itself stays transparent so the space between the islands
+ * keeps alpha 0 and Hyprland's ignore_alpha leaves it unblurred. */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+/* The lit edge is what separates a pane of glass from a smear of colour. */
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+/* Secondary text is @foreground at 0.80, not @color15: @color15 is always the
+ * light end of wallust's ramp, so on a light palette it would be light text on
+ * a light pane. @foreground tracks the palette's contrast direction. */
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+/* `on_accent` is a literal near-black: CSS cannot branch on the palette, and
+ * dark ink on a light chip is the one pairing that stays readable on both a
+ * dark and a light palette. */
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* The chip slots. Seven hues of the wallpaper's light ramp, dense enough that
+ * the dark ink reads on every one of them. */
+@define-color chip_a        alpha(@color5, 0.86);
+@define-color chip_b        alpha(@color6, 0.86);
+@define-color chip_c        alpha(@color7, 0.86);
+@define-color chip_d        alpha(@color8, 0.86);
+@define-color chip_e        alpha(@color13, 0.86);
+@define-color chip_f        alpha(@color14, 0.86);
+@define-color chip_g        alpha(@color15, 0.86);
+/* The recessed under-edge of a chip is the wallpaper's dark base: GTK3 CSS
+ * cannot darken a token, and a second ramp colour would read as a second hue. */
+@define-color chip_edge     alpha(@background, 0.60);
+
+/* Semantic, not decorative: must stay red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
 
 * {
 font-family: "JetBrainsMono Nerd Font";
@@ -11,13 +118,15 @@ font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
 window#waybar {
-  	background-color: rgba(0,0,0,0);
-  	transition-property: background-color;
-  	transition-duration: .5s;
+  	background-color: transparent;
+  	color: @ink;
 }
 
+/* Was `opacity: 0.5` on the whole window, which forces GTK to render the widget
+ * group offscreen. The bar is fully transparent here, so the dimming is dropped
+ * rather than faked with a banned property. */
 window#waybar.hidden {
-  	opacity: 0.5;
+  	background-color: transparent;
 }
 
 window#waybar.empty,
@@ -28,50 +137,65 @@ window#waybar.empty #window {
 }
 
 tooltip {
-	background: rgba(30, 30, 46, 0.55);
-	opacity: 0.8;
+	background-color: alpha(@background, 0.94);
+	color: @ink;
 	border-radius: 10px;
 	border-width: 2px;
 	border-style: solid;
-	border-color: #11111b;
+	border-color: @edge;
 }
 
 tooltip label{
-	color: #cdd6f4;
+	color: @ink;
+}
+
+/* The three islands: wallpaper tint + sheen over Hyprland's blur. They carry no
+ * vertical margin of their own, so an auto-height bar does not grow. */
+.modules-left,
+.modules-center,
+.modules-right {
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
+	border-radius: 16px;
+	padding: 2px 4px;
 }
 
 #taskbar button,
 #workspaces button {
-  	background-color: rgba(217, 224, 238, 0.55);
-  	color: #3A3B3C;
-    box-shadow: none;
-	text-shadow: none;
+  	background-color: @chip_c;
+  	color: @on_accent;
     padding: 0px;
     border-radius: 9px;
     padding-left: 4px;
     padding-right: 4px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-  	background-color: rgba(235, 160, 172, 0.55);
-  	color: #3A3B3C;
+  	background-color: @accent_pill;
+  	color: @on_accent;
     padding-left: 8px;
     padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-    background: rgba(235, 111, 146, 0.55);
-    color: #f6c177;
+    background-color: @chip_e;
+    color: @on_accent;
     padding-left: 3px;
     padding-right: 3px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #backlight,
@@ -135,64 +259,72 @@ tooltip label{
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
 	border-radius: 16px;
-  	color: #3A3B3C;
-  	border: 1px solid #b4befe;
+  	color: @ink;
+  	border: 1px solid @edge;
 	padding-top: 4px;
 	padding-bottom: 4px;
 	padding-right: 6px;
 	padding-left: 6px;
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
+}
+
+/* The chips below set the dark ink for themselves; this one is listed in the
+ * rule above as well, and takes its light fill from the workspaces rule, so it
+ * has to win the ink back after that rule. */
+#taskbar button {
+	color: @on_accent;
 }
 
 #backlight {
-	background-color: rgba(203, 166, 247, 0.55);
+	background-color: @chip_a;
+	color: @on_accent;
 }
 
 #battery {
-	background-color: rgba(249, 226, 175, 0.55);
+	background-color: @chip_c;
+	color: @on_accent;
 }
 
-@keyframes blink {
-		to {
-			color: #000000;
-		}
-}
-
+/* Was a 3s infinite `blink` (an animation that repaints forever and whose
+ * @keyframes dies with it). A static filled chip alerts just as loudly. */
 #battery.critical:not(.charging) {
-	background-color: rgba(243, 139, 168, 0.55);
-	color: #f38ba8;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+	background-color: alpha(@danger, 0.85);
+	color: @on_accent;
 }
 
 #clock {
-	background-color: rgba(166, 227, 161, 0.55);
+	background-color: @chip_e;
+	color: @on_accent;
 }
 
 #mpris {
-	background-color: rgba(250, 179, 135, 0.55);
-	color: black;
+	background-color: @chip_b;
+	color: @on_accent;
 }
 #custom-keyboard,
 #keyboard-state,
 #keyboard-state label,
 #keyboard-state label.locked,
 #cpu {
-	background-color: rgba(137, 220, 235, 0.55);
+	background-color: @chip_f;
+	color: @on_accent;
 }
 
 #memory {
-	background-color: rgba(235, 160, 172, 0.55);
+	background-color: @chip_d;
+	color: @on_accent;
 }
 
 #disk {
-	background-color: rgba(180, 190, 254, 0.55);
+	background-color: @chip_g;
+	color: @on_accent;
 }
 
 #tray {
-	background-color: rgba(180, 190, 254, 0.55);
+	background-color: @chip_g;
+	color: @on_accent;
 }
 #tray > .passive {
 		-gtk-icon-effect: dim;
@@ -202,21 +334,23 @@ tooltip label{
 }
 
 #custom-menu {
-	background-color: rgba(245, 194, 231, 0.55);
+	background-color: @chip_d;
 	/*padding: 1px;*/
 	padding-right: 10px;
 	border-radius: 16px;
-  	color: #3A3B3C;
-  	border: 1px solid #b4befe;
+  	color: @on_accent;
+  	border: 1px solid @edge;
 }
 
 #custom-power {
-	background-color: rgba(243, 139, 168, 0.55);
+	background-color: @chip_a;
+	color: @on_accent;
 	padding: 0px 0px 0px 6px;
 }
 
 #custom-updater {
-	background-color: rgba(230, 237, 123, 0.55);
+	background-color: @chip_c;
+	color: @on_accent;
 }
 
 #custom-cava_mviz,
@@ -225,39 +359,47 @@ tooltip label{
 #custom-file_manager,
 #custom-tty,
 #custom-settings {
-    background: rgba(15, 20, 30, 0.55);
+    /* Deliberately dark chips: they always carried the light ink. */
+    background-color: alpha(@background, 0.55);
+    color: @ink;
 }
 
 #custom-cycle_wall {
-	background-color: rgba(148, 226, 213, 0.55);
+	background-color: @chip_e;
+	color: @on_accent;
 }
 
 #custom-swaync,
 #custom-weather {
-	background-color: rgba(203, 166, 247, 0.55);
+	background-color: @chip_a;
+	color: @on_accent;
 }
 
 #custom-reboot,
 #wireplumber {
-	background-color: rgba(166, 227, 161, 0.55);
+	background-color: @chip_c;
+	color: @on_accent;
 }
 
 #wireplumber.muted {
-	background-color: rgba(49, 50, 68, 0.55);
-	color: #cdd6f4;
+	background-color: alpha(@background, 0.55);
+	color: @ink;
 }
 
 #custom-lock {
-	background-color: rgba(137, 220, 235, 0.55);
+	background-color: @chip_f;
+	color: @on_accent;
 }
 
 #custom-quit,
 #temperature {
-  	background-color: rgba(134, 180, 250, 0.55);
+  	background-color: @chip_g;
+	color: @on_accent;
 }
 
 #temperature.critical {
-  background-color: rgba(239, 68, 68, 0.55);
+  background-color: alpha(@danger, 0.85);
+  color: @on_accent;
 }
 
 #custom-power_vertical,
@@ -265,44 +407,53 @@ tooltip label{
 #custom-nightlight,
 #custom-hypridle,
 #idle_inhibitor {
-  	background-color: rgba(134, 180, 250, 0.55);
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+  	background-color: @chip_g;
+	color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 /*-----Indicators----*/
+/* `border-bottom: 8px` is this file's indicator bar, kept as it was and only
+ * retinted: it carries the wallpaper accent instead of neon green. */
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+	color: @on_accent;
+	background-color: @accent_pill;
+    border-bottom: 8px solid @accent;
 }
 
 #bluetooth {
-	background-color: rgba(137, 220, 235, 0.55);
+	background-color: @chip_e;
+	color: @on_accent;
 }
 #window {
-	background-color: rgba(137, 220, 235, 0.55);
+	background-color: @chip_e;
+	color: @on_accent;
 }
 
 #custom-hint,
 #pulseaudio {
-	background-color: rgba(250, 179, 135, 0.55);
+	background-color: @chip_b;
+	color: @on_accent;
 }
 
 #pulseaudio.bluetooth {
-	background-color: rgba(245, 194, 231, 0.55);
+	background-color: @chip_f;
+	color: @on_accent;
 }
 #pulseaudio.muted {
-	background-color: rgba(49, 50, 68, 0.55);
-	color: #cdd6f4;
+	background-color: alpha(@background, 0.55);
+	color: @ink;
 }
 
 #network {
-	background-color: rgba(137, 180, 250, 0.55);
+	background-color: @chip_d;
+	color: @on_accent;
 	padding-right: 12px;
 }
 #network.disconnected,#network.disabled {
-	background-color: rgba(49, 50, 68, 0.55);
-	color: #cdd6f4;
+	background-color: alpha(@background, 0.55);
+	color: @ink;
 }
 
 #backlight-slider slider,
@@ -312,11 +463,11 @@ tooltip label{
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
 #pulseaudio-slider trough {
+	background-color: @tile;
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
@@ -324,6 +475,7 @@ tooltip label{
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
+	background-color: @accent;
 	min-height: 10px;
 	border-radius: 5px;
 }

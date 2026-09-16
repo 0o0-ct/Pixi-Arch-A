@@ -1,7 +1,72 @@
 /* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
-/* Wallust Colored*/
+/* Wallust Colored — frosted glass driven by wallust.
+ *
+ * Only the colour system changed: every selector, radius, padding and margin
+ * below is the one this style always had.
+ *
+ * The blur is Hyprland's (`layerrule = blur 1`, `ignore_alpha`), so the bar
+ * window stays fully transparent and only the three .modules-* islands are
+ * tinted — the gaps between them must keep alpha 0 or they get blurred too and
+ * the islands stop reading as separate panes of glass.
+ *
+ * @background carries the wallpaper's hue, but on a dark wallpaper it is the
+ * darkest colour in the image, so a pane built from it alone reads as a black
+ * rectangle. The @color15 sheen gradient is what lifts it into glass.
+ * @foreground is the text and the lit hairline edge; @color15 at high alpha is
+ * the accent pill, with dark ink on top.
+ *
+ * The import is relative to ~/.config/waybar/ because waybar loads the symlink
+ * style.css: "../wallust/..." resolves to ~/.config/wallust/ and a failed
+ * import kills the bar on reload.
+ *
+ * Performance: no box-shadow, no opacity on containers, transitions animate
+ * only background-color/border-color/color, and the dead `gradient_f`
+ * animation plus the 3s battery blink (an endless repaint) are gone.
+ */
 
-@import '../../.config/waybar/wallust/colors-waybar.css';
+@import url("wallust/colors-waybar.css");
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: an alert must stay red whatever the wallpaper is.
+ * Same exception, and the same value, as the reference style. */
+@define-color danger        #ffa8a8;
+
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * The bar window itself stays transparent so the space between the islands
+ * keeps alpha 0 and Hyprland's ignore_alpha leaves it unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    color: @ink;
+    padding: 0px;
+    border: none;
+}
 
 * {
     font-family: "JetBrainsMono Nerd Font";
@@ -12,9 +77,9 @@
     font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
-window#waybar.hidden {
-    opacity: 0.5;
-}
+/* Was `window#waybar.hidden { opacity: 0.5 }`. Opacity on the bar container
+ * forces GTK to composite the whole widget group offscreen, so the hidden
+ * state is simply left to the window manager. */
 
 window#waybar,
 window#waybar.empty #window {
@@ -25,18 +90,29 @@ window#waybar.empty #window {
 
 
 tooltip {
-    background: alpha(@background, 0.55);
+    background: alpha(@background, 0.94);
+    background-color: alpha(@background, 0.94);
+    color: @ink;
     border-radius: 10px;
     border-width: 1px;
     border-style: solid;
-    border-color: @color15;
+    border-color: @edge;
+}
+
+tooltip label {
+    color: @ink;
 }
 
 /*-----module groups----*/
+/* The islands keep their own geometry (3px edge, asymmetric radii); only the
+ * fill, the sheen and the edge colour come from wallust now. */
 .modules-right {
-	border: 3px solid @color12;
+	border: 3px solid @edge;
+	border-top: 3px solid @edge_top;
 	border-radius: 40px 0px 0px 0px;
-	background-color: alpha(@color1, 0.55);
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 4px;
@@ -44,9 +120,12 @@ tooltip {
 }
 
 .modules-center {
-	border: 3px solid @color7;
+	border: 3px solid @edge;
+	border-top: 3px solid @edge_top;
 	border-radius: 60px 0px 60px 0px;
-	background-color: alpha(@background, 0.55);
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 4px;
@@ -54,9 +133,12 @@ tooltip {
 }
 
 .modules-left {
-	border: 3px solid @color12;
+	border: 3px solid @edge;
+	border-top: 3px solid @edge_top;
 	border-radius: 0px 0px 40px 0px;
-	background-color: alpha(@color1, 0.55);
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 4px;
@@ -65,47 +147,46 @@ tooltip {
 
 #taskbar button,
 #workspaces button {
-    color: @foreground;
-    box-shadow: none;
-	text-shadow: none;
+    color: @ink_dim;
+    text-shadow: none;
     padding: 0px;
     border-radius: 9px;
     padding-left: 4px;
     padding-right: 4px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    background-color: @tile;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-    color: @background;
-    background-color: alpha(@color7, 0.55);
+    color: @on_accent;
+    background-color: @accent_pill;
     padding-left: 8px;
     padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button.focused {
-    color: @color4;
+    color: @accent;
 }
 
 #workspaces button.urgent {
-    color: #11111b;
+    color: @on_accent;
+    background-color: @accent_urgent;
     border-radius: 10px;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-    color: @color4;
+    color: @ink;
+    background-color: @tile_hi;
     padding-left: 2px;
     padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #clock#2 {
-    color: @color6;
+    color: @accent;
 }
 
 #backlight,
@@ -167,37 +248,34 @@ tooltip {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-	color: @foreground;
+	color: @ink;
 	padding-top: 4px;
 	padding-bottom: 4px;
 	padding-right: 6px;
 	padding-left: 6px;
+	transition-property: background-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
 }
 
 #temperature.critical {
-    background-color: rgba(255, 0, 0, 0.55);
-}
-
-@keyframes blink {
-    to {
-        color: #000000;
-    }
+    color: @danger;
+    background-color: alpha(@danger, 0.18);
 }
 
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+	color: @on_accent;
+	background-color: @accent_pill;
+    border-bottom: 8px solid @accent;
 }
 
+/* Was a 3s infinite blink; a filled danger pill says the same thing without
+ * scheduling a repaint forever. */
 #battery.critical:not(.charging) {
-	color: #f53c3c;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+	color: @danger;
+	background-color: alpha(@danger, 0.18);
 }
 
 #backlight-slider slider,
@@ -207,11 +285,11 @@ tooltip {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
 #pulseaudio-slider trough {
+	background-color: @tile;
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
@@ -219,6 +297,7 @@ tooltip {
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
+	background-color: @accent;
 	min-height: 10px;
 	border-radius: 5px;
 }

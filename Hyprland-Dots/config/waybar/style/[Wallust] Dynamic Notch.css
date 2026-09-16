@@ -1,0 +1,219 @@
+/* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
+/* Wallust - Dynamic Notch Bar (Noctalia Style) — frosted glass.
+ *
+ * Layout untouched: the left/right islands keep their 18px radius, their
+ * 1px edge and their 14px outer margins, and the centre notch still hangs off
+ * the top of the screen with no top border and 0 0 22px 22px corners.
+ *
+ * Only the colour system changed. The blur is Hyprland's (`layerrule = blur 1`,
+ * `ignore_alpha`), so the bar window stays fully transparent and just the three
+ * islands are tinted; the gaps between them must keep alpha 0.
+ *
+ * @background is the wallpaper's darkest colour, so the islands need the
+ * @color15 sheen gradient to lift them off a dark wallpaper — without it the
+ * notch reads as a black tab. @foreground is the text and the lit top edge;
+ * @color15 at high alpha is the accent pill, with dark ink on top.
+ *
+ * The import is relative to ~/.config/waybar/ because waybar loads the symlink
+ * style.css: "../wallust/..." resolves to ~/.config/wallust/ and a failed
+ * import kills the bar on reload.
+ *
+ * Performance: no box-shadow (the notch stack had four of them), no opacity on
+ * containers, transitions animate only background-color/border-color/color, and
+ * the 1.5s infinite battery blink is now a static state.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color pane_deep     alpha(@background, 0.86);  /* the notch, denser   */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);
+@define-color tile_hi       alpha(@foreground, 0.13);
+
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: alerts stay red and charging stays green whatever
+ * the wallpaper is. Same exception the reference style makes for its danger
+ * colour. */
+@define-color danger        #ffa8a8;
+@define-color good          #a8e6a8;
+
+* {
+    font-family: "JetBrainsMono Nerd Font", "Outfit", "Inter", sans-serif;
+    font-weight: 700;
+    min-height: 0;
+    font-size: 13px;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+/* Remove full bar background strip completely */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    color: @ink;
+    padding: 0px;
+    border: none;
+}
+
+tooltip {
+    color: @ink;
+    background: alpha(@background, 0.94);
+    background-color: alpha(@background, 0.94);
+    border: 1px solid @edge;
+    border-radius: 12px;
+    padding: 8px 12px;
+}
+
+/* ----- Module Groups -----
+ * Fill + sheen + lit top edge are the glass; the geometry (margins, padding,
+ * radii, and the notch's missing top border) is exactly what this style had. */
+.modules-left {
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @ink;
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
+    border-radius: 18px;
+    margin-top: 6px;
+    margin-bottom: 4px;
+    margin-left: 14px;
+    margin-right: 4px;
+    padding: 2px 14px;
+}
+
+/* THE DYNAMIC NOTCH (Center Module - Touches top of screen seamlessly) */
+.modules-center {
+    background-color: @pane_deep;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @ink;
+    border-bottom: 2px solid @edge_top;
+    border-left: 1.5px solid @edge;
+    border-right: 1.5px solid @edge;
+    border-top: none;
+    border-radius: 0px 0px 22px 22px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 3px 24px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+.modules-center:hover {
+    background-color: alpha(@background, 0.92);
+    border-bottom-color: @accent;
+}
+
+.modules-right {
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @ink;
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
+    border-radius: 18px;
+    margin-top: 6px;
+    margin-bottom: 4px;
+    margin-right: 14px;
+    margin-left: 4px;
+    padding: 2px 14px;
+}
+
+/* ----- Workspace Buttons ----- */
+#workspaces button {
+    color: @ink_dim;
+    text-shadow: none;
+    padding: 2px 8px;
+    margin: 0 2px;
+    border-radius: 12px;
+    background-color: @tile;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#workspaces button.active {
+    color: @on_accent;
+    background-color: @accent_pill;
+    padding-left: 12px;
+    padding-right: 12px;
+    font-weight: 800;
+    border-radius: 14px;
+}
+
+#workspaces button:hover {
+    color: @ink;
+    background-color: @tile_hi;
+}
+
+/* ----- Individual Modules ----- */
+#clock,
+#battery,
+#pulseaudio,
+#temperature,
+#custom-weather,
+#custom-swaync,
+#custom-menu,
+#custom-power,
+#mpris,
+#tray {
+    color: @ink;
+    padding: 2px 8px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#custom-menu {
+    color: @accent;
+    font-size: 16px;
+    padding-right: 10px;
+}
+
+#custom-swaync {
+    color: @accent;
+    font-size: 15px;
+    padding-left: 8px;
+}
+
+#custom-power {
+    color: @danger;
+    font-size: 15px;
+    padding-left: 8px;
+    padding-right: 4px;
+}
+
+#temperature.critical {
+    color: @danger;
+    background-color: alpha(@danger, 0.18);
+    border-radius: 8px;
+}
+
+#battery.charging {
+    color: @good;
+}
+
+/* Was a 1.5s infinite blink; a filled danger pill alerts just as well and does
+ * not keep the compositor repainting. */
+#battery.critical:not(.charging) {
+    color: @on_accent;
+    background-color: @danger;
+}

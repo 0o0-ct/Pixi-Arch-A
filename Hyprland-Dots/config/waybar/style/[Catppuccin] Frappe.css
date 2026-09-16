@@ -1,5 +1,71 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Catppuccin Frappe */
+/* Catppuccin Frappe
+ *
+ *  Wallust-driven frosted glass. The Catppuccin Frappe hardcoding (and its
+ *  theme @import) is gone; the per-module colouring that this style is known
+ *  for survives as four tiers of the wallpaper ramp, assigned by how light the
+ *  original Catppuccin colour was:
+ *
+ *    @color15  <- rosewater / yellow      (clock, custom-menu)
+ *    @color7   <- green / mauve           (battery, cpu, window, mpris)
+ *    @color14  <- blue / sky / pink / ... (backlight, bluetooth, memory, ...)
+ *    @color8   <- sapphire / teal         (disk, pulseaudio, temperature, network)
+ *    @danger   <- red / maroon            (power, lock, updater, muted audio)
+ *
+ *  A wallust ramp is one hue family taken from the wallpaper, so the old
+ *  rainbow cannot survive as-is; the grouping keeps the "each module has its
+ *  own place in the palette" reading without reintroducing hardcoded colours.
+ *
+ *  The import base directory is ~/.config/waybar/ because waybar loads the
+ *  symlink ~/.config/waybar/style.css, so the path must stay exactly
+ *  "wallust/colors-waybar.css". "../wallust/..." resolves to
+ *  ~/.config/wallust/... and a failed import can kill the bar outright.
+ *
+ *  PERFORMANCE: no box-shadow (including the old `inset 0 -3px transparent`),
+ *  no opacity on containers, no `transition: all`, and the dead
+ *  `animation: gradient_f` references (that @keyframes exists nowhere in this
+ *  repo) are gone. The battery blink is now a static filled pill.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: power/lock/updater and alert states stay red. */
+@define-color danger        #ffa8a8;
+
 
 * {
 	font-family: "JetBrainsMono Nerd Font";
@@ -10,60 +76,69 @@
 	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
-@import "../waybar/style/catppuccin-themes/frappe.css";
-
+/* The bar itself is the pane of glass, keeping this style's 4px padding,
+ * its 10px radius, its lit top hairline and its 3px accent foot. */
 window#waybar {
   transition-property: background-color;
-  transition-duration: 0.5s;
+  transition-duration: 160ms;
   padding: 4px;
-  border-top: 1px solid @rosewater;
-  border-bottom: 3px solid @sapphire;
-  background: alpha(@crust, 0.4);
+  background-color: @pane;
+  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+  color: @ink;
+  border-top: 1px solid @edge_top;
+  border-bottom: 3px solid alpha(@accent, 0.75);
   border-radius: 10px;
 }
 
+/* Was `opacity: 0.2`, which makes GTK render the widget group offscreen;
+ * a thinner tint reads the same and costs nothing. */
 window#waybar.hidden {
-  opacity: 0.2;
+  background-color: alpha(@background, 0.25);
+  background-image: linear-gradient(180deg, alpha(@color15, 0.06) 0%, alpha(@color15, 0.04) 100%);
 }
 
 #taskbar button,
 #workspaces button {
-    box-shadow: none;
 	text-shadow: none;
     padding: 4px;
     border-radius: 9px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
 	border-radius: 10px;
-	color: @overlay0;
-	background-color: alpha(@surface0, 0.55);
+	color: @ink;
+	background-color: @tile_hi;
  	padding-left: 2px;
     padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #workspaces button.persistent {
-	color: @surface1;
+	color: @ink_dim;
 	border-radius: 10px;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-	color: @peach;
+	color: @on_accent;
+	background-color: @accent_pill;
   	border-radius: 10px;
     padding-left: 8px;
     padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #workspaces button.urgent {
-	color: @red;
+	color: @on_accent;
+	background-color: @accent_urgent;
  	border-radius: 0px;
 }
 
@@ -127,6 +202,7 @@ window#waybar.hidden {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
+	color: @ink;
 	padding-top: 4px;
 	padding-bottom: 4px;
 	padding-right: 6px;
@@ -136,62 +212,53 @@ window#waybar.hidden {
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 3px solid @sapphire;
+	color: @on_accent;
+	background-color: @accent_pill;
+    border-bottom: 3px solid alpha(@accent, 0.75);
 }
 
 #backlight {
-  	color: @blue;
+  	color: @color14;
 }
 
 #battery {
-  	color: @green;
+  	color: @color7;
 }
 
-@keyframes blink {
-  to {
-    color: @surface0;
-  }
-}
-
+/* Was a blinking animation; a filled pill alerts without repainting forever. */
 #battery.critical:not(.charging) {
-  	background-color: alpha(@red, 0.55);
-  	color: @theme_text_color;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
-  	box-shadow: inset 0 -3px transparent;
+  	background-color: @danger;
+  	color: @on_accent;
 }
 
 #bluetooth {
-	color: @blue;
+	color: @color14;
 }
 
 #clock {
-  	color: @yellow;
+  	color: @color15;
 }
 
 #cpu {
-  	color: @green;
+  	color: @color7;
 }
 
 #custom-keyboard,
 #memory {
-  	color: @sky;
+  	color: @color14;
 }
 
 #disk {
-  	color: @sapphire;
+  	color: @color8;
 }
 
 #temperature {
-  	color: @teal;
+  	color: @color8;
 }
 
 #temperature.critical {
-  	background-color: alpha(@red, 0.55);
+  	background-color: alpha(@danger, 0.85);
+  	color: @on_accent;
 }
 
 #tray > .passive {
@@ -202,64 +269,64 @@ window#waybar.hidden {
 }
 
 #keyboard-state {
-  	color: @flamingo;
+  	color: @color14;
 }
 
 #custom-cava_mviz {
-	color: @pink;
+	color: @color14;
 }
 
 #custom-menu {
-  	color: @rosewater;
+  	color: @color15;
 }
 
 #custom-power {
-  	color: @red;
+  	color: @danger;
 }
 
 #custom-updater {
-  	color: @red;
+  	color: @danger;
 }
 
 #custom-light_dark {
-  	color: @blue;
+  	color: @color14;
 }
 
 #custom-weather {
-  	color: @lavender;
+  	color: @color14;
 }
 
 #custom-lock {
-  	color: @maroon;
+  	color: @danger;
 }
 
 #pulseaudio {
-  	color: @sapphire;
+  	color: @color8;
 }
 
 #pulseaudio.bluetooth {
-  	color: @pink;
+  	color: @color14;
 }
 #pulseaudio.muted {
-  	color: @red;
+  	color: @danger;
 }
 
 #window {
-  	color: @mauve;
+  	color: @color7;
 }
 
 #mpris {
-  	color:@lavender;
+  	color:@color14;
 }
 
 #network {
-  	color: @teal;
+  	color: @color8;
 }
 
 #network.disconnected,
 #network.disabled {
-  	background-color: alpha(@surface0, 0.55);
-  	color: @text;
+  	background-color: @tile_hi;
+  	color: @ink;
 }
 
 #backlight-slider slider,
@@ -269,11 +336,11 @@ window#waybar.hidden {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
 #pulseaudio-slider trough {
+	background-color: @tile;
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
@@ -281,6 +348,7 @@ window#waybar.hidden {
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
+	background-color: @accent;
 	min-height: 10px;
 	border-radius: 5px;
 }

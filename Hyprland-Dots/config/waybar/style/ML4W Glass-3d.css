@@ -1,3 +1,74 @@
+/* ML4W GLASS THEME - 3D DARK OBSIDIAN GLASS — frosted glass, wallust-tinted
+ * ==========================================================================
+ * Layout untouched: the three islands still carry the same 1px border,
+ * 16px radius, `padding: 4px 14px` and `margin: 4px` they always did. Only
+ * the colour system changed.
+ *
+ * THE IMPORT PATH
+ * ---------------
+ * GTK resolves a relative @import against the file waybar actually loads,
+ * which is the SYMLINK ~/.config/waybar/style.css, so the base directory is
+ * ~/.config/waybar/ and wallust is imported as "wallust/colors-waybar.css".
+ * "../wallust/..." resolves to ~/.config/wallust/... and dies with
+ * "Failed to import", which on waybar 0.15.0 throws and can kill the bar.
+ *
+ * WHY WALLUST IS IMPORTED TWICE (second one is not a duplicate by accident)
+ * ------------------------------------------------------------------------
+ * The shared dependency `style/ML4W/glass.css` ends with
+ *     @define-color background @background;
+ * a self-reference. GTK resolves @define-color lazily against the final colour
+ * map, so that line does not "keep" the previous value — it leaves
+ * @background UNDEFINED, and takes every token derived from it down with it.
+ * Measured with a Gtk.CssProvider probe: `@define-color pane
+ * alpha(@background, 0.74)` declared *before* the self-reference still comes
+ * back UNDEFINED. Unrepaired, the island fill vanishes and only the sheen
+ * paints — a black bar, which is precisely the failure this migration is
+ * about. Re-asserting wallust's file after glass.css restores @background and
+ * @pane resolves. (The same bug affects RGB ML4W Glass.css, which imports the
+ * same shared file.)
+ *
+ * THE GLASS
+ * ---------
+ * window#waybar stays fully transparent so the gaps between the islands keep
+ * alpha 0 and Hyprland's `ignore_alpha 0.1` leaves them unblurred; the blur
+ * itself is Hyprland's (`blur 1`), never CSS. Each island gets the wallpaper
+ * tint plus the vertical refracting sheen — @background alone is the
+ * wallpaper's darkest colour, so without the sheen a dark wallpaper gives a
+ * black, non-glassy bar.
+ *
+ * TOKEN ROLES (wallust.toml declares palette = "dark16")
+ * ------------------------------------------------------
+ *   @background  -> @pane: pane body tint (@color15 for the sheen over it)
+ *   @color15     -> @accent / @accent_pill: active workspace, live states
+ *   @color13     -> @accent_urgent: urgent state
+ *   @foreground  -> @ink and alpha variants: text, dim text, tile lift,
+ *                   hairline edge (@edge) and lit top edge (@edge_top)
+ *
+ * The original text colour was literal #ffffff, which only worked because the
+ * old pane was a fixed dark navy; @ink follows the palette's contrast
+ * direction instead, and @on_accent (the one literal near-black) is the ink
+ * that sits on the light accent pill.
+ *
+ * PERFORMANCE: no GTK shadow properties anywhere (the inert shadow resets in
+ * the transparency block and on .modules-* went with them), no dimmed
+ * containers, transitions animate only background-color/border-color/color at
+ * 160ms (the old blanket transition shorthand is gone), and no animations.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
 /* ML4W GLASS THEME - 3D DARK OBSIDIAN GLASS */
 
 * {
@@ -15,39 +86,82 @@
 
 @import "style/ML4W/glass.css";
 
+/* Repair for glass.css's `@define-color background @background;` — see the
+ * header. Without this, @background and everything derived from it (including
+ * @pane) resolve to nothing and the island fill is dropped. */
+@import url("wallust/colors-waybar.css");
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);  /* hairline            */
+@define-color edge_top      alpha(@foreground, 0.32);  /* lit top edge        */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic: alert red must stay red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
+
 window#waybar {
   background: transparent;
   border: 0;
   outline: none;
+  color: @ink;
 }
 
+/* The islands. background-color is the tint, background-image is the sheen
+ * falling from the lit top edge to the dim bottom one; GTK paints the colour
+ * first and the gradient over it. */
 .modules-left,
 .modules-center,
 .modules-right {
-  background: rgba(8, 12, 22, 0.58);
+  background-color: @pane;
+  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+  color: @ink;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: none;
+  border: 1px solid @edge;
+  border-top-color: @edge_top;
   padding: 4px 14px;
   margin: 4px;
 }
 
 #taskbar button,
 #workspaces button {
-  color: #ffffff;
+  color: @ink_dim;
+  background-color: @tile;
+  border: 1px solid transparent;
   padding: 2px 6px;
   border-radius: 8px;
-  transition: all 0.3s ease;
+  transition-property: background-color, border-color, color;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-  background: rgba(255, 255, 255, 0.22);
-  color: #ffffff;
+  background-color: @tile_hi;
+  border-color: @edge;
+  color: @ink;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-  background: rgba(255, 255, 255, 0.32);
-  color: #ffffff;
+  background-color: @accent_pill;
+  border-color: @edge_top;
+  color: @on_accent;
 }

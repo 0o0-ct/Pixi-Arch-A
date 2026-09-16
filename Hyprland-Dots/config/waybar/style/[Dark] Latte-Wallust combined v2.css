@@ -1,24 +1,96 @@
+
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
 /* Catppuccin Latte - Wallust - v2 */
 
-@define-color white      	#F2F2F2;
-@define-color black      	#000000;
-@define-color text       	#FFFFFF;
-@define-color lightgray  	#686868;
-@define-color darkgray   	#353535;
+/* Catppuccin Latte - Wallust v2 — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Only the colour system changed: every selector, padding, margin and radius
+ * below is the one this style shipped with, including the 15px bar radius and
+ * the accented centre group.
+ *
+ *   @background -> pane tint            @color15 -> sheen, active pill, accent
+ *   @foreground -> text, tiles, edge    @color13 -> urgent pill, volume accent
+ *
+ * This style paints its pane on the bar window itself, so that is where the
+ * glass goes: a translucent @background tint, the @color15 refraction sheen
+ * that lifts it off the wallpaper, and a 1px lit top edge. A tint built from
+ * @background alone would read as a black bar, because @background is the
+ * darkest colour wallust extracts from the image.
+ *
+ * The centre group keeps its own tinted box and its wireframe edges — that is
+ * this version's identity — recoloured from this style's wallust ramp
+ * (@color11 tint, @color12 / @color13 edges) instead of hardcoded hex.
+ *
+ * The catppuccin palette names that used to colour individual modules
+ * (@sapphire, @mauve, @rosewater, @sky, @teal, @yellow, @red) are gone: they
+ * were hardcoded Latte hues that ignored the wallpaper. Module text is @ink
+ * now, which tracks the palette's contrast direction.
+ *
+ * The `latte.css` import below is left in place — it is a shared dependency
+ * owned by catppuccin-themes/, not this style, and nothing here reads from it
+ * any more.
+ *
+ * The blur is Hyprland's (`layerrule = match:namespace waybar, blur 1`), never
+ * CSS: GTK3 has no backdrop filter.
+ *
+ * The import path is the trap: waybar loads the symlink
+ * ~/.config/waybar/style.css, so GTK resolves relative imports against
+ * ~/.config/waybar/, hence "wallust/colors-waybar.css". A failed import does
+ * not merely warn on waybar 0.15.0 — it kills the bar.
+ *
+ * PERFORMANCE (the user is fighting heat)
+ * ---------------------------------------
+ *   - no box-shadow anywhere
+ *   - no opacity on containers (#workspaces used `opacity: 0.8`; it is a
+ *     dimmed ink + tile fill now, so GTK never renders the group offscreen)
+ *   - transitions animate only background-color / border-color / color
+ *   - the dead animation references (their keyframes exist nowhere) and the
+ *     critical-battery blink is now a static filled pill.
+ */
 
-@define-color transparent	rgba(1, 1, 1, 0.5);
-@define-color teal-trans	rgba(1, 117, 84, 0.5);
-@define-color cyan			rgba(53, 140, 169, 1);
-
-@define-color background-module     @background;
-@define-color background-module2	@color11;
-@define-color border-color          @color12;
-@define-color button-color          @color10;
-@define-color button-hover          @color13;
-
-@import '../../.config/waybar/wallust/colors-waybar.css';
+@import url("wallust/colors-waybar.css");
 @import "../waybar/style/catppuccin-themes/latte.css";
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * The space Hyprland's ignore_alpha covers stays at alpha 0 and unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);
+@define-color sheen_top     alpha(@color15, 0.20);
+@define-color sheen_bot     alpha(@color15, 0.12);
+
+@define-color tile          alpha(@foreground, 0.05);
+@define-color tile_hi       alpha(@foreground, 0.13);
+
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic: stays red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
+/* This style's own wallust ramp, kept for the centre group's edges. */
+@define-color border-color  @color12;
+@define-color button-hover  @color13;
 
 * {
     font-family: "JetBrainsMono Nerd Font";
@@ -30,8 +102,15 @@
 }
 
 window#waybar {
-    background: alpha(@background, 0.55);
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @ink;
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
     border-radius:15px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 	padding-top: 2px;
 	padding-bottom: 0px;
 	padding-right: 4px;
@@ -39,12 +118,12 @@ window#waybar {
 }
 
 tooltip {
-    background: rgba(30, 30, 46, 0.55);
+    background-color: alpha(@background, 0.94);
     border-radius: 12px;
     border-width: 1px;
     border-style: solid;
     border-color: @border-color;
-    color: #ffffff;
+    color: @ink;
 }
 
 #workspaces {
@@ -53,55 +132,59 @@ tooltip {
     border-bottom: 2px solid @border-color;
     font-weight: bold;
     font-style: normal;
-    opacity: 0.8;
+    color: @ink_dim;
+    background-color: @tile;
 }
 
 #taskbar button,   
 #workspaces button {
-    color: @foreground;
-    box-shadow: none;
-	text-shadow: none;
+    color: @ink_dim;
+    background-color: @tile;
+    border: 1px solid transparent;
     border-radius: 30px;
     padding-left: 4px;
     padding-right: 4px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-    color: #ffd700;
+    color: @on_accent;
     border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.55);
+    background-color: @accent_pill;
+    border-color: @edge_top;
     border-radius: 15px;
     padding-left: 8px;
     padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button.focused {
-    color: #d8dee9;
+    color: @ink;
 }
 
 #workspaces button.urgent {
-    color: #11111b;
+    color: @on_accent;
+    background-color: @accent_urgent;
+    border-color: @accent_urgent;
     border-radius: 10px;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-    color: #ffd700;
+    color: @ink;
+    background-color: @tile_hi;
+    border-color: @edge;
     border-radius: 10px;
  	padding-left: 2px;
     padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 /*-----module groups----*/
 .modules-center {
-    background-color: alpha(@background-module2, 0.55);
+    background-color: alpha(@color11, 0.55);
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
     border-radius: 10px;
     padding: 4px;
 	border-bottom: 2px solid @border-color;
@@ -168,19 +251,14 @@ tooltip {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-    color: @foreground;
+    color: @ink;
 	padding-right: 6px;
 	padding-left: 6px;;
 }
 
 #temperature.critical {
-    background-color: rgba(255, 0, 0, 0.55);
-}
-
-@keyframes blink {
-    to {
-        color: #000000;
-    }
+    background-color: @danger;
+    color: @on_accent;
 }
 
 #backlight-slider slider,
@@ -190,7 +268,6 @@ tooltip {
     opacity: 0;
     background-image: none;
     border: none;
-    box-shadow: none;
 }
 
 #backlight-slider trough,
@@ -198,14 +275,14 @@ tooltip {
     min-width: 80px;
     min-height: 5px;
     border-radius: 5px;
-    background-color: rgba(34, 37, 42, 0.55);
+    background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
     min-height: 10px;
     border-radius: 5px;
-    background-color: rgba(186, 86, 99, 0.55);
+    background-color: @accent;
 }
 
 #pulseaudio-slider,
@@ -214,59 +291,56 @@ tooltip {
 }
 
 #pulseaudio.muted {
-    color: red;
+    color: @danger;
 }
 
 #memory {
-	color: @sapphire;
+	color: @ink;
 }
 
 #cpu {
-	color: @mauve;
+	color: @ink;
 }
 
 #battery {
-	color: @rosewater;
+	color: @ink;
 }
 
 #disk {
-	color: @sky;
+	color: @ink;
 }
 
 #temperature.critical {
-    background-color: alpha(@red, 0.55);
+    background-color: @danger;
 }
 
+/* Was a 3s infinite blink; a filled pill alerts without repainting forever. */
 #battery.critical:not(.charging) {
-	color: #f53c3c;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+	color: @on_accent;
+	background-color: @danger;
 }
 
 #custom-hypridle,
 #custom-lock,
 #idle_inhibitor {
-    color: @teal;
+    color: @ink;
     border-bottom: 2px solid @border-color;
 }
 
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
+	color: @accent;
     border-bottom: 2px solid @border-color;
 }
 
 #clock {
-	color: @foreground;
+	color: @ink;
     border-radius: 15px;
 }
 
 #custom-updates {
-    color: @yellow;
+    color: @ink;
 }
 #swaync{
-    color: #ffd700;}
+    color: @accent;}

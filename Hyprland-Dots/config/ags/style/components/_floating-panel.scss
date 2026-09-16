@@ -1,0 +1,119 @@
+@use "../layouts" as *;
+@use "../abstracts" as *;
+@use "sass:color";
+
+/* ── Container ── */
+.floating-panel-container {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Trigger strip (always visible) ── */
+.floating-panel-trigger {
+  min-width: 6px;
+  min-height: 80px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px 0 0 3px;
+  transition: background 0.3s ease;
+  margin: 0;
+  padding: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.45);
+  }
+}
+
+/* ── Main panel ── */
+.floating-panel {
+  background: linear-gradient(
+    135deg,
+    rgba(20, 20, 30, 0.85),
+    rgba(15, 15, 20, 0.7)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: none;
+  border-radius: 18px 0 0 18px;
+  box-shadow:
+    -8px 8px 32px rgba(0, 0, 0, 0.45),
+    -2px 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  padding: 6px 8px 6px 12px;
+  margin: 0;
+  -gtk-icon-size: $font;
+
+  & > box {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* ── Icon buttons ── */
+.floating-panel-btn {
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 12px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  border: none;
+  box-shadow: none;
+  transition: all 0.25s ease;
+  padding: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  &:active {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  image {
+    -gtk-icon-size: 18px;
+    margin: 0;
+  }
+}
+
+/* ── Accent button (edit) ── */
+.floating-panel-btn-accent {
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 50%;
+  background: $primary_container;
+  color: $on_primary_container;
+  border: none;
+  box-shadow:
+    0 4px 16px rgba($primary_container, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+  margin-left: 4px;
+
+  &:hover {
+    background: color.adjust($primary_container, $alpha: +0.1);
+    box-shadow:
+      0 6px 24px rgba($primary_container, 0.45),
+      0 3px 10px rgba(0, 0, 0, 0.4);
+  }
+
+  &:active {
+    background: color.adjust($primary_container, $alpha: -0.1);
+  }
+
+  image {
+    -gtk-icon-size: 16px;
+    margin: 0;
+  }
+}
+
+/* ── Separator ── */
+.floating-panel separator {
+  background: rgba(255, 255, 255, 0.08);
+  min-width: 1px;
+  min-height: 24px;
+  margin: 7px 4px;
+}

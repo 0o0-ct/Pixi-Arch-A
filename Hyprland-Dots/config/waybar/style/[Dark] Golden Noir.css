@@ -1,6 +1,82 @@
+
 /* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
 /* ...............Golden Noir................ */
 /* --- 👍 designed by https://github.com/Krautt  👍 --- */
+
+/* Golden Noir — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Only the colour system changed. Every selector, padding, margin and radius
+ * below is the one this style shipped with, including the 30px bar radius and
+ * the 2px tooltip border.
+ *
+ *   @background -> pane tint            @color15 -> sheen, accent, active pill
+ *   @foreground -> text, tiles, edge    @color13 -> urgent pill
+ *
+ * This style paints its pane on the bar window itself, so that is where the
+ * glass goes: a translucent @background tint, the @color15 refraction sheen
+ * that lifts it off the wallpaper, and a lit top edge. A tint made from
+ * @background alone would read as a black bar on a dark wallpaper, because
+ * @background is the darkest colour wallust extracts from the image.
+ *
+ * The `#ffd700` gold this file was built around is now @color15 — the same
+ * role, but taken from the wallpaper instead of hardcoded.
+ *
+ * The blur is Hyprland's (`layerrule = match:namespace waybar, blur 1`), never
+ * CSS: GTK3 has no backdrop filter.
+ *
+ * The import path is the trap: waybar loads the symlink
+ * ~/.config/waybar/style.css, so GTK resolves relative imports against
+ * ~/.config/waybar/, hence "wallust/colors-waybar.css". A failed import does
+ * not merely warn on waybar 0.15.0 — it kills the bar.
+ *
+ * PERFORMANCE (the user is fighting heat)
+ * ---------------------------------------
+ *   - no box-shadow anywhere
+ *   - no opacity on containers (translucency is rgba/alpha instead)
+ *   - transitions animate only background-color / border-color / color
+ *   - the dead animation references (their keyframes exist nowhere) and the
+ *     critical-battery blink is now a static filled pill.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * Keep the bar window clean so the space Hyprland's ignore_alpha covers stays
+ * unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);
+@define-color sheen_top     alpha(@color15, 0.20);
+@define-color sheen_bot     alpha(@color15, 0.12);
+
+@define-color tile          alpha(@foreground, 0.05);
+@define-color tile_hi       alpha(@foreground, 0.13);
+
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic: stays red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
 
 * {
     font-family: "JetBrainsMono Nerd Font";
@@ -12,23 +88,31 @@
 }
 
 window#waybar {
-    background: rgba(4, 4, 6, 0.55);
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @ink;
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
     border-radius: 30px;
-    color: #cba6f7;
-
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
+/* Was `opacity: 0.5` on the window — a container opacity makes GTK render the
+ * widget group offscreen. Dropping the pane fill hides it just as well. */
 window#waybar.hidden {
-    opacity: 0.5;
+    background-color: transparent;
+    background-image: none;
 }
 
 tooltip {
-    background: rgba(30, 30, 46, 0.55);
+    background-color: alpha(@background, 0.94);
     border-radius: 10px;
     border-width: 2px;
     border-style: solid;
-    border-color: #11111b;
-    color: #ffd700;
+    border-color: @edge;
+    color: @ink;
 }
 
 /*-----module groups----*/
@@ -41,9 +125,10 @@ tooltip {
 
 }
 
+/* The gold hairline that framed the centre group is now the wallpaper accent. */
 .modules-center {
-    border-left: 1px solid #ffd700;
-    border-right: 1px solid #ffd700;
+    border-left: 1px solid @accent;
+    border-right: 1px solid @accent;
     border-radius: 20px;
 	padding-top: 2px;
 	padding-bottom: 2px;
@@ -53,46 +138,48 @@ tooltip {
 
 #taskbar button,
 #workspaces button {
-    color: #6E6A86;
-    box-shadow: none;
-	text-shadow: none;
+    color: @ink_dim;
+    background-color: @tile;
+    border: 1px solid transparent;
     padding: 0px;
     border-radius: 9px;
     padding-left: 4px;
     padding-right: 4px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-    color: #ffd700;
+    color: @on_accent;
     border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.55);
+    background-color: @accent_pill;
+    border-color: @edge_top;
     border-radius: 15px 15px 15px 15px;
     padding-left: 8px;
     padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button.focused {
-    color: #d8dee9;
+    color: @ink;
 }
 
 #workspaces button.urgent {
-    color: #11111b;
+    color: @on_accent;
+    background-color: @accent_urgent;
+    border-color: @accent_urgent;
     border-radius: 10px;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-    color: #ffd700;
+    color: @ink;
+    background-color: @tile_hi;
+    border-color: @edge;
     border-radius: 15px;
  	padding-left: 2px;
     padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #backlight,
@@ -154,7 +241,7 @@ tooltip {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-    color: #e5d9f5;
+    color: @ink;
 	padding-top: 5px;
 	padding-bottom: 5px;
 	padding-right: 6px;
@@ -162,29 +249,21 @@ tooltip {
 }
 
 #temperature.critical {
-    background-color: rgba(255, 0, 0, 0.55);
-}
-
-@keyframes blink {
-    to {
-        color: #000000;
-    }
+    background-color: @danger;
+    color: @on_accent;
 }
 
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+	color: @accent;
+    border-bottom: 8px solid @accent;
 }
 
+/* Was a 3s infinite blink; a filled pill alerts without repainting forever. */
 #battery.critical:not(.charging) {
-	color: #f53c3c;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+	color: @on_accent;
+	background-color: @danger;
 }
 
 #backlight-slider slider,
@@ -194,7 +273,6 @@ tooltip {
     opacity: 0;
     background-image: none;
     border: none;
-    box-shadow: none;
 }
 
 #backlight-slider trough,
@@ -202,12 +280,12 @@ tooltip {
     min-width: 80px;
     min-height: 5px;
     border-radius: 5px;
-    background-color: rgba(34, 37, 42, 0.55);
+    background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
     min-height: 10px;
     border-radius: 5px;
-    background-color: rgba(186, 86, 99, 0.55);
+    background-color: @accent;
 }

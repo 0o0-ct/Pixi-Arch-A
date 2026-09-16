@@ -1,4 +1,91 @@
-/* ML4W GLASS THEME - ANIMATED RGB EDITION */
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+
+/* ML4W GLASS THEME — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * The LAYOUT of this file is untouched: the 16px island radius, the 2.5px
+ * frame, the 4px 12px island padding/margin, the 10px button radius and the
+ * 2px 6px button padding are exactly what it shipped with. Only the colour
+ * system changed — every colour now comes from wallust.
+ *
+ * THE ANIMATION IS GONE ON PURPOSE
+ * --------------------------------
+ * `ml4w-rgb-cycle` was a 6s `linear infinite` @keyframes stepping the island
+ * border through six hardcoded colours. A looping animation repaints the pane
+ * forever, which is the exact cost this pass exists to remove. The identity
+ * survives as a static frame: a hairline @edge around the pane with a lit
+ * accent top edge (`@rim_top`), so the frame still takes its colour from the
+ * wallpaper instead of a frozen hex.
+ *
+ * THE IMPORT PATH (the one trap in this file)
+ * -------------------------------------------
+ * Waybar loads the symlink ~/.config/waybar/style.css, so GTK resolves a
+ * relative @import against ~/.config/waybar/ and the path must stay exactly
+ * "wallust/colors-waybar.css". "../wallust/colors-waybar.css" resolves to
+ * ~/.config/wallust/colors-waybar.css, dies with "Failed to import", and on
+ * waybar 0.15.0 that failure takes the bar down, not just the rule.
+ * Checked with a Gtk.CssProvider probe: this line resolves @foreground,
+ * @background and @color15, and the derived @pane/@sheen_top come out as
+ * #191B1B @ 0.74 and #B0CFCE @ 0.20; the "../wallust/" form fails to load.
+ *
+ * The shared token-only import "style/ML4W/glass.css" was dropped: it defined
+ * nothing but aliases of wallust tokens this file never referenced (it even
+ * redefined @background as itself), so it was pure load-path weight.
+ *
+ * THE GLASS IS NOT DONE HERE
+ * --------------------------
+ * GTK3 has no backdrop-filter; the blur is Hyprland's (`layerrule blur` plus
+ * `ignore_alpha`). That is why window#waybar stays fully transparent — the
+ * gaps between the islands keep alpha 0 and are left unblurred.
+ *
+ * PERFORMANCE (the user is fighting CPU/GPU heat)
+ * -----------------------------------------------
+ * no drop shadows, no opacity on containers, no blanket transition (only
+ * background-color/color at 160ms) and no looping animation anywhere.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles (see [Colorful] Aurora Blossom.css for the rationale)
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);  /* the pane hairline   */
+@define-color edge_top      alpha(@foreground, 0.32);  /* lit top edge        */
+/* This file's stand-in for the retired RGB cycle: the wallpaper's light
+ * accent as the lit rim, so the frame still tracks the wallpaper. */
+@define-color rim_top       alpha(@color15, 0.65);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: a critical battery stays red whatever the
+ * wallpaper is. */
+@define-color danger        #ffa8a8;
+
 
 * {
   background-color: transparent;
@@ -13,18 +100,6 @@
   padding-bottom: 2px;
 }
 
-@import "style/ML4W/glass.css";
-
-@keyframes ml4w-rgb-cycle {
-    0%   { border-color: #0D1E4C; }
-    16%  { border-color: #C48CB3; }
-    33%  { border-color: #E5C9D7; }
-    50%  { border-color: #83A6CE; }
-    66%  { border-color: #26415E; }
-    83%  { border-color: #0B1B32; }
-    100% { border-color: #0D1E4C; }
-}
-
 window#waybar {
   background: transparent;
   border: 0;
@@ -34,31 +109,37 @@ window#waybar {
 .modules-left,
 .modules-center,
 .modules-right {
-  background: rgba(10, 15, 26, 0.65);
-  border: 2.5px solid #0D1E4C;
+  background-color: @pane;
+  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+  color: @ink;
+  border: 2.5px solid @edge;
+  border-top: 2.5px solid @rim_top;
   border-radius: 16px;
-  animation: ml4w-rgb-cycle 6s linear infinite;
   padding: 4px 12px;
   margin: 4px;
-  box-shadow: none;
 }
 
 #taskbar button,
 #workspaces button {
-  color: #cdd6f4;
+  color: @ink_dim;
+  background-color: @tile;
   padding: 2px 6px;
   border-radius: 10px;
-  transition: all 0.3s ease;
+  transition-property: background-color, color;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background-color: @tile_hi;
+  color: @ink;
 }
 
+/* The active workspace is the one solid note in the pane: the wallpaper's own
+ * light accent, with dark ink on top. */
 #taskbar button.active,
 #workspaces button.active {
-  background: rgba(255, 255, 255, 0.28);
-  color: #ffffff;
+  background-color: @accent_pill;
+  color: @on_accent;
 }

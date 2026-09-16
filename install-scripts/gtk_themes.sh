@@ -47,4 +47,12 @@ else
     echo "$ERROR Error al descargar los temas GTK e Iconos.." 2>&1 | tee -a "$LOG"
 fi
 
+# Installing papirus-folders for dynamic folder colors in file manager
+if ! command -v papirus-folders &>/dev/null && [ ! -f "$HOME/.local/bin/papirus-folders" ]; then
+    echo "$NOTE Instalando herramienta papirus-folders..." 2>&1 | tee -a "$LOG"
+    mkdir -p "$HOME/.local/bin"
+    wget -qO "$HOME/.local/bin/papirus-folders" https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-folders/master/papirus-folders
+    chmod +x "$HOME/.local/bin/papirus-folders"
+fi
+
 printf "\n%.0s" {1..2}

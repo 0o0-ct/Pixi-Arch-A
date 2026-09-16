@@ -1,7 +1,87 @@
+
 /* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
 /* ..........Half Moon.................. */
 /* NOTE: This is only for some waybar configs */
 /* --- 👍 shared by https://github.com/TomekBobrowicz  👍 --- */
+
+/* Half Moon — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Only the colour system changed: every selector, margin, padding, radius and
+ * the module arrangement below are the ones this style shipped with.
+ *
+ * WHERE THE GLASS GOES IN THIS STYLE
+ * ----------------------------------
+ * Half Moon does not draw panes on the module groups — the bar window is
+ * already transparent and each module is its own floating 50px pill. So the
+ * pills *are* the glass here, and they get the full treatment: a translucent
+ * @background tint, the @color15 refraction sheen that lifts them off the
+ * wallpaper, and a 1px lit top edge. The bar window itself keeps alpha 0 so
+ * the gaps between the pills stay unblurred by Hyprland's ignore_alpha.
+ *
+ * (#taskbar, #workspaces are pinned to `border: 0px` by this style, so they
+ * keep their borderless edge and only take the tint and the sheen.)
+ *
+ *   @background -> pill tint            @color15 -> sheen, accent, active pill
+ *   @foreground -> text, tiles, edge    @color13 -> urgent pill
+ *
+ * The blur is Hyprland's (`layerrule = match:namespace waybar, blur 1`), never
+ * CSS: GTK3 has no backdrop filter.
+ *
+ * The import path is the trap: waybar loads the symlink
+ * ~/.config/waybar/style.css, so GTK resolves relative imports against
+ * ~/.config/waybar/, hence "wallust/colors-waybar.css". A failed import does
+ * not merely warn on waybar 0.15.0 — it kills the bar.
+ *
+ * PERFORMANCE (the user is fighting heat)
+ * ---------------------------------------
+ *   - no box-shadow anywhere
+ *   - no opacity on containers or buttons: the inactive/active/hover dimming
+ *     that used `opacity: 0.5 / 1.0 / 0.8` is now expressed with rgba fills and
+ *     dimmed ink, so GTK never renders a widget group offscreen
+ *   - transitions animate only background-color / border-color / color
+ *   - the unused `gradient_horizontal` / `swiping` keyframes and the
+ *     `blink` animation are gone; critical battery is a static filled pill.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * The bar window keeps alpha 0 so Hyprland's ignore_alpha leaves the space
+ * between the pills unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);
+@define-color sheen_top     alpha(@color15, 0.20);
+@define-color sheen_bot     alpha(@color15, 0.12);
+
+@define-color tile          alpha(@foreground, 0.05);
+@define-color tile_hi       alpha(@foreground, 0.13);
+
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic: stays red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
 
 * {
     font-family: "JetBrainsMono Nerd Font";
@@ -14,10 +94,10 @@
 
 
 window#waybar {
-  background-color: rgba(26,27,38,0);
-  border-bottom: 1px solid rgba(26,27,38,0);
+  background-color: transparent;
+  border-bottom: 1px solid transparent;
   border-radius: 0px;
-  color: #E6B673;
+  color: @ink;
 }
 
 #waybar.empty, #waybar.tiled, #waybar.floating {
@@ -29,15 +109,18 @@ window#waybar.empty #window {
     background-color: transparent;
 }
 
+/* The workspaces/taskbar group pill. This style pins it to `border: 0px`, so
+ * it takes the tint and the sheen but keeps its borderless edge. */
 #taskbar,
 #workspaces {
-  background: rgba(15, 20, 25, 0.55);
+  background-color: @pane;
+  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
   margin: 5px;
   padding: 0px 1px;
   border-radius: 15px;
   border: 0px;
   font-style: normal;
-  color: #0F1419;
+  color: @ink_dim;
 }
 
 #taskbar button,
@@ -46,10 +129,11 @@ window#waybar.empty #window {
   margin: 4px 3px;
   border-radius: 15px;
   border: 0px;
-  color: #0F1419;
-  background: rgba(15, 20, 30, 0.55);
-  opacity: 0.5;
-  transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+  color: @ink_dim;
+  background-color: @tile;
+  transition-property: background-color, border-color, color;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
 }
 
 #taskbar button.active,
@@ -58,55 +142,39 @@ window#waybar.empty #window {
   margin: 4px 3px;
   border-radius: 15px;
   border: 0px;
-  color: #0F1419;
-  background: rgba(15, 20, 30, 0.55);
-  opacity: 1.0;
+  color: @on_accent;
+  background-color: @accent_pill;
   min-width: 40px;
-  transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+  transition-property: background-color, border-color, color;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
 }
 
 #workspaces button:hover {
   border-radius: 15px;
-  color: #0F1419;
-  background: rgba(15, 20, 30, 0.55);
-  opacity: 0.8;
-  transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
-
-}
-@keyframes gradient_horizontal {
-0% {
-  background-position: 0% 50%;
-	}
-50% {
-  background-position: 100% 50%;
-	}
-100% {
-  background-position: 0% 50%;
-	}
-}
-
-@keyframes swiping {
-0% {
-  background-position: 0% 200%;
-	}
-100% {
-  background-position: 200% 200%;
-	}
+  color: @ink;
+  background-color: @tile_hi;
+  transition-property: background-color, border-color, color;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
 }
 
 tooltip {
-background: rgba(15, 20, 25, 0.55);
-border: 1px solid #D2A6FF;
+background-color: alpha(@background, 0.94);
+border: 1px solid @edge;
 border-radius: 10px;
 }
 
 tooltip label {
-color: #F3F4F5;
+color: @ink;
 }
 
 #window {
-	color: #E6E1CF;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -114,8 +182,11 @@ color: #F3F4F5;
 
 #temperature,
 #memory {
-	color: #E6B673;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -128,8 +199,11 @@ color: #F3F4F5;
 #custom-hypridle,
 #idle_inhibitor,
 #clock {
-	color: #B8CC52;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -138,13 +212,16 @@ color: #F3F4F5;
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 1px solid rgba(26,27,38,0);
+	color: @accent;
+    border-bottom: 1px solid transparent;
 }
 
 #bluetooth {
-	color: blue;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -154,16 +231,22 @@ color: #F3F4F5;
 #power-profiles-daemon,
 #custom-cycle_wall,
 #cpu {
-	color: #F3F4F5;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
 }
 
 #disk {
-	color: #B8CC52;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -171,16 +254,22 @@ color: #F3F4F5;
 
 #backlight,
 #battery {
-	color: #F07178;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
 }
 
 #mpris {
-	color: #F07178;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding-left: 8px;
@@ -188,49 +277,66 @@ color: #F3F4F5;
 }
 
 #backlight {
-	color: white;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
 }
 
 #network {
-	color: #FF8F40;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
 }
 
 #custom-hyprbindings {
-	color: #D2A6FF;
-	background: rgba(15, 20, 25, 0.55);
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
 }
 
 #tray {
-	color: #E6E1CF;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
 }
 
 #pulseaudio {
-	color: #59C2FF;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
 }
 
 #custom-notification {
-	color: #95E6CB;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -243,37 +349,52 @@ color: #F3F4F5;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
-	color: #0F1419;
-    background: rgba(15, 20, 30, 0.55);
+	color: @ink_dim;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 }
 
 #custom-weather {
-	color: #59C2FF;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
 }
 
 #custom-menu {
-	color: #59C2FF;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 0px 15px 50px 0px;
 	margin: 5px 5px 5px 0px;
 	padding: 1px 15px;
 }
 
 #custom-power {
-	color: #D2A6FF;
-	background: rgba(15, 20, 25, 0.55);
+	color: @ink;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 15px 0px 0px 50px;
 	margin: 5px 0px;
 	padding: 2px 5px 2px 15px;
 } 
 
 #custom-lock {
-	color: red;
-	background: rgba(15, 20, 25, 0.55);
+	color: @danger;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
@@ -281,20 +402,20 @@ color: #F3F4F5;
 
 #custom-power_vertical,
 #keyboard-state {
-	color: green;
-	background: rgba(15, 20, 25, 0.55);
+	color: @accent;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	border: 1px solid @edge;
+	border-top: 1px solid @edge_top;
 	border-radius: 50px 50px;
 	margin: 5px;
 	padding: 2px 15px;
 }
 
+/* Was a 3s infinite blink; a filled pill alerts without repainting forever. */
 #battery.critical:not(.charging) {
-	color: #f53c3c;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+	color: @on_accent;
+	background-color: @danger;
 }
 
 #backlight-slider slider,
@@ -304,7 +425,6 @@ color: #F3F4F5;
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
@@ -312,12 +432,12 @@ color: #F3F4F5;
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
-	background-color: rgba(110, 106, 134, 0.55);
+	background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
 	min-height: 10px;
 	border-radius: 5px;
-	background-color: purple;
+	background-color: @accent;
 }

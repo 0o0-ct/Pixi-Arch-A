@@ -1,5 +1,82 @@
+
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+
+/* Light - MonoChrome Contrast — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Full rationale and the measurements live in [Colorful] Aurora Blossom.css,
+ * the reference implementation. The short version:
+ *
+ *   @background -> pane tint (hue carrier)      @color15 -> sheen + accent
+ *   @foreground -> text, dim text, lit edge     @color13 -> urgent pill
+ *
+ * The @import path is the one trap: GTK resolves it against the directory of
+ * the SYMLINK waybar actually loads (~/.config/waybar/style.css), so it must be
+ * "wallust/colors-waybar.css". "../wallust/..." resolves to ~/.config/wallust/
+ * and a failed import can kill the bar outright on waybar 0.15.0.
+ *
+ * WHAT CHANGED AND WHAT DID NOT
+ * -----------------------------
+ * The monochrome palette (rgba(255,255,255,.55) islands, black text, grey
+ * buttons) is gone. Layout is untouched: same selectors, same radii (10px
+ * islands, 9px buttons that grow to 8px padding when active), same paddings,
+ * same 2px border-bottom edge — only its colour moved to the wallust edge
+ * roles, with the lit role on the bottom edge the file already had.
+ *
+ * Note the name: this style used to be "Light" because the islands were white
+ * and the ink black. wallust's palette is dark16, so @background is dark and
+ * @foreground is light, which flips the whole thing to a dark pane with light
+ * ink. That is the intended migration — the tint now follows the wallpaper
+ * instead of being a fixed white — but the "Light" in the filename no longer
+ * describes the pixels. Set wallust.toml to a light16 palette to get a light
+ * pane back; the roles are the same and the design reads either way because
+ * @foreground always tracks the palette's contrast direction.
+ *
+ * PERFORMANCE (the user is fighting heat): no box-shadow, no opacity on
+ * containers, transitions only on background-color/border-color/color, the dead
+ * `gradient_f` animation removed and the infinite battery `blink` replaced by a
+ * static filled state.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * The bar window itself stays transparent so the space between the islands
+ * keeps alpha 0 and Hyprland's ignore_alpha leaves it unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
 /* Light - MonoChrome Contrast */
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles (same mapping as the reference style)
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* button fill         */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* hover fill          */
+
+@define-color edge          alpha(@foreground, 0.16);  /* hairline            */
+@define-color edge_top      alpha(@foreground, 0.32);  /* lit edge            */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;   /* near-black ink, readable on any accent */
+
+@define-color danger        #ffa8a8;   /* semantic red, wallpaper-independent  */
 
 * {
 font-family: "JetBrainsMono Nerd Font";
@@ -16,30 +93,32 @@ window#waybar.empty #window {
     background-color: transparent;
     padding: 0px;
     border: 0px;
+    color: @ink;
 }
 
 tooltip {
-	color: white;
-	background: rgba(30, 30, 46, 0.55);
-	opacity: 0.8;
+	color: @ink;
+	background-color: alpha(@background, 0.94);
 	border-radius: 10px;
 	border-width: 2px;
 	border-style: solid;
-	border-color: white;
+	border-color: @edge;
 }
 
 tooltip label{
-	color: #cdd6f4;
+	color: @ink;
 }
 /*-----module groups----*/
 .modules-left,
 .modules-center,
 .modules-right {
-	background-color: rgba(255, 255, 255, 0.55);
-	color: black;
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
 	border-bottom: 2px;
 	border-style: solid;
-	border-color: black;
+	border-color: @edge;
+	border-bottom-color: @edge_top;
 	border-radius: 10px;
 	padding-top: 2px;
 	padding-bottom: 2px;
@@ -50,34 +129,40 @@ tooltip label{
 /*-----modules indv----*/
 #taskbar button,
 #workspaces button {
-	color: black;
-    box-shadow: none;
-	text-shadow: none;
+	color: @ink_dim;
+    text-shadow: none;
+    background-color: @tile;
+    border: 1px solid transparent;
     padding: 0px;
     border-radius: 9px;
     padding-left: 4px;
     padding-right: 4px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 #taskbar button:hover,
 #workspaces button:hover {
-	color: grey;
-	background-color: rgba(0,153,153,0.2);
+	color: @ink;
+	background-color: @tile_hi;
+	border-color: @edge;
     padding-left: 2px;
     padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-	background-color: grey;
-	color: black;
+	background-color: @accent_pill;
+	color: @on_accent;
+	border-color: @edge_top;
     padding-left: 8px;
     padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #workspaces button.persistent {
@@ -143,6 +228,7 @@ tooltip label{
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
+	color: @ink;
 	padding-top: 4px;
 	padding-bottom: 4px;
 	padding-right: 6px;
@@ -154,30 +240,23 @@ tooltip label{
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+	color: @on_accent;
+	background-color: @accent_pill;
+    border-bottom: 8px solid alpha(@foreground, 0.2);
 }
 
 #pulseaudio.muted {
-	color: #cc3436;
+	color: @danger;
 }
 #temperature.critical {
-	color: #cc3436;
+	color: @danger;
 }
 
-@keyframes blink {
-	to {
-		color: #000000;
-	}
-}
-
+/* Was an infinite blinking animation: a filled pill says the same thing
+ * without scheduling a repaint forever. */
 #battery.critical:not(.charging) {
-	color: #f53c3c;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+	color: @on_accent;
+	background-color: @danger;
 }
 
 #backlight-slider slider,
@@ -187,7 +266,6 @@ tooltip label{
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
@@ -195,11 +273,12 @@ tooltip label{
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
-	background-color: grey;
+	background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
 	min-height: 10px;
 	border-radius: 5px;
+	background-color: @accent;
 }

@@ -1,6 +1,93 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/*  Vertical Catpuccin Mocha */
-/*  As stated on title, best style for vertical layout waybar config */
+/*  Vertical Catpuccin Mocha
+ *  As stated on title, best style for vertical layout waybar config
+ *
+ *  Wallust-driven frosted glass. Every colour now comes from the wallpaper
+ *  palette; the Catppuccin Mocha hardcoding (and its theme @import) is gone.
+ *
+ *  THE IMPORT PATH (the one trap here)
+ *  -----------------------------------
+ *  GTK resolves a relative @import against the file waybar actually loads,
+ *  which is the SYMLINK ~/.config/waybar/style.css. The base directory is
+ *  therefore ~/.config/waybar/ and the path must stay exactly
+ *  "wallust/colors-waybar.css". "../wallust/colors-waybar.css" resolves to
+ *  ~/.config/wallust/... and dies with "Failed to import" — on waybar 0.15.0
+ *  that failure takes the bar down, not just the rule.
+ *
+ *  VERTICAL LAYOUT — how the islands work here
+ *  -------------------------------------------
+ *  The vertical configs ($HOME/.config/waybar/configs/[LEFT] WestWing and
+ *  friends) stack modules-left / modules-center / modules-right down the
+ *  column, so the three panes of glass land as three stacked slabs with
+ *  waybar's own "spacing" between them and the column's own margins at the
+ *  screen edges. window#waybar therefore stays fully transparent: the gaps
+ *  keep alpha 0, Hyprland's ignore_alpha leaves them unblurred, and the
+ *  islands read as separate panes.
+ *  The file's own 5px corner radius is kept on the islands (it used to sit on
+ *  the window), and every module padding below is untouched.
+ *  NB: the sibling file "[0 VERTICAL] [Catpuccin] Mocha.css" made the whole
+ *  strip the pane instead; if the two must look identical, that is the one
+ *  line to change.
+ *
+ *  WHAT REPLACED WHAT
+ *  ------------------
+ *  @base/@surface0 pane tints -> @pane + the @color15 sheen gradient
+ *  @surface2/@rosewater/@blue/@mauve/... module text -> @ink (one coherent
+ *      text colour, the wallpaper's @foreground)
+ *  @red lock/power           -> @danger (semantic: session controls)
+ *  @maroon active workspace  -> @accent_pill with @on_accent ink
+ *  #39FF14-style indicators  -> the accent pill
+ *  @sapphire/@flamingo/#89b4fa/#a6e3a1 hardcoded module colours -> gone
+ *
+ *  Refraction: the pane tint alone is @background, the wallpaper's darkest
+ *  colour, which reads as a black strip on a dark wallpaper. The @color15
+ *  sheen gradient is what lifts it into glass.
+ *
+ *  PERFORMANCE: no drop shadows, no opacity on containers, no blanket
+ *  transition (only background-color/border-color/color at 160ms) and no
+ *  looping animation — the 0.5s battery blink is now a static filled pill.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles (see [Colorful] Aurora Blossom.css for the rationale)
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: critical states and the lock/power controls stay
+ * red on any wallpaper. */
+@define-color danger        #ffa8a8;
+
 
 * {
 	font-family: "JetBrainsMono Nerd Font";
@@ -11,57 +98,77 @@
 	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
-@import "../waybar/style/catppuccin-themes/mocha.css";
-
 window#waybar {
-  background-color: alpha(@base, 0.55);
+  background-color: transparent;
   border-radius: 5px;
+  color: @ink;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * The three panes of glass, stacked down the column
+ * ------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+  background-color: @pane;
+  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+  color: @ink;
+  border: 1px solid @edge;
+  border-top: 1px solid @edge_top;
+  border-radius: 5px;
+  padding: 3px 6px;
+  margin: 3px 0;
 }
 
 tooltip {
-  background: alpha(@base, 0.55);
-  opacity: 1;
+  background-color: alpha(@background, 0.94);
+  color: @ink;
   border-radius: 10px;
   border-width: 2px;
   border-style: solid;
-  border-color: @sapphire;
+  border-color: @edge;
 }
 
 tooltip label {
-  color: @blue;
+  color: @ink;
 }
 
 #taskbar button,
 #workspaces button {
-  color: @surface2;
-  background-color: transparent;
+  color: @ink_dim;
+  background-color: @tile;
   	padding-top: 4px;
 	padding-bottom: 4px;
 	padding-right: 6px;
 	padding-left: 4px;
+  transition-property: background-color, border-color, color;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-  color: @maroon;
+  color: @on_accent;
+  background-color: @accent_pill;
 }
 
 #workspaces button.focused {
-  color: @rosewater;
+  color: @ink;
   background: transparent;
   border-radius: 15px;
 }
 
 #workspaces button.urgent {
-  color: #11111b;
-  background: transparent;
+  color: @on_accent;
+  background: @accent_urgent;
   border-radius: 15px;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-  background: transparent;
-  color: @flamingo;
+  background: @tile_hi;
+  color: @ink;
   border-radius: 15px;
 }
 
@@ -125,7 +232,7 @@ tooltip label {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-  opacity: 1;
+  color: @ink;
   padding-top: 4px;
   padding-bottom: 4px;
   padding-right: 6px;
@@ -133,39 +240,30 @@ tooltip label {
 }
 
 #idle_inhibitor {
-  color: @pink;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+  color: @ink;
+    border-bottom: 8px solid @edge;
 }
 
 #mpris {
-  color: @rosewater;
+  color: @ink;
 }
 
 #battery {
-  color: #a6e3a1;
+  color: @ink;
   padding-left: 15px;
   border-radius: 15px 0 0 15px;
 }
 
-@keyframes blink {
-  to {
-    background-color: rgba(255, 255, 255, 0.55);
-    color: #333333;
-  }
-}
-
+/* Was a 0.5s infinite blink; a filled pill says the same thing and does not
+ * schedule a repaint twice a second forever. */
 #battery.critical:not(.charging) {
-  color: #f53c3c;
-  animation-name: blink;
-  animation-duration: 0.5s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
+  color: @on_accent;
+  background-color: @danger;
 }
 
 #custom-lock,
 #custom-power {
-  color: @red;
+  color: @danger;
   border-radius: 15px;
   font-weight: bolder;
   padding-left: 1px;
@@ -173,36 +271,36 @@ tooltip label {
 
 #network {
   background-color: transparent;
-  color: @mauve;
+  color: @ink;
 }
 
 #backlight {
-  color: @flamingo;
+  color: @ink;
 }
 
 
 #custom-weather {
-  color: @green;
+  color: @ink;
   border-radius: 15px;
   background-color: transparent;
 }
 
 #custom-menu {
-  color: #89b4fa;
+  color: @ink;
 }
 
 #pulseaudio {
   background-color: transparent;
-  color: @blue;
+  color: @ink;
 }
 
 #clock,
 #clock-calender {
-  color: @sapphire;
+  color: @ink;
 }
 
 #custom-dots {
-  color: @sapphire;
+  color: @ink;
 }
 
 #backlight-slider slider,
@@ -210,9 +308,8 @@ tooltip label {
   min-height: 7px;
   min-width: 15px;
   opacity: 0;
-  background-color: alpha(@text, 0.55);
+  background-color: @tile;
   border-radius: 3px;
-  box-shadow: 1px 5px 6px 1px #272727;
 }
 
 #backlight-slider trough,
@@ -220,12 +317,12 @@ tooltip label {
   min-height: 100px;
   min-width: 7px;
   border-radius: 5px;
-  background-color: alpha(@surface0, 0.55);
+  background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
   min-width: 5px;
   border-radius: 5px;
-  background-color: alpha(@blue, 0.55);
+  background-color: @accent;
 }

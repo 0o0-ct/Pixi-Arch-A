@@ -1,7 +1,75 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
 /* Dark - Obsidian Edge */
 
-@import '../../.config/waybar/wallust/colors-waybar.css';
+/* Obsidian Edge — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * This style already leaned on wallust, but it drove a black window slab
+ * (rgba(0,0,0,0.55)) and kept a few hardcoded catppuccin/gruvbox leftovers
+ * (#d8dee9, #11111b, #39FF14, #f53c3c). All of that is gone: the bar window is
+ * now fully transparent and the glass lives on the three islands, so the gaps
+ * between them stay alpha 0 for Hyprland's ignore_alpha.
+ *
+ * Layout untouched: island radius 10px, module radius 8px, the 4px button
+ * padding, the 15px active radius and every padding value are the original
+ * ones. The island border was `0px solid #b4befe` — invisible and hardcoded —
+ * so the pane now carries the glass edge instead: 1px @edge, with the lit
+ * 1px @edge_top along the top. The indicator states lose their
+ * `border-bottom: 8px solid rgba(0, 0, 0, 0.2)` bar for the same accent pill
+ * the reference uses. See [Colorful] Aurora Blossom.css for the wallust role
+ * reasoning.
+ *
+ * The import path must be exactly "wallust/colors-waybar.css" — the file above
+ * used a roundabout '../../.config/waybar/wallust/...', which is fragile;
+ * GTK resolves a relative import against ~/.config/waybar/ because the file
+ * waybar loads is the symlink ~/.config/waybar/style.css.
+ *
+ * Performance: no box-shadow, no opacity on containers, transitions only on
+ * background-color / border-color / color (160ms), no animations (the dead
+ * `gradient_f` references and the 3s battery blink are removed).
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The window itself must stay transparent so the space between the islands
+ * keeps alpha 0 and is not blurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);  /* hairline edge       */
+@define-color edge_top      alpha(@foreground, 0.32);  /* lit top edge        */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;                   /* dark ink on accent  */
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: stays red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
 
 * {
 font-family: "JetBrainsMono Nerd Font";
@@ -13,32 +81,36 @@ font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
 window#waybar {
-    background: rgba(0, 0, 0, 0.55);
-	border-radius: 12px;
-}
-
-window#waybar.hidden {
-    opacity: 0.5;
+    background: transparent;
+    border-radius: 12px;
+    color: @ink;
 }
 
 tooltip {
-	color: @foreground;
-    background: rgba(0, 0, 0, 0.8);
+	color: @ink;
+    background: alpha(@background, 0.94);
+    border: 1px solid @edge;
     border-radius: 10px;
 }
 
 tooltip label {
-    color: @foreground;
+    color: @ink;
     padding-right: 2px;
     padding-left: 2px;
 }
 
-/*-----module groups----*/
+/*-----module groups----
+ * The islands: wallpaper tint + refraction sheen + a lit top edge.
+ * ------------------------------------------------------------------------- */
 .modules-left,
 .modules-center,
 .modules-right {
-    border: 0px solid #b4befe;
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
     border-radius: 10px;
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @ink;
 	padding-top: 2px;
 	padding-bottom: 2px;
     padding-right: 4px;
@@ -47,42 +119,47 @@ tooltip label {
 
 #taskbar button,
 #workspaces button {
-    color: @color12;
-    box-shadow: none;
+    color: @ink_dim;
 	text-shadow: none;
     padding: 4px;
     border-radius: 9px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    background-color: @tile;
+    border: 1px solid transparent;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
+/* The active workspace is the one solid note in the pane. */
 #taskbar button.active,
 #workspaces button.active {
-    color: @foreground;
+    color: @on_accent;
+    background-color: @accent_pill;
+    border-color: @edge_top;
     border-radius: 15px 15px 15px 15px;
     padding-left: 8px;
     padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button.focused {
-    color: #d8dee9;
+    color: @ink;
 }
 
 #workspaces button.urgent {
-    color: #11111b;
+    color: @on_accent;
+    background-color: @accent_urgent;
+    border-color: @accent_urgent;
     border-radius: 10px;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-    color: @color9;
+    color: @ink;
+    background-color: @tile_hi;
+    border-color: @edge;
     border-radius: 15px;
  	padding-left: 2px;
     padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #backlight,
@@ -137,45 +214,42 @@ tooltip label {
 #custom-weather.clearNight,
 #custom-weather.cloudyFoggyDay,
 #custom-weather.cloudyFoggyNight,
-#custom-weather.default, 
+#custom-weather.default,
 #custom-weather.rainyDay,
 #custom-weather.rainyNight,
 #custom-weather.severe,
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-    color: @foreground;
+    color: @ink;
     border-radius: 8px;
 	padding-top: 5px;
 	padding-bottom: 5px;
 	padding-right: 6px;
 	padding-left: 6px;
+    background-color: transparent;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #temperature.critical {
-    background-color: rgba(255, 0, 0, 0.55);
-}
-
-@keyframes blink {
-    to {
-        color: #000000;
-    }
+    color: @on_accent;
+    background-color: alpha(@danger, 0.80);
 }
 
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+	color: @on_accent;
+    background-color: @accent_pill;
 }
 
+/* Was a blinking animation; a filled pill says the same thing without
+ * scheduling a repaint three times a second forever. */
 #battery.critical:not(.charging) {
-	color: #f53c3c;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+	color: @on_accent;
+    background-color: @danger;
 }
 
 #backlight-slider slider,
@@ -185,7 +259,6 @@ tooltip label {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
@@ -193,10 +266,12 @@ tooltip label {
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
+	background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
 	min-height: 10px;
 	border-radius: 5px;
+	background-color: @accent;
 }

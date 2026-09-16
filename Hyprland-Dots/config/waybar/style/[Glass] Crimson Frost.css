@@ -1,0 +1,396 @@
+
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+
+/* ============================================================================
+ *  [Glass] Crimson Frost  ·  Waybar
+ *  Vidrio esmerilado para Pixi-Arch-A — lenguaje visual derivado de One UI 7
+ *  ----------------------------------------------------------------------------
+ *  MIGRADO A WALLUST. El diseño (radios enormes, islas separadas, motivo de
+ *  círculos, filo casi invisible) es el original y NO se ha tocado: mismos
+ *  selectores, mismos radios (18px islas, 12px módulos, círculos de 24px),
+ *  mismos paddings, mismos márgenes, mismos min-width. Lo único que cambia es
+ *  de dónde salen los colores: antes eran literales (blancos al 0.085, el
+ *  carmesí #ff4136), ahora los pone el wallpaper.
+ *
+ *  QUÉ SE COPIA DE ONE UI 7 (medido sobre la captura de referencia)
+ *
+ *   1. Radios enormes. Los paneles pequeños son píldoras completas (radio =
+ *      mitad de la altura) y los grandes van muy redondeados.
+ *   2. El panel NO tapa el fondo: lo deja pasar. Su relleno es una capa de
+ *      alfa bajo, así que hereda el color del fondo desenfocado.
+ *   3. La jerarquía la llevan los elementos CASI BLANCOS (los círculos de
+ *      icono y las píldoras activas), no los paneles. El contraste no viene
+ *      del panel.
+ *   4. Motivo de círculos: cada icono vive dentro de un círculo.
+ *   5. Borde prácticamente invisible.
+ *
+ *  LA DIFERENCIA QUE NO SE PUEDE COPIAR
+ *
+ *  One UI atenúa TODA la pantalla al abrir el panel; por eso puede usar un
+ *  relleno tan transparente. Waybar se dibuja sobre el escritorio vivo, sin
+ *  atenuar nada. La compensación es el alfa.
+ *
+ *  ARQUITECTURA DE RENDIMIENTO
+ *
+ *  GTK3 no soporta `backdrop-filter`: el desenfoque NO puede venir de aquí.
+ *  Lo hace Hyprland en la GPU:
+ *      layerrule = match:namespace waybar, blur 1
+ *      layerrule = match:namespace waybar, ignore_alpha 0.1
+ *  Y como respeta `ignore_alpha`, los huecos entre islas no se desenfocan.
+ *  Este CSS por tanto: no usa `box-shadow` (carísimo en el render CPU de GTK),
+ *  no usa `opacity` en contenedores, y anima solo propiedades dibujables.
+ * ========================================================================== */
+
+/* Colores del wallpaper, regenerados por wallust en cada cambio de fondo.
+ *
+ * OJO con la ruta: Waybar carga siempre `~/.config/waybar/style.css`, que es
+ * un symlink, y GTK resuelve los @import relativos contra la ruta del SYMLINK
+ * (~/.config/waybar/), no contra el directorio real del archivo. Por eso la
+ * ruta es `wallust/...` y no `../wallust/...` (esa segunda forma apunta a
+ * ~/.config/wallust/ y falla). Un import fallido puede tumbar la barra. */
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * La ventana de la barra se queda transparente para que el hueco entre islas
+ * mantenga alfa 0 y `ignore_alpha` no lo desenfoque.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * 1. Tokens — roles de wallust
+ *
+ *   @background -> tinte del panel (el color dominante oscuro = el tono)
+ *   @color15    -> acento: refracción, píldora activa, indicadores
+ *   @color13    -> píldora urgente / avisos
+ *   @foreground -> texto, texto atenuado, círculos, filo
+ * ------------------------------------------------------------------------- */
+@define-color glass        alpha(@background, 0.74);  /* isla base          */
+@define-color glass_raise  alpha(@background, 0.85);  /* hover              */
+@define-color glass_sunken alpha(@background, 0.45);  /* zonas hundidas     */
+
+/* Refracción: sin esto el panel queda MÁS OSCURO que el fondo y se lee como
+ * un agujero. En wallust el acento es también la luz. */
+@define-color sheen_top    alpha(@color15, 0.20);
+@define-color sheen_bot    alpha(@color15, 0.12);
+
+@define-color lift         alpha(@foreground, 0.06);  /* círculo de icono   */
+@define-color lift_hi      alpha(@foreground, 0.13);  /* círculo activo     */
+
+/* El filo sigue siendo casi invisible (rasgo nº 5). */
+@define-color edge         alpha(@foreground, 0.10);
+@define-color edge_hi      alpha(@foreground, 0.18);
+
+@define-color ink          @foreground;
+@define-color ink_muted    alpha(@foreground, 0.80);
+
+@define-color accent       @color15;
+@define-color accent_pill  alpha(@color15, 0.94);
+@define-color accent_soft  alpha(@color13, 0.35);
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* `on_accent` es un casi-negro literal a propósito: el CSS no puede ramificar
+ * según la paleta y texto oscuro sobre acento claro es la única combinación que
+ * se lee igual con paleta oscura y con paleta clara. */
+@define-color on_accent    #12141a;
+
+/* Semánticos: deben seguir siendo ámbar / rojo sea cual sea el wallpaper. */
+@define-color warn         #ffb454;
+@define-color danger       #ffa8a8;
+
+
+/* ---------------------------------------------------------------------------
+ * 2. Base
+ * ------------------------------------------------------------------------- */
+* {
+    font-family: "JetBrainsMono Nerd Font", "FiraCode Nerd Font", monospace;
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+window#waybar {
+    background-color: transparent;
+    color: @ink;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * 3. Las islas de cristal
+ *
+ * Radio 18 y separación amplia: los huecos entre islas son parte del diseño.
+ * Al ser transparentes, esas zonas no se desenfocan.
+ * ------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: @glass;
+    background-image: linear-gradient(
+        180deg,
+        @sheen_top 0%,
+        @sheen_bot 100%
+    );
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_hi;
+    border-radius: 18px;
+    padding: 3px 6px;
+    margin: 3px 0;
+}
+
+.modules-left  { margin-left: 5px; }
+.modules-right { margin-right: 5px; }
+
+
+/* ---------------------------------------------------------------------------
+ * 4. Módulos genéricos
+ * ------------------------------------------------------------------------- */
+#network,
+#bluetooth,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#clock,
+#mpris,
+#tray,
+#idle_inhibitor,
+#keyboard-state,
+#power-profiles-daemon,
+#custom-menu,
+#custom-weather,
+#custom-power,
+#custom-lock,
+#custom-swaync,
+#custom-dot_update,
+#custom-light_dark,
+#custom-separator {
+    padding: 0 9px;
+    margin: 0;
+    color: @ink;
+    border-radius: 12px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#custom-separator {
+    padding: 0;
+    min-width: 4px;
+}
+
+/* Motivo de círculos (rasgo nº 4). Solo en los módulos que son un icono
+ * suelto: los que llevan texto necesitan una píldora, no un círculo. */
+#custom-power,
+#custom-menu,
+#custom-lock,
+#custom-swaync,
+#idle_inhibitor,
+#custom-light_dark {
+    min-width: 24px;
+    min-height: 24px;
+    padding: 0;
+    margin: 0 3px;
+    border-radius: 12px;              /* = mitad del lado -> círculo */
+    background-color: @lift;
+    color: @ink;
+}
+
+#custom-power:hover,
+#custom-menu:hover,
+#custom-lock:hover,
+#custom-swaync:hover,
+#idle_inhibitor:hover,
+#custom-light_dark:hover {
+    background-color: @lift_hi;
+    color: @ink;
+}
+
+#network:hover,
+#bluetooth:hover,
+#cpu:hover,
+#memory:hover,
+#disk:hover,
+#temperature:hover,
+#clock:hover,
+#mpris:hover,
+#keyboard-state:hover,
+#power-profiles-daemon:hover,
+#custom-weather:hover,
+#custom-dot_update:hover {
+    background-color: @glass_raise;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * 5. Workspaces — la píldora activa
+ *
+ * Réplica del patrón de One UI: la opción activa es un relleno BRILLANTE con
+ * texto OSCURO. Ahora el relleno brillante es el acento del wallpaper.
+ * ------------------------------------------------------------------------- */
+#workspaces {
+    padding: 0 5px;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    margin: 4px 2px;
+    min-width: 22px;
+    color: @ink_muted;
+    background-color: @lift;
+    border: 1px solid transparent;
+    border-radius: 11px;              /* píldora */
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#workspaces button:hover {
+    background-color: @lift_hi;
+    color: @ink;
+}
+
+#workspaces button.active {
+    background-color: @accent_pill;
+    border-color: @edge_hi;
+    color: @on_accent;
+    min-width: 36px;
+}
+
+#workspaces button.urgent {
+    background-color: @accent_urgent;
+    color: @on_accent;
+}
+
+#workspaces button.occupied {
+    color: @ink;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * 6. Barra vertical izquierda
+ * ------------------------------------------------------------------------- */
+window#waybar.left .modules-left,
+window#waybar.left .modules-center,
+window#waybar.left .modules-right {
+    border-radius: 16px;
+    padding: 5px 3px;
+    margin: 4px 0;
+}
+
+window#waybar.left .modules-center {
+    padding: 10px 3px;
+}
+
+#clock.vertical {
+    font-size: 15px;
+    font-weight: 700;
+    padding: 5px 4px;
+    color: @accent;
+}
+
+window#waybar.left #custom-lock,
+window#waybar.left #idle_inhibitor,
+window#waybar.left #custom-swaync,
+window#waybar.left #custom-light_dark {
+    margin: 3px 4px;
+}
+
+window#waybar.left #mpris,
+window#waybar.left #tray,
+window#waybar.left #custom-dot_update {
+    padding: 5px 4px;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * 7. Estados
+ * ------------------------------------------------------------------------- */
+#idle_inhibitor.activated {
+    background-color: @accent_pill;
+    color: @on_accent;
+}
+
+#keyboard-state label.locked {
+    color: @accent;
+}
+
+#power-profiles-daemon.performance { color: @accent; }
+#power-profiles-daemon.power-saver { color: @warn; }
+
+#temperature.critical,
+#cpu.critical,
+#memory.critical,
+#disk.critical,
+#battery.critical:not(.charging),
+#battery.warning:not(.charging) {
+    color: @danger;
+}
+
+#network.disconnected,
+#network.disabled,
+#pulseaudio.muted,
+#pulseaudio#microphone.muted {
+    color: @ink_muted;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * 8. Grupos — transparentes, para no romper la isla en trozos
+ * ------------------------------------------------------------------------- */
+#group-motherboard,
+#group-audio {
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+#group-motherboard #cpu,
+#group-motherboard #memory,
+#group-motherboard #disk,
+#group-motherboard #temperature,
+#group-motherboard #power-profiles-daemon,
+#group-audio #pulseaudio {
+    padding: 0 6px;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * 9. Tray y tooltips
+ * ------------------------------------------------------------------------- */
+#tray {
+    padding: 0 8px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: @accent_soft;
+    border-radius: 10px;
+}
+
+tooltip {
+    background-color: @glass_raise;
+    border: 1px solid @edge_hi;
+    border-radius: 14px;
+    color: @ink;
+}
+
+tooltip label {
+    color: @ink;
+    padding: 3px 5px;
+}

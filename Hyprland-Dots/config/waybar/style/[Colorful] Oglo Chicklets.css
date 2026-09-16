@@ -1,5 +1,111 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Oglo Chicklets */
+/* Oglo Chicklets — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * The LAYOUT of this file is untouched: the selector set, the paddings, the
+ * radii and the thick `border-bottom` chicklet edges are exactly what it
+ * shipped with. Only the colour system changed — the chicklet fills now come
+ * from wallust's ramp instead of a fixed set of hexes, and the three module
+ * islands became panes of glass.
+ *
+ * THE IMPORT PATH (the one trap in this file)
+ * -------------------------------------------
+ * Waybar loads the symlink ~/.config/waybar/style.css, so GTK resolves a
+ * relative @import against ~/.config/waybar/ and the import must be
+ * "wallust/colors-waybar.css". "../wallust/" resolves to ~/.config/wallust,
+ * where there is no colours file; on waybar 0.15.0 a failed import throws and
+ * the style load dies rather than warning.
+ *
+ * WHICH WALLUST TOKENS THE CHICKLETS USE
+ * --------------------------------------
+ * A chicklet is a light fill with the dark `on_accent` ink riding on it, so the
+ * fills are taken from the light half of wallust's ramp (@color5 - @color15),
+ * never from the dark half (@color0 - @color4, @color9 - @color12), which would
+ * swallow the label. The hue variety is therefore exactly the wallpaper's — on
+ * a colourful image the chicklets differ, on a monochrome one they harmonise.
+ *
+ * WHY THE PANE IS TINTED *AND* LIFTED
+ * -----------------------------------
+ * @background is the wallpaper's darkest colour, so a tint built from it alone
+ * reads as a black rectangle on a dark wallpaper. The @color15 sheen gradient
+ * is what lifts the pane: the accent is both the hue and the light.
+ *
+ * THE GLASS IS NOT DONE IN CSS
+ * ----------------------------
+ * GTK3 has no backdrop-filter. The blur is Hyprland's (`blur 1` +
+ * `ignore_alpha`), which is why window#waybar stays fully transparent: the gaps
+ * between the islands must keep alpha 0 so they are not blurred.
+ *
+ * PERFORMANCE (the user is fighting heat; not stylistic choices)
+ * --------------------------------------------------------------
+ *   - box-shadow removed (5 uses here, two of them tooltip-decoration resets)
+ *   - no opacity on containers; translucency is rgba()/alpha()
+ *   - `transition: transform` on the chicklets replaced with background-color /
+ *     border-color / color at 160ms (a transform transition repaints every
+ *     frame of the scale)
+ *   - the looping `blink` battery animation is gone; the critical state is a
+ *     static filled chicklet
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window itself stays transparent so the space between the islands
+ * keeps alpha 0 and Hyprland's ignore_alpha leaves it unblurred. */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+/* The lit edge is what separates a pane of glass from a smear of colour. */
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+/* Secondary text is @foreground at 0.80, not @color15: @color15 is always the
+ * light end of wallust's ramp, so on a light palette it would be light text on
+ * a light pane. @foreground tracks the palette's contrast direction. */
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+/* `on_accent` is a literal near-black: CSS cannot branch on the palette, and
+ * dark ink on a light chicklet is the one pairing that stays readable on both
+ * a dark and a light palette. */
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Chicklets: the wallpaper's own ramp, dense enough that the dark ink reads. */
+@define-color chip          alpha(@color5, 0.90);
+@define-color chip_hi       alpha(@color7, 0.92);
+@define-color chip_alt      alpha(@color6, 0.90);
+@define-color chip_warm     alpha(@color13, 0.90);
+@define-color chip_cool     alpha(@color14, 0.90);
+@define-color chip_light    alpha(@color15, 0.90);
+@define-color chip_neutral  alpha(@color8, 0.90);
+/* The thick bottom edge of a chicklet is a *recessed* edge, so it is the
+ * wallpaper's dark base rather than another ramp colour: GTK3 CSS cannot mix or
+ * darken a token, and a second ramp colour would just read as a second hue. */
+@define-color chip_edge     alpha(@background, 0.90);
+
+/* Semantic, not decorative: must stay red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
 
 * {
     font-family: "JetBrainsMono Nerd Font", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
@@ -7,16 +113,21 @@
     font-weight: bold;
 }
 
+/* The window keeps the band it always had: the 8px bottom border is still
+ * reserved (so nothing is re-measured) but it can no longer be painted, because
+ * a filled window would be blurred by Hyprland as one solid slab and the gaps
+ * between the islands would stop being gaps. */
 window#waybar {
-    background-color: rgba(35, 42, 46, 0.55);
-    border-bottom: 8px solid #1d2327;
-    color: #d3c6aa;
-    transition-property: background-color;
-    transition-duration: .5s;
+    background-color: transparent;
+    border-bottom: 8px solid transparent;
+    color: @ink;
 }
 
+/* Was `opacity: 0.2` on the whole window, which forces GTK to render the widget
+ * group offscreen. The bar is fully transparent here, so the dimming is dropped
+ * rather than faked with a banned property. */
 window#waybar.hidden {
-    opacity: 0.2;
+    background-color: transparent;
 }
 
 /*
@@ -24,37 +135,56 @@ window#waybar.empty {
     background-color: transparent;
 }
 window#waybar.solo {
-    background-color: rgba(255, 255, 255, 0.55);
+    background-color: transparent;
 }
 */
 
+/* The three islands: wallpaper tint + sheen over Hyprland's blur. They carry no
+ * vertical margin of their own, so an auto-height bar does not grow. */
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @ink;
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
+    border-radius: 16px;
+    padding: 0px 4px;
+}
+
 button {
     all: unset;
-    background-color: rgba(119, 143, 82, 0.55);
-    color: #2d353b;
+    background-color: @chip;
+    color: @on_accent;
     border: none;
-    border-bottom: 8px solid #5d743e;
+    border-bottom: 8px solid @chip_edge;
     border-radius: 5px;
     padding-left: 15px;
     padding-right: 15px;
-    transition: transform 0.1s ease-in-out;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 button:hover {
     background: inherit;
-    background-color: rgba(146, 171, 108, 0.55);
-    border-bottom: 8px solid #788f57;
+    background-color: @chip_hi;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 button.active {
     background: inherit;
-    background-color: rgba(165, 190, 126, 0.55);
-    border-bottom: 8px solid #8aa168;
+    background-color: @accent_pill;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #mode {
-    background-color: rgba(100, 114, 125, 0.55);
-    border-bottom: 3px solid #ffffff;
+    background-color: @chip_neutral;
+    color: @on_accent;
+    border-bottom: 3px solid @edge_top;
 }
 
 #backlight,
@@ -116,12 +246,16 @@ button.active {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay{
-    color: #ffffff;
+    /* Modules without a chicklet of their own read as plain text on the pane. */
+    color: @ink;
     padding-top: 2px;
     padding-bottom: 2px;
     border-radius: 5px;
 	padding-left: 5px;
 	padding-right: 5px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #window,
@@ -139,153 +273,151 @@ button.active {
     margin-right: 0;
 }
 
+/* A dark chicklet: this one always carried the light ink, so it keeps the
+ * wallpaper's dark base as its fill. */
 #window {
-    background-color: rgba(52, 63, 68, 0.55);
-    color: #d3c6aa;
-    border-bottom: 8px solid #2b3539;
+    background-color: alpha(@background, 0.55);
+    color: @ink;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #custom-swaync {
-    background-color: rgba(119, 143, 82, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #5d743e;
+    background-color: @chip;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #custom-menu {
-    background-color: rgba(119, 143, 82, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #5d743e;
+    background-color: @chip;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #custom-power {
-    background-color: rgba(238, 96, 106, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #ca4853;
+    background-color: alpha(@danger, 0.85);
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
     padding-left: 10px;
 }
 
 #custom-power_vertical{
-    background-color: rgba(238, 96, 106, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #ca4853;
+    background-color: alpha(@danger, 0.85);
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #clock {
-    background-color: rgba(150, 168, 76, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #7a8c37;
+    background-color: @chip_warm;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #battery {
-    background-color: rgba(58, 153, 143, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #227d74;
+    background-color: @chip_cool;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
-@keyframes blink {
-    to {
-        background-color: rgba(255, 255, 255, 0.55);
-        color: #000000;
-    }
-}
-
+/* Was a 3s infinite `blink` (an animation that repaints forever and whose
+ * @keyframes dies with it). A static filled chicklet alerts just as loudly. */
 #battery.critical:not(.charging) {
-    background-color: rgba(238, 96, 106, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #ca4853;
-    animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+    background-color: alpha(@danger, 0.85);
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 label:focus {
-    background-color: rgba(0, 0, 0, 0.55);
+    background-color: alpha(@background, 0.55);
 }
 
 #cpu {
-    background-color: rgba(119, 143, 82, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #5d743e;
+    background-color: @chip;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #memory {
-    background-color: rgba(217, 128, 173, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #b86790;
+    background-color: @chip_hi;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #disk {
-    background-color: rgba(150, 75, 0, 0.55);
-    border-bottom: 8px solid #793300;
+    background-color: @chip_alt;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #custom-lock,
 #custom-light_dark,
 #custom-nightlight,
 #backlight {
-    background-color: rgba(100, 182, 172, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #4f9990;
+    background-color: @chip_cool;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
     padding-left: 10px;
 }
 
 #network {
-    background-color: rgba(41, 128, 185, 0.55);
+    background-color: @chip_warm;
+    color: @on_accent;
 }
 
 #network.disconnected {
-    background-color: rgba(245, 60, 60, 0.55);
+    background-color: alpha(@danger, 0.85);
+    color: @on_accent;
 }
 
 #pulseaudio {
-    background-color: rgba(216, 172, 71, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #b78f30;
+    background-color: @chip_light;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #pulseaudio.muted {
-    background-color: rgba(144, 177, 177, 0.55);
-    color: #2a5c45;
+    background-color: @chip_neutral;
+    color: @on_accent;
 }
 
 #wireplumber {
-    background-color: rgba(255, 240, 245, 0.55);
-    color: #000000;
+    background-color: @chip_hi;
+    color: @on_accent;
 }
 
 #wireplumber.muted {
-    background-color: rgba(245, 60, 60, 0.55);
+    background-color: alpha(@danger, 0.85);
+    color: @on_accent;
 }
 
 #custom-media {
-    background-color: rgba(102, 204, 153, 0.55);
-    color: #2a5c45;
+    background-color: @chip_cool;
+    color: @on_accent;
     min-width: 100px;
 }
 
 #custom-media.custom-spotify {
-    background-color: rgba(102, 204, 153, 0.55);
+    background-color: @chip_cool;
 }
 
 #custom-media.custom-vlc {
-    background-color: rgba(255, 160, 0, 0.55);
+    background-color: @chip_warm;
 }
 
 #temperature {
-    background-color: rgba(240, 147, 43, 0.55);
-    border-bottom: 8px solid #b78f30;
+    background-color: @chip_warm;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #temperature.critical {
-    background-color: rgba(235, 77, 75, 0.55);
+    background-color: alpha(@danger, 0.85);
+    color: @on_accent;
 }
 
 #tray {
-    background-color: rgba(230, 127, 81, 0.55);
-    color: #2d353b;;
-    border-bottom: 8px solid #c3653b;
+    background-color: @chip_warm;
+    color: @on_accent;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #tray > .passive {
@@ -294,48 +426,52 @@ label:focus {
 
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
-    background-color: rgba(235, 77, 75, 0.55);
+    background-color: alpha(@danger, 0.85);
 }
 
 #idle_inhibitor {
-    background-color: rgba(45, 52, 54, 0.55);
-    border-bottom: 8px solid #1d2327;
+    background-color: alpha(@background, 0.55);
+    color: @ink;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #idle_inhibitor.activated {
-    background-color: rgba(236, 240, 241, 0.55);
-    border-bottom: 8px solid #7a8c37;
-    color: #2d3436;
+    background-color: @accent_pill;
+    border-bottom: 8px solid @accent;
+    color: @on_accent;
 }
 
 #mpd {
-    background-color: rgba(102, 204, 153, 0.55);
-    color: #2a5c45;
+    background-color: @chip_cool;
+    color: @on_accent;
 }
 
 #mpd.disconnected {
-    background-color: rgba(245, 60, 60, 0.55);
+    background-color: alpha(@danger, 0.85);
+    color: @on_accent;
 }
 
 #mpd.stopped {
-    background-color: rgba(144, 177, 177, 0.55);
+    background-color: @chip_neutral;
+    color: @on_accent;
 }
 
 #mpd.paused {
-    background-color: rgba(81, 163, 122, 0.55);
+    background-color: @chip;
+    color: @on_accent;
 }
 
 #language {
-    background: rgba(0, 176, 147, 0.55);
-    color: #740864;
+    background: @chip_cool;
+    color: @on_accent;
     min-width: 16px;
 }
 
 #keyboard-state {
-    background: rgba(151, 225, 173, 0.55);
-    color: #000000;
+    background: @chip_hi;
+    color: @on_accent;
     min-width: 16px;
-    border-bottom: 8px solid #78b48a;
+    border-bottom: 8px solid @chip_edge;
 }
 
 #keyboard-state > label {
@@ -343,11 +479,11 @@ label:focus {
 }
 
 #keyboard-state > label.locked {
-    background: rgba(0, 0, 0, 0.2);
+    background: alpha(@background, 0.45);
 }
 
 #scratchpad {
-    background: rgba(0, 0, 0, 0.2);
+    background: alpha(@background, 0.45);
 }
 
 #scratchpad.empty {
@@ -355,21 +491,14 @@ label:focus {
 }
 
 tooltip {
-  background-color: rgba(35, 42, 46, 0.55);
+  background-color: alpha(@background, 0.94);
   border: none;
-  border-bottom: 8px solid #1d2327;
-}
-
-tooltip decoration {
-  box-shadow: none;
-}
-
-tooltip decoration:backdrop {
-  box-shadow: none;
+  border-bottom: 8px solid @chip_edge;
+  color: @ink;
 }
 
 tooltip label {
-  color: #d3c6aa;
+  color: @ink;
   padding-left: 5px;
   padding-right: 5px;
   padding-top: 0px;
@@ -383,17 +512,17 @@ tooltip label {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #pulseaudio-slider trough {
-	background-color: rgba(127, 132, 156, 0.55);
+	background-color: @tile;
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
 }
 
 #pulseaudio-slider highlight {
+	background-color: @accent;
 	min-height: 10px;
 	border-radius: 5px;
 }
@@ -404,17 +533,17 @@ tooltip label {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough {
-	background-color: rgba(127, 132, 156, 0.55);
+	background-color: @tile;
 	min-width: 80px;
 	min-height: 10px;
 	border-radius: 5px;
 }
 
 #backlight-slider highlight {
+	background-color: @accent;
 	min-width: 10px;
 	border-radius: 5px;
 }

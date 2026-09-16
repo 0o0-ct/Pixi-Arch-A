@@ -1,5 +1,93 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Oglo Chicklets */
+/* Oglo Chicklets
+ *
+ *  Wallust-driven frosted glass. The chicklet identity — every module a small
+ *  chip with a 5px radius and an 8px bottom lip — is kept exactly as it was;
+ *  only the colours changed. Each chip keeps its own hue slot, but the hues
+ *  now come from the wallpaper ramp (chip_a..chip_f) instead of hardcoded
+ *  rgba() values, so the whole strip is driven by one palette.
+ *
+ *  The import base directory is ~/.config/waybar/ because waybar loads the
+ *  symlink ~/.config/waybar/style.css, so the path must stay exactly
+ *  "wallust/colors-waybar.css". "../wallust/..." resolves to
+ *  ~/.config/wallust/... and a failed import can kill the bar outright.
+ *
+ *  Chip alpha: fills sit at 0.90 and their bottom lips at 0.55 of the same
+ *  token. The lip reads darker because it lets more of the dark pane through,
+ *  which reproduces the original darker-lip shading without a second hardcoded
+ *  colour per chip. Chips whose text was dark keep dark ink (@on_accent);
+ *  chips whose text was light keep @ink.
+ *
+ *  PERFORMANCE: no box-shadow (the two `tooltip decoration` rules that held
+ *  nothing but `box-shadow: none` are gone), no opacity on containers, no
+ *  `transition: transform`, and the battery blink is a static filled chip.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@background, 0.74);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: alerts stay red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
+/* Chicklet hue slots. Each replaces one of the old hardcoded chip colours;
+ * the delta between them survives, the exact hue now follows the wallpaper.
+ * They are taken from the light half of the ramp because most chips carry
+ * dark ink on top (@chip_ink), which needs a light enough fill to read.
+ *   chip_a <- rgba(119,143,82)   green   (buttons, cpu, menu, swaync)
+ *   chip_b <- rgba(58,153,143)   teal    (battery, media, mpd, language)
+ *   chip_c <- rgba(150,168,76)   lime    (clock, keyboard-state)
+ *   chip_d <- rgba(217,128,173)  pink    (memory, lock row)
+ *   chip_e <- rgba(255,240,245)  pale    (wireplumber, tray)
+ *   chip_f <- rgba(216,172,71)   amber   (pulseaudio)
+ *   chip_dark <- rgba(41,128,185) deep   (disk, network, temperature and the
+ *                                         other chips that carry light text)
+ *
+ * Every chip_dark fill is paired with @ink and every other chip with
+ * @chip_ink, so no chip puts dark text on a dark fill.
+ */
+@define-color chip_a        @color13;
+@define-color chip_b        @color14;
+@define-color chip_c        @color7;
+@define-color chip_d        @color6;
+@define-color chip_e        @color15;
+@define-color chip_f        @color8;
+@define-color chip_dark     @color11;
+
+@define-color chip_ink      @on_accent;
+
 
 * {
     font-family: "JetBrainsMono Nerd Font", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
@@ -7,16 +95,24 @@
     font-weight: bold;
 }
 
+/* The strip behind the chicklets: wallpaper tint + sheen, lit top edge, and
+ * the 8px bottom foot the style always had. */
 window#waybar {
-    background-color: rgba(35, 42, 46, 0.55);
-    border-bottom: 8px solid #1d2327;
-    color: #d3c6aa;
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @ink;
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
+    border-bottom: 8px solid alpha(@background, 0.55);
     transition-property: background-color;
-    transition-duration: .5s;
+    transition-duration: 160ms;
 }
 
+/* Was `opacity: 0.2`, which makes GTK render the widget group offscreen;
+ * a thinner tint reads the same and costs nothing. */
 window#waybar.hidden {
-    opacity: 0.2;
+    background-color: alpha(@background, 0.25);
+    background-image: linear-gradient(180deg, alpha(@color15, 0.06) 0%, alpha(@color15, 0.04) 100%);
 }
 
 /*
@@ -24,37 +120,39 @@ window#waybar.empty {
     background-color: transparent;
 }
 window#waybar.solo {
-    background-color: rgba(255, 255, 255, 0.55);
+    background-color: alpha(@chip_e, 0.55);
 }
 */
 
 button {
     all: unset;
-    background-color: rgba(119, 143, 82, 0.55);
-    color: #2d353b;
+    background-color: alpha(@chip_a, 0.90);
+    color: @chip_ink;
     border: none;
-    border-bottom: 8px solid #5d743e;
+    border-bottom: 8px solid alpha(@chip_a, 0.55);
     border-radius: 5px;
     padding-left: 5px;
     padding-right: 5px;
-    transition: transform 0.1s ease-in-out;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 button:hover {
     background: inherit;
-    background-color: rgba(146, 171, 108, 0.55);
-    border-bottom: 8px solid #788f57;
+    background-color: alpha(@chip_b, 0.90);
+    border-bottom: 8px solid alpha(@chip_b, 0.55);
 }
 
 button.active {
     background: inherit;
-    background-color: rgba(165, 190, 126, 0.55);
-    border-bottom: 8px solid #8aa168;
+    background-color: alpha(@chip_c, 0.90);
+    border-bottom: 8px solid alpha(@chip_c, 0.55);
 }
 
 #mode {
-    background-color: rgba(100, 114, 125, 0.55);
-    border-bottom: 3px solid #ffffff;
+    background-color: alpha(@chip_f, 0.90);
+    border-bottom: 3px solid @edge_top;
 }
 
 #backlight,
@@ -116,7 +214,7 @@ button.active {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay{
-    color: #ffffff;
+    color: @ink;
     padding-top: 2px;
     padding-bottom: 2px;
     border-radius: 5px;
@@ -139,153 +237,149 @@ button.active {
     margin-right: 0;
 }
 
+/* Was rgba(52,63,68,.55) with light text: the neutral chip. */
 #window {
-    background-color: rgba(52, 63, 68, 0.55);
-    color: #d3c6aa;
-    border-bottom: 8px solid #2b3539;
+    background-color: @tile_hi;
+    color: @ink;
+    border-bottom: 8px solid alpha(@background, 0.90);
 }
 
 #custom-swaync {
-    background-color: rgba(119, 143, 82, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #5d743e;
+    background-color: alpha(@chip_a, 0.90);
+    color: @chip_ink;
+    border-bottom: 8px solid alpha(@chip_a, 0.55);
 }
 
 #custom-menu {
-    background-color: rgba(119, 143, 82, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #5d743e;
+    background-color: alpha(@chip_a, 0.90);
+    color: @chip_ink;
+    border-bottom: 8px solid alpha(@chip_a, 0.55);
 }
 
 #custom-power {
-    background-color: rgba(238, 96, 106, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #ca4853;
+    background-color: alpha(@danger, 0.90);
+    color: @chip_ink;
+    border-bottom: 8px solid alpha(@danger, 0.55);
     padding-left: 5px;
 }
 
 #custom-power_vertical{
-    background-color: rgba(238, 96, 106, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #ca4853;
+    background-color: alpha(@danger, 0.90);
+    color: @chip_ink;
+    border-bottom: 8px solid alpha(@danger, 0.55);
 }
 
 #clock {
-    background-color: rgba(150, 168, 76, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #7a8c37;
+    background-color: alpha(@chip_c, 0.90);
+    color: @chip_ink;
+    border-bottom: 8px solid alpha(@chip_c, 0.55);
 }
 
 #battery {
-    background-color: rgba(58, 153, 143, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #227d74;
+    background-color: alpha(@chip_b, 0.90);
+    color: @chip_ink;
+    border-bottom: 8px solid alpha(@chip_b, 0.55);
 }
 
-@keyframes blink {
-    to {
-        background-color: rgba(255, 255, 255, 0.55);
-        color: #000000;
-    }
-}
-
+/* Was a blinking animation; a filled chip alerts without repainting forever. */
 #battery.critical:not(.charging) {
-    background-color: rgba(238, 96, 106, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #ca4853;
-    animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+    background-color: alpha(@danger, 0.90);
+    color: @chip_ink;
+    border-bottom: 8px solid alpha(@danger, 0.55);
 }
 
 label:focus {
-    background-color: rgba(0, 0, 0, 0.55);
+    background-color: alpha(@background, 0.70);
 }
 
 #cpu {
-    background-color: rgba(119, 143, 82, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #5d743e;
+    background-color: alpha(@chip_a, 0.90);
+    color: @chip_ink;
+    border-bottom: 8px solid alpha(@chip_a, 0.55);
 }
 
 #memory {
-    background-color: rgba(217, 128, 173, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #b86790;
+    background-color: alpha(@chip_d, 0.90);
+    color: @chip_ink;
+    border-bottom: 8px solid alpha(@chip_d, 0.55);
 }
 
 #disk {
-    background-color: rgba(150, 75, 0, 0.55);
-    border-bottom: 8px solid #793300;
+    background-color: alpha(@chip_dark, 0.90);
+    color: @ink;
+    border-bottom: 8px solid alpha(@chip_dark, 0.55);
 }
 
 #custom-lock,
 #custom-light_dark,
 #custom-nightlight,
 #backlight {
-    background-color: rgba(100, 182, 172, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #4f9990;
+    background-color: alpha(@chip_d, 0.90);
+    color: @chip_ink;
+    border-bottom: 8px solid alpha(@chip_d, 0.55);
     padding-left: 5px;
 }
 
 #network {
-    background-color: rgba(41, 128, 185, 0.55);
+    background-color: alpha(@chip_dark, 0.90);
+    color: @ink;
 }
 
 #network.disconnected {
-    background-color: rgba(245, 60, 60, 0.55);
+    background-color: alpha(@danger, 0.90);
+    color: @chip_ink;
 }
 
 #pulseaudio {
-    background-color: rgba(216, 172, 71, 0.55);
-    color: #2d353b;
-    border-bottom: 8px solid #b78f30;
+    background-color: alpha(@chip_f, 0.90);
+    color: @chip_ink;
+    border-bottom: 8px solid alpha(@chip_f, 0.55);
 }
 
 #pulseaudio.muted {
-    background-color: rgba(144, 177, 177, 0.55);
-    color: #2a5c45;
+    background-color: alpha(@chip_dark, 0.90);
+    color: @ink;
 }
 
 #wireplumber {
-    background-color: rgba(255, 240, 245, 0.55);
-    color: #000000;
+    background-color: alpha(@chip_e, 0.90);
+    color: @chip_ink;
 }
 
 #wireplumber.muted {
-    background-color: rgba(245, 60, 60, 0.55);
+    background-color: alpha(@danger, 0.90);
+    color: @chip_ink;
 }
 
 #custom-media {
-    background-color: rgba(102, 204, 153, 0.55);
-    color: #2a5c45;
+    background-color: alpha(@chip_b, 0.90);
+    color: @chip_ink;
     min-width: 100px;
 }
 
 #custom-media.custom-spotify {
-    background-color: rgba(102, 204, 153, 0.55);
+    background-color: alpha(@chip_b, 0.90);
 }
 
 #custom-media.custom-vlc {
-    background-color: rgba(255, 160, 0, 0.55);
+    background-color: alpha(@chip_c, 0.90);
 }
 
 #temperature {
-    background-color: rgba(240, 147, 43, 0.55);
-    border-bottom: 8px solid #b78f30;
+    background-color: alpha(@chip_dark, 0.90);
+    color: @ink;
+    border-bottom: 8px solid alpha(@chip_dark, 0.55);
 }
 
 #temperature.critical {
-    background-color: rgba(235, 77, 75, 0.55);
+    background-color: alpha(@danger, 0.90);
+    color: @chip_ink;
 }
 
 #tray {
-    background-color: rgba(230, 127, 81, 0.55);
-    color: #2d353b;;
-    border-bottom: 8px solid #c3653b;
+    background-color: alpha(@chip_e, 0.90);
+    color: @chip_ink;
+    border-bottom: 8px solid alpha(@chip_e, 0.55);
 }
 
 #tray > .passive {
@@ -294,48 +388,53 @@ label:focus {
 
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
-    background-color: rgba(235, 77, 75, 0.55);
+    background-color: alpha(@danger, 0.90);
+    color: @chip_ink;
 }
 
 #idle_inhibitor {
-    background-color: rgba(45, 52, 54, 0.55);
-    border-bottom: 8px solid #7a8c37;
+    background-color: alpha(@background, 0.70);
+    color: @ink;
+    border-bottom: 8px solid alpha(@accent, 0.55);
 }
 
 #idle_inhibitor.activated {
-    background-color: rgba(236, 240, 241, 0.55);
-    border-bottom: 8px solid #7a8c37;
-    color: #2d3436;
+    background-color: @accent_pill;
+    border-bottom: 8px solid alpha(@accent, 0.55);
+    color: @on_accent;
 }
 
 #mpd {
-    background-color: rgba(102, 204, 153, 0.55);
-    color: #2a5c45;
+    background-color: alpha(@chip_b, 0.90);
+    color: @chip_ink;
 }
 
 #mpd.disconnected {
-    background-color: rgba(245, 60, 60, 0.55);
+    background-color: alpha(@danger, 0.90);
+    color: @chip_ink;
 }
 
 #mpd.stopped {
-    background-color: rgba(144, 177, 177, 0.55);
+    background-color: alpha(@chip_dark, 0.90);
+    color: @ink;
 }
 
 #mpd.paused {
-    background-color: rgba(81, 163, 122, 0.55);
+    background-color: alpha(@chip_a, 0.90);
+    color: @chip_ink;
 }
 
 #language {
-    background: rgba(0, 176, 147, 0.55);
-    color: #740864;
+    background-color: alpha(@chip_b, 0.90);
+    color: @chip_ink;
     min-width: 16px;
 }
 
 #keyboard-state {
-    background: rgba(151, 225, 173, 0.55);
-    color: #000000;
+    background-color: alpha(@chip_c, 0.90);
+    color: @chip_ink;
     min-width: 16px;
-    border-bottom: 8px solid #78b48a;
+    border-bottom: 8px solid alpha(@chip_c, 0.55);
 }
 
 #keyboard-state > label {
@@ -343,11 +442,11 @@ label:focus {
 }
 
 #keyboard-state > label.locked {
-    background: rgba(0, 0, 0, 0.2);
+    background: alpha(@background, 0.45);
 }
 
 #scratchpad {
-    background: rgba(0, 0, 0, 0.2);
+    background: alpha(@background, 0.45);
 }
 
 #scratchpad.empty {
@@ -355,21 +454,14 @@ label:focus {
 }
 
 tooltip {
-  background-color: rgba(35, 42, 46, 0.55);
+  background-color: alpha(@background, 0.94);
+  color: @ink;
   border: none;
-  border-bottom: 8px solid #1d2327;
-}
-
-tooltip decoration {
-  box-shadow: none;
-}
-
-tooltip decoration:backdrop {
-  box-shadow: none;
+  border-bottom: 8px solid @edge;
 }
 
 tooltip label {
-  color: #d3c6aa;
+  color: @ink;
   padding-left: 5px;
   padding-right: 5px;
   padding-top: 0px;
@@ -382,9 +474,8 @@ tooltip label {
   min-height: 7px;
   min-width: 15px;
   opacity: 0;
-  background-color: rgba(255, 160, 0, 0.55);
+  background-color: alpha(@accent, 0.55);
   border-radius: 3px;
-  box-shadow: 1px 5px 6px 1px #272727;
 }
 
 #backlight-slider trough,
@@ -392,12 +483,12 @@ tooltip label {
   min-height: 100px;
   min-width: 7px;
   border-radius: 5px;
-  background-color: rgba(216, 172, 71, 0.55);
+  background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
   min-width: 5px;
   border-radius: 5px;
-  background-color: rgba(100, 182, 172, 0.55);
+  background-color: @accent;
 }

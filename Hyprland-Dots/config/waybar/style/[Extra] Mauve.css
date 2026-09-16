@@ -2,6 +2,52 @@
 /* .......Mauve....................... */
 /* --- 👍 designed by https://github.com/CelestiaKai  👍 --- */
 
+/* ---------------------------------------------------------------------------
+ * Frosted glass, coloured by the wallpaper.
+ *
+ * The import path is the one trap in this file: GTK resolves a relative
+ * @import against the path of the file waybar actually loads, and that file is
+ * the SYMLINK ~/.config/waybar/style.css, so the base directory is
+ * ~/.config/waybar/ and the path below is right. "../wallust/colors-waybar.css"
+ * resolves to ~/.config/wallust/... , fails to import, and on waybar 0.15.0 a
+ * failed import does not merely warn — the style load throws and the bar dies.
+ * ------------------------------------------------------------------------- */
+@import url("wallust/colors-waybar.css");
+
+/* Tokens — wallust roles:
+ *   @background  -> pane tint (the wallpaper's dominant dark colour = the hue)
+ *   @color15     -> accent: refraction sheen, active pill, lit edge
+ *   @color13     -> mid-tone accent (urgent)
+ *   @foreground  -> text, tile lift, hairline edge
+ */
+@define-color pane          alpha(@background, 0.74);
+@define-color sheen_top     alpha(@color15, 0.20);
+@define-color sheen_bot     alpha(@color15, 0.12);
+@define-color tile          alpha(@foreground, 0.05);
+@define-color edge          alpha(@foreground, 0.16);
+@define-color edge_top      alpha(@foreground, 0.32);
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+@define-color danger        #ffa8a8;
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window itself stays transparent so the gaps between the panes keep
+ * alpha 0 and Hyprland's ignore_alpha leaves them unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
 * {
 	font-family: "JetBrainsMono Nerd Font";
 	font-weight: bold;
@@ -12,35 +58,36 @@
 }
 
 window#waybar {
-	background: rgba(17, 17, 27, 0.55);
-	color: #cba6f7;
-}
-
-window#waybar.hidden {
-	opacity: 0.5;
+	background: transparent;
+	color: @ink;
 }
 
 tooltip {
-	background: rgba(30, 30, 46, 0.55);
+	background-color: alpha(@background, 0.94);
 	border-radius: 10px;
 	border-width: 2px;
 	border-style: solid;
-	border-color: #11111b;
-	color: #cba6f7;
+	border-color: @edge;
+	color: @ink;
 }
 
 /*-----module groups----*/
 .modules-left,
 .modules-right {
-	border: 3px solid #11111b;
+	border: 3px solid @edge;
+	border-top: 3px solid @edge_top;
 	border-radius: 10px 10px 10px 10px;
-	background-color: rgba(49, 50, 68, 0.55);
+	background-color: @pane;
+	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+	color: @ink;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 4px;
 	padding-left: 4px;
 }
 
+/* The centre group is bare in this style — the clock floats between the two
+ * panes — so it keeps its padding and deliberately gets no pane of its own. */
 .modules-center {
 	padding-top: 2px;
 	padding-bottom: 2px;
@@ -50,56 +97,58 @@ tooltip {
 
 #taskbar button,
 #workspaces button {
-	color: #6E6A86;
-    box-shadow: none;
+	color: @ink_dim;
 	text-shadow: none;
     padding: 0px;
     border-radius: 9px;
     padding-left: 4px;
     padding-right: 4px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button.active,
 #workspaces button.active {
-	color: #1e1e1e;
+	color: @on_accent;
 	border-radius: 30%;
-	background-color: rgba(203, 166, 247, 0.55);
+	background-color: @accent_pill;
     padding-left: 6px;
     padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #workspaces button.active:hover {
-	color: #1e1e1e;
+	color: @on_accent;
 	border-radius: 30%;
-	background-color: rgba(203, 166, 247, 0.55);
+	background-color: @accent_pill;
     padding-left: 6px;
     padding-right: 8px;
 }
 
 #workspaces button.focused {
-	color: #d8dee9;
+	color: @ink;
 }
 
 #workspaces button.urgent {
 	border-radius: 30%;
-	background-color: rgba(203, 166, 247, 0.55);
-	color: #1e1e1e;
+	background-color: @accent_urgent;
+	color: @on_accent;
 }
 
 #taskbar button:hover,
 #workspaces button:hover {
-	color: #1e1e1e;
-	border: 3px solid #1e1e2e;
-	background-color: rgba(203, 166, 247, 0.55);
+	color: @on_accent;
+	border: 3px solid @on_accent;
+	background-color: @accent_pill;
     border-radius: 30%;
  	padding-left: 4px;
     padding-right: 4px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #backlight,
@@ -161,7 +210,7 @@ tooltip {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-	color: whitesmoke;
+	color: @ink;
 	padding-top: 4px;
 	padding-bottom: 4px;
 	padding-right: 6px;
@@ -170,29 +219,21 @@ tooltip {
 }
 
 #temperature.critical {
-	background-color: rgba(255, 0, 0, 0.55);
-}
-
-@keyframes blink {
-	to {
-		color: #000000;
-	}
+	color: @danger;
 }
 
 /*-----Indicators----*/
 #custom-hypridle.notactive,
 #idle_inhibitor.activated {
-	color: #39FF14;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+	color: @accent;
+    border-bottom: 8px solid @edge;
 }
 
+/* Was a blinking animation; a filled pill alerts the same way without
+ * scheduling a repaint three times a second forever. */
 #battery.critical:not(.charging) {
-	color: #f53c3c;
-	animation-name: blink;
-	animation-duration: 3.0s;
-	animation-timing-function: steps(12);
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+	color: @on_accent;
+	background-color: @danger;
 }
 
 #backlight-slider slider,
@@ -202,7 +243,6 @@ tooltip {
 	opacity: 0;
 	background-image: none;
 	border: none;
-	box-shadow: none;
 }
 
 #backlight-slider trough,
@@ -210,12 +250,12 @@ tooltip {
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
-	background-color: rgba(110, 106, 134, 0.55);
+	background-color: @tile;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
 	min-height: 10px;
 	border-radius: 5px;
-	background-color: purple;
+	background-color: @accent;
 }

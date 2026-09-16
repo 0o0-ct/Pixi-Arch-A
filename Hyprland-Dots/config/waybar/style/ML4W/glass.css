@@ -1,3 +1,16 @@
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+    box-shadow: none;
+}
+
 /* ML4W Glass theme for Kool's Hyprland  */
 
 /* SPDX-FileCopyrightText: 2025-present Ahum Maitra theahummaitra@gmail.com

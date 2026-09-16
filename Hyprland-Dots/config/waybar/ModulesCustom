@@ -63,8 +63,10 @@
 "custom/dot_update": {
 	"format": " 󰁈 ",
 	"on-click": "$HOME/.config/hypr/scripts/KooLsDotsUpdate.sh",
+	"on-click-right": "$HOME/.config/hypr/scripts/Distro_update.sh",
 	"tooltip": true,
-	"tooltip-format": "Check KooL Dots update\nIf available"},
+	"tooltip-format": "Clic Izquierdo: Actualizar Personalización Pixi-Arch-A\nClic Derecho: Actualizar Sistema Arch Linux (yay -Syu)"
+},
 
 // Hypridle inhibitor
 "custom/hypridle": {
@@ -97,14 +99,12 @@
 // Night light (Hyprsunset)
 "custom/nightlight": {
 	"return-type": "json",
-	"exec": "$HOME/.config/hypr/scripts/Hyprsunset.sh status",
-	"exec-if": "test -f $HOME/.config/hypr/scripts/Hyprsunset.sh",
-	"interval": 10,
-	"format": "{text}",
-	"min-length": 2,
-	"on-click": "$HOME/.config/hypr/scripts/Hyprsunset.sh toggle",
+	"exec": "$HOME/.config/hypr/scripts/ScreenIdleToggle.sh status",
+	"exec-if": "test -f $HOME/.config/hypr/scripts/ScreenIdleToggle.sh",
+	"interval": 3,
+	"format": "{}",
+	"on-click": "$HOME/.config/hypr/scripts/ScreenIdleToggle.sh toggle",
 	"tooltip": true,
-	"tooltip-format": "Night light toggle",
 	"escape": false
 },
 
@@ -163,19 +163,20 @@
 
 "custom/swaync": {
 	"tooltip": true,
-	"tooltip-format": "Left Click: Launch Quick Settings & Notification Center\nRight Click: Launch Logout Menu",
+	"tooltip-format": "Left Click: Toggle Control Center\nRight Click: Launch Logout Menu",
 	"format": "",
-	"on-click": "command -v ags && ags request -i matshell 'system-menu' || swaync-client -t -sw",
+	"on-click": "qs -c controlcenter ipc call panel toggle",
 	"on-click-right": "command -v ags && ags request -i matshell 'logout' || ~/.config/hypr/scripts/Wlogout.sh"},
 // NOTE:! This is mainly for Arch and Arch Based Distros  depend: pacman-contrib
 "custom/updater": {
-	"format": " {}",
-	"exec": "command -v checkupdates > /dev/null && checkupdates | wc -l || echo 0",
-	"exec-if": "command -v checkupdates > /dev/null",
-	"interval": 43200,
-	"on-click": "test -f $HOME/.config/hypr/scripts/Distro_update.sh && $HOME/.config/hypr/scripts/Distro_update.sh",
+	"return-type": "json",
+	"exec": "$HOME/.config/hypr/scripts/ArchUpdateCount.sh",
+	"interval": 300,
+	"signal": 8,
+	"on-click": "$HOME/.config/hypr/scripts/Distro_update.sh",
 	"tooltip": true,
-	"tooltip-format": "Left Click: Update System"},
+	"escape": false
+},
 // Separators
 "custom/separator#dot": {
 	"format": "",

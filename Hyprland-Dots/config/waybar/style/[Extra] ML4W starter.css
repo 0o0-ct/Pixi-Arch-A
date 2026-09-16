@@ -2,15 +2,62 @@
 /*  ML4W - Waybar Style */
 /* Original design from ML4W - Hyprland Starter Waybar */
 
-@define-color backgroundlight #FFFFFF;
-@define-color backgrounddark #FFFFFF;
-@define-color workspacesbackground1 #FFFFFF;
-@define-color workspacesbackground2 #CCCCCC;
-@define-color bordercolor #FFFFFF;
-@define-color textcolor1 #000000;
-@define-color textcolor2 #000000;
-@define-color textcolor3 #FFFFFF;
-@define-color iconcolor #FFFFFF;
+/* ---------------------------------------------------------------------------
+ * Frosted glass, coloured by the wallpaper.
+ *
+ * This style has no .modules-left/.modules-center/.modules-right panes: every
+ * module is its own rounded pill (that IS the ML4W starter look), so the pills
+ * are the glass surfaces here and they are tinted from wallust below.
+ *
+ * The import path is the one trap: GTK resolves a relative @import against the
+ * path of the file waybar actually loads, and that file is the SYMLINK
+ * ~/.config/waybar/style.css — so the base directory is ~/.config/waybar/ and
+ * the path below is right. "../wallust/colors-waybar.css" resolves to
+ * ~/.config/wallust/... , fails to import, and on waybar 0.15.0 a failed import
+ * kills the bar outright.
+ * ------------------------------------------------------------------------- */
+@import url("wallust/colors-waybar.css");
+
+/* ---------------------------------------------------------------------------
+ * Tokens.
+ *
+ * The pills in this style were flat white with black text on them. wallust
+ * gives us the same design driven by the wallpaper: the pill fill becomes
+ * @color15 (the light end of wallust's ramp, i.e. the wallpaper's own light
+ * accent) and the text on those pills becomes the one near-black ink. Measured
+ * at the 0.55 alpha the selectors already use, that pairing holds ~6.5:1 on a
+ * dark wallpaper and ~12:1 on a bright one — dark ink on a light pill is the
+ * only combination that survives both, because CSS cannot branch on palette.
+ * ------------------------------------------------------------------------- */
+@define-color ink            @foreground;
+@define-color ink_dim        alpha(@foreground, 0.80);
+@define-color on_accent      #12141a;
+@define-color tile_hi        alpha(@foreground, 0.13);
+@define-color edge           alpha(@foreground, 0.16);
+@define-color danger         #ffa8a8;   /* semantic: must stay red on any wallpaper */
+
+/* The names this style already used, now wallust-driven. */
+@define-color backgroundlight       @color15;   /* pill fill (was flat #FFFFFF)  */
+@define-color backgrounddark        @color15;   /* pill fill (was flat #FFFFFF)  */
+@define-color workspacesbackground2 @color15;   /* workspace pill                */
+@define-color textcolor1            @on_accent; /* ink on a light pill           */
+@define-color textcolor2            @on_accent; /* ink on a light pill           */
+@define-color textcolor3            @ink_dim;   /* icon on the bare bar          */
+@define-color iconcolor             @ink;       /* icon on the bare bar          */
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window itself stays transparent so the space between the pills keeps
+ * alpha 0 and Hyprland's ignore_alpha leaves it unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
 
 /* -----------------------------------------------------
  * General 
@@ -27,11 +74,9 @@
 }
 
 window#waybar {
-    background-color: rgba(0,0,0,0.2);
-    border-bottom: 0px solid #ffffff;
-    /* color: #FFFFFF; */
-    transition-property: background-color;
-    transition-duration: .5s;
+    background-color: transparent;
+    border-bottom: 0px solid @edge;
+    /* color: @ink; */
 }
 
 /* -----------------------------------------------------
@@ -46,7 +91,7 @@ window#waybar {
     border: 0px;
     font-weight: bold;
     font-style: normal;
-    color: @textcolor1;
+    color: @ink;
 }
 
 #taskbar button,
@@ -56,16 +101,20 @@ window#waybar {
     border-radius: 12px;
     border: 0px;
     color: @textcolor3;
-    transition: all 0.3s ease-in-out;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #taskbar button.active,
 #workspaces button.active {
     color: @textcolor1;
-    background: alpha(@workspacesbackground2, 0.55);
+    background: alpha(@workspacesbackground2, 0.85);
     border-radius: 8px;
     min-width: 40px;
-    transition: all 0.3s ease-in-out;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
 }
 
 #workspaces button:hover {
@@ -80,14 +129,13 @@ window#waybar {
 
 tooltip {
     border-radius: 10px;
-    background-color: alpha(@backgroundlight, 0.55);
-    opacity:0.8;
+    background-color: alpha(@background, 0.94);
     padding:20px;
     margin:0px;
 }
 
 tooltip label {
-    color: @textcolor2;
+    color: @ink;
 }
 
 /* -----------------------------------------------------
@@ -310,21 +358,11 @@ window#waybar.empty #window {
     background-color: alpha(@backgroundlight, 0.55);
 }
 
-@keyframes blink {
-    to {
-        background-color: alpha(@backgroundlight, 0.55);
-        color: @textcolor2;
-    }
-}
-
+/* Was a 0.5s blinking animation; a filled pill says "critical" just as loudly
+ * without scheduling a repaint twice a second forever. */
 #battery.critical:not(.charging) {
-    background-color: rgba(245, 60, 60, 0.55);
-    color: @textcolor3;
-    animation-name: blink;
-    animation-duration: 0.5s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+    background-color: @danger;
+    color: @on_accent;
 }
 
 /* -----------------------------------------------------
@@ -339,9 +377,12 @@ window#waybar.empty #window {
     -gtk-icon-effect: dim;
 }
 
+/* @danger is a light red, so the icon on top of it has to be the dark ink —
+ * light ink on this fill only reaches ~2.6:1. */
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
-    background-color: rgba(235, 77, 75, 0.55);
+    background-color: alpha(@danger, 0.88);
+    color: @on_accent;
 }
 
 /* -----------------------------------------------------
@@ -349,18 +390,19 @@ window#waybar.empty #window {
  * ----------------------------------------------------- */
 
 label:focus {
-    background-color: rgba(0, 0, 0, 0.55);
+    background-color: @tile_hi;
 }
 
+/* A dark-end teal, not a mid-ramp one: at this alpha a mid teal fill stays
+ * light enough on a bright wallpaper that light ink only reaches ~2.2:1. */
 #backlight {
-    background-color: rgba(144, 177, 177, 0.55);
+    background-color: alpha(@color2, 0.85);
 }
 
 #network {
-    background-color: rgba(41, 128, 185, 0.55);
+    background-color: alpha(@color13, 0.80);
 }
 
 #network.disconnected {
-    background-color: rgba(245, 60, 60, 0.55);
+    background-color: alpha(@danger, 0.75);
 }
-

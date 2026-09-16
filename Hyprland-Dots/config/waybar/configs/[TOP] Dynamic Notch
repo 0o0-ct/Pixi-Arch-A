@@ -1,0 +1,50 @@
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+// Dynamic Notch Bar
+
+{
+"include": [
+  "$HOME/.config/waybar/Modules",
+  "$HOME/.config/waybar/ModulesWorkspaces",
+  "$HOME/.config/waybar/ModulesCustom",
+  "$HOME/.config/waybar/ModulesGroups",
+  "$HOME/.config/waybar/UserModules"
+],
+"layer": "top",
+"position": "top",
+"height": 28,
+"margin-left": 0,
+"margin-right": 0,
+"margin-top": 0,
+	
+"modules-left": [
+	"custom/menu",
+	"custom/separator#blank_2",
+	"hyprland/workspaces",
+	"custom/separator#blank_2",
+	"mpris"
+],
+
+"modules-center": [
+	"custom/weather",
+	"custom/separator#blank",
+	"temperature",
+	"custom/separator#blank_2",
+	"pulseaudio",
+	"custom/separator#blank",
+	"battery",
+	"custom/separator#blank_2",
+	"custom/dot_update",
+	"custom/separator#blank",
+	"custom/updater",
+	"custom/separator#blank_2",
+	"custom/swaync"
+],
+		
+"modules-right": [
+	"tray",
+	"custom/separator#blank_2",
+	"clock",
+	"custom/separator#blank_2",
+	"custom/power"
+]
+}

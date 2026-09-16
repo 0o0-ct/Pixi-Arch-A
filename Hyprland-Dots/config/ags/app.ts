@@ -15,6 +15,7 @@ import {
   MusicPlayer,
   Sidebar,
 } from "./widgets";
+import FloatingPanel, { togglePanel } from "./widgets/floating-panel/main.tsx";
 
 // Style paths
 const scss = `${GLib.get_user_config_dir()}/ags/style/main.scss`;
@@ -51,6 +52,10 @@ app.start({
         app.toggle_window("system-menu");
         res("system-menu toggled");
         break;
+      case "floating-panel":
+        togglePanel();
+        res("floating-panel toggled");
+        break;
       case "reload-css":
         reloadCss();
         res("css reloaded");
@@ -79,5 +84,6 @@ app.start({
     PickerWindow();
     LogoutMenu();
     Sidebar();
+    FloatingPanel();
   },
 });

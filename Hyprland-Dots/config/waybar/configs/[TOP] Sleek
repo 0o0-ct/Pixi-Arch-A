@@ -30,7 +30,10 @@
 	"custom/separator#blank",
 	"clock#3",
 	"custom/separator#blank",
-	"custom/swaync", "custom/dot_update"
+	"custom/swaync",
+	"custom/separator#blank",
+	"custom/dot_update",
+	"custom/separator#blank",
 ],
 		
 "modules-right": [
@@ -40,6 +43,6 @@
 	"custom/separator#blank",
 	"group/mobo_drawer",
 	"custom/nightlight",
-	"custom/power",					
-	],
+	"custom/power"
+]
 }
