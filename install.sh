@@ -136,7 +136,7 @@ execute_script() {
 ## Valores por defecto para las opciones (serán sobreescritos por el preset si existe)
 gtk_themes="OFF"
 bluetooth="OFF"
-nautilus="OFF"
+thunar="OFF"
 quickshell="OFF"
 sddm="OFF"
 sddm_theme="OFF"

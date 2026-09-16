@@ -353,7 +353,7 @@ check_and_install_essential_pkgs() {
 
   local pkgs=(
     papirus-icon-theme
-    nautilus
+    thunar
     ffmpegthumbnailer
     file-roller
     poppler-glib
