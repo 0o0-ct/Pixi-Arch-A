@@ -263,3 +263,64 @@ entry:focus {
     border-color: rgba(220, 50, 47, 0.60);
     background-color: rgba(255, 255, 255, 0.11);
 }
+
+/* ---- 💫 Thunar Premium Glassmorphism & Modern Styling 💫 ---- */
+
+/* Thunar Main Window & Sidebar */
+.thunar .sidebar,
+.thunar .sidebar treeview {
+    background-color: rgba(18, 18, 22, 0.65);
+    color: #e2e8f0;
+    font-weight: 500;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.thunar .sidebar treeview:selected {
+    background-color: rgba(139, 92, 246, 0.45);
+    color: #ffffff;
+    border-radius: 8px;
+}
+
+/* Thunar Pathbar / Breadcrumb navigation pills */
+.thunar .path-bar-button {
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 8px;
+    padding: 4px 10px;
+    margin: 2px;
+    color: #f1f5f9;
+    transition: all 0.2s ease-in-out;
+}
+
+.thunar .path-bar-button:hover {
+    background-color: rgba(139, 92, 246, 0.35);
+    border-color: rgba(139, 92, 246, 0.60);
+    color: #ffffff;
+}
+
+/* Thunar Tabs */
+.thunar notebook tab {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px 8px 0 0;
+    padding: 6px 12px;
+    margin: 0 2px;
+    color: #94a3b8;
+}
+
+.thunar notebook tab:checked {
+    background-color: rgba(139, 92, 246, 0.40);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Thunar Main View Canvas */
+.thunar .view {
+    background-color: rgba(15, 15, 18, 0.70);
+    color: #f8fafc;
+}
+
+.thunar .view:selected {
+    background-color: rgba(139, 92, 246, 0.35);
+    color: #ffffff;
+    border-radius: 8px;
+}

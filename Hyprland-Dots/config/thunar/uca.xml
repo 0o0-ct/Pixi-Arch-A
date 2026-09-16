@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+<action>
+	<icon>utilities-terminal</icon>
+	<name>Abrir Terminal Kitty Aquí</name>
+	<submenu></submenu>
+	<unique-id>1690000001-1</unique-id>
+	<command>kitty --directory %f</command>
+	<description>Abrir terminal Kitty en esta carpeta</description>
+	<range></range>
+	<patterns>*</patterns>
+	<startup-notify/>
+	<directories/>
+</action>
+<action>
+	<icon>com.visualstudio.code</icon>
+	<name>Abrir con VS Code</name>
+	<submenu></submenu>
+	<unique-id>1690000001-2</unique-id>
+	<command>code %f</command>
+	<description>Abrir este archivo o carpeta en VS Code</description>
+	<range></range>
+	<patterns>*</patterns>
+	<startup-notify/>
+	<directories/>
+	<other-files/>
+	<text-files/>
+</action>
+<action>
+	<icon>background</icon>
+	<name>Establecer como Fondo de Pantalla</name>
+	<submenu></submenu>
+	<unique-id>1690000001-3</unique-id>
+	<command>$HOME/.config/hypr/scripts/WallustSwww.sh %f</command>
+	<description>Aplicar esta imagen como Wallpaper y generar tema Wallust</description>
+	<range></range>
+	<patterns>*.png;*.jpg;*.jpeg;*.webp;*.gif</patterns>
+	<startup-notify/>
+	<image-files/>
+</action>
+<action>
+	<icon>folder-color</icon>
+	<name>Cambiar Color de Carpetas</name>
+	<submenu></submenu>
+	<unique-id>1690000001-4</unique-id>
+	<command>$HOME/.config/hypr/scripts/ThunarDynamicColor.sh</command>
+	<description>Rotar el color de los íconos de las carpetas</description>
+	<range></range>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+</actions>
