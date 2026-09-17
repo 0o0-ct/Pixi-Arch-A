@@ -258,6 +258,7 @@ options_command+=(
     "gtk_themes" "¿Instalar temas GTK? (necesario para Dark/Light)" "OFF"
     "bluetooth" "¿Quieres que el script configure el Bluetooth?" "OFF"
     "thunar" "¿Deseas instalar el gestor de archivos Thunar & Plugins?" "OFF"
+    "nwg_dock" "¿Deseas instalar el Dock flotante estilo macOS (nwg-dock-hyprland)?" "OFF"
     "quickshell" "¿Instalar quickshell para la Vista de Escritorio?" "OFF"
     "xdph" "¿Instalar XDG-DESKTOP-PORTAL-HYPRLAND (para compartir pantalla)?" "OFF"
     "zsh" "¿Instalar la shell zsh con personalización Pixi-Arch-A?" "OFF"
@@ -542,6 +543,10 @@ for option in "${options[@]}"; do
         thunar)
             echo "${INFO} Instalando ${SKY_BLUE}el gestor de archivos Thunar & Plugins...${RESET}" | tee -a "$LOG"
             execute_script "thunar.sh"
+            ;;
+        nwg_dock)
+            echo "${INFO} Instalando ${SKY_BLUE}nwg-dock-hyprland (Floating macOS Dock)...${RESET}" | tee -a "$LOG"
+            execute_script "nwg_dock.sh"
             ;;
         sddm_theme)
             echo "${INFO} Descargando e instalando ${SKY_BLUE}un tema adicional para SDDM...${RESET}" | tee -a "$LOG"

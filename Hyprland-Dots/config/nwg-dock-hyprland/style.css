@@ -1,0 +1,32 @@
+/* ---- 💫 Pixi-Arch-A Glassmorphic nwg-dock-hyprland Style 💫 ---- */
+
+#dock-box {
+    background-color: rgba(15, 15, 20, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 6px 12px;
+    margin-bottom: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+button {
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    padding: 4px;
+    margin: 0 4px;
+    transition: all 0.2s ease-in-out;
+}
+
+button:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: scale(1.15);
+}
+
+#open-indicator {
+    background-color: #8b5cf6;
+    border-radius: 50%;
+    min-width: 4px;
+    min-height: 4px;
+    margin-top: 2px;
+}
