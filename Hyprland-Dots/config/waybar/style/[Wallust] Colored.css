@@ -30,9 +30,9 @@
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.74);  /* glass body          */
-@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
-@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+@define-color pane          alpha(@background, 0.38);  /* true frosted glass body */
+@define-color sheen_top     alpha(@color15, 0.28);     /* crystal sheen light */
+@define-color sheen_bot     alpha(@color15, 0.10);     /* refraction low end */
 
 @define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
 @define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
