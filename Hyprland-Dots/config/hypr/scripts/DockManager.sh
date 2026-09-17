@@ -11,8 +11,8 @@ fi
 
 if [ -n "$MONITORS" ]; then
     for MON in $MONITORS; do
-        nohup nwg-dock-hyprland -m -o "$MON" -i 36 -mb 10 -ml 10 -mr 10 -a center -d -c "pkill rofi || rofi -show drun" >/dev/null 2>&1 &
+        nohup nwg-dock-hyprland -m -o "$MON" -i 36 -mb 10 -ml 10 -mr 10 -a center >/dev/null 2>&1 &
     done
 else
-    nohup nwg-dock-hyprland -i 36 -mb 10 -ml 10 -mr 10 -a center -d -c "pkill rofi || rofi -show drun" >/dev/null 2>&1 &
+    nohup nwg-dock-hyprland -i 36 -mb 10 -ml 10 -mr 10 -a center >/dev/null 2>&1 &
 fi
