@@ -22,9 +22,9 @@ main() {
     current_target=$(readlink -f "$waybar_config")
     current_name=$(basename "$current_target")
 
-    # Build sorted list of available layouts
+    # Build sorted list of available layouts (excluding [BOT] layouts that collide with bottom Dock)
     mapfile -t options < <(
-        find -L "$waybar_layouts" -maxdepth 1 -type f -printf '%f\n' | sort
+        find -L "$waybar_layouts" -maxdepth 1 -type f -printf '%f\n' | grep -v '\[BOT' | grep -v '\[TOP & BOT' | sort
     )
 
     # Mark and locate the active layout
