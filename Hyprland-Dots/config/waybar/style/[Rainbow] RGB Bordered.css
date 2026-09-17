@@ -77,8 +77,8 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.74);  /* glass body          */
-@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.28);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
 
 @define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */

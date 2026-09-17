@@ -27,8 +27,8 @@
  *   @color13/6/7/8 -> the per-module hues, on the light half of the ramp so
  *                     they stay readable as text on a dark pane
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.74);
-@define-color sheen_top     alpha(@color15, 0.20);
+@define-color pane          alpha(@background, 0.35);
+@define-color sheen_top     alpha(@color15, 0.28);
 @define-color sheen_bot     alpha(@color15, 0.12);
 @define-color ink           @foreground;
 @define-color accent        @color15;

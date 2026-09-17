@@ -32,9 +32,9 @@
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.74);  /* dark glass surface  */
+@define-color pane          alpha(@background, 0.35);  /* dark glass surface  */
 @define-color pane_light    alpha(@color15, 0.82);     /* light module pill   */
-@define-color sheen_top     alpha(@color15, 0.20);     /* refraction, lit end */
+@define-color sheen_top     alpha(@color15, 0.28);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
 
 @define-color tile          alpha(@foreground, 0.05);

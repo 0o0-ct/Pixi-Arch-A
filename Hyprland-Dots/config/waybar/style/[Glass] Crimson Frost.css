@@ -74,13 +74,13 @@ window#waybar #window,
  *   @color13    -> píldora urgente / avisos
  *   @foreground -> texto, texto atenuado, círculos, filo
  * ------------------------------------------------------------------------- */
-@define-color glass        alpha(@background, 0.74);  /* isla base          */
+@define-color glass        alpha(@background, 0.35);  /* isla base          */
 @define-color glass_raise  alpha(@background, 0.85);  /* hover              */
 @define-color glass_sunken alpha(@background, 0.45);  /* zonas hundidas     */
 
 /* Refracción: sin esto el panel queda MÁS OSCURO que el fondo y se lee como
  * un agujero. En wallust el acento es también la luz. */
-@define-color sheen_top    alpha(@color15, 0.20);
+@define-color sheen_top    alpha(@color15, 0.28);
 @define-color sheen_bot    alpha(@color15, 0.12);
 
 @define-color lift         alpha(@foreground, 0.06);  /* círculo de icono   */

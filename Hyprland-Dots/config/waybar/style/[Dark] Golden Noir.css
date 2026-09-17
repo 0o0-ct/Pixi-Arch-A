@@ -57,8 +57,8 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.74);
-@define-color sheen_top     alpha(@color15, 0.20);
+@define-color pane          alpha(@background, 0.35);
+@define-color sheen_top     alpha(@color15, 0.28);
 @define-color sheen_bot     alpha(@color15, 0.12);
 
 @define-color tile          alpha(@foreground, 0.05);
