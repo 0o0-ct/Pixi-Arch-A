@@ -10,3 +10,4 @@ CcTileGrid 1.0 CcTileGrid.qml
 CcNotificationsSection 1.0 CcNotificationsSection.qml
 CcNotificationItem 1.0 CcNotificationItem.qml
 CcPowerMenu 1.0 CcPowerMenu.qml
+CcMediaSection 1.0 CcMediaSection.qml

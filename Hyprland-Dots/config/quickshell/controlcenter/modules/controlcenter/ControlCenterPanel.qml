@@ -98,6 +98,10 @@ PanelWindow {
                 width: parent.width
             }
 
+            CcMediaSection {
+                width: parent.width
+            }
+
             CcNotificationsSection {
                 width: parent.width
             }
