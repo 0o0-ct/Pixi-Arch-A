@@ -44,6 +44,7 @@ PanelWindow {
     // ── Click-away dismissal: clicking anywhere outside the card closes the panel ──
     MouseArea {
         anchors.fill: parent
+        z: -1
         onClicked: CcPanelState.dismiss()
     }
 
@@ -57,6 +58,7 @@ PanelWindow {
     // ── Floating Center Card ──────────────────────────────────────────────
     Rectangle {
         id: card
+        z: 1
         width: Theme.panelWidth
         height: content.implicitHeight + Theme.panelPadding * 2
         anchors.top: parent.top
@@ -66,11 +68,6 @@ PanelWindow {
         color: Theme.panelBg
         border.width: 1
         border.color: Theme.panelBorder
-
-        // Absorbs clicks inside the card so clicking between tiles does NOT trigger dismissal
-        MouseArea {
-            anchors.fill: parent
-        }
 
         // ── Content ───────────────────────────────────────────────────────────
         Column {
