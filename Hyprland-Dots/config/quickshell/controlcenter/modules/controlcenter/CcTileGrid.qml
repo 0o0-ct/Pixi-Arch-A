@@ -27,7 +27,14 @@ Grid {
         title: CcSystem.bluetoothTitle
         subtitle: CcSystem.bluetoothSubtitle
         active: CcSystem.bluetoothEnabled
-        onClicked: CcSystem.toggleBluetooth()
+        onClicked: {
+            if (!CcSystem.bluetoothEnabled) {
+                CcSystem.toggleBluetooth()
+                CcSystem.bluetoothDrawerOpen = true
+            } else {
+                CcSystem.bluetoothDrawerOpen = !CcSystem.bluetoothDrawerOpen
+            }
+        }
     }
 
     CcTile {

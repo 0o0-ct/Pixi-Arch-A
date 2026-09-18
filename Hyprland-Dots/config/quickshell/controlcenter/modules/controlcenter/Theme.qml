@@ -287,6 +287,7 @@ Singleton {
 
     property color tileBg: "#1F1A1F"
     property color tileBgHover: "#2D282E"
+    readonly property color tileHoverBg: tileBgHover
     property color tileBorder: "#4C444D"
     property color tileIconBg: "#2D282E"
     property color tileIconBgActive: "#161217"

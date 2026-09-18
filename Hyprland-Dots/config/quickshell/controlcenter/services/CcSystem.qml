@@ -235,30 +235,109 @@ Singleton {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  Bluetooth
+    //  Bluetooth (Integrated via bt_helper.py + bluetoothctl)
     // ══════════════════════════════════════════════════════════════════════
 
-    readonly property var bluetoothAdapter: Bluetooth.defaultAdapter
-    readonly property bool bluetoothEnabled: bluetoothAdapter?.enabled ?? false
-    readonly property string bluetoothDeviceName: {
-        const devices = Bluetooth.devices.values ?? []
-        for (const device of devices)
-            if (device.connected) {
-                const name = device.name ?? device.deviceName ?? device.address ?? ""
-                if (name.length > 0)
-                    return name
-            }
-        return ""
+    property bool bluetoothEnabled: false
+    property var bluetoothPairedDevices: []
+    property var bluetoothAvailableDevices: []
+    property bool bluetoothScanning: false
+    property bool bluetoothDrawerOpen: false
+    property string bluetoothDeviceName: ""
+
+    readonly property string bluetoothTitle: bluetoothEnabled ? "Bluetooth" : "Disabled"
+    readonly property string bluetoothSubtitle: {
+        if (!bluetoothEnabled) return "No devices"
+        if (bluetoothDeviceName.length > 0) return bluetoothDeviceName
+        if (bluetoothPairedDevices.length > 0) return bluetoothPairedDevices.length + " paired"
+        return "Enabled"
     }
-    readonly property string bluetoothTitle: bluetoothAdapter === null ? "Unavailable"
-        : (bluetoothEnabled ? "Enabled" : "Disabled")
-    readonly property string bluetoothSubtitle: bluetoothAdapter === null ? "No adapter"
-        : (bluetoothDeviceName.length > 0 ? bluetoothDeviceName : "No devices")
+
+    property string btHelperPath: Quickshell.shellDir + "/services/bt_helper.py"
+
+    Process {
+        id: btStatusProcess
+        command: [root.btHelperPath, "status"]
+        stdout: StdioCollector {
+            onStreamFinished: root.handleBtOutput(this.text)
+        }
+    }
+
+    Process {
+        id: btScanProcess
+        command: [root.btHelperPath, "scan"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.bluetoothScanning = false
+                root.handleBtOutput(this.text)
+            }
+        }
+    }
+
+    function handleBtOutput(jsonText) {
+        try {
+            const data = JSON.parse(jsonText.trim())
+            root.bluetoothEnabled = data.powered ?? false
+            root.bluetoothPairedDevices = data.paired ?? []
+            root.bluetoothAvailableDevices = data.available ?? []
+            let connectedName = ""
+            for (let i = 0; i < root.bluetoothPairedDevices.length; i++) {
+                if (root.bluetoothPairedDevices[i].connected) {
+                    connectedName = root.bluetoothPairedDevices[i].name
+                    break
+                }
+            }
+            root.bluetoothDeviceName = connectedName
+        } catch(e) {
+            console.log("Error parsing bt output:", e)
+        }
+    }
+
+    Timer {
+        interval: 10000
+        repeat: true
+        running: true
+        onTriggered: root.refreshBluetooth()
+    }
+
+    Timer {
+        id: btTimer
+        interval: 1200
+        repeat: false
+        onTriggered: root.refreshBluetooth()
+    }
+
+    function refreshBluetooth() {
+        if (!btStatusProcess.running && !btScanProcess.running) {
+            btStatusProcess.running = true
+        }
+    }
 
     function toggleBluetooth() {
-        const adapter = bluetoothAdapter
-        if (adapter)
-            adapter.enabled = !adapter.enabled
+        root.runDetached([root.btHelperPath, "toggle"])
+        btTimer.start()
+    }
+
+    function scanBluetooth() {
+        if (!btScanProcess.running) {
+            root.bluetoothScanning = true
+            btScanProcess.running = true
+        }
+    }
+
+    function connectBluetooth(mac) {
+        root.runDetached([root.btHelperPath, "connect", mac])
+        btTimer.start()
+    }
+
+    function disconnectBluetooth(mac) {
+        root.runDetached([root.btHelperPath, "disconnect", mac])
+        btTimer.start()
+    }
+
+    function pairBluetooth(mac) {
+        root.runDetached([root.btHelperPath, "pair", mac])
+        btTimer.start()
     }
 
     // ══════════════════════════════════════════════════════════════════════

@@ -95,6 +95,11 @@ PanelWindow {
                 width: parent.width
             }
 
+            CcBluetoothDrawer {
+                width: parent.width
+                visible: CcSystem.bluetoothDrawerOpen
+            }
+
             CcMediaSection {
                 width: parent.width
             }
