@@ -43,31 +43,40 @@ Singleton {
      */
     property string openScreenName: ""
 
-    /** Opens the panel, on the monitor the user is working on. */
-    function reveal() {
-        const focused = Hyprland.focusedMonitor
-        state.openScreenName = focused ? focused.name : ""
+    /** Opens the panel, on the monitor the user is working on or requested. */
+    function reveal(targetScreen) {
+        if (typeof targetScreen === "string" && targetScreen.length > 0) {
+            state.openScreenName = targetScreen
+        } else {
+            const focused = Hyprland.focusedMonitor
+            state.openScreenName = focused ? focused.name : (Quickshell.screens[0]?.name ?? "")
+        }
         state.visible = true
     }
 
     /**
      * Closes the panel on every instance.
-     *
-     * This is the single close path: Escape, `panel close` and `panel toggle`
-     * all end up here, so the panel can never be left half open with the power
-     * menu still showing.
      */
     function dismiss() {
         state.visible = false
         state.powerMenuOpen = false
+        state.openScreenName = ""
     }
 
-    /** Flips `visible`. */
-    function toggle() {
-        if (state.visible)
+    /** Flips `visible` targeting the specific monitor. */
+    function toggle(targetScreen) {
+        if (state.visible) {
+            const requested = (typeof targetScreen === "string" && targetScreen.length > 0)
+                ? targetScreen
+                : (Hyprland.focusedMonitor?.name ?? "")
+            if (requested.length > 0 && requested !== state.openScreenName) {
+                state.openScreenName = requested
+                return
+            }
             state.dismiss()
-        else
-            state.reveal()
+        } else {
+            state.reveal(targetScreen)
+        }
     }
 
     /**
@@ -153,17 +162,10 @@ Singleton {
      */
     readonly property var keyboardScreen: {
         const screens = state.panelScreens
-        if (screens.length === 0)
+        if (screens.length === 0 || state.openScreenName.length === 0)
             return null
-
-        const focused = Hyprland.focusedMonitor
-        if (focused) {
-            const match = screens.find(screen => screen.name === focused.name)
-            if (match)
-                return match
-        }
-        return screens[0]
+        return screens.find(screen => screen.name === state.openScreenName) ?? screens[0]
     }
 
-    readonly property string keyboardScreenName: state.keyboardScreen ? state.keyboardScreen.name : ""
+    readonly property string keyboardScreenName: state.openScreenName
 }

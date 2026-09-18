@@ -27,19 +27,16 @@ PanelWindow {
         right: true
     }
 
-    visible: CcPanelState.visible
+    readonly property bool isTargetScreen: panel.screen !== null && panel.screen.name === CcPanelState.openScreenName
+
+    visible: CcPanelState.visible && isTargetScreen
     color: "transparent"
     exclusiveZone: 0
     aboveWindows: true
     WlrLayershell.namespace: "quickshell-controlcenter"
     WlrLayershell.layer: WlrLayer.Overlay
 
-    readonly property bool ownsKeyboardFocus: CcPanelState.visible
-        && CcPanelState.keyboardScreen !== null
-        && panel.screen !== null
-        && panel.screen.name === CcPanelState.keyboardScreenName
-
-    WlrLayershell.keyboardFocus: panel.ownsKeyboardFocus ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    WlrLayershell.keyboardFocus: (CcPanelState.visible && isTargetScreen) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
     // ── Click-away dismissal: clicking anywhere outside the card closes the panel ──
     MouseArea {
