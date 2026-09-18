@@ -52,7 +52,7 @@ PanelWindow {
         onActivated: CcPanelState.dismiss()
     }
 
-    // ── Floating Center Card ──────────────────────────────────────────────
+    // ── Floating Center Card (Apple / VisionOS .glass-card Specification) ──
     Rectangle {
         id: card
         z: 1
@@ -61,10 +61,40 @@ PanelWindow {
         anchors.top: parent.top
         anchors.topMargin: Theme.panelMargin
         anchors.horizontalCenter: parent.horizontalCenter
-        radius: Theme.panelRadius
-        color: Theme.panelBg
+        radius: 20
+        color: Qt.rgba(1, 1, 1, 0.10)
         border.width: 1
-        border.color: Theme.panelBorder
+        border.color: Qt.rgba(1, 1, 1, 0.30)
+        clip: true
+
+        // Specular Top Highlight line (::before)
+        Rectangle {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: 1.5
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.0; color: "transparent" }
+                GradientStop { position: 0.2; color: Qt.rgba(1, 1, 1, 0.80) }
+                GradientStop { position: 0.8; color: Qt.rgba(1, 1, 1, 0.80) }
+                GradientStop { position: 1.0; color: "transparent" }
+            }
+        }
+
+        // Specular Left Highlight line (::after)
+        Rectangle {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            width: 1.5
+            gradient: Gradient {
+                orientation: Gradient.Vertical
+                GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.80) }
+                GradientStop { position: 0.6; color: "transparent" }
+                GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.30) }
+            }
+        }
 
         // ── Content ───────────────────────────────────────────────────────────
         Column {

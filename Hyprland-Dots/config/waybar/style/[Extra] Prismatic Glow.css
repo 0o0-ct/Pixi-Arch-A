@@ -52,15 +52,15 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles (same mapping as the reference style)
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
-@define-color sheen_top     alpha(@color15, 0.28);     /* refraction, lit end */
-@define-color sheen_bot     alpha(@color15, 0.12);     /* refraction, low end */
+@define-color pane          rgba(255, 255, 255, 0.10);  /* glass body          */
+@define-color sheen_top     rgba(255, 255, 255, 0.20);     /* refraction, lit end */
+@define-color sheen_bot     rgba(255, 255, 255, 0.04);     /* refraction, low end */
 
 @define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
 @define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
 
-@define-color edge          alpha(@foreground, 0.16);  /* hairline            */
-@define-color edge_top      alpha(@foreground, 0.32);  /* lit top edge        */
+@define-color edge          rgba(255, 255, 255, 0.30);  /* hairline            */
+@define-color edge_top      rgba(255, 255, 255, 0.75);  /* lit top edge        */
 
 @define-color ink           @foreground;
 @define-color ink_dim       alpha(@foreground, 0.80);
