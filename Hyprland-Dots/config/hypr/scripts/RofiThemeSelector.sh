@@ -39,8 +39,13 @@ apply_rofi_theme_to_config() {
   temp_rofi_config_file=$(mktemp)
   cp "$ROFI_CONFIG_FILE" "$temp_rofi_config_file"
 
-  # Comment out any existing @theme entry
-  sed -i -E 's/^(\s*@theme)/\\/\\/\1/' "$temp_rofi_config_file"
+  # Remove every existing @theme line (active OR previously commented).
+  # The original sed was malformed -- it escaped the '/' delimiter as '\\/' and
+  # sed aborted with "unknown option to 's'", so the old line was never removed
+  # and a new one was appended on every selection. That is how config.rasi ended
+  # up with 23 @theme lines, of which only the last one takes effect.
+  # Using '|' as the delimiter removes the escaping problem entirely.
+  sed -i -E '/^[[:space:]]*@theme/d; /^[[:space:]]*\/\/[[:space:]]*@theme/d' "$temp_rofi_config_file"
 
   # Add the new @theme entry at the end of the file
   echo "@theme \"$theme_path_with_tilde\"" >>"$temp_rofi_config_file"

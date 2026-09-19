@@ -19,6 +19,7 @@ configuration {
     font: "Iosevka 12";
     
     BG:    #1E1D2Fff;
+    GLASS: rgba(30, 29, 47, 0.55);
     BGA:   #89DCEBff;
     FG:    #D9E0EEff;
     FGA:   #F28FADff;
@@ -32,7 +33,7 @@ configuration {
 
 window {
     transparency:                   "real";
-    background-color:               @BG;
+    background-color:               @GLASS;
     text-color:                     @FG;
     border:                         2px;
     border-color:                   @BDR;
@@ -95,7 +96,7 @@ case-indicator {
 
 
 listview {
-    background-color:               @BG;
+    background-color:               transparent;
     columns:                        1;
     lines:			                7;
     spacing:                        4px;
@@ -115,7 +116,7 @@ scrollbar {
 }
 
 mainbox {
-    background-color:               @BG;
+    background-color:               transparent;
     children:                       [ inputbar, message, listview ];
     spacing:                        15px;
     padding:                        15px;

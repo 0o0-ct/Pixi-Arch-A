@@ -14,7 +14,7 @@ window {
   border: 1px;
   border-radius: 22px;
   border-color: rgba(255, 255, 255, 0.22);
-  background-color: rgba(10, 12, 18, 0.38);
+  background-color: rgba(26, 17, 15, 0.55); /* frosted-glass tint; mirrors @background-color from wallust/matugen colors-rofi.rasi */
   transparency: "real";
 }
 

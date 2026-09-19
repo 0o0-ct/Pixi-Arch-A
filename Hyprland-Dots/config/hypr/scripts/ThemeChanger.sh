@@ -33,6 +33,17 @@ if (( prompt_status != 0 )) || [[ -z "${choice}" ]]; then
   exit 0
 fi
 
+# ─── Red de seguridad de perfiles de tema (ThemeProfileSave.sh) ──────────────
+# Toma una foto "last-known-good" de la identidad del tema ANTES de que nada la
+# sobrescriba, para que ningún cambio de tema sea una puerta de un solo sentido.
+# Para volver atrás:  ~/.config/hypr/scripts/ThemeProfileRestore.sh last-known-good
+# Para revertir esta modificación: borrar estas 10 líneas (ver THEME-PROFILES.md).
+if [ -x "$HOME/.config/hypr/scripts/ThemeProfileSave.sh" ]; then
+  "$HOME/.config/hypr/scripts/ThemeProfileSave.sh" --quiet --force last-known-good \
+    --tag "auto: pre-cambio, choice=${choice}" || true
+fi
+# ─────────────────────────────────────────────────────────────────────────────
+
 # Record time before applying so we can wait for fresh template outputs
 start_ts=$(date +%s)
 
