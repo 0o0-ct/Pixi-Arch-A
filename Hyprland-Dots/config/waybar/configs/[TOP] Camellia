@@ -45,7 +45,7 @@
 	"battery",
 	"clock#3", 
 	"network",
-	"custom/nightlight"],
+	"custom/hypridle", "custom/nightlight"],
 
 // Additional modules //
 "pulseaudio/slider": {

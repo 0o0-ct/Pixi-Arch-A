@@ -34,6 +34,6 @@
 	"backlight", 
 	"pulseaudio", 
 	"battery", 
-	"custom/nightlight",
+	"custom/hypridle", "custom/nightlight",
 	"custom/power"],
 }

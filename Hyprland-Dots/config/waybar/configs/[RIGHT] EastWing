@@ -28,7 +28,7 @@
 ],
 
 "modules-center": [
-	"idle_inhibitor",
+	"custom/hypridle",
 	"hyprland/workspaces",
 ],
 

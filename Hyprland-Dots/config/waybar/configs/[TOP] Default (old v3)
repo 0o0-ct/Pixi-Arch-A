@@ -40,8 +40,8 @@
 	"custom/separator#line",
 	"hyprland/workspaces#kanji",
 	"custom/separator#dot-line",
-	"idle_inhibitor",
-	//"idle_inhibitor",	
+	"custom/hypridle",
+	//"custom/hypridle",	
 	"custom/hint",	
 	], 
 

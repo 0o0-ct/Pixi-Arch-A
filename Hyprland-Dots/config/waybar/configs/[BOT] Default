@@ -40,7 +40,7 @@
 		"custom/separator#dot-line",
 		"custom/weather",
 		"custom/separator#dot-line",
-		"idle_inhibitor",	
+		"custom/hypridle",	
 		"custom/hint",	
 		],
 	

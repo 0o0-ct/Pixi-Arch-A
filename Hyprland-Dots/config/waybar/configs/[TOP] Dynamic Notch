@@ -45,6 +45,6 @@
 	"custom/separator#blank_2",
 	"clock",
 	"custom/separator#blank_2",
-	"custom/power"
+	"custom/hypridle", "custom/power"
 ]
 }

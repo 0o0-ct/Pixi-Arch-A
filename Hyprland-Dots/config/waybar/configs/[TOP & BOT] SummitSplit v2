@@ -34,7 +34,7 @@
       "backlight",
       "pulseaudio",
       "group/mobo_drawer", 
-      "idle_inhibitor",
+      "custom/hypridle",
       "custom/nightlight",
       "group/power"
     ],

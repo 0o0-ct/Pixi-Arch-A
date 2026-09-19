@@ -38,7 +38,7 @@
 	"pulseaudio#1",
 	"backlight#2",
 	"power-profiles-daemon", 
-	"battery"
+	"battery", "custom/hypridle"
 	],
 
 }

@@ -35,7 +35,7 @@
 "modules-center": ["clock#4"], 
 	
 "modules-right": [
-	"battery",
+	"battery", "custom/hypridle",
 	"custom/separator#blank",
 	"backlight",
 	"custom/separator#blank",

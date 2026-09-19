@@ -43,7 +43,7 @@
 	"custom/speaker",
 	"pulseaudio/slider",
 	"power-profiles-daemon",
-	"battery",
+	"battery", "custom/hypridle",
 	"clock#3", 
 	"network"],
 

@@ -68,17 +68,17 @@
 	"tooltip-format": "Clic Izquierdo: Actualizar Personalización Pixi-Arch-A\nClic Derecho: Actualizar Sistema Arch Linux (yay -Syu)"
 },
 
-// Hypridle inhibitor
+// Hypridle inhibitor / Screen Idle Toggle (15m vs ∞)
 "custom/hypridle": {
-	"format": "󱫗 ",
+	"format": "{}",
 	"return-type": "json",
-	"escape": true,
-	"exec-on-event": true,
-	"interval": 60,
-	"exec": "$HOME/.config/hypr/scripts/Hypridle.sh status",
-	"exec-if": "test -f $HOME/.config/hypr/scripts/Hypridle.sh",
-	"on-click": "$HOME/.config/hypr/scripts/Hypridle.sh toggle",
-	"on-click-right": "hyprlock"
+	"escape": false,
+	"interval": 2,
+	"exec": "$HOME/.config/hypr/scripts/ScreenIdleToggle.sh status",
+	"exec-if": "test -f $HOME/.config/hypr/scripts/ScreenIdleToggle.sh",
+	"on-click": "$HOME/.config/hypr/scripts/ScreenIdleToggle.sh toggle",
+	"on-click-right": "hyprlock",
+	"signal": 9
 },
 
 "custom/keyboard": {
@@ -98,14 +98,11 @@
 
 // Night light (Hyprsunset)
 "custom/nightlight": {
-	"return-type": "json",
-	"exec": "$HOME/.config/hypr/scripts/ScreenIdleToggle.sh status",
-	"exec-if": "test -f $HOME/.config/hypr/scripts/ScreenIdleToggle.sh",
-	"interval": 3,
-	"format": "{}",
-	"on-click": "$HOME/.config/hypr/scripts/ScreenIdleToggle.sh toggle",
+	"format": "󰌵",
+	"on-click": "$HOME/.config/hypr/scripts/Hyprsunset.sh toggle",
+	"on-click-right": "$HOME/.config/hypr/scripts/Hyprsunset.sh menu",
 	"tooltip": true,
-	"escape": false
+	"tooltip-format": "Night Light (Hyprsunset)"
 },
 
 "custom/lock": {

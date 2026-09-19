@@ -277,6 +277,22 @@ button.active {
     margin: 2px 2px;
 }
 
+#custom-hypridle {
+    background-color: @chip_cool;
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.40);
+    border-radius: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
+}
+
+#custom-hypridle.caffeine {
+    background-color: alpha(@color10, 0.60);
+    color: #ffffff;
+    border: 1px solid alpha(@color10, 0.70);
+}
+
 #clock {
     background-color: @chip_warm;
     color: @foreground;

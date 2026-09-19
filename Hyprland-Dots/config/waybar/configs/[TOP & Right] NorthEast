@@ -41,6 +41,7 @@
 	"custom/separator#blank_2",
 	"group/audio",
 	"custom/separator#blank_2",
+    "custom/hypridle",
     "keyboard-state",
     "custom/power",
     ],
@@ -69,7 +70,7 @@
    
 "modules-left": [
     "custom/lock",
-    "idle_inhibitor",   
+    "custom/hypridle",   
     ],
     
 "modules-center": [

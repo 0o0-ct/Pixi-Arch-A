@@ -20,7 +20,7 @@
 "margin-top": 2,
 
 "modules-left": [	
-	"idle_inhibitor",
+	"custom/hypridle",
 	"group/mobo_drawer",
 	"hyprland/workspaces#rw",
 	"tray",

@@ -18,7 +18,7 @@
       "gtk-layer-shell": true,
       "reload_style_on_change": true,
       "modules-left": [
-        "idle_inhibitor",
+        "custom/hypridle",
         "custom/separator#blank",
         "group/tray_drawer",
         "connections",

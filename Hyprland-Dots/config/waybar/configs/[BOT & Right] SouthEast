@@ -45,6 +45,7 @@
     //"wireplumber",
     "power-profiles-daemon",
     "pulseaudio#microphone",
+    "custom/hypridle",
     "keyboard-state",
     "custom/nightlight",
     "custom/power",
@@ -74,7 +75,7 @@
    
 "modules-left": [
     "custom/lock",
-    "idle_inhibitor",   
+    "custom/hypridle",   
     ],
     
 "modules-center": [
