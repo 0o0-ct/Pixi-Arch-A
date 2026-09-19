@@ -27,12 +27,12 @@
  *   @color13     -> mid-tone accent (urgent)
  *   @foreground  -> text, slider trough, hairline edge
  * ------------------------------------------------------------------------- */
-@define-color pane          rgba(255, 255, 255, 0.10);
-@define-color sheen_top     rgba(255, 255, 255, 0.20);
-@define-color sheen_bot     rgba(255, 255, 255, 0.04);
+@define-color pane          alpha(@background, 0.35);
+@define-color sheen_top     alpha(@color15, 0.25);
+@define-color sheen_bot     alpha(@background, 0.08);
 @define-color tile          alpha(@foreground, 0.05);
-@define-color edge          rgba(255, 255, 255, 0.30);
-@define-color edge_top      rgba(255, 255, 255, 0.75);
+@define-color edge          alpha(@color14, 0.30);
+@define-color edge_top      alpha(@color15, 0.75);
 @define-color ink           @foreground;
 @define-color accent        @color15;
 @define-color accent_pill   alpha(@color15, 0.94);

@@ -33,7 +33,7 @@
 @define-color ink_dim        alpha(@foreground, 0.80);
 @define-color on_accent      #12141a;
 @define-color tile_hi        alpha(@foreground, 0.13);
-@define-color edge           rgba(255, 255, 255, 0.30);
+@define-color edge          alpha(@color14, 0.30);
 @define-color danger         #ffa8a8;   /* semantic: must stay red on any wallpaper */
 
 /* The names this style already used, now wallust-driven. */

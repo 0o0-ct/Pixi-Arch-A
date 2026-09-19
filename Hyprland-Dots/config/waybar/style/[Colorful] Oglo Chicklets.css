@@ -64,45 +64,36 @@ window#waybar #window,
 
 
 /* ---------------------------------------------------------------------------
- * Tokens — wallust roles
+ * Tokens — Wallust Extracted Dynamic Frosted Glass Palette
  * ------------------------------------------------------------------------- */
-@define-color pane          rgba(255, 255, 255, 0.10);  /* glass body          */
-@define-color sheen_top     rgba(255, 255, 255, 0.20);     /* refraction, lit end */
-@define-color sheen_bot     rgba(255, 255, 255, 0.04);     /* refraction, low end */
+@define-color pane          alpha(@background, 0.35);  /* atmospheric wallpaper-tinted glass */
+@define-color sheen_top     alpha(@color15, 0.25);     /* specular refraction highlight */
+@define-color sheen_bot     alpha(@background, 0.08);  /* gradient base */
 
-@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
-@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+@define-color tile          alpha(@foreground, 0.08);  /* subtle tile */
+@define-color tile_hi       alpha(@color15, 0.25);     /* tile hover glow */
 
-/* The lit edge is what separates a pane of glass from a smear of colour. */
-@define-color edge          rgba(255, 255, 255, 0.30);
-@define-color edge_top      rgba(255, 255, 255, 0.75);
+/* Specular reflection edges */
+@define-color edge          alpha(@color14, 0.30);     /* delicate tinted glass outline */
+@define-color edge_top      alpha(@color15, 0.75);     /* bright light-catching specular hairline */
 
 @define-color ink           @foreground;
-/* Secondary text is @foreground at 0.80, not @color15: @color15 is always the
- * light end of wallust's ramp, so on a light palette it would be light text on
- * a light pane. @foreground tracks the palette's contrast direction. */
-@define-color ink_dim       alpha(@foreground, 0.80);
+@define-color ink_dim       alpha(@foreground, 0.82);
 
-/* `on_accent` is a literal near-black: CSS cannot branch on the palette, and
- * dark ink on a light chicklet is the one pairing that stays readable on both
- * a dark and a light palette. */
 @define-color accent        @color15;
-@define-color accent_pill   alpha(@color15, 0.94);
+@define-color accent_pill   alpha(@color15, 0.85);
 @define-color on_accent     #12141a;
 @define-color accent_urgent alpha(@color13, 0.88);
 
-/* Chicklets: the wallpaper's own ramp, dense enough that the dark ink reads. */
-@define-color chip          alpha(@color5, 0.90);
-@define-color chip_hi       alpha(@color7, 0.92);
-@define-color chip_alt      alpha(@color6, 0.90);
-@define-color chip_warm     alpha(@color13, 0.90);
-@define-color chip_cool     alpha(@color14, 0.90);
-@define-color chip_light    alpha(@color15, 0.90);
-@define-color chip_neutral  alpha(@color8, 0.90);
-/* The thick bottom edge of a chicklet is a *recessed* edge, so it is the
- * wallpaper's dark base rather than another ramp colour: GTK3 CSS cannot mix or
- * darken a token, and a second ramp colour would just read as a second hue. */
-@define-color chip_edge     alpha(@background, 0.90);
+/* Translucent Frosted Glass Chicklets - rich dynamic extracted colors */
+@define-color chip          alpha(@color5, 0.45);
+@define-color chip_hi       alpha(@color7, 0.60);
+@define-color chip_alt      alpha(@color6, 0.45);
+@define-color chip_warm     alpha(@color13, 0.45);
+@define-color chip_cool     alpha(@color14, 0.45);
+@define-color chip_light    alpha(@color15, 0.50);
+@define-color chip_neutral  alpha(@color8, 0.40);
+@define-color chip_edge     alpha(@color15, 0.35);
 
 /* Semantic, not decorative: must stay red whatever the wallpaper is. */
 @define-color danger        #ffa8a8;
@@ -141,6 +132,7 @@ window#waybar.solo {
 
 /* The three islands: wallpaper tint + sheen over Hyprland's blur. They carry no
  * vertical margin of their own, so an auto-height bar does not grow. */
+/* The three islands: wallpaper tint + sheen over Hyprland's blur. */
 .modules-left,
 .modules-center,
 .modules-right {
@@ -148,20 +140,24 @@ window#waybar.solo {
     background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
     color: @ink;
     border: 1px solid @edge;
-    border-top: 1px solid @edge_top;
-    border-radius: 16px;
-    padding: 0px 4px;
+    border-top: 1.5px solid @edge_top;
+    border-radius: 18px;
+    padding: 2px 6px;
 }
 
 button {
     all: unset;
     background-color: @chip;
-    color: @on_accent;
-    border: none;
-    border-bottom: 8px solid @chip_edge;
-    border-radius: 5px;
-    padding-left: 15px;
-    padding-right: 15px;
+    color: @foreground;
+    border: 1px solid @chip_edge;
+    border-top: 1.5px solid alpha(@color15, 0.70);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin: 2px 2px;
     transition-property: background-color, border-color, color;
     transition-duration: 160ms;
     transition-timing-function: ease-out;
@@ -170,21 +166,26 @@ button {
 button:hover {
     background: inherit;
     background-color: @chip_hi;
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    color: #ffffff;
+    border-color: alpha(@color15, 0.85);
+    border-top-color: #ffffff;
 }
 
 button.active {
     background: inherit;
     background-color: @accent_pill;
     color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    border: 1.5px solid alpha(#ffffff, 0.90);
+    border-radius: 12px;
 }
 
 #mode {
     background-color: @chip_neutral;
     color: @on_accent;
-    border-bottom: 3px solid @edge_top;
+    border: 1px solid @edge;
+    border-top: 1.5px solid @edge_top;
+    border-radius: 10px;
+    padding: 2px 8px;
 }
 
 #backlight,
@@ -273,57 +274,95 @@ button.active {
     margin-right: 0;
 }
 
-/* A dark chicklet: this one always carried the light ink, so it keeps the
- * wallpaper's dark base as its fill. */
+/* A dark chicklet: translucent wallpaper dark base */
 #window {
-    background-color: alpha(@background, 0.55);
+    background-color: alpha(@background, 0.45);
     color: @ink;
-    border-bottom: 8px solid @chip_edge;
+    border: 1px solid @edge;
+    border-top: 1.5px solid @edge_top;
+    border-radius: 12px;
+    padding: 2px 10px;
+    margin: 2px 2px;
 }
 
 #custom-swaync {
-    background-color: @chip;
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    background-color: alpha(@color14, 0.50);
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.65);
+    border-top: 1.5px solid alpha(@color15, 0.85);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
 }
 
 #custom-menu {
     background-color: @chip;
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    color: @foreground;
+    border: 1px solid alpha(@color5, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin: 2px 2px;
 }
 
 #custom-power {
-    background-color: alpha(@danger, 0.85);
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    background-color: alpha(@danger, 0.50);
+    color: @foreground;
+    border: 1px solid alpha(@danger, 0.70);
+    border-top: 1.5px solid alpha(#ffffff, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
     padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
 }
 
-#custom-power_vertical{
-    background-color: alpha(@danger, 0.85);
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+#custom-power_vertical {
+    background-color: alpha(@danger, 0.50);
+    color: @foreground;
+    border: 1px solid alpha(@danger, 0.70);
+    border-top: 1.5px solid alpha(#ffffff, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    margin: 2px 2px;
 }
 
 #clock {
     background-color: @chip_warm;
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    color: @foreground;
+    border: 1px solid alpha(@color13, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
 }
 
 #battery {
     background-color: @chip_cool;
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
 }
 
-/* Was a 3s infinite `blink` (an animation that repaints forever and whose
- * @keyframes dies with it). A static filled chicklet alerts just as loudly. */
 #battery.critical:not(.charging) {
-    background-color: alpha(@danger, 0.85);
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    background-color: alpha(@danger, 0.70);
+    color: #ffffff;
+    border: 1px solid alpha(@danger, 0.90);
+    border-top: 1.5px solid alpha(#ffffff, 0.85);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    margin: 2px 2px;
 }
 
 label:focus {
@@ -332,20 +371,38 @@ label:focus {
 
 #cpu {
     background-color: @chip;
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    color: @foreground;
+    border: 1px solid alpha(@color5, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
 }
 
 #memory {
     background-color: @chip_hi;
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    color: @foreground;
+    border: 1px solid alpha(@color7, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
 }
 
 #disk {
     background-color: @chip_alt;
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    color: @foreground;
+    border: 1px solid alpha(@color6, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
 }
 
 #custom-lock,
@@ -353,46 +410,85 @@ label:focus {
 #custom-nightlight,
 #backlight {
     background-color: @chip_cool;
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
     padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
 }
 
 #network {
     background-color: @chip_warm;
-    color: @on_accent;
+    color: @foreground;
+    border: 1px solid alpha(@color13, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
 }
 
 #network.disconnected {
-    background-color: alpha(@danger, 0.85);
-    color: @on_accent;
+    background-color: alpha(@danger, 0.70);
+    color: #ffffff;
+    border: 1px solid alpha(@danger, 0.90);
+    border-radius: 12px;
+    margin: 2px 2px;
 }
 
 #pulseaudio {
     background-color: @chip_light;
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    color: @foreground;
+    border: 1px solid alpha(@color11, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
 }
 
 #pulseaudio.muted {
     background-color: @chip_neutral;
-    color: @on_accent;
+    color: @ink_dim;
+    border-radius: 12px;
+    margin: 2px 2px;
 }
 
 #wireplumber {
     background-color: @chip_hi;
-    color: @on_accent;
+    color: @foreground;
+    border: 1px solid alpha(@color7, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
 }
 
 #wireplumber.muted {
-    background-color: alpha(@danger, 0.85);
-    color: @on_accent;
+    background-color: alpha(@danger, 0.70);
+    color: #ffffff;
+    border-radius: 12px;
+    margin: 2px 2px;
 }
 
 #custom-media {
     background-color: @chip_cool;
-    color: @on_accent;
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
     min-width: 100px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
 }
 
 #custom-media.custom-spotify {
@@ -405,19 +501,33 @@ label:focus {
 
 #temperature {
     background-color: @chip_warm;
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    color: @foreground;
+    border: 1px solid alpha(@color13, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
 }
 
 #temperature.critical {
-    background-color: alpha(@danger, 0.85);
-    color: @on_accent;
+    background-color: alpha(@danger, 0.70);
+    color: #ffffff;
+    border-radius: 12px;
+    margin: 2px 2px;
 }
 
 #tray {
     background-color: @chip_warm;
-    color: @on_accent;
-    border-bottom: 8px solid @chip_edge;
+    color: @foreground;
+    border: 1px solid alpha(@color13, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-bottom: 2px solid alpha(@background, 0.60);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
 }
 
 #tray > .passive {
@@ -426,52 +536,74 @@ label:focus {
 
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
-    background-color: alpha(@danger, 0.85);
+    background-color: alpha(@danger, 0.70);
 }
 
 #idle_inhibitor {
-    background-color: alpha(@background, 0.55);
+    background-color: alpha(@background, 0.50);
     color: @ink;
-    border-bottom: 8px solid @chip_edge;
+    border: 1px solid @edge;
+    border-top: 1.5px solid @edge_top;
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
 }
 
 #idle_inhibitor.activated {
     background-color: @accent_pill;
-    border-bottom: 8px solid @accent;
+    border: 1.5px solid alpha(#ffffff, 0.90);
     color: @on_accent;
+    border-radius: 12px;
+    margin: 2px 2px;
 }
 
 #mpd {
     background-color: @chip_cool;
-    color: @on_accent;
+    color: @foreground;
+    border-radius: 12px;
+    margin: 2px 2px;
 }
 
 #mpd.disconnected {
-    background-color: alpha(@danger, 0.85);
-    color: @on_accent;
+    background-color: alpha(@danger, 0.70);
+    color: #ffffff;
+    border-radius: 12px;
+    margin: 2px 2px;
 }
 
 #mpd.stopped {
     background-color: @chip_neutral;
-    color: @on_accent;
+    color: @ink_dim;
+    border-radius: 12px;
+    margin: 2px 2px;
 }
 
 #mpd.paused {
     background-color: @chip;
-    color: @on_accent;
+    color: @foreground;
+    border-radius: 12px;
+    margin: 2px 2px;
 }
 
 #language {
     background: @chip_cool;
-    color: @on_accent;
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-radius: 12px;
     min-width: 16px;
+    margin: 2px 2px;
 }
 
 #keyboard-state {
     background: @chip_hi;
-    color: @on_accent;
+    color: @foreground;
+    border: 1px solid alpha(@color7, 0.60);
+    border-top: 1.5px solid alpha(@color15, 0.75);
+    border-radius: 12px;
     min-width: 16px;
-    border-bottom: 8px solid @chip_edge;
+    margin: 2px 2px;
 }
 
 #keyboard-state > label {
@@ -484,6 +616,10 @@ label:focus {
 
 #scratchpad {
     background: alpha(@background, 0.45);
+    border: 1px solid @edge;
+    border-top: 1.5px solid @edge_top;
+    border-radius: 12px;
+    margin: 2px 2px;
 }
 
 #scratchpad.empty {
@@ -491,10 +627,12 @@ label:focus {
 }
 
 tooltip {
-  background-color: alpha(@background, 0.94);
-  border: none;
-  border-bottom: 8px solid @chip_edge;
+  background-color: alpha(@background, 0.85);
+  border: 1px solid @edge;
+  border-top: 1.5px solid @edge_top;
+  border-radius: 14px;
   color: @ink;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
 tooltip label {
