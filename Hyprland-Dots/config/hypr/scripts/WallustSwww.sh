@@ -23,11 +23,7 @@ read_cached_wallpaper() {
 read_wallpaper_from_query() {
   local monitor="$1"
   swww query | awk -v mon="$monitor" '
-    /^Monitor/ {
-      cur=$2
-      gsub(":", "", cur)
-    }
-    /image:/ && cur==mon {
+    $0 ~ mon && /image:/ {
       sub(/^.*image: /,"")
       print
       exit

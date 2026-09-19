@@ -45,9 +45,10 @@ declare -A effects=(
 
 # Function to apply no effects
 no-effects() {
-    swww img -o "$focused_monitor" "$wallpaper_current" $SWWW_PARAMS &&
+    # Apply wallpaper to all monitors/outputs
+    swww img "$wallpaper_current" $SWWW_PARAMS &&
     wait $!
-    wallust run "$wallpaper_current" -s &&
+    "$SCRIPTSDIR/WallustSwww.sh" "$wallpaper_current" &&
     wait $!
     # Refresh rofi, waybar, wallust palettes
 	sleep 2
@@ -83,11 +84,12 @@ main() {
             done
 
             sleep 1
-            swww img -o "$focused_monitor" "$wallpaper_output" $SWWW_PARAMS &
+            # Apply effect wallpaper to all monitors/outputs
+            swww img "$wallpaper_output" $SWWW_PARAMS &
 
             sleep 2
   
-            wallust run "$wallpaper_output" -s &
+            "$SCRIPTSDIR/WallustSwww.sh" "$wallpaper_output" &
             sleep 1
             # Refresh rofi, waybar, wallust palettes
             "${SCRIPTSDIR}/Refresh.sh"
