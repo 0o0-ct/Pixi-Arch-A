@@ -18,3 +18,7 @@ venv/
 
 # Local color extraction tool source
 extraccion de colores/
+
+# Local non-dotfile folders and external downloaded assets
+yo-github/
+GTK-themes-icons/
