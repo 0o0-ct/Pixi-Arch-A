@@ -216,16 +216,16 @@ element selected.active {
     text-color:                  @selected-active-foreground;
 }
 element alternate.normal {
-    background-color:            @alternate-normal-background;
-    text-color:                  @alternate-normal-foreground;
+    background-color:            transparent;
+    text-color:                  @normal-foreground;
 }
 element alternate.urgent {
-    background-color:            @alternate-urgent-background;
-    text-color:                  @alternate-urgent-foreground;
+    background-color:            transparent;
+    text-color:                  @urgent-foreground;
 }
 element alternate.active {
-    background-color:            @alternate-active-background;
-    text-color:                  @alternate-active-foreground;
+    background-color:            transparent;
+    text-color:                  @active-foreground;
 }
 element-icon {
     background-color:            transparent;

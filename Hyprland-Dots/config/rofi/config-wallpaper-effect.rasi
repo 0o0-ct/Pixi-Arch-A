@@ -38,6 +38,11 @@ inputbar {
 }
 
 /* ---- Element ---- */
+element normal.normal,
+element alternate.normal {
+  background-color: transparent;
+}
+
 element-icon {
   size: 0%;
 }
