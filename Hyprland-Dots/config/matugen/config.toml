@@ -1,0 +1,33 @@
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+# Matugen 4.2.0 Material Design 3 Configuration
+
+[config]
+reload_apps = false
+
+[templates.waybar]
+input_path = "~/.config/matugen/templates/colors-waybar.css"
+output_path = "~/.config/waybar/wallust/colors-waybar.css"
+
+[templates.quickshell]
+input_path = "~/.config/matugen/templates/qml_color.json"
+output_path = "~/.config/quickshell/qml_color.json"
+
+[templates.hyprland]
+input_path = "~/.config/matugen/templates/colors-hyprland.conf"
+output_path = "~/.config/hypr/wallust/wallust-hyprland.conf"
+
+[templates.rofi]
+input_path = "~/.config/matugen/templates/colors-rofi.rasi"
+output_path = "~/.config/rofi/wallust/colors-rofi.rasi"
+
+[templates.ghostty]
+input_path = "~/.config/matugen/templates/colors-ghostty.conf"
+output_path = "~/.config/ghostty/wallust.conf"
+
+[templates.kitty]
+input_path = "~/.config/matugen/templates/colors-kitty.conf"
+output_path = "~/.config/kitty/kitty-themes/01-Wallust.conf"
+
+[templates.swaync]
+input_path = "~/.config/matugen/templates/colors-swaync.css"
+output_path = "~/.config/swaync/wallust/colors-wallust.css"

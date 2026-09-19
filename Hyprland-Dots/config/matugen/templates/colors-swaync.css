@@ -1,0 +1,12 @@
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/* Matugen Material Design 3 template - colors-swaync */
+
+@define-color text {{colors.on_surface.default.hex}};
+@define-color background rgba({{colors.surface.default.red}}, {{colors.surface.default.green}}, {{colors.surface.default.blue}}, 0.40);
+@define-color background-alt {{colors.surface_container.default.hex}};
+@define-color cursor {{colors.primary.default.hex}};
+@define-color hovered {{colors.surface_container_high.default.hex}};
+@define-color button-background {{colors.surface_container.default.hex}};
+@define-color button-active {{colors.primary.default.hex}};
+@define-color border {{colors.outline_variant.default.hex}};
+@define-color urgent {{colors.error.default.hex}};

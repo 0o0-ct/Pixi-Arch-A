@@ -155,13 +155,19 @@ wait_for_templates() {
   return 1
 }
 
-# Run wallust (silent) to regenerate templates defined in ~/.config/wallust/wallust.toml
-# -s is used in this repo to keep things quiet and avoid extra prompts
+# Run wallust (silent) as base fallback
 start_ts=$(date +%s)
 wallust run -s "$wallpaper_path" || true
+
+# Run Matugen (Material Design 3 / Monet extraction from ~/JaKooLit/extraccion de colores)
+if command -v matugen >/dev/null 2>&1; then
+  matugen image "$wallpaper_path" --source-color-index 0 || true
+fi
+
 wallust_targets=(
   "$HOME/.config/waybar/wallust/colors-waybar.css"
   "$HOME/.config/rofi/wallust/colors-rofi.rasi"
+  "$HOME/.config/quickshell/qml_color.json"
 )
 wait_for_templates "$start_ts" "${wallust_targets[@]}" || true
 
