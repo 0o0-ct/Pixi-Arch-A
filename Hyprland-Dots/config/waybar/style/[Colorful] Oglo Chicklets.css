@@ -1,53 +1,11 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Oglo Chicklets — frosted glass, coloured by the wallpaper
+/* Oglo Chicklets — Pure Frosted Glass, Coloured by Wallpaper (Matugen M3)
  * ==========================================================================
- * The LAYOUT of this file is untouched: the selector set, the paddings, the
- * radii and the thick `border-bottom` chicklet edges are exactly what it
- * shipped with. Only the colour system changed — the chicklet fills now come
- * from wallust's ramp instead of a fixed set of hexes, and the three module
- * islands became panes of glass.
- *
- * THE IMPORT PATH (the one trap in this file)
- * -------------------------------------------
- * Waybar loads the symlink ~/.config/waybar/style.css, so GTK resolves a
- * relative @import against ~/.config/waybar/ and the import must be
- * "wallust/colors-waybar.css". "../wallust/" resolves to ~/.config/wallust,
- * where there is no colours file; on waybar 0.15.0 a failed import throws and
- * the style load dies rather than warning.
- *
- * WHICH WALLUST TOKENS THE CHICKLETS USE
- * --------------------------------------
- * A chicklet is a light fill with the dark `on_accent` ink riding on it, so the
- * fills are taken from the light half of wallust's ramp (@color5 - @color15),
- * never from the dark half (@color0 - @color4, @color9 - @color12), which would
- * swallow the label. The hue variety is therefore exactly the wallpaper's — on
- * a colourful image the chicklets differ, on a monochrome one they harmonise.
- *
- * WHY THE PANE IS TINTED *AND* LIFTED
- * -----------------------------------
- * @background is the wallpaper's darkest colour, so a tint built from it alone
- * reads as a black rectangle on a dark wallpaper. The @color15 sheen gradient
- * is what lifts the pane: the accent is both the hue and the light.
- *
- * THE GLASS IS NOT DONE IN CSS
- * ----------------------------
- * GTK3 has no backdrop-filter. The blur is Hyprland's (`blur 1` +
- * `ignore_alpha`), which is why window#waybar stays fully transparent: the gaps
- * between the islands must keep alpha 0 so they are not blurred.
- *
- * PERFORMANCE (the user is fighting heat; not stylistic choices)
- * --------------------------------------------------------------
- *   - box-shadow removed (5 uses here, two of them tooltip-decoration resets)
- *   - no opacity on containers; translucency is rgba()/alpha()
- *   - `transition: transform` on the chicklets replaced with background-color /
- *     border-color / color at 160ms (a transform transition repaints every
- *     frame of the scale)
- *   - the looping `blink` battery animation is gone; the critical state is a
- *     static filled chicklet
+ * Clean, smooth frosted glass without harsh specular highlights or bottom bevels.
+ * Uses dynamic Wallust & Matugen Material You tokens.
  */
 
 @import url("wallust/colors-waybar.css");
-
 
 /* --- Clean Floating Glass Transparency Rule ---
  * The bar window itself stays transparent so the space between the islands
@@ -62,20 +20,14 @@ window#waybar #window,
     border: none;
 }
 
-
 /* ---------------------------------------------------------------------------
  * Tokens — Wallust Extracted Dynamic Frosted Glass Palette
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* atmospheric wallpaper-tinted glass */
-@define-color sheen_top     alpha(@color15, 0.25);     /* specular refraction highlight */
-@define-color sheen_bot     alpha(@background, 0.08);  /* gradient base */
+@define-color pane          alpha(@background, 0.40);  /* atmospheric wallpaper-tinted glass */
+@define-color edge          alpha(@color15, 0.20);     /* clean uniform subtle glass border */
 
 @define-color tile          alpha(@foreground, 0.08);  /* subtle tile */
 @define-color tile_hi       alpha(@color15, 0.25);     /* tile hover glow */
-
-/* Specular reflection edges */
-@define-color edge          alpha(@color14, 0.30);     /* delicate tinted glass outline */
-@define-color edge_top      alpha(@color15, 0.75);     /* bright light-catching specular hairline */
 
 @define-color ink           @foreground;
 @define-color ink_dim       alpha(@foreground, 0.82);
@@ -93,7 +45,7 @@ window#waybar #window,
 @define-color chip_cool     alpha(@color14, 0.45);
 @define-color chip_light    alpha(@color15, 0.50);
 @define-color chip_neutral  alpha(@color8, 0.40);
-@define-color chip_edge     alpha(@color15, 0.35);
+@define-color chip_edge     alpha(@color15, 0.25);
 
 /* Semantic, not decorative: must stay red whatever the wallpaper is. */
 @define-color danger        #ffa8a8;
@@ -104,43 +56,23 @@ window#waybar #window,
     font-weight: bold;
 }
 
-/* The window keeps the band it always had: the 8px bottom border is still
- * reserved (so nothing is re-measured) but it can no longer be painted, because
- * a filled window would be blurred by Hyprland as one solid slab and the gaps
- * between the islands would stop being gaps. */
 window#waybar {
     background-color: transparent;
     border-bottom: 8px solid transparent;
     color: @ink;
 }
 
-/* Was `opacity: 0.2` on the whole window, which forces GTK to render the widget
- * group offscreen. The bar is fully transparent here, so the dimming is dropped
- * rather than faked with a banned property. */
 window#waybar.hidden {
     background-color: transparent;
 }
 
-/*
-window#waybar.empty {
-    background-color: transparent;
-}
-window#waybar.solo {
-    background-color: transparent;
-}
-*/
-
-/* The three islands: wallpaper tint + sheen over Hyprland's blur. They carry no
- * vertical margin of their own, so an auto-height bar does not grow. */
-/* The three islands: wallpaper tint + sheen over Hyprland's blur. */
+/* The three islands: clean frosted glass over Hyprland blur */
 .modules-left,
 .modules-center,
 .modules-right {
     background-color: @pane;
-    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
     color: @ink;
     border: 1px solid @edge;
-    border-top: 1.5px solid @edge_top;
     border-radius: 18px;
     padding: 2px 6px;
 }
@@ -150,8 +82,6 @@ button {
     background-color: @chip;
     color: @foreground;
     border: 1px solid @chip_edge;
-    border-top: 1.5px solid alpha(@color15, 0.70);
-    border-bottom: 2px solid alpha(@background, 0.60);
     border-radius: 12px;
     padding-left: 12px;
     padding-right: 12px;
@@ -167,15 +97,14 @@ button:hover {
     background: inherit;
     background-color: @chip_hi;
     color: #ffffff;
-    border-color: alpha(@color15, 0.85);
-    border-top-color: #ffffff;
+    border-color: alpha(@color15, 0.65);
 }
 
 button.active {
     background: inherit;
     background-color: @accent_pill;
     color: @on_accent;
-    border: 1.5px solid alpha(#ffffff, 0.90);
+    border: 1px solid alpha(#ffffff, 0.70);
     border-radius: 12px;
 }
 
@@ -183,7 +112,6 @@ button.active {
     background-color: @chip_neutral;
     color: @on_accent;
     border: 1px solid @edge;
-    border-top: 1.5px solid @edge_top;
     border-radius: 10px;
     padding: 2px 8px;
 }
@@ -246,51 +174,75 @@ button.active {
 #custom-weather.severe,
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
-#custom-weather.sunnyDay{
-    /* Modules without a chicklet of their own read as plain text on the pane. */
+#custom-weather.sunnyDay {
     color: @ink;
     padding-top: 2px;
     padding-bottom: 2px;
     border-radius: 5px;
-	padding-left: 5px;
-	padding-right: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
     transition-property: background-color, border-color, color;
     transition-duration: 160ms;
     transition-timing-function: ease-out;
 }
 
-#window,
-#workspaces {
-    margin: 0 4px;
-}
-
-/* If workspaces is the leftmost module, omit left margin */
-.modules-left > widget:first-child > #workspaces {
-    margin-left: 0;
-}
-
-/* If workspaces is the rightmost module, omit right margin */
-.modules-right > widget:last-child > #workspaces {
-    margin-right: 0;
-}
-
-/* A dark chicklet: translucent wallpaper dark base */
 #window {
-    background-color: alpha(@background, 0.45);
+    color: @ink;
+}
+
+#custom-hypridle.active,
+#custom-hypridle.notactive {
+    color: @ink;
+}
+
+#workspaces {
+    background-color: transparent;
+    padding: 0px 1px;
+}
+
+#workspaces button {
+    background-color: @chip_neutral;
     color: @ink;
     border: 1px solid @edge;
-    border-top: 1.5px solid @edge_top;
     border-radius: 12px;
     padding: 2px 10px;
     margin: 2px 2px;
 }
 
+#workspaces button.active {
+    background-color: @accent_pill;
+    color: @on_accent;
+    border: 1px solid alpha(#ffffff, 0.70);
+}
+
+#workspaces button.urgent {
+    background-color: @accent_urgent;
+    color: #ffffff;
+}
+
+#workspaces button:hover {
+    background-color: @chip_hi;
+    color: #ffffff;
+}
+
+#taskbar button {
+    background-color: @chip_neutral;
+    color: @ink;
+    border: 1px solid @edge;
+    border-radius: 12px;
+    padding: 2px 10px;
+    margin: 2px 2px;
+}
+
+#taskbar button.active {
+    background-color: @accent_pill;
+    color: @on_accent;
+}
+
 #custom-swaync {
     background-color: alpha(@color14, 0.50);
     color: @foreground;
-    border: 1px solid alpha(@color14, 0.65);
-    border-top: 1.5px solid alpha(@color15, 0.85);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color14, 0.40);
     border-radius: 12px;
     padding-left: 10px;
     padding-right: 10px;
@@ -300,9 +252,7 @@ button.active {
 #custom-menu {
     background-color: @chip;
     color: @foreground;
-    border: 1px solid alpha(@color5, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color5, 0.40);
     border-radius: 12px;
     padding-left: 12px;
     padding-right: 12px;
@@ -312,9 +262,7 @@ button.active {
 #custom-power {
     background-color: alpha(@danger, 0.50);
     color: @foreground;
-    border: 1px solid alpha(@danger, 0.70);
-    border-top: 1.5px solid alpha(#ffffff, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@danger, 0.50);
     border-radius: 12px;
     padding-left: 10px;
     padding-right: 10px;
@@ -324,9 +272,7 @@ button.active {
 #custom-power_vertical {
     background-color: alpha(@danger, 0.50);
     color: @foreground;
-    border: 1px solid alpha(@danger, 0.70);
-    border-top: 1.5px solid alpha(#ffffff, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@danger, 0.50);
     border-radius: 12px;
     margin: 2px 2px;
 }
@@ -334,9 +280,7 @@ button.active {
 #clock {
     background-color: @chip_warm;
     color: @foreground;
-    border: 1px solid alpha(@color13, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color13, 0.40);
     border-radius: 12px;
     padding-left: 10px;
     padding-right: 10px;
@@ -346,9 +290,7 @@ button.active {
 #battery {
     background-color: @chip_cool;
     color: @foreground;
-    border: 1px solid alpha(@color14, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color14, 0.40);
     border-radius: 12px;
     padding-left: 10px;
     padding-right: 10px;
@@ -358,9 +300,7 @@ button.active {
 #battery.critical:not(.charging) {
     background-color: alpha(@danger, 0.70);
     color: #ffffff;
-    border: 1px solid alpha(@danger, 0.90);
-    border-top: 1.5px solid alpha(#ffffff, 0.85);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@danger, 0.70);
     border-radius: 12px;
     margin: 2px 2px;
 }
@@ -372,9 +312,7 @@ label:focus {
 #cpu {
     background-color: @chip;
     color: @foreground;
-    border: 1px solid alpha(@color5, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color5, 0.40);
     border-radius: 12px;
     padding-left: 8px;
     padding-right: 8px;
@@ -384,9 +322,7 @@ label:focus {
 #memory {
     background-color: @chip_hi;
     color: @foreground;
-    border: 1px solid alpha(@color7, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color7, 0.40);
     border-radius: 12px;
     padding-left: 8px;
     padding-right: 8px;
@@ -396,9 +332,7 @@ label:focus {
 #disk {
     background-color: @chip_alt;
     color: @foreground;
-    border: 1px solid alpha(@color6, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color6, 0.40);
     border-radius: 12px;
     padding-left: 8px;
     padding-right: 8px;
@@ -411,9 +345,7 @@ label:focus {
 #backlight {
     background-color: @chip_cool;
     color: @foreground;
-    border: 1px solid alpha(@color14, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color14, 0.40);
     border-radius: 12px;
     padding-left: 10px;
     padding-right: 10px;
@@ -423,9 +355,7 @@ label:focus {
 #network {
     background-color: @chip_warm;
     color: @foreground;
-    border: 1px solid alpha(@color13, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color13, 0.40);
     border-radius: 12px;
     padding-left: 8px;
     padding-right: 8px;
@@ -435,7 +365,7 @@ label:focus {
 #network.disconnected {
     background-color: alpha(@danger, 0.70);
     color: #ffffff;
-    border: 1px solid alpha(@danger, 0.90);
+    border: 1px solid alpha(@danger, 0.70);
     border-radius: 12px;
     margin: 2px 2px;
 }
@@ -443,9 +373,7 @@ label:focus {
 #pulseaudio {
     background-color: @chip_light;
     color: @foreground;
-    border: 1px solid alpha(@color11, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color11, 0.40);
     border-radius: 12px;
     padding-left: 8px;
     padding-right: 8px;
@@ -455,6 +383,7 @@ label:focus {
 #pulseaudio.muted {
     background-color: @chip_neutral;
     color: @ink_dim;
+    border: 1px solid alpha(@color8, 0.30);
     border-radius: 12px;
     margin: 2px 2px;
 }
@@ -462,9 +391,7 @@ label:focus {
 #wireplumber {
     background-color: @chip_hi;
     color: @foreground;
-    border: 1px solid alpha(@color7, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color7, 0.40);
     border-radius: 12px;
     padding-left: 8px;
     padding-right: 8px;
@@ -474,6 +401,7 @@ label:focus {
 #wireplumber.muted {
     background-color: alpha(@danger, 0.70);
     color: #ffffff;
+    border: 1px solid alpha(@danger, 0.70);
     border-radius: 12px;
     margin: 2px 2px;
 }
@@ -481,9 +409,7 @@ label:focus {
 #custom-media {
     background-color: @chip_cool;
     color: @foreground;
-    border: 1px solid alpha(@color14, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color14, 0.40);
     border-radius: 12px;
     min-width: 100px;
     padding-left: 8px;
@@ -502,9 +428,7 @@ label:focus {
 #temperature {
     background-color: @chip_warm;
     color: @foreground;
-    border: 1px solid alpha(@color13, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color13, 0.40);
     border-radius: 12px;
     padding-left: 8px;
     padding-right: 8px;
@@ -514,6 +438,7 @@ label:focus {
 #temperature.critical {
     background-color: alpha(@danger, 0.70);
     color: #ffffff;
+    border: 1px solid alpha(@danger, 0.70);
     border-radius: 12px;
     margin: 2px 2px;
 }
@@ -521,9 +446,7 @@ label:focus {
 #tray {
     background-color: @chip_warm;
     color: @foreground;
-    border: 1px solid alpha(@color13, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
-    border-bottom: 2px solid alpha(@background, 0.60);
+    border: 1px solid alpha(@color13, 0.40);
     border-radius: 12px;
     padding-left: 8px;
     padding-right: 8px;
@@ -543,7 +466,6 @@ label:focus {
     background-color: alpha(@background, 0.50);
     color: @ink;
     border: 1px solid @edge;
-    border-top: 1.5px solid @edge_top;
     border-radius: 12px;
     padding-left: 8px;
     padding-right: 8px;
@@ -552,7 +474,7 @@ label:focus {
 
 #idle_inhibitor.activated {
     background-color: @accent_pill;
-    border: 1.5px solid alpha(#ffffff, 0.90);
+    border: 1px solid alpha(#ffffff, 0.70);
     color: @on_accent;
     border-radius: 12px;
     margin: 2px 2px;
@@ -561,6 +483,7 @@ label:focus {
 #mpd {
     background-color: @chip_cool;
     color: @foreground;
+    border: 1px solid alpha(@color14, 0.35);
     border-radius: 12px;
     margin: 2px 2px;
 }
@@ -568,6 +491,7 @@ label:focus {
 #mpd.disconnected {
     background-color: alpha(@danger, 0.70);
     color: #ffffff;
+    border: 1px solid alpha(@danger, 0.70);
     border-radius: 12px;
     margin: 2px 2px;
 }
@@ -575,6 +499,7 @@ label:focus {
 #mpd.stopped {
     background-color: @chip_neutral;
     color: @ink_dim;
+    border: 1px solid @edge;
     border-radius: 12px;
     margin: 2px 2px;
 }
@@ -582,6 +507,7 @@ label:focus {
 #mpd.paused {
     background-color: @chip;
     color: @foreground;
+    border: 1px solid @edge;
     border-radius: 12px;
     margin: 2px 2px;
 }
@@ -589,8 +515,7 @@ label:focus {
 #language {
     background: @chip_cool;
     color: @foreground;
-    border: 1px solid alpha(@color14, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
+    border: 1px solid alpha(@color14, 0.40);
     border-radius: 12px;
     min-width: 16px;
     margin: 2px 2px;
@@ -599,8 +524,7 @@ label:focus {
 #keyboard-state {
     background: @chip_hi;
     color: @foreground;
-    border: 1px solid alpha(@color7, 0.60);
-    border-top: 1.5px solid alpha(@color15, 0.75);
+    border: 1px solid alpha(@color7, 0.40);
     border-radius: 12px;
     min-width: 16px;
     margin: 2px 2px;
@@ -617,71 +541,67 @@ label:focus {
 #scratchpad {
     background: alpha(@background, 0.45);
     border: 1px solid @edge;
-    border-top: 1.5px solid @edge_top;
     border-radius: 12px;
     margin: 2px 2px;
 }
 
 #scratchpad.empty {
-	background-color: transparent;
+    background-color: transparent;
 }
 
 tooltip {
-  background-color: alpha(@background, 0.85);
-  border: 1px solid @edge;
-  border-top: 1.5px solid @edge_top;
-  border-radius: 14px;
-  color: @ink;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    background-color: alpha(@background, 0.85);
+    border: 1px solid @edge;
+    border-radius: 14px;
+    color: @ink;
 }
 
 tooltip label {
-  color: @ink;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-top: 0px;
-  padding-bottom: 5px;
+    color: @ink;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 0px;
+    padding-bottom: 5px;
 }
 
-
 #pulseaudio-slider slider {
-	min-width: 0px;
-	min-height: 0px;
-	opacity: 0;
-	background-image: none;
-	border: none;
+    min-width: 0px;
+    min-height: 0px;
+    opacity: 0;
+    background-image: none;
+    border: none;
 }
 
 #pulseaudio-slider trough {
-	background-color: @tile;
-	min-width: 80px;
-	min-height: 5px;
-	border-radius: 5px;
+    background-color: @tile;
+    min-width: 80px;
+    min-height: 5px;
+    border-radius: 5px;
 }
 
 #pulseaudio-slider highlight {
-	background-color: @accent;
-	min-height: 10px;
-	border-radius: 5px;
+    background-color: @accent;
+    min-height: 10px;
+    border-radius: 5px;
 }
 
 #backlight-slider slider {
-	min-width: 0px;
-	min-height: 0px;
-	opacity: 0;
-	background-image: none;
-	border: none;
+    min-width: 0px;
+    min-height: 0px;
+    opacity: 0;
+    background-image: none;
+    border: none;
 }
 
 #backlight-slider trough {
-	background-color: @tile;
-	min-width: 80px;
-	min-height: 10px;
-	border-radius: 5px;
+    background-color: @tile;
+    min-width: 80px;
+    min-height: 10px;
+    border-radius: 5px;
 }
 
 #backlight-slider highlight {
-	background-color: @accent;
-	min-width: 10px;
-	border-radius: 5px;
+    background-color: @accent;
+    min-width: 10px;
+    border-radius: 5px;
 }

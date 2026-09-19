@@ -17,20 +17,17 @@ configuration {
     me-accept-entry:            "MousePrimary";
 }
 
-/* ---- Load wallust colors ---- */
+/* ---- Load wallust / matugen colors ---- */
 @theme "~/.config/rofi/wallust/colors-rofi.rasi"
 
 /*****----- Global Properties -----*****/
 * {
-    /* --- Premium Dark Glassmorphism Variables --- */
-    background:                  rgba(10, 12, 18, 0.38);
-    background-alt:              rgba(255, 255, 255, 0.04);
-    foreground:                  #ffffff;
-    selected:                    rgba(255, 255, 255, 0.18);
-    active:                      rgba(255, 255, 255, 0.18);
-    urgent:                      #cc3436;
+    /* --- Dynamic Matugen Material You & Frosted Glass Variables --- */
+    background-alt:              rgba(255, 255, 255, 0.05);
+    selected:                    @selected-normal-background;
+    active:                      @active-background;
+    urgent:                      @urgent-background;
     
-    border-color:                rgba(255, 255, 255, 0.12);
     handle-color:                @selected;
     background-color:            @background;
     foreground-color:            @foreground;
@@ -41,13 +38,6 @@ configuration {
     urgent-foreground:           @foreground;
     active-background:           @active;
     active-foreground:           @foreground;
-    
-    selected-normal-background:  @selected;
-    selected-normal-foreground:  #ffffff;
-    selected-urgent-background:  @selected;
-    selected-urgent-foreground:  #ffffff;
-    selected-active-background:  @selected;
-    selected-active-foreground:  @selected;
     
     alternate-normal-background: transparent;
     alternate-normal-foreground: @foreground;
@@ -225,19 +215,19 @@ element selected.normal {
     background-color:            @selected;
     border:                      1px;
     border-color:                rgba(255, 255, 255, 0.20);
-    text-color:                  #ffffff;
+    text-color:                  @selected-normal-foreground;
 }
 element selected.urgent {
     background-color:            @selected;
     border:                      1px;
     border-color:                rgba(255, 255, 255, 0.20);
-    text-color:                  #ffffff;
+    text-color:                  @selected-urgent-foreground;
 }
 element selected.active {
     background-color:            @selected;
     border:                      1px;
     border-color:                rgba(255, 255, 255, 0.20);
-    text-color:                  #ffffff;
+    text-color:                  @selected-active-foreground;
 }
 element alternate.normal {
     background-color:            @alternate-normal-background;

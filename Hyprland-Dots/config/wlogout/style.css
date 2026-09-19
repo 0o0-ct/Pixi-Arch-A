@@ -1,23 +1,22 @@
 /* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
-/* wlogout - Sleek compact card style with icons + text */
+/* wlogout - Material You & Frosted Glass (Matugen M3) */
 
 @import '../../.config/waybar/wallust/colors-waybar.css';
 
 window {
-  background: rgba(20, 20, 28, 0.45);
+  background: rgba(10, 14, 16, 0.40);
   font-family: "FiraCode Nerd Font", "JetBrainsMono Nerd Font", sans-serif;
 }
 
 flowbox {
-  background: rgba(14, 14, 20, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: alpha(@surface, 0.50);
+  border: 1px solid alpha(@color15, 0.20);
   border-radius: 24px;
   padding: 16px 20px;
   margin-top: auto;
   margin-bottom: auto;
   margin-left: auto;
   margin-right: auto;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
 }
 
 flowbox::before {
@@ -25,8 +24,8 @@ flowbox::before {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 26px;
-  background-color: rgba(20, 20, 28, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: alpha(@surface, 0.75);
+  border: 1px solid alpha(@color15, 0.20);
   border-radius: 35px;
   min-width: 70px;
   min-height: 70px;
@@ -37,12 +36,11 @@ flowbox::before {
   left: 0;
   right: 0;
   margin: 0 auto;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
 }
 
 button {
-  background: rgba(46, 50, 74, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: alpha(@surface_container, 0.45);
+  border: 1px solid alpha(@color15, 0.20);
   border-radius: 18px;
   margin: 165px 8px; /* Restrict height to exactly 150px */
   min-width: 90px;
@@ -56,13 +54,11 @@ button {
   background-position: center 25%;
   background-size: 32px;
   padding-top: 95px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 button:hover {
-  background-color: rgba(70, 76, 110, 0.7);
-  border-color: @color13;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+  background-color: alpha(@primary_container, 0.70);
+  border-color: @primary;
 }
 
 button:focus {
@@ -78,7 +74,7 @@ button label {
 }
 
 button:hover label {
-  color: @color13;
+  color: @primary;
 }
 
 #lock {

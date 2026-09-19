@@ -90,6 +90,9 @@ apply_dynamic_waybar_glass() {
   if [[ -z "$style_target" || ! -f "$style_target" ]]; then
     return 0
   fi
+  if [[ "$style_target" == *"Oglo Chicklets"* ]]; then
+    return 0
+  fi
 
   local bg_line="    background: rgba(15, 20, 30, 0.36);"
   local border_line="    border: 1px solid rgba(255, 255, 255, 0.40);"
@@ -185,6 +188,19 @@ if pidof ghostty >/dev/null; then
   for pid in $(pidof ghostty); do kill -SIGUSR2 "$pid" 2>/dev/null || true; done
 fi
 
+# Reload Hyprland borders with newly generated M3 colors
+hyprctl reload >/dev/null 2>&1 || true
+
+# Signal Kitty to reload colors
+if pidof kitty >/dev/null 2>&1; then
+  pkill -SIGUSR1 kitty 2>/dev/null || true
+fi
+
+# Reload SwayNC CSS if swaync is actually running
+if pidof swaync >/dev/null 2>&1 && command -v swaync-client >/dev/null 2>&1; then
+  swaync-client -R -rs >/dev/null 2>&1 || true
+fi
+
 # Prompt Waybar to reload colours.
 # SIGUSR2 does NOT reload the stylesheet on Waybar 0.15.0, and `waybar-msg` is
 # not installed here, so the previous code changed nothing and the bar kept the
@@ -193,7 +209,7 @@ fi
 if pidof waybar >/dev/null 2>&1; then
   pkill -x waybar 2>/dev/null || true
   sleep 0.3
-  setsid waybar >/dev/null 2>&1 </dev/null &
+  hyprctl dispatch exec waybar >/dev/null 2>&1 || true
 fi
 
 # Automatically sync SDDM wallpaper with the new desktop wallpaper
