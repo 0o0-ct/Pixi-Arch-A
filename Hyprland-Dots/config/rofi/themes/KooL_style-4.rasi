@@ -25,26 +25,12 @@ configuration {
     /* --- Dynamic Matugen Material You & Frosted Glass Variables --- */
     background-alt:              rgba(255, 255, 255, 0.05);
     selected:                    @selected-normal-background;
-    active:                      @active-background;
-    urgent:                      @urgent-background;
+    active:                      @selected-active-background;
+    urgent:                      @selected-urgent-background;
     
     handle-color:                @selected;
-    background-color:            @background;
     foreground-color:            @foreground;
     alternate-background:        @background-alt;
-    normal-background:           transparent;
-    normal-foreground:           @foreground;
-    urgent-background:           @urgent;
-    urgent-foreground:           @foreground;
-    active-background:           @active;
-    active-foreground:           @foreground;
-    
-    alternate-normal-background: transparent;
-    alternate-normal-foreground: @foreground;
-    alternate-urgent-background: @urgent;
-    alternate-urgent-foreground: @foreground;
-    alternate-active-background: @active;
-    alternate-active-foreground: @foreground;
 }
 
 
