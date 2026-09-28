@@ -44,12 +44,11 @@ $UserConfigs = $HOME/.config/hypr/UserConfigs
 #bind = $mainMod ALT, P, submap, reset
 #submap = reset
 
-# Atajo personalizado para cambiar entre los idiomas us y es
-bindd = CTRL SUPER, space, Cambiar distribucion de teclado, exec, $scriptsDir/KeyboardLayout.sh switch
-
-# Atajo personalizado para abrir Administrador de Archivos con carpetas dinámicas de colores
-unbind = $mainMod, E
-bindd = $mainMod, E, Administrador de archivos (Color dinámico), exec, $scriptsDir/DynamicFolderColor.sh
-
-# Atajo para la tecla N dedicada de Acer Nitro (DAMX - DIV Acer Manager Max)
-bindd = , XF86Launch7, Abrir Acer Manager Max (DAMX), exec, damx
+# Atajos de usuario personalizados (User Keybinds)
+# Nota:
+# - Super + E ya abre el Administrador de Archivos ($files) en Keybinds.hl
+# - Ctrl + Super + Espacio ya cambia el teclado en Keybinds.hl
+# - Tecla Nitro (XF86Launch7) ya ejecuta damx en Laptops.hl
+# - Se asegura que CTRL + E NO esté capturado por el gestor de ventanas
+unbind = CTRL, E
+unbind = CTRL ALT, E
