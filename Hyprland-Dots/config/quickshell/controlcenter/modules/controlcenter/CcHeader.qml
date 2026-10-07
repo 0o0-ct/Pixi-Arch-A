@@ -15,7 +15,6 @@ Item {
     signal lockRequested()
     signal powerRequested()
     signal settingsRequested()
-    signal editRequested()
     signal closeRequested()
 
     implicitHeight: Theme.avatarSize
@@ -109,10 +108,6 @@ Item {
             CcIconButton {
                 iconName: "settings"
                 onClicked: header.settingsRequested()
-            }
-            CcIconButton {
-                iconName: "edit"
-                onClicked: header.editRequested()
             }
             CcIconButton {
                 iconName: "close"

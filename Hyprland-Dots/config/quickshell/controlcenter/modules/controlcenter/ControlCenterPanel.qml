@@ -97,10 +97,15 @@ PanelWindow {
             CcHeader {
                 width: parent.width
                 powerMenuOpen: CcPanelState.powerMenuOpen
-                onLockRequested: CcSystem.runDetached(["hyprlock"])
+                onLockRequested: {
+                    CcPanelState.dismiss()
+                    CcSystem.runDetached(["bash", Quickshell.env("HOME") + "/.config/hypr/scripts/LockScreen.sh"])
+                }
                 onPowerRequested: CcPanelState.powerMenuOpen = !CcPanelState.powerMenuOpen
-                onSettingsRequested: CcSystem.runDetached(["xdg-open", Quickshell.shellDir])
-                onEditRequested: CcSystem.runDetached(["sh", "-c", "for e in antigravity-ide code kate mousepad; do command -v \"$e\" >/dev/null && exec \"$e\" \"$1\"; done; exec xdg-open \"$1\"", "sh", Quickshell.shellDir + "/modules/controlcenter/Theme.qml"])
+                onSettingsRequested: {
+                    CcPanelState.dismiss()
+                    CcSystem.runDetached(["bash", Quickshell.env("HOME") + "/.config/hypr/scripts/Kool_Quick_Settings.sh"])
+                }
                 onCloseRequested: CcPanelState.dismiss()
             }
 
