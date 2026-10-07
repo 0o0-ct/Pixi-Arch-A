@@ -82,19 +82,6 @@ PanelWindow {
             }
         }
 
-        // Specular Left Highlight line (::after)
-        Rectangle {
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            width: 1.5
-            gradient: Gradient {
-                orientation: Gradient.Vertical
-                GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.80) }
-                GradientStop { position: 0.6; color: "transparent" }
-                GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.30) }
-            }
-        }
 
         // ── Content ───────────────────────────────────────────────────────────
         Column {
