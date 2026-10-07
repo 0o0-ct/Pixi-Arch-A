@@ -40,6 +40,10 @@ ShellRoot {
             function open() {
                 CcPanelState.reveal()
             }
+
+            function clearNotifications() {
+                CcNotifications.clearAll()
+            }
         }
     }
 }

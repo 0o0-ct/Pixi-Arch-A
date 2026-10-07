@@ -39,6 +39,18 @@ Item {
                 color: Theme.textDim
                 font.pixelSize: Appearance.font.pixelSize.textSmall
             }
+
+            CcIconButton {
+                id: clearAllButton
+                Layout.alignment: Qt.AlignVCenter
+                visible: root.itemCount > 0
+                implicitWidth: Theme.notificationDismissSize
+                implicitHeight: Theme.notificationDismissSize
+                iconSize: 16
+                iconName: "sweep"
+                iconColor: Theme.textDim
+                onClicked: CcNotifications.clearAll()
+            }
         }
 
         ListView {

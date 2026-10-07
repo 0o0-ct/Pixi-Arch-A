@@ -29,6 +29,16 @@ Singleton {
         return (index >= 0 && index < values.length) ? values[index] : null
     }
 
+    /** Clear all tracked notifications. */
+    function clearAll() {
+        const values = (server.trackedNotifications.values ?? []).slice()
+        for (let i = 0; i < values.length; ++i) {
+            if (values[i] && typeof values[i].dismiss === "function") {
+                values[i].dismiss()
+            }
+        }
+    }
+
     /** Process name owning org.freedesktop.Notifications, or "". */
     property string busOwner: ""
 

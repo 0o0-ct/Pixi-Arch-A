@@ -12,6 +12,7 @@ RippleButton {
 
     property string iconName
     property color iconColor: Theme.textSecondary
+    property real iconSize: Theme.iconButtonIconSize
 
     implicitWidth: Theme.iconButtonSize
     implicitHeight: Theme.iconButtonSize
@@ -26,7 +27,7 @@ RippleButton {
 
     contentItem: MaterialSymbol {
         text: button.iconName
-        iconSize: Theme.iconButtonIconSize
+        iconSize: button.iconSize
         font.family: Theme.iconFontFamily
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
