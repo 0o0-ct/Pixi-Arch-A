@@ -76,11 +76,11 @@ Singleton {
     readonly property int headerButtonSpacing: 2
 
     // Sliders
-    readonly property int sliderRowHeight: 22
-    readonly property int sliderTrackHeight: 6
-    readonly property int sliderIconSize: 16
-    readonly property int sliderSpacing: 18
-    readonly property int sliderGap: 8
+    readonly property int sliderRowHeight: 40
+    readonly property int sliderTrackHeight: 40
+    readonly property int sliderIconSize: 22
+    readonly property int sliderSpacing: 12
+    readonly property int sliderGap: 10
 
     // Tiles
     readonly property int tileHeight: 56
