@@ -1,5 +1,5 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Tema Kitty de Pixi-Arch-A */
+/* Tema Kitty de Pixi-Arch-A con estilo Glass Frosted */
 
 @import "~/.config/rofi/config.rasi"  
 
@@ -10,59 +10,100 @@ configuration {
 
 /* ---- Window ---- */
 window {
-  width: inherit;
+  width: 55%;
   height: inherit;
-  border-radius: 15px;
+  border: 1px solid;
+  border-color: rgba(255, 255, 255, 0.47);
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.11);
+  padding: 0px;
 }
 
 mainbox {
-  children: [ "inputbar" , "listview" ];
-}
-
-/* ---- Listbox ---- */
-listbox {
-  border-radius: 12px;
+  background-color: transparent;
+  padding: 24px;
+  spacing: 16px;
+  children: [ "inputbar", "message", "listview" ];
 }
 
 /* ---- Inputbar ---- */
 inputbar {
-  padding: 14px;
-  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid;
+  border-color: rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  padding: 12px 16px;
+  children: [ "entry" ];
 }
 
 entry {
   expand: true;
+  background-color: transparent;
+  text-color: @foreground;
   placeholder: " 🐾  Elegir tema Kitty: Enter para Previsualizar; CTRL S para Aplicar";
+  placeholder-color: rgba(255, 255, 255, 0.45);
+}
+
+/* ---- Message ---- */
+message {
+  background-color: transparent;
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
+}
+
+textbox {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid;
+  border-color: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  text-color: @foreground;
+  padding: 8px 14px;
 }
 
 /* ---- Listview ---- */
 listview {
+  background-color: transparent;
   columns: 3;
-  lines: 4;
-  spacing: 4px;
-  border-radius: 10px;
+  lines: 5;
+  spacing: 8px;
+  border-radius: 12px;
   cycle: true;
+  border: 0px;
 }
 
 /* ---- Element ---- */
 element {
   orientation: horizontal;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid;
+  border-color: rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
 }
 
-/* ---- Message ---- */
-message {
-  border-radius: 10px;
+element normal.normal {
+  background-color: rgba(255, 255, 255, 0.06);
+  text-color: @foreground;
 }
 
-textbox {
-  padding: 15px;
+element selected.normal {
+  background-color: @selected;
+  border: 1px solid;
+  border-color: rgba(255, 255, 255, 0.50);
+  border-radius: 12px;
+  text-color: @selected-normal-foreground;
 }
 
-/* ---- Element ---- */
+element-text {
+  background-color: transparent;
+  text-color: inherit;
+  horizontal-align: 0.0;
+  vertical-align: 0.5;
+  margin: 0px 4px;
+}
+
 element-icon {
   size: 0%;
-}
-element-text {
-  horizontal-align: 0.0;
-  margin: 5px 30px 5px 30px;
 }
