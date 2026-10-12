@@ -1,0 +1,277 @@
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/* =============================================================================
+ * [Glass] Monet Frosted — VisionOS / Material You Dynamic Frosted Glass Theme
+ * =============================================================================
+ * Combines translucent white frosted glass with dynamic Material You / Monet
+ * colors extracted by Wallust from the current wallpaper.
+ *
+ * Glass Formula:
+ * - Islands: Liquid glass with white sheen (rgba(255, 255, 255, 0.10))
+ * - Borders: Crisp 1px specular light border (rgba(255, 255, 255, 0.26))
+ * - Curvature: 16px radius for smooth pill islands
+ * - Active pill: Solid @primary accent with @on_primary high-contrast ink
+ * - Sub-modules: Capsule pills with subtle glass tint & smooth hover transitions
+ * =============================================================================
+ */
+
+@import url("wallust/colors-waybar.css");
+
+/* -----------------------------------------------------------------------------
+ * Dynamic Color Roles & Glass Variables
+ * -------------------------------------------------------------------------- */
+@define-color glass_island       rgba(255, 255, 255, 0.11);
+@define-color glass_island_tint  alpha(@background, 0.40);
+@define-color glass_border       rgba(255, 255, 255, 0.24);
+@define-color glass_border_top   rgba(255, 255, 255, 0.45);
+
+@define-color pill_bg            rgba(255, 255, 255, 0.08);
+@define-color pill_bg_hover      rgba(255, 255, 255, 0.18);
+@define-color pill_border        rgba(255, 255, 255, 0.14);
+@define-color pill_border_hover  rgba(255, 255, 255, 0.35);
+
+@define-color text_main          @foreground;
+@define-color text_dim           alpha(@foreground, 0.75);
+
+@define-color accent_active      @primary;
+@define-color accent_text        @on_primary;
+
+/* -----------------------------------------------------------------------------
+ * Root Window Transparency
+ * -------------------------------------------------------------------------- */
+* {
+    font-family: "JetBrainsMono Nerd Font", "Roboto", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: transparent;
+    background-color: transparent;
+    color: @text_main;
+    border: none;
+    padding: 0;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+/* -----------------------------------------------------------------------------
+ * Floating Glass Islands (.modules-left, .modules-center, .modules-right)
+ * -------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: @glass_island_tint;
+    background-image: linear-gradient(180deg, @glass_island 0%, rgba(255, 255, 255, 0.03) 100%);
+    border: 1px solid @glass_border;
+    border-top: 1.5px solid @glass_border_top;
+    border-radius: 16px;
+    padding: 3px 6px;
+    margin: 2px 4px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.20);
+    transition: all 0.2s ease-out;
+}
+
+/* -----------------------------------------------------------------------------
+ * Workspaces (One UI / Monet Pill Style)
+ * -------------------------------------------------------------------------- */
+#workspaces {
+    background: transparent;
+    padding: 0;
+    margin: 0 3px;
+}
+
+#workspaces button {
+    color: @text_dim;
+    background-color: @pill_bg;
+    border: 1px solid @pill_border;
+    border-radius: 12px;
+    padding: 2px 8px;
+    margin: 2px 3px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+#workspaces button:hover {
+    color: #ffffff;
+    background-color: @pill_bg_hover;
+    border-color: @pill_border_hover;
+}
+
+#workspaces button.active,
+#workspaces button.focused {
+    color: @accent_text;
+    background-color: @accent_active;
+    border: 1px solid @accent_active;
+    border-radius: 12px;
+    padding: 2px 14px;
+    font-weight: 800;
+    box-shadow: 0 2px 8px alpha(@accent_active, 0.40);
+}
+
+#workspaces button.visible:not(.active):not(.focused) {
+    color: @text_main;
+    background-color: alpha(@accent_active, 0.22);
+    border: 1px solid alpha(@accent_active, 0.45);
+    border-radius: 12px;
+    padding: 2px 10px;
+}
+
+#workspaces button.urgent {
+    color: #ffffff;
+    background-color: #ff5449;
+    border: 1px solid #ff5449;
+    border-radius: 12px;
+}
+
+/* -----------------------------------------------------------------------------
+ * Sub-Module Pill Capsules (Clock, Battery, Network, etc.)
+ * -------------------------------------------------------------------------- */
+#clock,
+#battery,
+#cpu,
+#memory,
+#temperature,
+#disk,
+#network,
+#pulseaudio,
+#backlight,
+#custom-weather,
+#custom-hypridle,
+#custom-hint,
+#custom-swaync,
+#custom-dot_update,
+#custom-menu,
+#custom-power,
+#custom-cava_mviz,
+#custom-playerctl,
+#custom-nightlight,
+#custom-light_dark,
+#custom-file_manager,
+#custom-tty,
+#custom-browser,
+#custom-settings,
+#power-profiles-daemon,
+#tray {
+    color: @text_main;
+    background-color: @pill_bg;
+    border: 1px solid @pill_border;
+    border-radius: 12px;
+    padding: 3px 10px;
+    margin: 2px 3px;
+    transition: all 0.2s ease-out;
+}
+
+/* Hover effect on all pills */
+#clock:hover,
+#battery:hover,
+#cpu:hover,
+#memory:hover,
+#temperature:hover,
+#disk:hover,
+#network:hover,
+#pulseaudio:hover,
+#backlight:hover,
+#custom-weather:hover,
+#custom-hypridle:hover,
+#custom-hint:hover,
+#custom-swaync:hover,
+#custom-dot_update:hover,
+#custom-menu:hover,
+#custom-power:hover,
+#custom-playerctl:hover,
+#custom-nightlight:hover {
+    background-color: @pill_bg_hover;
+    border-color: @pill_border_hover;
+    color: #ffffff;
+}
+
+/* -----------------------------------------------------------------------------
+ * Accentuated Hero Modules
+ * -------------------------------------------------------------------------- */
+#clock {
+    color: @accent_active;
+    font-weight: 800;
+    border-color: alpha(@accent_active, 0.35);
+}
+
+#custom-menu {
+    color: @accent_active;
+    font-size: 15px;
+    padding: 2px 10px;
+    border-radius: 12px;
+}
+
+#custom-power {
+    color: #ff897d;
+    background-color: rgba(255, 84, 73, 0.12);
+    border-color: rgba(255, 84, 73, 0.25);
+}
+
+#custom-power:hover {
+    color: #ffffff;
+    background-color: #ff5449;
+    border-color: #ff5449;
+}
+
+#battery.charging,
+#battery.plugged {
+    color: @accent_active;
+    border-color: alpha(@accent_active, 0.40);
+}
+
+#battery.critical:not(.charging) {
+    color: #ffffff;
+    background-color: #ff5449;
+    border-color: #ff5449;
+}
+
+#pulseaudio.muted {
+    color: @outline;
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+#custom-hint {
+    color: @accent_active;
+    font-weight: 800;
+}
+
+#window {
+    color: @text_dim;
+    font-weight: 600;
+    padding: 2px 8px;
+    margin: 2px;
+}
+
+/* Tray styling */
+#tray {
+    padding: 2px 8px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: alpha(@accent_active, 0.25);
+}
+
+/* Tooltip Styling */
+tooltip {
+    background-color: alpha(@background, 0.85);
+    border: 1px solid @glass_border;
+    border-radius: 12px;
+    color: @text_main;
+    padding: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.40);
+}
+
+tooltip label {
+    color: @text_main;
+    font-size: 12px;
+    padding: 4px;
+}
