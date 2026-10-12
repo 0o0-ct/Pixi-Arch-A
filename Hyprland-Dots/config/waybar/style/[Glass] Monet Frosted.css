@@ -63,14 +63,11 @@ window#waybar.hidden {
 .modules-left,
 .modules-center,
 .modules-right {
-    background-color: @glass_island_tint;
-    background-image: linear-gradient(180deg, @glass_island 0%, rgba(255, 255, 255, 0.03) 100%);
-    border: 1px solid @glass_border;
-    border-top: 1.5px solid @glass_border_top;
+    background-color: alpha(@surface, 0.45);
+    border: 1px solid alpha(@color15, 0.22);
     border-radius: 16px;
     padding: 3px 6px;
     margin: 2px 4px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.20);
     transition: all 0.2s ease-out;
 }
 
