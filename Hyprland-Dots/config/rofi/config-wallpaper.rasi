@@ -11,10 +11,10 @@ configuration {
 window {
   width: 75%;
   height: inherit;
-  border: 1px;
-  border-radius: 22px;
-  border-color: rgba(255, 255, 255, 0.22);
-  background-color: rgba(26, 17, 15, 0.55); /* frosted-glass tint; mirrors @background-color from wallust/matugen colors-rofi.rasi */
+  border: 1px solid;
+  border-radius: 20px;
+  border-color: rgba(255, 255, 255, 0.40);
+  background-color: rgba(255, 255, 255, 0.11);
   transparency: "real";
 }
 
@@ -26,11 +26,20 @@ mainbox {
   padding: 24px;
 }
 
+inputbar {
+  border: 1px;
+  border-radius: 14px;
+  border-color: rgba(255, 255, 255, 0.22);
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 10px 16px;
+  margin: 0px 0px 14px 0px;
+}
+
 entry {
   expand: true;
   placeholder: " 🎞️ Buscar / Elegir Fondo";
   horizontal-align: 0.5;
-  horizontal-align: 0.5;
+  background-color: transparent;
 }
 
 /* ---- Listview ---- */
@@ -39,8 +48,6 @@ listview {
   lines: 2;
   spacing: 20px;
   padding: 10px;
-  columns: 6;
-  lines: 2;
   flow: horizontal;
   fixed-width: true;
   fixed-height: true;
@@ -55,18 +62,20 @@ element {
   spacing: 6px;
   border-radius: 14px;
   margin: 0px;
-  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px;
+  border-color: rgba(255, 255, 255, 0.10);
 }
 
 element normal.normal,
 element alternate.normal {
-  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 element selected.normal {
-  background-color: rgba(255, 255, 255, 0.18);
-  border: 1px;
-  border-color: rgba(255, 255, 255, 0.25);
+  background-color: @selected;
+  border: 1px solid;
+  border-color: rgba(255, 255, 255, 0.45);
   border-radius: 14px;
 }
 

@@ -19,10 +19,10 @@ window {
     x-offset: 0px;
     y-offset: 0px;
     enabled: true;
-    border-radius: 28px;
-    background-color: rgba(26, 17, 15, 0.55); /* frosted-glass tint; mirrors @background-color from wallust/matugen colors-rofi.rasi */
-    border: 1px;
-    border-color: #ffffff14; /* rgba(255, 255, 255, 0.08) */
+    border-radius: 24px;
+    background-color: rgba(255, 255, 255, 0.11);
+    border: 1px solid;
+    border-color: rgba(255, 255, 255, 0.40);
     cursor: "default";
 }
 
@@ -46,10 +46,10 @@ inputbar {
 prompt {
     enabled: true;
     font: "FiraCode Nerd Font 28";
-    background-color: #14141cbf; /* rgba(20, 20, 28, 0.75) */
+    background-color: rgba(255, 255, 255, 0.12);
     text-color: #52adf2; /* Arch blue */
-    border: 1px;
-    border-color: #ffffff1a; /* rgba(255, 255, 255, 0.1) */
+    border: 1px solid;
+    border-color: rgba(255, 255, 255, 0.35);
     border-radius: 20px; /* beautiful rounded rectangle card */
     padding: 12px 32px;
     horizontal-align: 0.5;
@@ -82,42 +82,35 @@ element {
     padding: 24px 5px;
     width: 90px;
     border-radius: 20px;
-    background-color: #2e324a72; /* rgba(46, 50, 74, 0.45) */
-    border: 1px;
-    border-color: #ffffff14; /* rgba(255, 255, 255, 0.08) */
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid;
+    border-color: rgba(255, 255, 255, 0.12);
     text-color: @foreground;
     orientation: vertical;
     cursor: pointer;
 }
 
-element selected {
-    background-color: #464c6ebf;
-    border-color: @color13;
-    text-color: @color13;
+element normal.normal,
+element alternate.normal {
+    background-color: rgba(255, 255, 255, 0.06);
 }
 
+element selected,
 element selected.normal {
-    background-color: #464c6ebf;
-    border-color: @color13;
-    text-color: @color13;
+    background-color: @selected;
+    border-color: rgba(255, 255, 255, 0.50);
+    text-color: @selected-normal-foreground;
 }
 
-element selected element-icon {
-    background-color: transparent;
-}
-
-element selected element-text {
-    background-color: transparent;
-    text-color: @color13;
-}
-
+element selected element-icon,
 element selected.normal element-icon {
     background-color: transparent;
 }
 
+element selected element-text,
 element selected.normal element-text {
     background-color: transparent;
-    text-color: @color13;
+    text-color: @selected-normal-foreground;
 }
 
 element-icon {
