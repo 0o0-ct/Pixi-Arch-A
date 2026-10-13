@@ -42,6 +42,9 @@ if git clone --depth=1 https://github.com/JaKooLit/GTK-themes-icons.git ; then
     chmod +x auto-extract.sh
     ./auto-extract.sh
     cd ..
+    if [ -f "Hyprland-Dots/scripts/patch-tray-icons.sh" ]; then
+        bash "Hyprland-Dots/scripts/patch-tray-icons.sh" 2>&1 | tee -a "$LOG"
+    fi
     echo "$OK Temas GTK e Iconos extraídos en los directorios ~/.icons y ~/.themes" 2>&1 | tee -a "$LOG"
 else
     echo "$ERROR Error al descargar los temas GTK e Iconos.." 2>&1 | tee -a "$LOG"

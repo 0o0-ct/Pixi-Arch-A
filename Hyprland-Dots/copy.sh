@@ -601,6 +601,11 @@ if command -v awww >/dev/null 2>&1; then
   fi
 fi
 
+# Patch tray status icons (Ethernet, Bluetooth, Wi-Fi) with Pixi-Arch-A Monet palette
+if [ -f "$SCRIPT_DIR/scripts/patch-tray-icons.sh" ]; then
+  bash "$SCRIPT_DIR/scripts/patch-tray-icons.sh" 2>&1 | tee -a "$LOG"
+fi
+
 # initialize wallust to avoid config error on hyprland
 wallust run -s $wallpaper 2>&1 | tee -a "$LOG"
 
