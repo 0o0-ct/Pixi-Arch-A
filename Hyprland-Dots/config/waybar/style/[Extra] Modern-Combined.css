@@ -27,7 +27,7 @@
  *   @color13     -> mid-tone accent (urgent)
  *   @foreground  -> text, slider trough, hairline edge
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);
+@define-color pane          alpha(@color15, 0.11);
 @define-color sheen_top     alpha(@color15, 0.25);
 @define-color sheen_bot     alpha(@background, 0.08);
 @define-color tile          alpha(@foreground, 0.05);
@@ -48,7 +48,7 @@
  * that collapses on a bright wallpaper, so neither idle state uses one.
  * Measured against the live palette: idle 13.0:1 (4.5:1 on a bright backdrop),
  * hover 4.6:1 / 10.4:1, active 10.0:1 / 11.0:1. */
-@define-color ws_idle       alpha(@background, 0.55);
+@define-color ws_idle       alpha(@color15, 0.11);
 @define-color ws_hover      alpha(@color15, 0.55);
 
 /* The per-module accents this file used to import from catppuccin latte.
@@ -98,7 +98,7 @@ window#waybar {
 }
 
 tooltip {
-    background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
     border-radius: 12px;
     border-width: 1px;
     border-style: solid;
@@ -161,19 +161,21 @@ tooltip {
  * backdrop, plus the lit top edge. ---------------- */
 .modules-left,
 .modules-right {
-    background-color: transparent;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 0px 0px 45px 45px;
+    padding-left: 10px;
+    padding-right: 6px;
 }
 
 .modules-center {
-    background-color: @pane;
-    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-    border: 1px solid @edge;
-    border-top: 1px solid @edge_top;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
     border-radius: 0px 0px 45px 45px;
-	padding-top: 8px;
-	padding-bottom: 8px;
-	padding-left: 10px;
-	padding-right: 6px;
+    padding-left: 10px;
+    padding-right: 6px;
 }
 
 #backlight,

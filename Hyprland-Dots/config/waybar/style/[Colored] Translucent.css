@@ -78,7 +78,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -138,14 +138,12 @@ window#waybar #window,
  * and the 38px radius this style is known for.
  * ------------------------------------------------------------------------- */
 window#waybar {
-	background-color: @pane;
-	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-	border: 1px solid @edge_top;
-	border-radius: 38px;
-	color: @ink;
-	transition-property: background-color, border-color, color;
-	transition-duration: 160ms;
-	transition-timing-function: ease-out;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 38px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
 }
 
 /* The whole window used to be dimmed as a unit. A container dim forces GTK to
@@ -158,7 +156,7 @@ window#waybar.hidden {
 }
 
 tooltip {
-	background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
 	border: 1px solid @edge;
 	border-radius: 10px;
 	color: @ink;
@@ -323,7 +321,7 @@ tooltip {
 }
 
 label:focus {
-	background-color: alpha(@background, 0.55);
+	background-color: alpha(@color15, 0.20);
 }
 
 #custom-menu{

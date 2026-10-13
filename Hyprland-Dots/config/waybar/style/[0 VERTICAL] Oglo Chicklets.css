@@ -41,7 +41,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -98,12 +98,9 @@ window#waybar #window,
 /* The strip behind the chicklets: wallpaper tint + sheen, lit top edge, and
  * the 8px bottom foot the style always had. */
 window#waybar {
-    background-color: @pane;
-    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-    color: @ink;
-    border: 1px solid @edge;
-    border-top: 1px solid @edge_top;
-    border-bottom: 8px solid alpha(@background, 0.55);
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
     transition-property: background-color;
     transition-duration: 160ms;
 }
@@ -241,7 +238,7 @@ button.active {
 #window {
     background-color: @tile_hi;
     color: @ink;
-    border-bottom: 8px solid alpha(@background, 0.90);
+    border-bottom: 8px solid alpha(@color15, 0.11);
 }
 
 #custom-swaync {
@@ -289,7 +286,7 @@ button.active {
 }
 
 label:focus {
-    background-color: alpha(@background, 0.70);
+    background-color: alpha(@color15, 0.20);
 }
 
 #cpu {
@@ -393,8 +390,8 @@ label:focus {
 }
 
 #idle_inhibitor {
-    background-color: alpha(@background, 0.70);
-    color: @ink;
+    background-color: alpha(@color15, 0.20);
+    color: @on_accent;
     border-bottom: 8px solid alpha(@accent, 0.55);
 }
 
@@ -442,11 +439,11 @@ label:focus {
 }
 
 #keyboard-state > label.locked {
-    background: alpha(@background, 0.45);
+    background: alpha(@color15, 0.20);
 }
 
 #scratchpad {
-    background: alpha(@background, 0.45);
+    background: alpha(@color15, 0.20);
 }
 
 #scratchpad.empty {
@@ -454,7 +451,7 @@ label:focus {
 }
 
 tooltip {
-  background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
   color: @ink;
   border: none;
   border-bottom: 8px solid @edge;

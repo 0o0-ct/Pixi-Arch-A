@@ -72,7 +72,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles (see [Colorful] Aurora Blossom.css for the rationale)
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -121,22 +121,20 @@ window#waybar.empty #window {
 .modules-left,
 .modules-center,
 .modules-right {
-	background-color: @pane;
-	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-	color: @ink;
-	border: 2px solid @edge;
-	border-top: 2px solid @edge_top;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
     border-radius: 20px;
-	padding: 3px 6px;
-	margin: 3px 0;
+    padding: 3px 6px;
+    margin: 3px 0;
 }
 
 tooltip {
-	background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
 	border-radius: 10px;
 	border-width: 1px;
 	border-style: solid;
-	border-color: @edge;
+	border-color: alpha(@color15, 0.47);
 	color: @ink;
 }
 

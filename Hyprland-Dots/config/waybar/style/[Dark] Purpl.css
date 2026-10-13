@@ -45,7 +45,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -88,42 +88,30 @@ window#waybar {
  * only the colours changed (#20052a -> @edge / @edge_top).
  * ------------------------------------------------------------------------- */
 .modules-right {
-	border: 3px solid @edge;
-	border-top: 3px solid @edge_top;
-	border-radius: 100px 0px 0px 0px;
-	background-color: @pane;
-	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-	color: @ink;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 5px;
-	padding-left: 5px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 100px 0px 0px 0px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .modules-center {
-	border: 3px solid transparent;
-	border-top: 3px solid @edge_top;
-	border-radius: 16px;
-	background-color: @pane;
-	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-	color: @ink;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 16px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 .modules-left {
-	border: 3px solid @edge;
-	border-top: 3px solid @edge_top;
-	border-radius: 0px 0px 100px 0px;
-	background-color: @pane;
-	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-	color: @ink;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 5px;
-	padding-left: 5px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 0px 0px 100px 0px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 #taskbar button,
@@ -281,11 +269,11 @@ window#waybar {
  * Tooltips — the same glass, denser so the text always reads
  * ------------------------------------------------------------------------- */
 tooltip {
-	background: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
 	border-radius: 10px;
 	border-width: 2px;
 	border-style: solid;
-	border-color: @edge;
+	border-color: alpha(@color15, 0.47);
 	color: @ink;
 }
 

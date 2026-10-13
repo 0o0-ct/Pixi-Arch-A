@@ -69,7 +69,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -130,33 +130,33 @@ window#waybar {
  * highlight, which is why that property is nowhere in this file any more. The
  * file's own radii, paddings and 10px margins are kept. */
 .modules-left {
-  border-radius: 12px;
-  border: 1px solid @edge;
-  border-top: 1px solid @edge_top;
-  padding-left: 5px;
-  padding-right: 15px;
-  margin: 10px;
-  background-color: @pane;
-  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 12px;
+    padding-left: 5px;
+    padding-right: 15px;
+    margin: 10px;
 }
 
 .modules-right {
-  border-radius: 12px;
-  border: 1px solid @edge;
-  border-top: 1px solid @edge_top;
-  padding-left: 15px;
-  margin: 10px;
-  background-color: @pane;
-  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 12px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin: 10px;
 }
 
 .modules-center {
-  border-radius: 12px;
-  border: 1px solid @edge;
-  border-top: 1px solid @edge_top;
-  margin: 10px;
-  background-color: @pane;
-  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 12px;
+    padding-left: 5px;
+    padding-right: 15px;
+    margin: 10px;
 }
 
 label.module {
@@ -228,7 +228,7 @@ label.module:hover {
  * ----------------------------------------------------- */
 
 tooltip {
-  background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
   color: @ink;
   border-radius: 12px;
   border: 1px solid @edge;

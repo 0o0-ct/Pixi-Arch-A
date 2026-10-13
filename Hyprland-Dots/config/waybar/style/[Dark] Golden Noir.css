@@ -57,7 +57,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);
+@define-color pane          alpha(@color15, 0.11);
 @define-color sheen_top     alpha(@color15, 0.25);
 @define-color sheen_bot     alpha(@background, 0.08);
 
@@ -107,33 +107,33 @@ window#waybar.hidden {
 }
 
 tooltip {
-    background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
     border-radius: 10px;
     border-width: 2px;
     border-style: solid;
-    border-color: @edge;
+    border-color: alpha(@color15, 0.47);
     color: @ink;
 }
 
 /*-----module groups----*/
 .modules-left,
 .modules-right {
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
-
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 20px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 /* The gold hairline that framed the centre group is now the wallpaper accent. */
 .modules-center {
-    border-left: 1px solid @accent;
-    border-right: 1px solid @accent;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
     border-radius: 20px;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 #taskbar button,

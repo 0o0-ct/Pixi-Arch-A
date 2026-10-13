@@ -41,7 +41,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -90,34 +90,34 @@ window#waybar.hidden {
 }
 
 tooltip {
-    background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
     border-radius: 10px;
     border-width: 2px;
     border-style: solid;
-    border-color: @edge;
+    border-color: alpha(@color15, 0.47);
     color: @ink;
 }
 
 /*-----module groups----*/
 .modules-left,
 .modules-right {
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
-
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 20px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 /* The accent-bordered centre group: the original gold hairline is now the
  * wallpaper's own accent. */
 .modules-center {
-    border-top: 1px solid alpha(@accent, 0.55);
-    border-bottom: 1px solid alpha(@accent, 0.55);
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
     border-radius: 20px;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 #taskbar button,
@@ -243,7 +243,7 @@ tooltip {
 #idle_inhibitor.activated {
 	color: @on_accent;
 	background-color: @accent_pill;
-    border-bottom: 8px solid alpha(@background, 0.55);
+    border-bottom: 8px solid alpha(@color15, 0.11);
 }
 
 /* Was a blinking animation; a filled pill alerts without repainting forever. */

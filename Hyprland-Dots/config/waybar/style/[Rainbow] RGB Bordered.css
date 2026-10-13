@@ -77,7 +77,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -178,16 +178,12 @@ window#waybar.empty #window {
  * falling from the lit top edge to the dim bottom one; GTK paints the colour
  * first and the gradient over it. Border width unchanged at 2.5px. */
 .modules-left, .modules-center, .modules-right {
-  background-color: @pane;
-  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-  color: @ink;
-  border: 2.5px solid @edge;
-  border-top-color: @edge_top;
-  border-radius: 16px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  padding-right: 6px;
-  padding-left: 6px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 16px;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 #backlight, #battery, #bluetooth, #clock, #cpu, #disk, #idle_inhibitor, #keyboard-state, #memory, #mode, #mpris, #network, #pulseaudio, #taskbar, #temperature, #tray, #window, #workspaces, #custom-menu, #custom-power, #custom-weather {

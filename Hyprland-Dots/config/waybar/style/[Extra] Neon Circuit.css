@@ -27,7 +27,7 @@
  *   @color13/6/7/8 -> the per-module hues, on the light half of the ramp so
  *                     they stay readable as text on a dark pane
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);
+@define-color pane          alpha(@color15, 0.11);
 @define-color sheen_top     alpha(@color15, 0.25);
 @define-color sheen_bot     alpha(@background, 0.08);
 @define-color ink           @foreground;
@@ -68,11 +68,13 @@ window#waybar #window,
 }
 
 window#waybar {
-    background: transparent;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
 }
 
 tooltip {
-    background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
     color: @ink;
     border-radius: 12px;
     border-width: 0px;

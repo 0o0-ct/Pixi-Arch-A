@@ -69,7 +69,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -105,19 +105,17 @@ font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
  * falls from the lit top edge to the dim bottom one; GTK paints the colour
  * first and the gradient over it. Radius 12px as before. */
 window#waybar {
-	background-color: @pane;
-	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-	color: @ink;
-	border: 1px solid @edge;
-	border-top-color: @edge_top;
-	border-radius: 12px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 12px;
 }
 
 /* The window#waybar.hidden rule was dropped: dimming a whole container forces
  * GTK to render the widget group offscreen, so translucency here is rgba(). */
 
 tooltip {
-	background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
 	border: 1px solid @edge;
 	border-radius: 10px;
 	color: @ink;

@@ -44,7 +44,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -94,12 +94,9 @@ window#waybar {
 .modules-left,
 .modules-center,
 .modules-right {
-    background-color: @pane;
-    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-    color: @ink;
-    border: 1px solid @edge;
-    border-top: 1px solid @edge_top;
-    border-bottom: 2px solid @accent;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
     border-radius: 12px;
     padding: 2px 6px;
     margin: 2px 0;
@@ -145,7 +142,7 @@ window#waybar {
 }
 
 tooltip {
-    background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
     border-radius: 6px;
     color: @ink;
 }

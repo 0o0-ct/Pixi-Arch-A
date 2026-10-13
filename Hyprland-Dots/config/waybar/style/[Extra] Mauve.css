@@ -20,7 +20,7 @@
  *   @color13     -> mid-tone accent (urgent)
  *   @foreground  -> text, tile lift, hairline edge
  */
-@define-color pane          alpha(@background, 0.35);
+@define-color pane          alpha(@color15, 0.11);
 @define-color sheen_top     alpha(@color15, 0.25);
 @define-color sheen_bot     alpha(@background, 0.08);
 @define-color tile          alpha(@foreground, 0.05);
@@ -63,36 +63,34 @@ window#waybar {
 }
 
 tooltip {
-	background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
 	border-radius: 10px;
 	border-width: 2px;
 	border-style: solid;
-	border-color: @edge;
+	border-color: alpha(@color15, 0.47);
 	color: @ink;
 }
 
 /*-----module groups----*/
 .modules-left,
 .modules-right {
-	border: 3px solid @edge;
-	border-top: 3px solid @edge_top;
-	border-radius: 10px 10px 10px 10px;
-	background-color: @pane;
-	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-	color: @ink;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 10px 10px 10px 10px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 /* The centre group is bare in this style — the clock floats between the two
  * panes — so it keeps its padding and deliberately gets no pane of its own. */
 .modules-center {
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 10px 10px 10px 10px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 #taskbar button,

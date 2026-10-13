@@ -30,7 +30,7 @@
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.38);  /* true frosted glass body */
+@define-color pane          alpha(@color15, 0.11);  /* true frosted glass body */
 @define-color sheen_top     alpha(@color15, 0.25);     /* crystal sheen light */
 @define-color sheen_bot     alpha(@color15, 0.10);     /* refraction low end */
 
@@ -90,13 +90,12 @@ window#waybar.empty #window {
 
 
 tooltip {
-    background: alpha(@background, 0.94);
-    background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
     color: @ink;
     border-radius: 10px;
     border-width: 1px;
     border-style: solid;
-    border-color: @edge;
+    border-color: alpha(@color15, 0.47);
 }
 
 tooltip label {
@@ -107,42 +106,30 @@ tooltip label {
 /* The islands keep their own geometry (3px edge, asymmetric radii); only the
  * fill, the sheen and the edge colour come from wallust now. */
 .modules-right {
-	border: 3px solid @edge;
-	border-top: 3px solid @edge_top;
-	border-radius: 40px 0px 0px 0px;
-	background-color: @pane;
-	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-	color: @ink;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 40px 0px 0px 0px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 .modules-center {
-	border: 3px solid @edge;
-	border-top: 3px solid @edge_top;
-	border-radius: 60px 0px 60px 0px;
-	background-color: @pane;
-	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-	color: @ink;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 60px 0px 60px 0px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 .modules-left {
-	border: 3px solid @edge;
-	border-top: 3px solid @edge_top;
-	border-radius: 0px 0px 40px 0px;
-	background-color: @pane;
-	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-	color: @ink;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 0px 0px 40px 0px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 #taskbar button,
@@ -304,4 +291,40 @@ tooltip label {
 
 #custom-cava_mviz {
 	padding-right: 10px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Network & Bluetooth — Monet Frosted Glass state colors
+ * ------------------------------------------------------------------------- */
+#network {
+	color: @color14;
+}
+
+#network.disconnected {
+	color: @danger;
+}
+
+#network.disabled {
+	color: alpha(@foreground, 0.40);
+}
+
+#network.linked {
+	color: @tertiary;
+}
+
+#bluetooth {
+	color: @color14;
+}
+
+#bluetooth.connected {
+	color: @color15;
+}
+
+#bluetooth.disabled,
+#bluetooth.off {
+	color: alpha(@foreground, 0.40);
+}
+
+#bluetooth.discovering {
+	color: @tertiary;
 }

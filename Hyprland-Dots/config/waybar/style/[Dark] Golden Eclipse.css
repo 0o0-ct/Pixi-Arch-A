@@ -52,7 +52,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);
+@define-color pane          alpha(@color15, 0.11);
 @define-color sheen_top     alpha(@color15, 0.25);
 @define-color sheen_bot     alpha(@background, 0.08);
 
@@ -85,19 +85,12 @@ padding: 1px;
 
 
 window#waybar {
-  transition-property: background-color, border-color, color;
-  transition-duration: 160ms;
-  transition-timing-function: ease-out;
-	background-color: @pane;
-	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-	color: @ink;
-	border: 1px solid @edge;
-	border-top: 1px solid @edge_top;
-	padding-top: 3px;
-	padding-bottom: 3px;
-	padding-right: 4px;
-	padding-left: 4px;
-	border-radius: 12px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 12px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
 }
 
 /* Was `opacity: 0.2` on the window; a container opacity forces GTK to render

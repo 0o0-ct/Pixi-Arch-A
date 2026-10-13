@@ -260,7 +260,7 @@ window#waybar.hidden {
 
 /* Tooltip Styling */
 tooltip {
-    background-color: alpha(@background, 0.85);
+    background-color: alpha(@color15, 0.11);
     border: 1px solid @glass_border;
     border-radius: 12px;
     color: @text_main;

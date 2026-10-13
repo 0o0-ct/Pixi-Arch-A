@@ -37,8 +37,8 @@
 @define-color danger         #ffa8a8;   /* semantic: must stay red on any wallpaper */
 
 /* The names this style already used, now wallust-driven. */
-@define-color backgroundlight       @color15;   /* pill fill (was flat #FFFFFF)  */
-@define-color backgrounddark        @color15;   /* pill fill (was flat #FFFFFF)  */
+@define-color backgroundlight       alpha(@color15, 0.20);   /* pill fill (was flat #FFFFFF)  */
+@define-color backgrounddark        alpha(@color15, 0.20);   /* pill fill (was flat #FFFFFF)  */
 @define-color workspacesbackground2 @color15;   /* workspace pill                */
 @define-color textcolor1            @on_accent; /* ink on a light pill           */
 @define-color textcolor2            @on_accent; /* ink on a light pill           */
@@ -128,8 +128,8 @@ window#waybar {
  * ----------------------------------------------------- */
 
 tooltip {
+    background-color: alpha(@color15, 0.11);
     border-radius: 10px;
-    background-color: alpha(@background, 0.94);
     padding:20px;
     margin:0px;
 }

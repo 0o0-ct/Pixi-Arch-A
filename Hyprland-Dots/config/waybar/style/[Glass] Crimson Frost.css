@@ -75,7 +75,7 @@ window#waybar #window,
  *   @foreground -> texto, texto atenuado, círculos, filo
  * ------------------------------------------------------------------------- */
 @define-color glass        rgba(255, 255, 255, 0.10);  /* isla base          */
-@define-color glass_raise  alpha(@background, 0.85);  /* hover              */
+@define-color glass_raise  alpha(@color15, 0.20);  /* hover */
 @define-color glass_sunken alpha(@background, 0.45);  /* zonas hundidas     */
 
 /* Refracción: sin esto el panel queda MÁS OSCURO que el fondo y se lee como
@@ -136,14 +136,9 @@ window#waybar {
 .modules-left,
 .modules-center,
 .modules-right {
-    background-color: @glass;
-    background-image: linear-gradient(
-        180deg,
-        @sheen_top 0%,
-        @sheen_bot 100%
-    );
-    border: 1px solid @edge;
-    border-top: 1px solid @edge_hi;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
     border-radius: 18px;
     padding: 3px 6px;
     margin: 3px 0;

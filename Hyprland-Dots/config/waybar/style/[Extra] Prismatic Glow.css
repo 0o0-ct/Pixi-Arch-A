@@ -52,15 +52,15 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles (same mapping as the reference style)
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
-@define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
-@define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.47);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.11);     /* refraction, low end */
 
 @define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
 @define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
 
-@define-color edge          alpha(@color14, 0.30);  /* hairline            */
-@define-color edge_top      alpha(@color15, 0.75);  /* lit top edge        */
+@define-color edge          alpha(@color15, 0.47);  /* hairline            */
+@define-color edge_top      alpha(@color15, 0.47);  /* lit top edge        */
 
 @define-color ink           @foreground;
 @define-color ink_dim       alpha(@foreground, 0.80);
@@ -128,7 +128,7 @@ window#waybar.empty #window {
  * shorthand left border-style unset, so it paints nothing today too). */
 menu,
 tooltip {
-    background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
     border-radius: 10px;
     border: 2px transparent;
     border-image: linear-gradient(45deg, @prism_a, @prism_b) 1;

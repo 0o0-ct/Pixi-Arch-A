@@ -30,7 +30,7 @@
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -89,9 +89,8 @@ window#waybar.empty #window {
 }
 
 tooltip {
+    background-color: alpha(@color15, 0.11);
 	color: @ink;
-	background: alpha(@background, 0.94);
-	background-color: alpha(@background, 0.94);
 	border: 1px solid @edge;
 	border-radius: 10px;
 }
@@ -102,16 +101,12 @@ tooltip {
 .modules-left,
 .modules-center,
 .modules-right {
-	background-color: @pane;
-	background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-	color: @ink;
-	border: 0.5px solid @edge;
-	border-top: 0.5px solid @edge_top;
-	border-radius: 10px;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 /*-----modules indv----*/
 

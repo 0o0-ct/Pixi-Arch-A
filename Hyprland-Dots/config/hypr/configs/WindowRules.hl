@@ -184,6 +184,7 @@ windowrule = match:title ^(wind.*)$, no_initial_focus on
 # LAYER RULES
 layerrule = match:namespace rofi, blur on
 layerrule = match:namespace notifications, blur on
+layerrule = match:namespace waybar, blur on
 layerrule = match:namespace gtk4-layer-shell, blur on
 layerrule = match:namespace gtk4-layer-shell, ignore_alpha 0.5
 layerrule = match:namespace quickshell:overview, blur on

@@ -45,7 +45,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -79,15 +79,13 @@ window#waybar #window,
 /* The bar itself is the pane of glass, keeping this style's 4px padding,
  * its 10px radius, its lit top hairline and its 3px accent foot. */
 window#waybar {
-  transition-property: background-color;
-  transition-duration: 160ms;
-  padding: 4px;
-  background-color: @pane;
-  background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-  color: @ink;
-  border-top: 1px solid @edge_top;
-  border-bottom: 3px solid alpha(@accent, 0.75);
-  border-radius: 10px;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+    padding: 4px;
+    transition-property: background-color;
+    transition-duration: 160ms;
 }
 
 /* Was `opacity: 0.2`, which makes GTK render the widget group offscreen;

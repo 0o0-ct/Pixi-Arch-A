@@ -23,7 +23,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — Wallust Extracted Dynamic Frosted Glass Palette
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.40);  /* atmospheric wallpaper-tinted glass */
+@define-color pane          alpha(@color15, 0.11);  /* atmospheric wallpaper-tinted glass */
 @define-color edge          alpha(@color15, 0.20);     /* clean uniform subtle glass border */
 
 @define-color tile          alpha(@foreground, 0.08);  /* subtle tile */
@@ -70,9 +70,9 @@ window#waybar.hidden {
 .modules-left,
 .modules-center,
 .modules-right {
-    background-color: @pane;
-    color: @ink;
-    border: 1px solid @edge;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
     border-radius: 18px;
     padding: 2px 6px;
 }
@@ -322,7 +322,7 @@ button.active {
 }
 
 label:focus {
-    background-color: alpha(@background, 0.55);
+    background-color: alpha(@color15, 0.20);
 }
 
 #cpu {
@@ -479,8 +479,8 @@ label:focus {
 }
 
 #idle_inhibitor {
-    background-color: alpha(@background, 0.50);
-    color: @ink;
+    background-color: alpha(@color15, 0.20);
+    color: @on_accent;
     border: 1px solid @edge;
     border-radius: 12px;
     padding-left: 8px;
@@ -551,11 +551,11 @@ label:focus {
 }
 
 #keyboard-state > label.locked {
-    background: alpha(@background, 0.45);
+    background: alpha(@color15, 0.20);
 }
 
 #scratchpad {
-    background: alpha(@background, 0.45);
+    background: alpha(@color15, 0.20);
     border: 1px solid @edge;
     border-radius: 12px;
     margin: 2px 2px;
@@ -566,7 +566,7 @@ label:focus {
 }
 
 tooltip {
-    background-color: alpha(@background, 0.85);
+    background-color: alpha(@color15, 0.11);
     border: 1px solid @edge;
     border-radius: 14px;
     color: @ink;

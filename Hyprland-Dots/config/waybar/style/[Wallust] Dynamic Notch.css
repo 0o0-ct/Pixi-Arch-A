@@ -29,8 +29,8 @@
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
-@define-color pane_deep     alpha(@background, 0.86);  /* the notch, denser   */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
+@define-color pane_deep     alpha(@color15, 0.25);  /* glass mas denso */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -75,9 +75,8 @@ window#waybar #window,
 }
 
 tooltip {
+    background-color: alpha(@color15, 0.11);
     color: @ink;
-    background: alpha(@background, 0.94);
-    background-color: alpha(@background, 0.94);
     border: 1px solid @edge;
     border-radius: 12px;
     padding: 8px 12px;
@@ -87,53 +86,32 @@ tooltip {
  * Fill + sheen + lit top edge are the glass; the geometry (margins, padding,
  * radii, and the notch's missing top border) is exactly what this style had. */
 .modules-left {
-    background-color: @pane;
-    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-    color: @ink;
-    border: 1px solid @edge;
-    border-top: 1px solid @edge_top;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
     border-radius: 18px;
-    margin-top: 6px;
-    margin-bottom: 4px;
-    margin-left: 14px;
-    margin-right: 4px;
     padding: 2px 14px;
 }
 
 /* THE DYNAMIC NOTCH (Center Module - Touches top of screen seamlessly) */
 .modules-center {
-    background-color: @pane_deep;
-    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-    color: @ink;
-    border-bottom: 2px solid @edge_top;
-    border-left: 1.5px solid @edge;
-    border-right: 1.5px solid @edge;
-    border-top: none;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
     border-radius: 0px 0px 22px 22px;
-    margin-top: 0px;
-    margin-bottom: 0px;
     padding: 3px 24px;
-    transition-property: background-color, border-color, color;
-    transition-duration: 160ms;
-    transition-timing-function: ease-out;
 }
 
 .modules-center:hover {
-    background-color: alpha(@background, 0.92);
+    background-color: alpha(@color15, 0.20);
     border-bottom-color: @accent;
 }
 
 .modules-right {
-    background-color: @pane;
-    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
-    color: @ink;
-    border: 1px solid @edge;
-    border-top: 1px solid @edge_top;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
     border-radius: 18px;
-    margin-top: 6px;
-    margin-bottom: 4px;
-    margin-right: 14px;
-    margin-left: 4px;
     padding: 2px 14px;
 }
 

@@ -56,7 +56,7 @@ window#waybar #window,
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles (same mapping as the reference style)
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@background, 0.35);  /* glass body          */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
@@ -85,8 +85,9 @@ window#waybar #window,
 }
 
 window#waybar {
-    background: transparent;
-    color: @ink;
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
 }
 
 window#waybar.empty,
@@ -97,7 +98,7 @@ window#waybar.empty #window {
 }
 
 tooltip {
-    background-color: alpha(@background, 0.94);
+    background-color: alpha(@color15, 0.11);
     color: @ink;
     border-radius: 8px;
     border: 1px solid @edge;
