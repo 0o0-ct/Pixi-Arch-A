@@ -69,6 +69,20 @@ find_themes() {
             echo "Directory does not exist: $TD"
         fi
     done
+
+    # Priorizar "[Glass] Monet Frosted" como primera opcion del menu
+    local priority="[Glass] Monet Frosted"
+    local -a pinned=() remaining=() t
+    for t in "${theme_names[@]}"; do
+        if [[ "$t" == "$priority" ]]; then
+            pinned+=("$t")
+        else
+            remaining+=("$t")
+        fi
+    done
+    if [ ${#pinned[@]} -gt 0 ]; then
+        theme_names=("${pinned[@]}" "${remaining[@]}")
+    fi
 }
 
 ##

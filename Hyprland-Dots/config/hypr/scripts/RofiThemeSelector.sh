@@ -89,6 +89,17 @@ mapfile -t available_theme_names < <((
   find "$ROFI_THEMES_DIR_LOCAL" -maxdepth 1 -name "*.rasi" -type f -printf "%f\n" 2>/dev/null
 ) | sort -V -u)
 
+# Priorizar "[Glass] Monet Frosted" como primera opcion del menu
+_priority="[Glass] Monet Frosted.rasi"
+declare -a _pinned=()
+declare -a _remaining=()
+for _t in "${available_theme_names[@]}"; do
+  if [[ "$_t" == "$_priority" ]]; then _pinned+=("$_t"); else _remaining+=("$_t"); fi
+done
+if [ ${#_pinned[@]} -gt 0 ]; then
+  available_theme_names=("${_pinned[@]}" "${_remaining[@]}")
+fi
+
 if [ ${#available_theme_names[@]} -eq 0 ]; then
   notify_user "$IDIR/error.png" "No Rofi Themes" "No .rasi files found in theme directories."
   exit 1
