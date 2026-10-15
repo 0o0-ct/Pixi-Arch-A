@@ -110,10 +110,17 @@ fi
 add_option "󰤨  Configuración avanzada (nmtui)" "NMTUI"
 add_option "󰑐  Refrescar lista de redes" "RESCAN"
 
+# Toggle: si ya está abierto, cerrarlo al volver a hacer clic
+if pidof rofi >/dev/null 2>&1; then
+    killall rofi
+    exit 0
+fi
+
 # Mostrar menú Rofi con el tema Glass Monet Frosted
 list_input=$(printf '%s\n' "${options[@]}")
 chosen=$(echo "$list_input" | rofi -dmenu -i \
     -theme "$ROFI_THEME" \
+    -m -1 \
     -p "Redes WiFi" \
     -mesg "󰌾 = Con contraseña | 󰤥 = Red conocida | 󰤨 = Conectado" \
     -no-custom || true)
@@ -140,6 +147,7 @@ case "$action" in
         ssid="${action#NEW:}"
         pass=$(echo "" | rofi -dmenu -password \
             -theme "$ROFI_THEME" \
+            -m -1 \
             -p "Contraseña" \
             -mesg "Introduce la contraseña para $ssid:" \
             -no-custom || true)
