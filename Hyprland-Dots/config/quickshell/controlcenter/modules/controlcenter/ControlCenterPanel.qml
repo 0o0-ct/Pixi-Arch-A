@@ -127,6 +127,11 @@ PanelWindow {
                 visible: CcSystem.bluetoothDrawerOpen
             }
 
+            CcAudioDrawer {
+                width: parent.width
+                visible: CcSystem.audioDrawerOpen
+            }
+
             CcMediaSection {
                 width: parent.width
             }

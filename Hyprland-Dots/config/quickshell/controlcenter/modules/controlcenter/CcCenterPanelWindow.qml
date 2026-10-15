@@ -1,23 +1,36 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
-import "root:/modules/common"
-import "root:/modules/common/widgets"
 import "root:/modules/controlcenter"
-import "root:/modules/netcenter"
 
 /**
- * Standalone Wi-Fi panel: the same glass card as the control center, with the
- * shared Wi-Fi drawer (`CcWifiDrawer`) as its body.
+ * Standalone center panel window: the same glass card as the control center.
+ * The panel body is declared by the config and lands inside the card, e.g.
  *
- * Opened from the waybar network module with
- * `qs -c netcenter ipc call panel toggle`.
+ *     CcCenterPanelWindow {
+ *         panelState: panel
+ *         panelName: "netcenter"
+ *         CcWifiDrawer { width: parent.width }
+ *     }
+ *
+ * One instance is created per output by the config's `shell.qml`; visibility
+ * is decided by the shared `panelState` (see CcCenterPanelState).
  */
 PanelWindow {
     id: panel
 
     /** The screen this instance is drawn on, injected by `Variants`. */
     required property var modelData
+
+    /** The CcCenterPanelState instance this window belongs to. */
+    required property var panelState
+
+    /** Short name of the panel, used for the layer namespace
+     *  ("quickshell-netcenter", matching the Hyprland blur layer rules). */
+    property string panelName: "center"
+
+    /** The body: everything declared inside the instance is added here. */
+    default property alias body: content.data
 
     screen: panel.modelData
 
@@ -28,29 +41,29 @@ PanelWindow {
         right: true
     }
 
-    readonly property bool isTargetScreen: panel.screen !== null && panel.screen.name === NcPanelState.openScreenName
+    readonly property bool isTargetScreen: panel.screen !== null && panel.screen.name === panel.panelState.openScreenName
 
-    visible: NcPanelState.visible && isTargetScreen
+    visible: panel.panelState.visible && isTargetScreen
     color: "transparent"
     exclusiveZone: 0
     aboveWindows: true
-    WlrLayershell.namespace: "quickshell-netcenter"
+    WlrLayershell.namespace: "quickshell-" + panel.panelName
     WlrLayershell.layer: WlrLayer.Overlay
 
-    WlrLayershell.keyboardFocus: (NcPanelState.visible && isTargetScreen) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    WlrLayershell.keyboardFocus: (panel.panelState.visible && isTargetScreen) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
     // ── Click-away dismissal: clicking anywhere outside the card closes the panel ──
     MouseArea {
         anchors.fill: parent
         z: -1
-        onClicked: NcPanelState.dismiss()
+        onClicked: panel.panelState.dismiss()
     }
 
     // ── Keyboard shortcut: Escape always closes the panel regardless of child focus ──
     Shortcut {
         sequence: "Escape"
         enabled: panel.visible
-        onActivated: NcPanelState.dismiss()
+        onActivated: panel.panelState.dismiss()
     }
 
     // ── Floating card (same glass spec as the control center) ─────────────
@@ -83,17 +96,13 @@ PanelWindow {
             }
         }
 
-        // ── Content ───────────────────────────────────────────────────────
+        // ── Content (the config's body lands here) ────────────────────────
         Column {
             id: content
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.margins: Theme.panelPadding
-
-            CcWifiDrawer {
-                width: parent.width
-            }
         }
     }
 }

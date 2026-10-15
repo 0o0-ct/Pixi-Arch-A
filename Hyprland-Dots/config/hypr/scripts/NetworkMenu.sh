@@ -1,185 +1,177 @@
 #!/usr/bin/env bash
 # /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-# NetworkMenu.sh — Menú de red interactivo con Rofi en diseño Glass Monet Frosted
-
-set -euo pipefail
+# NetworkMenu.sh — Menú WiFi rápido con Rofi (tema Glass Monet Frosted)
 
 ROFI_THEME="$HOME/.config/rofi/themes/[Glass] Monet Frosted.rasi"
 PIDIR="$HOME/.config/swaync/images"
 SEPARATOR="────────────────────────────────────────"
 
 notify() {
-    local icon="${1:-nota.png}"
-    local title="${2:-Red}"
-    local msg="${3:-}"
-    if [ -f "$PIDIR/$icon" ]; then
-        notify-send -u low -i "$PIDIR/$icon" "$title" "$msg" 2>/dev/null || true
-    else
-        notify-send -u low "$title" "$msg" 2>/dev/null || true
-    fi
+    notify-send -u normal -i "$PIDIR/${1:-nota.png}" "${2:-Red}" "${3:-}" 2>/dev/null || true
 }
 
-wifi_radio() {
-    nmcli radio wifi 2>/dev/null || echo "disabled"
-}
+wifi_radio() { nmcli -g WIFI radio 2>/dev/null || echo "disabled"; }
 
-# Si el wifi está apagado pero se abre el menú, activar
+# Activar WiFi si está apagado (sin bloquear)
 if [ "$(wifi_radio)" = "disabled" ]; then
     nmcli radio wifi on 2>/dev/null || true
-    notify "nota.png" "WiFi" "Activando adaptador WiFi..."
-    sleep 1
+    notify "nota.png" "WiFi" "Activando adaptador..."
 fi
 
-# Disparar rescan en segundo plano para mantener la caché fresca sin bloquear la interfaz
-nmcli device wifi rescan &>/dev/null &
+# Estado actual
+active_wifi=$(nmcli -t -f NAME,TYPE connection show --active 2>/dev/null | grep ':802-11-wireless$' | cut -d: -f1 | head -1 || true)
+active_eth=$(nmcli -t -f NAME,TYPE connection show --active 2>/dev/null | grep ':802-3-ethernet$' | cut -d: -f1 | head -1 || true)
 
-# Conexiones activas
-active_eth=$(nmcli -t -f TYPE,NAME connection show --active 2>/dev/null | grep '^802-3-ethernet:' | cut -d: -f2 | head -1 || true)
-active_wifi=$(nmcli -t -f TYPE,NAME connection show --active 2>/dev/null | grep '^802-11-wireless:' | cut -d: -f2 | head -1 || true)
+# Redes guardadas
+known_conns=$(nmcli -t -f NAME,TYPE connection show 2>/dev/null | grep ':802-11-wireless$' | cut -d: -f1 | sort -u || true)
 
-# Redes guardadas / conocidas en NetworkManager
-known_conns=()
-while IFS= read -r conn; do
-    [ -z "$conn" ] && continue
-    known_conns+=("$conn")
-done < <(nmcli -t -f TYPE,NAME connection show 2>/dev/null | grep '^802-11-wireless:' | cut -d: -f2 | sort -u || true)
+# UNA sola llamada a nmcli con caché (rápido: ~30ms)
+wifi_list=$(nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY device wifi list --rescan no 2>/dev/null || true)
 
-# Construir lista de opciones para Rofi
+# Construir lista
 options=()
 declare -A action_map
+add_option() { options+=("$1"); action_map["$1"]="$2"; }
 
-add_option() {
-    options+=("$1")
-    action_map["$1"]="$2"
-}
+# Ethernet activa
+[ -n "$active_eth" ] && add_option "󰈀  Ethernet: $active_eth  (conectado)" "ETH:$active_eth"
 
-# 1. Mostrar conexión Ethernet si está activa
-if [ -n "$active_eth" ]; then
-    add_option "󰈀  Ethernet: $active_eth  (conectado)" "ETH:$active_eth"
-fi
-
-# 2. Obtener lista de redes WiFi al alcance
-declare -A seen_ssids
-
-# Primero detectar la señal de la red activa
+# Red WiFi activa (señal de la misma caché)
+seen=()
 if [ -n "$active_wifi" ]; then
-    active_sig=$(nmcli -t -f IN-USE,SSID,SIGNAL device wifi list 2>/dev/null | grep '^\*:' | cut -d: -f3 | head -1 || true)
-    [ -z "$active_sig" ] && active_sig="100"
+    active_sig=$(echo "$wifi_list" | grep "^\*:" | grep ":$active_wifi:" | cut -d: -f3 | head -1)
+    [ -z "$active_sig" ] && active_sig="?"
     add_option "󰤨  $active_wifi  ·${active_sig}%  (conectado)" "ACTIVE:$active_wifi"
-    seen_ssids["$active_wifi"]=1
+    seen+=("$active_wifi")
 fi
 
-# 3. Listar redes WiFi al alcance (ordenadas por intensidad de señal)
+# Redes en rango (con subtitulo de seguridad)
 while IFS=: read -r in_use ssid signal security; do
     [ -z "$ssid" ] && continue
-    [ -n "${seen_ssids[$ssid]:-}" ] && continue
-    seen_ssids["$ssid"]=1
+    [[ " ${seen[*]} " == *" $ssid "* ]] && continue
+    seen+=("$ssid")
 
-    sec_icon=""
-    [ -n "$security" ] && [ "$security" != "--" ] && sec_icon=" 󰌾"
+    sec_label="Abierta"
+    [ -n "$security" ] && [ "$security" != "--" ] && sec_label="${security%% *}"
+    [ -z "$sec_label" ] && sec_label="Abierta"
 
-    # Verificar si es una red ya guardada
     is_known=false
-    for k in "${known_conns[@]}"; do
-        if [ "$k" = "$ssid" ]; then
-            is_known=true
-            break
-        fi
-    done
+    [[ "$known_conns" == *"$ssid"* ]] && is_known=true
 
     if [ "$is_known" = true ]; then
-        add_option "󰤥  $ssid  ·${signal}%${sec_icon}" "CONNECT:$ssid"
+        add_option "󰤥  $ssid  ·${signal}%  |  ${sec_label}" "CONNECT:$ssid"
     else
-        add_option "󰤮  $ssid  ·${signal}%${sec_icon}" "NEW:$ssid"
+        add_option "󰤮  $ssid  ·${signal}%  |  ${sec_label}" "NEW:$ssid"
     fi
-done < <(nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY device wifi list 2>/dev/null | sort -t: -k3 -rn || true)
+done < <(echo "$wifi_list" | sort -t: -k3 -rn)
 
 add_option "$SEPARATOR" "SEP"
 
-# 4. Acciones y Controles
-if [ -n "$active_wifi" ]; then
-    add_option "󰤭  Desconectar de $active_wifi" "DISCONNECT"
-fi
-
+# Controles
+[ -n "$active_wifi" ] && add_option "󰤭  Desconectar de $active_wifi" "DISCONNECT"
 if [ "$(wifi_radio)" = "enabled" ]; then
-    add_option "󰤩  Apagar adaptador WiFi" "RADIO_OFF"
+    add_option "󰤩  Apagar WiFi" "RADIO_OFF"
 else
-    add_option "󰤨  Encender adaptador WiFi" "RADIO_ON"
+    add_option "󰤨  Encender WiFi" "RADIO_ON"
 fi
+add_option "󰤨  Editor (nmtui)" "NMTUI"
+add_option "󰑐  Refrescar redes" "RESCAN"
 
-add_option "󰤨  Configuración avanzada (nmtui)" "NMTUI"
-add_option "󰑐  Refrescar lista de redes" "RESCAN"
-
-# Toggle: si ya está abierto, cerrarlo al volver a hacer clic
-if pidof rofi >/dev/null 2>&1; then
-    killall rofi
-    exit 0
-fi
-
-# Mostrar menú Rofi con el tema Glass Monet Frosted
-list_input=$(printf '%s\n' "${options[@]}")
-chosen=$(echo "$list_input" | rofi -dmenu -i \
+# Mostrar menú
+chosen=$(printf '%s\n' "${options[@]}" | rofi -dmenu -i \
     -theme "$ROFI_THEME" \
-    -m -1 \
     -p "Redes WiFi" \
-    -mesg "󰌾 = Con contraseña | 󰤥 = Red conocida | 󰤨 = Conectado" \
-    -no-custom || true)
+    -mesg "󰌾 = Contraseña | 󰤥 = Conocida | 󰤨 = Conectado" \
+    -no-custom 2>/dev/null) || true
 
 [ -z "$chosen" ] && exit 0
 action="${action_map[$chosen]:-}"
-[ -z "$action" ] || [ "$action" = "SEP" ] && exit 0
+[ -z "$action" ] && exit 0
 
-# Ejecución de la acción seleccionada
+# Verificar conexión activa (rápido: 8s timeout, verificacion eficiente)
+wait_connection() {
+    local ssid="$1" i=0
+    while [ $i -lt 16 ]; do
+        nmcli -t -f NAME,TYPE connection show --active 2>/dev/null | grep -qxF "$ssid:802-11-wireless" && return 0
+        sleep 0.5
+        i=$((i + 1))
+    done
+    return 1
+}
+
+# IP real del dispositivo WiFi
+has_ip() {
+    local dev
+    dev=$(nmcli -t -f DEVICE,TYPE,STATE device status 2>/dev/null | grep ':wifi:connected' | cut -d: -f1 | head -1 || true)
+    [ -z "$dev" ] && return 1
+    ip -4 addr show "$dev" 2>/dev/null | grep -q 'inet '
+}
+
+# Resultado en messagebox Rofi (con estilo)
+show_result() {
+    local status="$1" title="$2" message="$3"
+    local icon="ja.png"
+    [ "$status" = "error" ] && icon="error.png"
+    notify "$icon" "$title" "$message"
+    printf '%s\n' "$message" | rofi -dmenu \
+        -theme "$ROFI_THEME" \
+        -p "$title" \
+        -mesg "$message" \
+        -markup \
+        -no-custom \
+        -only-match 2>/dev/null || true
+}
+
 case "$action" in
     ACTIVE:*)
-        notify "ja.png" "WiFi" "Ya estás conectado a ${action#ACTIVE:}"
+        notify "ja.png" "WiFi" "Ya conectado a ${action#ACTIVE:}"
         ;;
     CONNECT:*)
         ssid="${action#CONNECT:}"
         notify "nota.png" "WiFi" "Conectando a $ssid..."
-        if nmcli connection up "$ssid" &>/dev/null; then
-            notify "ja.png" "WiFi" "Conectado exitosamente a $ssid"
+        if nmcli connection up "$ssid" >/dev/null 2>&1 && wait_connection "$ssid"; then
+            has_ip && show_result "ok" "Conectado ✓" "Te conectaste a $ssid con IP asignada" \
+                   || show_result "ok" "Conectado" "Estás en $ssid (esperando IP...)"
         else
-            notify "error.png" "WiFi" "No se pudo conectar a $ssid"
+            show_result "error" "Error" "No se pudo conectar a $ssid"
         fi
         ;;
     NEW:*)
         ssid="${action#NEW:}"
+        # Detectar seguridad de la red elegida
+        sec=$(echo "$wifi_list" | grep -F ":$ssid:" | grep -v '^\*:' | cut -d: -f4 | head -1)
+        sec_label="Abierta"
+        [ -n "$sec" ] && [ "$sec" != "--" ] && sec_label="${sec%% *}"
         PASS_THEME="$HOME/.config/rofi/themes/[Glass] Password.rasi"
         [ ! -f "$PASS_THEME" ] && PASS_THEME="$ROFI_THEME"
-        pass=$(echo "" | rofi -dmenu -password \
+        # Escapar markup del SSID (para &, <, >)
+        ssid_esc="${ssid//&/&amp;}"; ssid_esc="${ssid_esc//</&lt;}"; ssid_esc="${ssid_esc//>/&gt;}"
+        info_msg=$(printf '󰌾  <b>Contraseña</b>\n<b>Red:</b> %s\n<b>Seguridad:</b> %s' "$ssid_esc" "$sec_label")
+        pass=$(printf '\n' | rofi -dmenu -password \
             -theme "$PASS_THEME" \
-            -m -1 \
-            -mesg "Introduce la contraseña para $ssid:" || true)
+            -p "Contraseña" \
+            -mesg "$info_msg" 2>/dev/null) || true
         [ -z "$pass" ] && exit 0
-        notify "nota.png" "WiFi" "Conectando a $ssid..."
-        if nmcli device wifi connect "$ssid" password "$pass" &>/dev/null; then
-            notify "ja.png" "WiFi" "Conectado exitosamente a $ssid"
+        notify "nota.png" "WiFi" "Verificando contraseña..."
+        if nmcli device wifi connect "$ssid" password "$pass" >/dev/null 2>&1 && wait_connection "$ssid"; then
+            has_ip && show_result "ok" "Conectado ✓" "Contraseña correcta. Conectado a $ssid" \
+                   || show_result "ok" "Conectado" "Contraseña correcta (esperando IP...)"
         else
-            notify "error.png" "WiFi" "Contraseña incorrecta o error al conectar"
+            show_result "error" "Contraseña incorrecta" "La contraseña no es válida para $ssid. Intenta de nuevo."
         fi
         ;;
     DISCONNECT)
-        if [ -n "$active_wifi" ]; then
-            nmcli connection down "$active_wifi" &>/dev/null || true
-            notify "nota.png" "WiFi" "Desconectado de $active_wifi"
-        fi
+        [ -n "$active_wifi" ] && nmcli connection down "$active_wifi" >/dev/null 2>&1 || true
+        notify "nota.png" "WiFi" "Desconectado"
         ;;
-    RADIO_OFF)
-        nmcli radio wifi off
-        notify "nota.png" "WiFi" "Adaptador WiFi apagado"
-        ;;
-    RADIO_ON)
-        nmcli radio wifi on
-        notify "nota.png" "WiFi" "Adaptador WiFi encendido"
-        ;;
-    NMTUI)
-        kitty -e nmtui 2>/dev/null || alacritty -e nmtui 2>/dev/null || xterm -e nmtui 2>/dev/null || true
-        ;;
+    RADIO_OFF) nmcli radio wifi off >/dev/null 2>&1; notify "nota.png" "WiFi" "WiFi apagado" ;;
+    RADIO_ON)  nmcli radio wifi on  >/dev/null 2>&1; notify "nota.png" "WiFi" "WiFi encendido" ;;
+    NMTUI) kitty -e nmtui >/dev/null 2>&1 || alacritty -e nmtui >/dev/null 2>&1 || true ;;
     RESCAN)
-        notify "nota.png" "WiFi" "Escaneando redes cercanas..."
-        nmcli device wifi rescan &>/dev/null || true
-        sleep 1.5
+        notify "nota.png" "WiFi" "Escaneando..."
+        nmcli device wifi rescan >/dev/null 2>&1 || true
+        sleep 1
         exec "$0"
         ;;
 esac
+exit 0

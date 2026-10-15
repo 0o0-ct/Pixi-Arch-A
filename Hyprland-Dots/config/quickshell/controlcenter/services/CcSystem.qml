@@ -152,6 +152,15 @@ Singleton {
         objects: root.audioSink ? [root.audioSink] : []
     }
 
+    /**
+     * Nodes are loaded lazily: untracked ones stay `ready=false` and without
+     * description, so the drawer could not list or name the devices that are
+     * not the current default. Tracking every node loads them all.
+     */
+    PwObjectTracker {
+        objects: Pipewire.nodes?.values ?? []
+    }
+
     readonly property real volume: audioSink?.audio?.volume ?? 0
     readonly property bool volumeMuted: audioSink?.audio?.muted ?? false
     readonly property string volumePercentText: Math.round(volume * 100) + "%"
@@ -179,6 +188,73 @@ Singleton {
         const audio = audioSink?.audio
         if (audio)
             audio.muted = !audio.muted
+    }
+
+    // ── Audio devices (PipeWire): default switching for the audio drawer ──
+
+    /** Default input device. */
+    readonly property var audioSource: Pipewire.defaultAudioSource
+
+    /**
+     * Output devices the audio drawer lists: the default one first, the rest
+     * sorted by name. Matched on PwNodeType.AudioSink so streams and driver
+     * nodes (cava, Midi-Bridge, ...) stay out.
+     */
+    readonly property var audioSinks: {
+        const list = (Pipewire.nodes?.values ?? []).filter((node) => (node.type & PwNodeType.AudioSink) === PwNodeType.AudioSink && !node.isStream)
+        return list.slice().sort((a, b) => {
+            if ((a === root.audioSink) !== (b === root.audioSink))
+                return a === root.audioSink ? -1 : 1
+            return root.audioNodeName(a).localeCompare(root.audioNodeName(b))
+        })
+    }
+
+    /**
+     * Input devices the audio drawer lists: the default one first, the rest
+     * by name. Matched on PwNodeType.AudioSource so video sources (the
+     * webcam) stay out, and streams (cava) with it.
+     */
+    readonly property var audioSources: {
+        const list = (Pipewire.nodes?.values ?? []).filter((node) => (node.type & PwNodeType.AudioSource) === PwNodeType.AudioSource && !node.isStream)
+        return list.slice().sort((a, b) => {
+            if ((a === root.audioSource) !== (b === root.audioSource))
+                return a === root.audioSource ? -1 : 1
+            return root.audioNodeName(a).localeCompare(root.audioNodeName(b))
+        })
+    }
+
+    /** Whether the audio drawer is open (tile click / IPC toggle). */
+    property bool audioDrawerOpen: false
+
+    /** Display name of a PipeWire node: nickname, else description, else name. */
+    function audioNodeName(node) {
+        const nickname = node?.nickname ?? ""
+        const description = node?.description ?? ""
+        return nickname.length > 0 ? nickname : (description.length > 0 ? description : (node?.name ?? ""))
+    }
+
+    /** Material symbol for a PipeWire node, guessed from its name/description. */
+    function audioNodeIcon(node) {
+        const id = ((node?.name ?? "") + " " + (node?.nickname ?? "") + " " + (node?.description ?? "")).toLowerCase()
+        if (id.includes("microphone") || id.includes("mic"))
+            return "mic"
+        if (id.includes("bluez") || id.includes("headphone") || id.includes("headset") || id.includes("buds"))
+            return "headphones"
+        if (id.includes("hdmi") || id.includes("displayport"))
+            return "tv"
+        if (id.includes("usb") || id.includes("analog") || id.includes("speaker") || id.includes("built-in") || id.includes("internal"))
+            return "speaker"
+        return "volume_up"
+    }
+
+    function setDefaultSink(node) {
+        if (node)
+            Pipewire.preferredDefaultAudioSink = node
+    }
+
+    function setDefaultSource(node) {
+        if (node)
+            Pipewire.preferredDefaultAudioSource = node
     }
 
     // ══════════════════════════════════════════════════════════════════════

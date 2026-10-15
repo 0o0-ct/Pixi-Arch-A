@@ -45,10 +45,31 @@ ShellRoot {
                 CcNotifications.clearAll()
             }
 
-            /** Opens/closes the Wi-Fi drawer (keeping the Bluetooth one closed). */
+            /** Opens/closes the Wi-Fi drawer (keeping the others closed). */
             function toggleWifi() {
                 CcSystem.wifiDrawerOpen = !CcSystem.wifiDrawerOpen
                 if (CcSystem.wifiDrawerOpen) {
+                    CcSystem.bluetoothDrawerOpen = false
+                    CcSystem.audioDrawerOpen = false
+                    CcPanelState.reveal()
+                }
+            }
+
+            /** Opens/closes the Bluetooth drawer (keeping the others closed). */
+            function toggleBluetooth() {
+                CcSystem.bluetoothDrawerOpen = !CcSystem.bluetoothDrawerOpen
+                if (CcSystem.bluetoothDrawerOpen) {
+                    CcSystem.wifiDrawerOpen = false
+                    CcSystem.audioDrawerOpen = false
+                    CcPanelState.reveal()
+                }
+            }
+
+            /** Opens/closes the audio drawer (keeping the others closed). */
+            function toggleAudio() {
+                CcSystem.audioDrawerOpen = !CcSystem.audioDrawerOpen
+                if (CcSystem.audioDrawerOpen) {
+                    CcSystem.wifiDrawerOpen = false
                     CcSystem.bluetoothDrawerOpen = false
                     CcPanelState.reveal()
                 }

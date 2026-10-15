@@ -85,7 +85,8 @@
 	"tooltip-format-connected": "{device_enumerate}",
 	"tooltip-format-enumerate-connected": "󰂱 {device_alias} 󰂄 {device_battery_percentage}%",
 	"tooltip": true,
-	"on-click": "command -v blueman-manager && blueman-manager"},
+	"on-click": "$HOME/.config/hypr/scripts/QsCenterToggle.sh btcenter",
+	"on-click-right": "command -v blueman-manager && blueman-manager"},
 
 "clock": {
 	"interval": 10,
@@ -243,7 +244,7 @@
 	"max-length": 30},
 
 "network": {
-	"on-click": "$HOME/.config/hypr/scripts/NetCenterToggle.sh",
+	"on-click": "$HOME/.config/hypr/scripts/QsCenterToggle.sh netcenter",
 	"format": "{ifname}",
 	"format-wifi": "{icon}",
 	"format-ethernet": "󰈀",
@@ -262,7 +263,7 @@
 
 "network#speed": {
 	"interval": 1,
-	"on-click": "$HOME/.config/hypr/scripts/NetCenterToggle.sh",
+	"on-click": "$HOME/.config/hypr/scripts/QsCenterToggle.sh netcenter",
 	"on-click-right": "$HOME/.config/hypr/scripts/NetworkMenu.sh",
 	"format": "{ifname}",
 	"format-wifi": "{icon} 󰕒 {bandwidthUpBytes} 󰇚 {bandwidthDownBytes}",
@@ -312,7 +313,8 @@
 			"Easy Effects Sink"
 		]},
 	"scroll-step": 5.0,
-	"on-click": "$HOME/.config/hypr/scripts/Volume.sh --toggle",
+	"on-click": "$HOME/.config/hypr/scripts/QsCenterToggle.sh audiocenter",
+	"on-click-middle": "$HOME/.config/hypr/scripts/Volume.sh --toggle",
 	"on-click-right": "pavucontrol -t 3",
 	"on-scroll-up": "$HOME/.config/hypr/scripts/Volume.sh --inc",
 	"on-scroll-down": "$HOME/.config/hypr/scripts/Volume.sh --dec",

@@ -1,21 +1,23 @@
-pragma Singleton
 pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import "root:/modules/controlcenter"
-import "root:/services"
 
 /**
- * Shared state of the standalone Wi-Fi panel (`qs -c netcenter`).
+ * Shared state of a standalone "center" panel (netcenter, btcenter,
+ * audiocenter, ...).
  *
  * Mirror of CcPanelState: the panel is drawn by one window per output (see
- * `shell.qml`), but it is a single logical panel — every instance asks this
- * singleton whether it should be mapped, so open/close/toggle from the waybar
- * module or Escape always act on every instance at once.
+ * each config's `shell.qml`), but it is a single logical panel — every window
+ * instance asks this object whether it should be mapped, so open/close/toggle
+ * from the waybar module or Escape always act on every instance at once.
+ *
+ * One instance is created per config inside its `shell.qml` and passed to
+ * every CcCenterPanelWindow.
  */
-Singleton {
+QtObject {
     id: state
 
     // ══════════════════════════════════════════════════════════════════════
@@ -33,6 +35,12 @@ Singleton {
      */
     property string openScreenName: ""
 
+    /**
+     * Emitted when the panel closes, so the config can clean up its own state
+     * (e.g. netcenter cancels a pending Wi-Fi password prompt here).
+     */
+    signal dismissed()
+
     /** Opens the panel, on the monitor the user is working on or requested. */
     function reveal(targetScreen) {
         if (typeof targetScreen === "string" && targetScreen.length > 0) {
@@ -48,7 +56,7 @@ Singleton {
     function dismiss() {
         state.visible = false
         state.openScreenName = ""
-        WifiService.cancelPrompt()
+        state.dismissed()
     }
 
     /** Flips `visible` targeting the specific monitor. */
@@ -76,8 +84,8 @@ Singleton {
      *
      * "all" (the default) means every connected output; anything else is
      * matched against the output name. This is the model of the `Variants` in
-     * `shell.qml`, so it stays live: plugging a monitor in adds an instance,
-     * unplugging one destroys it.
+     * the config's `shell.qml`, so it stays live: plugging a monitor in adds
+     * an instance, unplugging one destroys it.
      */
     readonly property var panelScreens: {
         const connected = Quickshell.screens ?? []
@@ -103,7 +111,7 @@ Singleton {
         if (named.length > 0)
             return named
 
-        console.warn("[netcenter] Theme.panelOutputs=\"" + wanted
+        console.warn("[center] Theme.panelOutputs=\"" + wanted
             + "\" matches no connected output; showing the panel on every monitor")
         return connected
     }

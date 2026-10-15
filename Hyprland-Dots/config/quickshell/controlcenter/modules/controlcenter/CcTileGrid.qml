@@ -23,10 +23,13 @@ Grid {
                 CcSystem.toggleWifi()
                 CcSystem.wifiDrawerOpen = true
                 CcSystem.bluetoothDrawerOpen = false
+                CcSystem.audioDrawerOpen = false
             } else {
                 CcSystem.wifiDrawerOpen = !CcSystem.wifiDrawerOpen
-                if (CcSystem.wifiDrawerOpen)
+                if (CcSystem.wifiDrawerOpen) {
                     CcSystem.bluetoothDrawerOpen = false
+                    CcSystem.audioDrawerOpen = false
+                }
             }
         }
     }
@@ -42,10 +45,13 @@ Grid {
                 CcSystem.toggleBluetooth()
                 CcSystem.bluetoothDrawerOpen = true
                 CcSystem.wifiDrawerOpen = false
+                CcSystem.audioDrawerOpen = false
             } else {
                 CcSystem.bluetoothDrawerOpen = !CcSystem.bluetoothDrawerOpen
-                if (CcSystem.bluetoothDrawerOpen)
+                if (CcSystem.bluetoothDrawerOpen) {
                     CcSystem.wifiDrawerOpen = false
+                    CcSystem.audioDrawerOpen = false
+                }
             }
         }
     }
@@ -56,7 +62,15 @@ Grid {
         title: CcSystem.audioTitle
         subtitle: CcSystem.audioSubtitle
         active: !CcSystem.volumeMuted
-        onClicked: CcSystem.toggleMute()
+        onClicked: {
+            if (CcSystem.audioDrawerOpen) {
+                CcSystem.audioDrawerOpen = false
+            } else {
+                CcSystem.audioDrawerOpen = true
+                CcSystem.wifiDrawerOpen = false
+                CcSystem.bluetoothDrawerOpen = false
+            }
+        }
     }
 
     CcTile {
