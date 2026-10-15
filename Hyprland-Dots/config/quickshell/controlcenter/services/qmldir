@@ -1,2 +1,3 @@
 singleton CcSystem 1.0 CcSystem.qml
 singleton CcNotifications 1.0 CcNotifications.qml
+singleton WifiService 1.0 WifiService.qml

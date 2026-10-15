@@ -44,6 +44,15 @@ ShellRoot {
             function clearNotifications() {
                 CcNotifications.clearAll()
             }
+
+            /** Opens/closes the Wi-Fi drawer (keeping the Bluetooth one closed). */
+            function toggleWifi() {
+                CcSystem.wifiDrawerOpen = !CcSystem.wifiDrawerOpen
+                if (CcSystem.wifiDrawerOpen) {
+                    CcSystem.bluetoothDrawerOpen = false
+                    CcPanelState.reveal()
+                }
+            }
         }
     }
 }

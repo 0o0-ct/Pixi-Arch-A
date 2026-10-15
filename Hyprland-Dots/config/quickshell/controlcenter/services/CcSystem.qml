@@ -245,6 +245,9 @@ Singleton {
     property bool bluetoothDrawerOpen: false
     property string bluetoothDeviceName: ""
 
+    /** Wi-Fi drawer of the panel (CcWifiDrawer). Mutually exclusive with the Bluetooth one. */
+    property bool wifiDrawerOpen: false
+
     readonly property string bluetoothTitle: bluetoothEnabled ? "Bluetooth" : "Disabled"
     readonly property string bluetoothSubtitle: {
         if (!bluetoothEnabled) return "No devices"

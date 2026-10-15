@@ -18,7 +18,17 @@ Grid {
         title: CcSystem.networkTitle
         subtitle: CcSystem.networkSubtitle
         active: CcSystem.networkConnected
-        onClicked: CcSystem.toggleWifi()
+        onClicked: {
+            if (!CcSystem.wifiEnabled) {
+                CcSystem.toggleWifi()
+                CcSystem.wifiDrawerOpen = true
+                CcSystem.bluetoothDrawerOpen = false
+            } else {
+                CcSystem.wifiDrawerOpen = !CcSystem.wifiDrawerOpen
+                if (CcSystem.wifiDrawerOpen)
+                    CcSystem.bluetoothDrawerOpen = false
+            }
+        }
     }
 
     CcTile {
@@ -31,8 +41,11 @@ Grid {
             if (!CcSystem.bluetoothEnabled) {
                 CcSystem.toggleBluetooth()
                 CcSystem.bluetoothDrawerOpen = true
+                CcSystem.wifiDrawerOpen = false
             } else {
                 CcSystem.bluetoothDrawerOpen = !CcSystem.bluetoothDrawerOpen
+                if (CcSystem.bluetoothDrawerOpen)
+                    CcSystem.wifiDrawerOpen = false
             }
         }
     }

@@ -243,7 +243,7 @@
 	"max-length": 30},
 
 "network": {
-	"on-click": "$HOME/.config/hypr/scripts/NetworkMenu.sh",
+	"on-click": "$HOME/.config/hypr/scripts/NetCenterToggle.sh",
 	"format": "{ifname}",
 	"format-wifi": "{icon}",
 	"format-ethernet": "󰈀",
@@ -262,7 +262,8 @@
 
 "network#speed": {
 	"interval": 1,
-	"on-click": "$HOME/.config/hypr/scripts/NetworkMenu.sh",
+	"on-click": "$HOME/.config/hypr/scripts/NetCenterToggle.sh",
+	"on-click-right": "$HOME/.config/hypr/scripts/NetworkMenu.sh",
 	"format": "{ifname}",
 	"format-wifi": "{icon} 󰕒 {bandwidthUpBytes} 󰇚 {bandwidthDownBytes}",
 	"format-ethernet": "󰈀 󰕒 {bandwidthUpBytes} 󰇚 {bandwidthDownBytes}",

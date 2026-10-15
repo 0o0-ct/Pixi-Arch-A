@@ -12,3 +12,6 @@ CcNotificationItem 1.0 CcNotificationItem.qml
 CcPowerMenu 1.0 CcPowerMenu.qml
 CcMediaSection 1.0 CcMediaSection.qml
 CcBluetoothDrawer 1.0 CcBluetoothDrawer.qml
+CcWifiDrawer 1.0 CcWifiDrawer.qml
+CcWifiRow 1.0 CcWifiRow.qml
+CcWifiPasswordPrompt 1.0 CcWifiPasswordPrompt.qml

@@ -117,6 +117,11 @@ PanelWindow {
                 width: parent.width
             }
 
+            CcWifiDrawer {
+                width: parent.width
+                visible: CcSystem.wifiDrawerOpen
+            }
+
             CcBluetoothDrawer {
                 width: parent.width
                 visible: CcSystem.bluetoothDrawerOpen
