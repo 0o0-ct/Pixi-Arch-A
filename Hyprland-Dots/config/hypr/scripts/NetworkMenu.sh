@@ -145,12 +145,12 @@ case "$action" in
         ;;
     NEW:*)
         ssid="${action#NEW:}"
+        PASS_THEME="$HOME/.config/rofi/themes/[Glass] Password.rasi"
+        [ ! -f "$PASS_THEME" ] && PASS_THEME="$ROFI_THEME"
         pass=$(echo "" | rofi -dmenu -password \
-            -theme "$ROFI_THEME" \
+            -theme "$PASS_THEME" \
             -m -1 \
-            -p "Contraseña" \
-            -mesg "Introduce la contraseña para $ssid:" \
-            -no-custom || true)
+            -mesg "Introduce la contraseña para $ssid:" || true)
         [ -z "$pass" ] && exit 0
         notify "nota.png" "WiFi" "Conectando a $ssid..."
         if nmcli device wifi connect "$ssid" password "$pass" &>/dev/null; then
