@@ -145,6 +145,7 @@ directories=(
     "hypr" "configuración principal de hyprland" "off"
     "kitty" "configuración de la terminal kitty" "off"
     "Kvantum" "configuración de Kvantum-manager" "off"
+    "matugen" "configuración de matugen (colores dinámicos)" "off"
     "quickshell" "configuración de quickshell desktop overview" "off"
     "qt5ct" "configuración de qt5ct" "off"
     "qt6ct" "configuración de qt6ct" "off"
@@ -254,6 +255,24 @@ done
 printf "\n%.0s" {1..1}
 printf "\n%s${SKY_BLUE}Intentando eliminar directorios seleccionados${RESET}\n" "${NOTE}"
 remove_directories /tmp/selected_directories.txt
+
+# Limpiar assets del tema macOS (MacTahoe GTK + iconos + SF Pro fonts)
+printf "\n%.0s" {1..1}
+printf "\n%s${SKY_BLUE}Limpiando assets del tema macOS (MacTahoe)...${RESET}\n" "${NOTE}"
+for macos_item in "$HOME/.themes/MacTahoe-Dark" "$HOME/.themes/MacTahoe-Light" "$HOME/.themes/MacTahoe-Dark-solid" "$HOME/.themes/MacTahoe-Light-solid" "$HOME/.themes/MacTahoe-Dark-hdpi" "$HOME/.themes/MacTahoe-Light-hdpi" "$HOME/.themes/MacTahoe-Dark-xhdpi" "$HOME/.themes/MacTahoe-Light-xhdpi" "$HOME/.themes/MacTahoe-Dark-solid-hdpi" "$HOME/.themes/MacTahoe-Light-solid-hdpi" "$HOME/.themes/MacTahoe-Dark-solid-xhdpi" "$HOME/.themes/MacTahoe-Light-solid-xhdpi" "$HOME/.icons/MacTahoe" "$HOME/.icons/MacTahoe-dark" "$HOME/.icons/MacTahoe-light"; do
+    if [ -d "$macos_item" ]; then
+        rm -rf "$macos_item"
+        echo "Eliminado: $macos_item"
+    fi
+done
+# Limpiar fuentes SF Pro
+for font_file in "$HOME/.local/share/fonts/"SF-Pro-*.otf; do
+    if [ -f "$font_file" ]; then
+        rm "$font_file"
+        echo "Eliminado: $font_file"
+    fi
+done
+fc-cache -f "$HOME/.local/share/fonts/" 2>/dev/null || true
 
 printf "\n%.0s" {1..1}
 echo -e "$MAGENTA Pixi-Arch-A 🇬🇹 y sus componentes relacionados han sido desinstalados.$RESET"

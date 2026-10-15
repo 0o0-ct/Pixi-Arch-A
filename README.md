@@ -76,6 +76,7 @@
 | **Kvantum / qt5ct / qt6ct** | Temas Qt |
 | **Swappy** | Screenshots |
 | **Nautilus / Thunar** | Gestores de archivos |
+| **macOS Tahoe Theme** | GTK theme + iconos + SF Pro fonts (estilo Finder) |
 | **Yay / Paru** | AUR helpers |
 
 ---

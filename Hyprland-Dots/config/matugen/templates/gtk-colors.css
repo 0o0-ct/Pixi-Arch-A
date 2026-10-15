@@ -1,6 +1,10 @@
-/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Matugen Material Design 3 template - gtk-colors.css */
+/* ---- 💫 Pixi-Arch-A × macOS Tahoe 💫 ---- */
+/* Matugen template - GTK3/GTK4 colors + macOS Tahoe design */
 
+/* Importar el diseño de widgets MacTahoe (sidebar, toolbar, botones, etc.) */
+@import url("file:///USER_HOME/.themes/MacTahoe-Dark/gtk-4.0/gtk.css");
+
+/* ===== COLORES DINÁMICOS (matugen) ===== */
 @define-color accent_color {{colors.primary.default.hex}};
 @define-color accent_fg_color {{colors.on_primary.default.hex}};
 @define-color accent_bg_color {{colors.primary.default.hex}};
@@ -26,3 +30,22 @@
 @define-color sidebar_fg_color @window_fg_color;
 @define-color sidebar_border_color @window_bg_color;
 @define-color sidebar_backdrop_color @window_bg_color;
+
+/* ===== GLASS EFFECT (macOS Tahoe translucent) ===== */
+window,
+window.background,
+.nautilus-window {
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+window > *,
+window box,
+window paned,
+window stack,
+window overlay,
+window viewport,
+window > box > stack,
+window > box > paned {
+    background-color: transparent;
+}

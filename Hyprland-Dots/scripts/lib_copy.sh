@@ -172,7 +172,7 @@ copy_waybar() {
 
 copy_phase2() {
   local log="$1"
-  local DIR="ags btop cava hypr Kvantum qt5ct qt6ct swappy wallust wlogout"
+  local DIR="ags btop cava hypr Kvantum matugen qt5ct qt6ct swappy thunar wallust wlogout"
   for DIR_NAME in $DIR; do
     local DIRPATH="$HOME/.config/$DIR_NAME"
     if [ -d "$DIRPATH" ]; then
@@ -188,6 +188,13 @@ copy_phase2() {
     fi
   done
   
+  # Reemplazar placeholder USER_HOME en matugen template (MacTahoe theme path)
+  local MATUGEN_TPL="$HOME/.config/matugen/templates/gtk-colors.css"
+  if [ -f "$MATUGEN_TPL" ]; then
+    sed -i "s|USER_HOME|$HOME|g" "$MATUGEN_TPL" 2>&1 | tee -a "$log"
+    echo "${OK:-[OK]} - Ruta de tema MacTahoe actualizada en matugen template." 2>&1 | tee -a "$log"
+  fi
+
   # Copiar configuraciones de GTK3 y GTK4 (Nautilus & Portal Glass style)
   for GTK_DIR in gtk-3.0 gtk-4.0; do
     local GTK_PATH="$HOME/.config/$GTK_DIR"
@@ -203,6 +210,9 @@ copy_phase2() {
         mv "$GTK_PATH" "$GTK_PATH-backup-$BACK_DIR" 2>&1 | tee -a "$log"
       fi
       cp -r "$SRC_GTK/" "$HOME/.config/$GTK_DIR" 2>&1 | tee -a "$log"
+      if [ "$GTK_DIR" = "gtk-4.0" ] && [ -f "$HOME/.config/gtk-4.0/gtk.css" ]; then
+        sed -i "s|USER_HOME|$HOME|g" "$HOME/.config/gtk-4.0/gtk.css" 2>&1 | tee -a "$log"
+      fi
       echo "${OK:-[OK]} - ¡Copia de personalización para $GTK_DIR completada!" 2>&1 | tee -a "$log"
     fi
   done
