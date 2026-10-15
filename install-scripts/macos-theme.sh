@@ -86,7 +86,35 @@ else
   rm -rf "$TEMP_DIR"
 fi
 
-# ─── 5. GTK settings.ini ───────────────────────────────────────────
+# ─── 5. macOS Cursor Theme ─────────────────────────────────────────
+printf "${INFO} Instalando ${SKY_BLUE}macOS Cursor Theme${RESET}...\n"
+if [ -d "$ICON_DIR/macOS" ]; then
+  echo "${OK} macOS cursor ya está instalado. Omitiendo..."
+else
+  TEMP_DIR=$(mktemp -d)
+  curl -sL -o "$TEMP_DIR/macOS.tar.xz" "https://github.com/ful1e5/apple_cursor/releases/download/v2.0.1/macOS.tar.xz" 2>&1 | tee -a "$LOG"
+  curl -sL -o "$TEMP_DIR/macOS-White.tar.xz" "https://github.com/ful1e5/apple_cursor/releases/download/v2.0.1/macOS-White.tar.xz" 2>&1 | tee -a "$LOG"
+  if [ -f "$TEMP_DIR/macOS.tar.xz" ]; then
+    mkdir -p "$ICON_DIR"
+    tar -xf "$TEMP_DIR/macOS.tar.xz" -C "$ICON_DIR/" 2>&1 | tee -a "$LOG"
+    tar -xf "$TEMP_DIR/macOS-White.tar.xz" -C "$ICON_DIR/" 2>&1 | tee -a "$LOG"
+    echo "${OK} macOS Cursor Theme instalado en $ICON_DIR"
+  else
+    echo "${ERROR} No se pudo descargar macOS Cursor Theme"
+  fi
+  rm -rf "$TEMP_DIR"
+fi
+
+# Configurar cursor default para XWayland/apps
+mkdir -p "$ICON_DIR/default"
+cat > "$ICON_DIR/default/index.theme" << 'EOF'
+[Icon Theme]
+Name=Default
+Comment=Default Cursor Theme
+Inherits=macOS
+EOF
+
+# ─── 6. GTK settings.ini ───────────────────────────────────────────
 printf "${INFO} Configurando ${SKY_BLUE}GTK settings.ini${RESET}...\n"
 
 for GTK_CONF in "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"; do
@@ -95,6 +123,7 @@ for GTK_CONF in "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"; do
     sed -i 's/^gtk-theme-name=.*/gtk-theme-name=MacTahoe-Dark/' "$GTK_CONF/settings.ini" 2>/dev/null
     sed -i 's/^gtk-icon-theme-name=.*/gtk-icon-theme-name=MacTahoe-Dark/' "$GTK_CONF/settings.ini" 2>/dev/null
     sed -i 's/^gtk-font-name=.*/gtk-font-name=SF Pro Text 11/' "$GTK_CONF/settings.ini" 2>/dev/null
+    sed -i 's/^gtk-cursor-theme-name=.*/gtk-cursor-theme-name=macOS/' "$GTK_CONF/settings.ini" 2>/dev/null
     echo "${OK} settings.ini actualizado en $GTK_CONF"
   else
     cat > "$GTK_CONF/settings.ini" << 'EOF'
@@ -102,7 +131,7 @@ for GTK_CONF in "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"; do
 gtk-theme-name=MacTahoe-Dark
 gtk-icon-theme-name=MacTahoe-Dark
 gtk-font-name=SF Pro Text 11
-gtk-cursor-theme-name=Bibata-Modern-Ice
+gtk-cursor-theme-name=macOS
 gtk-cursor-theme-size=24
 gtk-toolbar-style=GTK_TOOLBAR_ICONS
 gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR
@@ -120,7 +149,16 @@ EOF
   fi
 done
 
-# ─── 6. Matugen template: reemplazar placeholder con HOME real ──────
+# Aplicar cursor dinámicamente si gsettings / hyprctl están disponibles
+if command -v gsettings >/dev/null 2>&1; then
+  gsettings set org.gnome.desktop.interface cursor-theme "macOS" 2>/dev/null || true
+  gsettings set org.gnome.desktop.interface cursor-size 24 2>/dev/null || true
+fi
+if command -v hyprctl >/dev/null 2>&1; then
+  hyprctl setcursor macOS 24 2>/dev/null || true
+fi
+
+# ─── 7. Matugen template: reemplazar placeholder con HOME real ──────
 printf "${INFO} Configurando ${SKY_BLUE}matugen template${RESET}...\n"
 MATUGEN_TPL="$HOME/.config/matugen/templates/gtk-colors.css"
 if [ -f "$MATUGEN_TPL" ]; then
