@@ -257,7 +257,7 @@
 	"format-icons": [
 		"󰤯", "󰤟", "󰤢", "󰤥", "󰤨"
 	],
-	"on-click-right": "$HOME/.config/hypr/scripts/WaybarScripts.sh --nmtui"
+	"on-click-right": "$HOME/.config/hypr/scripts/NetworkMenu.sh"
 },
 
 "network#speed": {
@@ -277,7 +277,7 @@
 	"format-icons": [
 		"󰤯", "󰤟", "󰤢", "󰤥", "󰤨"
 	],
-	"on-click-right": "$HOME/.config/hypr/scripts/WaybarScripts.sh --nmtui"
+	"on-click-right": "$HOME/.config/hypr/scripts/NetworkMenu.sh"
 },
 
 "power-profiles-daemon": {
