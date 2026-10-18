@@ -30,6 +30,15 @@
  *  relleno tan transparente. Waybar se dibuja sobre el escritorio vivo, sin
  *  atenuar nada. La compensación es el alfa.
  *
+ *  EL DOBLE ACABADO ADAPTATIVO
+ *
+ *  El vidrio tiene dos acabados y WallustSwww.sh decide cuál toca en cada
+ *  cambio de fondo midiendo el brillo de la franja superior, que es donde vive
+ *  la barra: con franja clara (> 0.55) el material pasa a porcelana esmerilada
+ *  con tinta carbón; con franja oscura queda el vidrio ahumado con tinta
+ *  clara. Los tokens adaptativos viven en wallust/mode-glass.css y se
+ *  reescriben solos en cada cambio de fondo.
+ *
  *  ARQUITECTURA DE RENDIMIENTO
  *
  *  GTK3 no soporta `backdrop-filter`: el desenfoque NO puede venir de aquí.
@@ -49,6 +58,7 @@
  * ruta es `wallust/...` y no `../wallust/...` (esa segunda forma apunta a
  * ~/.config/wallust/ y falla). Un import fallido puede tumbar la barra. */
 @import url("wallust/colors-waybar.css");
+@import url("wallust/mode-glass.css");
 
 
 /* --- Clean Floating Glass Transparency Rule ---------------------------------
@@ -67,45 +77,23 @@ window#waybar #window,
 
 
 /* ---------------------------------------------------------------------------
- * 1. Tokens — roles de wallust
+ * 1. Tokens — dos capas
  *
- *   @background -> tinte del panel (el color dominante oscuro = el tono)
- *   @color15    -> acento: refracción, píldora activa, indicadores
- *   @color13    -> píldora urgente / avisos
- *   @foreground -> texto, texto atenuado, círculos, filo
+ *   Capa adaptativa. La escribe WallustSwww.sh en wallust/mode-glass.css en
+ *   cada cambio de fondo, según el brillo de la franja superior:
+ *     @pane_glass / @edge_glass / @shadow_glass  material de las islas
+ *     @ink / @ink_muted                          tinta del texto
+ *     @lift / @lift_hi / @edge / @edge_hi        relieves internos
+ *     @accent_ink / @on_accent / @warn / @danger acentos con contraste
+ *
+ *   Capa fija. No depende del brillo: los acentos salen del wallpaper.
+ *   Con franja oscura: vidrio ahumado + tinta clara. Con franja clara:
+ *   porcelana esmerilada + tinta carbón. Los dos acabados viven en
+ *   wallust/mode-glass.css; aquí no se duplican.
  * ------------------------------------------------------------------------- */
-@define-color glass        rgba(255, 255, 255, 0.10);  /* isla base          */
-@define-color glass_raise  alpha(@color15, 0.20);  /* hover */
-@define-color glass_sunken alpha(@background, 0.45);  /* zonas hundidas     */
-
-/* Refracción: sin esto el panel queda MÁS OSCURO que el fondo y se lee como
- * un agujero. En wallust el acento es también la luz. */
-@define-color sheen_top     alpha(@color15, 0.25);
-@define-color sheen_bot     alpha(@background, 0.08);
-
-@define-color lift         alpha(@foreground, 0.06);  /* círculo de icono   */
-@define-color lift_hi      alpha(@foreground, 0.13);  /* círculo activo     */
-
-/* El filo sigue siendo casi invisible (rasgo nº 5). */
-@define-color edge         alpha(@foreground, 0.10);
-@define-color edge_hi      alpha(@foreground, 0.18);
-
-@define-color ink          @foreground;
-@define-color ink_muted    alpha(@foreground, 0.80);
-
-@define-color accent       @color15;
 @define-color accent_pill  alpha(@color15, 0.94);
 @define-color accent_soft  alpha(@color13, 0.35);
 @define-color accent_urgent alpha(@color13, 0.88);
-
-/* `on_accent` es un casi-negro literal a propósito: el CSS no puede ramificar
- * según la paleta y texto oscuro sobre acento claro es la única combinación que
- * se lee igual con paleta oscura y con paleta clara. */
-@define-color on_accent    #12141a;
-
-/* Semánticos: deben seguir siendo ámbar / rojo sea cual sea el wallpaper. */
-@define-color warn         #ffb454;
-@define-color danger       #ffa8a8;
 
 
 /* ---------------------------------------------------------------------------
@@ -136,9 +124,9 @@ window#waybar {
 .modules-left,
 .modules-center,
 .modules-right {
-    background-color: alpha(@color15, 0.11);
-    border: 1px solid alpha(@color15, 0.47);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    background-color: @pane_glass;
+    border: 1px solid @edge_glass;
+    box-shadow: 0 4px 30px @shadow_glass;
     border-radius: 18px;
     padding: 3px 6px;
     margin: 3px 0;
@@ -224,7 +212,7 @@ window#waybar {
 #power-profiles-daemon:hover,
 #custom-weather:hover,
 #custom-dot_update:hover {
-    background-color: @glass_raise;
+    background-color: @lift_hi;
 }
 
 
@@ -292,7 +280,7 @@ window#waybar.left .modules-center {
     font-size: 15px;
     font-weight: 700;
     padding: 5px 4px;
-    color: @accent;
+    color: @accent_ink;
 }
 
 window#waybar.left #custom-lock,
@@ -318,10 +306,10 @@ window#waybar.left #custom-dot_update {
 }
 
 #keyboard-state label.locked {
-    color: @accent;
+    color: @accent_ink;
 }
 
-#power-profiles-daemon.performance { color: @accent; }
+#power-profiles-daemon.performance { color: @accent_ink; }
 #power-profiles-daemon.power-saver { color: @warn; }
 
 #temperature.critical,
@@ -379,8 +367,8 @@ window#waybar.left #custom-dot_update {
 }
 
 tooltip {
-    background-color: @glass_raise;
-    border: 1px solid @edge_hi;
+    background-color: @pane_glass;
+    border: 1px solid @edge_glass;
     border-radius: 14px;
     color: @ink;
 }

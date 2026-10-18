@@ -1,0 +1,19 @@
+/* Dynamic adaptive mode: DARK wallpaper band (translucent smoked glass) */
+/* Default fallback shipped with the dots. WallustSwww.sh rewrites this file
+ * on every wallpaper change with the finish that matches the wallpaper band
+ * behind the bar (porcelain frosted glass on light bands). Never edit this
+ * file by hand; tune the generators in $HOME/.config/hypr/scripts/WallustSwww.sh. */
+@define-color pane_glass    alpha(@color15, 0.11);
+@define-color edge_glass    alpha(@color15, 0.47);
+@define-color shadow_glass  rgba(0, 0, 0, 0.10);
+
+@define-color ink           @foreground;
+@define-color ink_muted     alpha(@foreground, 0.80);
+@define-color lift          alpha(@foreground, 0.06);
+@define-color lift_hi       alpha(@foreground, 0.13);
+@define-color edge          alpha(@foreground, 0.10);
+@define-color edge_hi       alpha(@foreground, 0.18);
+@define-color accent_ink    @color15;
+@define-color on_accent     #12141a;
+@define-color warn          #ffb454;
+@define-color danger        #ffa8a8;

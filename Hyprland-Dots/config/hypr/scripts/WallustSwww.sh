@@ -71,61 +71,101 @@ if [[ -z "${wallpaper_path:-}" || ! -f "$wallpaper_path" ]]; then
   exit 0
 fi
 
-detect_wallpaper_mean() {
+# Mean luminance of the top band of the wallpaper. That strip is what actually
+# sits behind the top bar, so it — not the whole-image mean — decides which
+# glass finish the bar wears: a dark photo with a bright sky owns the same
+# problem as a fully bright one. Falls back to the whole image if the crop
+# fails, and to an empty string (dark finish) when ImageMagick is missing.
+detect_wallpaper_band_mean() {
   local img="$1"
+  local band="" whole=""
   if command -v magick >/dev/null 2>&1; then
-    magick "$img" -scale 1x1 -format '%[fx:mean]' info: 2>/dev/null || true
+    band=$(magick "$img" -gravity north -crop 100%x7%+0+0 +repage -scale 1x1 -format '%[fx:mean]' info: 2>/dev/null || true)
+    whole=$(magick "$img" -scale 1x1 -format '%[fx:mean]' info: 2>/dev/null || true)
   fi
+  if [[ -n "$band" ]]; then printf '%s' "$band"; else printf '%s' "$whole"; fi
 }
 
-apply_dynamic_waybar_glass() {
-  local mean="$1"
-  local mode_css="$HOME/.config/waybar/wallust/mode-glass.css"
+# Make sure the active stylesheet resolves wallust/mode-glass.css. Styles can
+# ship the import themselves; for the rest it is injected right after the
+# colors-waybar import line (never inside a comment that merely mentions it).
+# The symlink is resolved first so the edit lands in the real stylesheet and
+# waybar keeps loading the same file it was pointed at.
+ensure_mode_glass_import() {
   local style_file="$HOME/.config/waybar/style.css"
+  local style_target line
+  [[ -f "$style_file" ]] || return 0
+  style_target=$(readlink -f "$style_file" 2>/dev/null || printf '%s' "$style_file")
+  [[ -f "$style_target" ]] || return 0
+  grep -q "wallust/mode-glass.css" "$style_target" && return 0
+  line=$(grep -nE '^[[:space:]]*@import[^;]*wallust/colors-waybar\.css' "$style_target" | head -1 | cut -d: -f1)
+  [[ -n "$line" ]] || return 0
+  {
+    head -n "$line" "$style_target"
+    printf '%s\n' '@import url("wallust/mode-glass.css");'
+    tail -n +"$((line + 1))" "$style_target"
+  } > "$style_target.tmp" 2>/dev/null && mv "$style_target.tmp" "$style_target" 2>/dev/null || true
+}
+
+# Rewrite the adaptive token set consumed by the glass waybar styles. Two
+# hand-tuned finishes of the same material:
+#   DARK band  -> smoked glass + light ink (the classic look, unchanged)
+#   LIGHT band -> porcelain frosted glass + charcoal ink, so a bright can
+#                 never swallow the bar again
+# Lives in $HOME/.config/waybar/wallust/mode-glass.css and is rewritten on
+# every wallpaper change; never edit that file by hand.
+apply_dynamic_waybar_glass() {
+  local band_mean="$1"
+  local mode_css="$HOME/.config/waybar/wallust/mode-glass.css"
   mkdir -p "$(dirname "$mode_css")"
+  ensure_mode_glass_import
 
-  # Ensure style.css imports mode-glass.css
-  if [[ -f "$style_file" ]] && ! grep -q "wallust/mode-glass.css" "$style_file"; then
-    sed -i '/wallust\/colors-waybar.css/a @import url("wallust/mode-glass.css");' "$style_file" 2>/dev/null || true
-  fi
-
-  if [[ -n "$mean" ]] && awk "BEGIN{exit !($mean > 0.58)}"; then
-    # Light wallpaper -> Soft Frosted White Glass + Deep Charcoal Typography (no harsh OLED black bars)
+  # 0.55 band brightness is the point where light ink starts drowning in the
+  # wallpaper; everything brighter switches to porcelain + dark ink.
+  if [[ -n "$band_mean" ]] && awk "BEGIN{exit !($band_mean >= 0.55)}"; then
     cat << 'EOF' > "$mode_css"
-/* Dynamic adaptive mode: LIGHT wallpaper (frosted white glass) */
-@define-color pane_glass    rgba(255, 255, 255, 0.45);
-@define-color edge_glass    rgba(255, 255, 255, 0.75);
-@define-color shadow_glass  rgba(0, 0, 0, 0.06);
+/* Dynamic adaptive mode: LIGHT wallpaper band (porcelain frosted glass) */
+/* No drop shadow here: GTK compresses it into a dark crescent hugging the
+ * island edge, which reads as a semi-black layer under the bar. The pane tint
+ * plus the 14% ink hairline already define the islands on bright walls. */
+@define-color pane_glass    alpha(@color15, 0.62);
+@define-color edge_glass    rgba(46, 42, 47, 0.14);
+@define-color shadow_glass  rgba(28, 22, 32, 0);
 
 @define-color ink           #2E2A2F;
-@define-color ink_dim       rgba(46, 42, 47, 0.75);
-@define-color tile          rgba(0, 0, 0, 0.04);
-@define-color tile_hi       rgba(0, 0, 0, 0.08);
-@define-color edge          rgba(0, 0, 0, 0.08);
-@define-color edge_top      rgba(255, 255, 255, 0.85);
-@define-color on_accent     #ffffff;
+@define-color ink_muted     rgba(46, 42, 47, 0.78);
+@define-color lift          rgba(46, 42, 47, 0.06);
+@define-color lift_hi       rgba(46, 42, 47, 0.11);
+@define-color edge          rgba(46, 42, 47, 0.10);
+@define-color edge_hi       rgba(46, 42, 47, 0.20);
+@define-color accent_ink    #552b50;
+@define-color on_accent     #2E2A2F;
+@define-color warn          #9a5b00;
+@define-color danger        #b3261e;
 EOF
   else
-    # Dark wallpaper -> Translucent Dark Glass + Light Foreground
     cat << 'EOF' > "$mode_css"
-/* Dynamic adaptive mode: DARK wallpaper (translucent dark glass) */
+/* Dynamic adaptive mode: DARK wallpaper band (translucent smoked glass) */
 @define-color pane_glass    alpha(@color15, 0.11);
 @define-color edge_glass    alpha(@color15, 0.47);
 @define-color shadow_glass  rgba(0, 0, 0, 0.10);
 
 @define-color ink           @foreground;
-@define-color ink_dim       alpha(@foreground, 0.80);
-@define-color tile          alpha(@foreground, 0.05);
-@define-color tile_hi       alpha(@foreground, 0.13);
-@define-color edge          alpha(@color14, 0.30);
-@define-color edge_top      alpha(@color15, 0.75);
+@define-color ink_muted     alpha(@foreground, 0.80);
+@define-color lift          alpha(@foreground, 0.06);
+@define-color lift_hi       alpha(@foreground, 0.13);
+@define-color edge          alpha(@foreground, 0.10);
+@define-color edge_hi       alpha(@foreground, 0.18);
+@define-color accent_ink    @color15;
 @define-color on_accent     #12141a;
+@define-color warn          #ffb454;
+@define-color danger        #ffa8a8;
 EOF
   fi
 }
 
-wallpaper_mean=$(detect_wallpaper_mean "$wallpaper_path")
-apply_dynamic_waybar_glass "$wallpaper_mean"
+wallpaper_band_mean=$(detect_wallpaper_band_mean "$wallpaper_path")
+apply_dynamic_waybar_glass "$wallpaper_band_mean"
 
 ln -sf "$wallpaper_path" "$rofi_link" || true
 mkdir -p "$(dirname "$wallpaper_current")"

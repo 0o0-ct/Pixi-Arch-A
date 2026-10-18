@@ -21,7 +21,7 @@
  *     a shared dependency and was NOT modified.
  *   `opacity: 0.8` on the module pills and `opacity: 1.0` no-ops: opacity on
  *     containers forces GTK to composite the widget group offscreen. The pills
- *     are translucent through the rgba() @tile fill instead.
+ *     are translucent through the rgba() @lift fill instead.
  *   every reference to the `gradient_f` keyframes (no @keyframes of that name
  *     exists anywhere in this repository, so they were dead) and the 3s
  *     looping battery blink, which is now a static filled pill.
@@ -34,22 +34,26 @@
  * ---------------
  * The file used to import wallust as
  *   '../../.config/waybar/wallust/colors-waybar.css'
-@import url("wallust/mode-glass.css");
  * which only ever worked when GTK resolved it against ~/.config/waybar/ (it
  * climbs out to ~ and back in again). The canonical line is used now: waybar
  * loads the symlink ~/.config/waybar/style.css, so GTK resolves against
  * ~/.config/waybar/ and the path must stay exactly
  * "wallust/colors-waybar.css". "../wallust/colors-waybar.css" resolves to
-@import url("wallust/mode-glass.css");
  * ~/.config/wallust/... and dies with "Failed to import" — on waybar 0.15.0
  * that failure takes the bar down, not just the rule.
  *
+ * THE ADAPTIVE LAYER
+ * ------------------
+ * mode-glass.css carries the glass finishes consumed below (@pane_glass,
+ * @edge_glass, @shadow_glass, @ink, @lift, @edge, @warn, @danger); it is
+ * rewritten by WallustSwww.sh on every wallpaper change. The tokens kept at
+ * the bottom of this list are only the wallpaper-fixed accents.
+ *
  * ROLE MAPPING (same as [Colorful] Aurora Blossom.css)
  * ----------------------------------------------------
- *   @background -> @pane (glass body)     @color15 -> sheen + accent pill
- *   @foreground -> @ink / @ink_dim / @edge / @tile
- *   @danger     -> the one semantic alert colour (critical states, muted
- *                  audio, the power button), kept red on purpose.
+ *   @color15 -> accent pill / accent ink      @color13 -> urgent accent
+ *   @danger  -> the one semantic alert colour (critical states, muted
+ *               audio, the power button), kept red on purpose.
  *
  * PERFORMANCE: no drop shadows, no opacity on containers, no blanket
  * transition (only background-color/border-color/color at 160ms), no looping
@@ -74,27 +78,13 @@ window#waybar #window,
 
 /* ---------------------------------------------------------------------------
  * Tokens — wallust roles (see [Colorful] Aurora Blossom.css for the rationale)
+ *
+ * The adaptive material (pane/edge/shadow glass, ink, lift, edge, warn,
+ * danger) is written by WallustSwww.sh into wallust/mode-glass.css; only the
+ * wallpaper-fixed accents are defined here.
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@color15, 0.11);  /* glass body          */
-@define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
-@define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
-
-@define-color tile          rgba(0, 0, 0, 0.04);  /* module tile fill    */
-@define-color tile_hi       rgba(0, 0, 0, 0.08);  /* tile hover          */
-
-@define-color edge          rgba(0, 0, 0, 0.07);
-@define-color edge_top      rgba(255, 255, 255, 0.80);
-
-@define-color ink           #2E2A2F;
-@define-color ink_dim       rgba(46, 42, 47, 0.75);
-
-@define-color accent        @color15;
 @define-color accent_pill   alpha(@color15, 0.94);
-@define-color on_accent     #12141a;
 @define-color accent_urgent alpha(@color13, 0.88);
-
-/* Semantic, not decorative: critical states stay red on any wallpaper. */
-@define-color danger        #ffa8a8;
 
 
 * {
@@ -199,7 +189,7 @@ tooltip {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
-	background-color: @tile;
+	background-color: @lift;
     border-radius: 25px;
     padding: 0px 10px 0px 10px;
     margin: 5px;
@@ -292,8 +282,8 @@ tooltip {
 #workspaces button {
     border-radius: 15px;
     border: 0px;
-    color: @ink_dim;
-    background-color: @tile;
+    color: @ink_muted;
+    background-color: @lift;
     padding-left: 2px;
     padding-right: 2px;
     transition-property: background-color, border-color, color;
@@ -319,7 +309,7 @@ tooltip {
 #taskbar button:hover,
 #workspaces button:hover {
     color: @ink;
-    background: @tile_hi;
+    background: @lift_hi;
     border-radius: 15px;
     padding-left: 2px;
     padding-right: 2px;
@@ -376,12 +366,12 @@ tooltip {
 	min-width: 80px;
 	min-height: 5px;
 	border-radius: 5px;
-	background-color: @tile;
+	background-color: @lift;
 }
 
 #backlight-slider highlight,
 #pulseaudio-slider highlight {
 	min-height: 10px;
 	border-radius: 5px;
-	background-color: @accent;
+	background-color: @accent_ink;
 }
