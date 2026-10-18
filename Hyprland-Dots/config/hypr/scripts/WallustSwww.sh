@@ -157,9 +157,14 @@ wait_for_templates() {
   return 1
 }
 
-# Run wallust (silent) to generate harmonious system-wide palette
+# Run wallust (silent) as base palette
 start_ts=$(date +%s)
 wallust run -s "$wallpaper_path" || true
+
+# Run Matugen (Material Design 3 / Monet extraction from ~/JaKooLit/extraccion de colores)
+if command -v matugen >/dev/null 2>&1; then
+  matugen image "$wallpaper_path" --source-color-index 0 || true
+fi
 
 wallust_targets=(
   "$HOME/.config/waybar/wallust/colors-waybar.css"
