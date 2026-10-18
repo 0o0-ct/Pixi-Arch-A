@@ -73,31 +73,47 @@ rofi_command="rofi -i -show -dmenu -config $rofi_theme -theme-str $rofi_override
 
 # Sorting Wallpapers
 menu() {
-  IFS=$'\n' sorted_options=($(sort <<<"${PICS[*]}"))
+  readarray -t sorted_options < <(printf '%s\n' "${PICS[@]}" | sort)
 
-  printf "%s\x00icon\x1f%s\n" "$RANDOM_PIC_NAME" "$RANDOM_PIC"
+  # Safe thumbnail for random option to prevent crash/freeze on raw unstripped image
+  local random_pic_name
+  random_pic_name=$(basename "$RANDOM_PIC")
+  local random_icon=""
+  if [[ "$random_pic_name" =~ \.gif$ ]]; then
+    random_icon="$HOME/.cache/gif_preview/${random_pic_name}.png"
+  elif [[ "$random_pic_name" =~ \.(mp4|mkv|mov|webm|MP4|MKV|MOV|WEBM)$ ]]; then
+    random_icon="$HOME/.cache/video_preview/${random_pic_name}.png"
+  else
+    random_icon="$HOME/.cache/wallpaper_preview/${random_pic_name}"
+  fi
+  if [[ ! -s "$random_icon" ]]; then
+    random_icon="$iDIRi/picture.png"
+    [[ ! -f "$random_icon" ]] && random_icon="$RANDOM_PIC"
+  fi
+
+  printf "%s\x00icon\x1f%s\n" "$RANDOM_PIC_NAME" "$random_icon"
 
   for pic_path in "${sorted_options[@]}"; do
     pic_name=$(basename "$pic_path")
     if [[ "$pic_name" =~ \.gif$ ]]; then
       cache_gif_image="$HOME/.cache/gif_preview/${pic_name}.png"
-      if [[ ! -f "$cache_gif_image" ]]; then
+      if [[ ! -s "$cache_gif_image" ]]; then
         mkdir -p "$HOME/.cache/gif_preview"
-        magick "$pic_path[0]" -resize 1920x1080 "$cache_gif_image"
+        magick "$pic_path[0]" -thumbnail 240x135 -strip "$cache_gif_image" 2>/dev/null
       fi
       printf "%s\x00icon\x1f%s\n" "$pic_name" "$cache_gif_image"
     elif [[ "$pic_name" =~ \.(mp4|mkv|mov|webm|MP4|MKV|MOV|WEBM)$ ]]; then
       cache_preview_image="$HOME/.cache/video_preview/${pic_name}.png"
-      if [[ ! -f "$cache_preview_image" ]]; then
+      if [[ ! -s "$cache_preview_image" ]]; then
         mkdir -p "$HOME/.cache/video_preview"
-        ffmpeg -v error -y -i "$pic_path" -ss 00:00:01.000 -vframes 1 "$cache_preview_image"
+        ffmpeg -v error -y -i "$pic_path" -ss 00:00:01.000 -vframes 1 -s 240x135 "$cache_preview_image" 2>/dev/null
       fi
       printf "%s\x00icon\x1f%s\n" "$pic_name" "$cache_preview_image"
     else
       cache_image="$HOME/.cache/wallpaper_preview/${pic_name}"
-      if [[ ! -f "$cache_image" ]]; then
+      if [[ ! -s "$cache_image" ]]; then
         mkdir -p "$HOME/.cache/wallpaper_preview"
-        magick "$pic_path" -resize 240x135 "$cache_image" 2>/dev/null || cp "$pic_path" "$cache_image"
+        magick "$pic_path" -thumbnail 240x135 -strip "$cache_image" 2>/dev/null
       fi
       printf "%s\x00icon\x1f%s\n" "$pic_name" "$cache_image"
     fi
@@ -204,8 +220,9 @@ main() {
 }
 
 # Check if rofi is already running
-if pidof rofi >/dev/null; then
-  pkill rofi
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  if pidof rofi >/dev/null; then
+    pkill rofi
+  fi
+  main
 fi
-
-main
