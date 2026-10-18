@@ -154,21 +154,19 @@ wait_for_templates() {
   return 1
 }
 
-# Run wallust (silent) as base fallback
+# Run wallust (silent) to generate harmonious system-wide palette
 start_ts=$(date +%s)
 wallust run -s "$wallpaper_path" || true
-
-# Run Matugen (Material Design 3 / Monet extraction from ~/JaKooLit/extraccion de colores)
-if command -v matugen >/dev/null 2>&1; then
-  matugen image "$wallpaper_path" --source-color-index 0 || true
-fi
 
 wallust_targets=(
   "$HOME/.config/waybar/wallust/colors-waybar.css"
   "$HOME/.config/rofi/wallust/colors-rofi.rasi"
   "$HOME/.config/quickshell/qml_color.json"
+  "$HOME/.config/gtk-3.0/gtk.css"
+  "$HOME/.config/gtk-4.0/gtk.css"
 )
 wait_for_templates "$start_ts" "${wallust_targets[@]}" || true
+
 
 # Normalize Ghostty palette syntax in case ':' was used by older files
 if [ -f "$HOME/.config/ghostty/wallust.conf" ]; then

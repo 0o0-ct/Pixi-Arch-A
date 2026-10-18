@@ -3,11 +3,11 @@
 
 # How the image is parse, in order to get the colors:
 # full - resized - wal - thumb -  fastresize - kmeans
-backend = "kmeans"
+backend = "resized"
 
 # What color space to use to produce and select the most prominent colors:
 # lab - labmixed - lch - lchmixed
-color_space = "labmixed"
+color_space = "lch"
 
 # NOTE: All filters will fill 16 colors (from color0 to color15), 16 color
 #       variations are the 'ilusion' of more colors by opaquing color1 to color5.
@@ -58,8 +58,14 @@ quickshell.target = '~/.config/quickshell/qml_color.json'
 ags.template = 'colors-ags.scss'
 ags.target = '~/.config/ags/style/abstracts/_variables.scss'
 
-#swaync.template = 'colors-swaync.css'
-#swaync.target = '~/.config/swaync/wallust/colors-wallust.css'
+swaync.template = 'colors-swaync.css'
+swaync.target = '~/.config/swaync/wallust/colors-wallust.css'
+
+gtk3.template = 'gtk-colors-gtk3.css'
+gtk3.target = '~/.config/gtk-3.0/gtk.css'
+
+gtk4.template = 'gtk-colors.css'
+gtk4.target = '~/.config/gtk-4.0/gtk.css'
 
 #macchina.template = 'colors-macchina.toml'
 #macchina.target = '~/.config/macchina/themes/wallust.toml'
@@ -69,3 +75,4 @@ ags.target = '~/.config/ags/style/abstracts/_variables.scss'
 
 #zathura.template = 'colors-zathura'
 #zathura.target = '~/.config/zathura/zathurarc'
+
