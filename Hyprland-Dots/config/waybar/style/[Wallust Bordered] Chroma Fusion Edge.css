@@ -34,11 +34,13 @@
  * ---------------
  * The file used to import wallust as
  *   '../../.config/waybar/wallust/colors-waybar.css'
+@import url("wallust/mode-glass.css");
  * which only ever worked when GTK resolved it against ~/.config/waybar/ (it
  * climbs out to ~ and back in again). The canonical line is used now: waybar
  * loads the symlink ~/.config/waybar/style.css, so GTK resolves against
  * ~/.config/waybar/ and the path must stay exactly
  * "wallust/colors-waybar.css". "../wallust/colors-waybar.css" resolves to
+@import url("wallust/mode-glass.css");
  * ~/.config/wallust/... and dies with "Failed to import" — on waybar 0.15.0
  * that failure takes the bar down, not just the rule.
  *
@@ -55,6 +57,7 @@
  */
 
 @import url("wallust/colors-waybar.css");
+@import url("wallust/mode-glass.css");
 
 
 /* --- Clean Floating Glass Transparency Rule --- */
@@ -76,14 +79,14 @@ window#waybar #window,
 @define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
 @define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
 
-@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
-@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+@define-color tile          rgba(0, 0, 0, 0.04);  /* module tile fill    */
+@define-color tile_hi       rgba(0, 0, 0, 0.08);  /* tile hover          */
 
-@define-color edge          alpha(@color14, 0.30);
-@define-color edge_top      alpha(@color15, 0.75);
+@define-color edge          rgba(0, 0, 0, 0.07);
+@define-color edge_top      rgba(255, 255, 255, 0.80);
 
-@define-color ink           @foreground;
-@define-color ink_dim       alpha(@foreground, 0.80);
+@define-color ink           #2E2A2F;
+@define-color ink_dim       rgba(46, 42, 47, 0.75);
 
 @define-color accent        @color15;
 @define-color accent_pill   alpha(@color15, 0.94);
@@ -121,20 +124,20 @@ window#waybar.empty #window {
 .modules-left,
 .modules-center,
 .modules-right {
-    background-color: alpha(@color15, 0.11);
-    border: 1px solid alpha(@color15, 0.47);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    background-color: @pane_glass;
+    border: 1px solid @edge_glass;
+    box-shadow: 0 4px 20px @shadow_glass;
     border-radius: 20px;
     padding: 3px 6px;
     margin: 3px 0;
 }
 
 tooltip {
-    background-color: alpha(@color15, 0.11);
+    background-color: @pane_glass;
 	border-radius: 10px;
 	border-width: 1px;
 	border-style: solid;
-	border-color: alpha(@color15, 0.47);
+	border-color: @edge_glass;
 	color: @ink;
 }
 

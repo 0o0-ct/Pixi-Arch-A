@@ -80,45 +80,48 @@ detect_wallpaper_mean() {
 
 apply_dynamic_waybar_glass() {
   local mean="$1"
-  local style_link="$HOME/.config/waybar/style.css"
-  local style_target
-  style_target=$(readlink -f "$style_link" 2>/dev/null || true)
-  if [[ -z "$style_target" || ! -f "$style_target" ]]; then
-    return 0
+  local mode_css="$HOME/.config/waybar/wallust/mode-glass.css"
+  local style_file="$HOME/.config/waybar/style.css"
+  mkdir -p "$(dirname "$mode_css")"
+
+  # Ensure style.css imports mode-glass.css
+  if [[ -f "$style_file" ]] && ! grep -q "wallust/mode-glass.css" "$style_file"; then
+    sed -i '/wallust\/colors-waybar.css/a @import url("wallust/mode-glass.css");' "$style_file" 2>/dev/null || true
   fi
-  if [[ "$style_target" == *"Oglo Chicklets"* ]]; then
-    return 0
+
+  if [[ -n "$mean" ]] && awk "BEGIN{exit !($mean > 0.58)}"; then
+    # Light wallpaper -> Soft Frosted White Glass + Deep Charcoal Typography (no harsh OLED black bars)
+    cat << 'EOF' > "$mode_css"
+/* Dynamic adaptive mode: LIGHT wallpaper (frosted white glass) */
+@define-color pane_glass    rgba(255, 255, 255, 0.45);
+@define-color edge_glass    rgba(255, 255, 255, 0.75);
+@define-color shadow_glass  rgba(0, 0, 0, 0.06);
+
+@define-color ink           #2E2A2F;
+@define-color ink_dim       rgba(46, 42, 47, 0.75);
+@define-color tile          rgba(0, 0, 0, 0.04);
+@define-color tile_hi       rgba(0, 0, 0, 0.08);
+@define-color edge          rgba(0, 0, 0, 0.08);
+@define-color edge_top      rgba(255, 255, 255, 0.85);
+@define-color on_accent     #ffffff;
+EOF
+  else
+    # Dark wallpaper -> Translucent Dark Glass + Light Foreground
+    cat << 'EOF' > "$mode_css"
+/* Dynamic adaptive mode: DARK wallpaper (translucent dark glass) */
+@define-color pane_glass    alpha(@color15, 0.11);
+@define-color edge_glass    alpha(@color15, 0.47);
+@define-color shadow_glass  rgba(0, 0, 0, 0.10);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+@define-color tile          alpha(@foreground, 0.05);
+@define-color tile_hi       alpha(@foreground, 0.13);
+@define-color edge          alpha(@color14, 0.30);
+@define-color edge_top      alpha(@color15, 0.75);
+@define-color on_accent     #12141a;
+EOF
   fi
-
-  local bg_line="    background: rgba(15, 20, 30, 0.36);"
-  local border_line="    border: 1px solid rgba(255, 255, 255, 0.40);"
-
-  # Temporarily locked to dark-glass mode for testing as requested by the user
-  # if [[ -n "$mean" ]] && awk "BEGIN{exit !($mean > 0.58)}"; then
-  #   bg_line="    background: rgba(15, 20, 30, 0.36);"
-  #   border_line="    border: 1px solid rgba(255, 255, 255, 0.40);"
-  # fi
-
-  awk -v bg_line="$bg_line" -v border_line="$border_line" '
-    BEGIN { in_waybar=0; bg_done=0; border_done=0 }
-    /^window#waybar[[:space:]]*\{/ { in_waybar=1 }
-    {
-      if (in_waybar == 1 && bg_done == 0 && $0 ~ /^[[:space:]]*background:[[:space:]]*rgba\(/) {
-        print bg_line
-        bg_done=1
-        next
-      }
-      if (in_waybar == 1 && border_done == 0 && $0 ~ /^[[:space:]]*border:[[:space:]]*[0-9.]+px[[:space:]]+solid[[:space:]]+rgba\(/) {
-        print border_line
-        border_done=1
-        next
-      }
-      print
-      if (in_waybar == 1 && $0 ~ /^}/) {
-        in_waybar=0
-      }
-    }
-  ' "$style_target" > "$style_target.tmp" && mv "$style_target.tmp" "$style_target"
 }
 
 wallpaper_mean=$(detect_wallpaper_mean "$wallpaper_path")
