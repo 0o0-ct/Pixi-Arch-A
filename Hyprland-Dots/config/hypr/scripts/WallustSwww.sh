@@ -256,6 +256,78 @@ EOF
   fi
 }
 
+# Echoes the given wallust-hyprland.conf accent as rgb(rrggbb), mixed 25%
+# toward the porcelain ink. Falls back to the live variable reference when
+# the palette line is missing.
+palette_ink_mix() {
+  local pal="$1" name="$2"
+  local hex=""
+  hex=$(sed -n "s/^\$${name}[[:space:]]*=[[:space:]]*rgb(\([0-9a-fA-F]\{6\}\)).*/\1/p" "$pal" 2>/dev/null | head -n 1 || true)
+  if [[ ! "$hex" =~ ^[0-9a-fA-F]{6}$ ]]; then
+    printf '$%s' "$name"
+    return
+  fi
+  local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+  r=$(( (r * 3 + 46) / 4 )); g=$(( (g * 3 + 42) / 4 )); b=$(( (b * 3 + 47) / 4 ))
+  printf 'rgb(%02x%02x%02x)' "$r" "$g" "$b"
+}
+
+# Lock screen: the same two finishes. hyprlock.conf sources the generated
+# file right after the wallust palette, and its inline values double as
+# the dark fallbacks. Dark side: the accent variables are re-emitted
+# untouched. Porcelain: the accents that act as text mix toward the ink,
+# and the cards take the same color15 pane as the bar and the menus.
+apply_dynamic_hyprlock_glass() {
+  local band_mean="$1"
+  local mode_conf="$HOME/.config/hypr/wallust/mode-glass-lock.conf"
+  local palette_css="$HOME/.config/waybar/wallust/colors-waybar.css"
+  local hypr_palette="$HOME/.config/hypr/wallust/wallust-hyprland.conf"
+  local base=""
+  base=$(sed -n 's/^@define-color[[:space:]]\+color15[[:space:]]\+\(#[0-9a-fA-F]\{6\}\).*/\1/p' "$palette_css" 2>/dev/null | head -n 1 || true)
+  [[ -n "$base" ]] || base="#EAE7EC"
+
+  local pr=234 pg=231 pb=236
+  if [[ "$base" =~ ^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$ ]]; then
+    pr=$((16#${BASH_REMATCH[1]})); pg=$((16#${BASH_REMATCH[2]})); pb=$((16#${BASH_REMATCH[3]}))
+  fi
+
+  mkdir -p "$(dirname "$mode_conf")"
+
+  if [[ -n "$band_mean" ]] && awk "BEGIN{exit !($band_mean >= 0.55)}"; then
+    cat << EOF > "$mode_conf"
+# Dynamic adaptive mode: LIGHT wallpaper band (porcelain lock screen).
+\$lock_date = rgba(46, 42, 47, 0.9)
+\$lock_time = rgba(46, 42, 47, 0.95)
+\$lock_user = $(palette_ink_mix "$hypr_palette" color9)
+\$lock_layout = $(palette_ink_mix "$hypr_palette" color8)
+\$lock_field_border = $(palette_ink_mix "$hypr_palette" color8)
+\$lock_field_bg = rgba($pr, $pg, $pb, 0.62)
+\$lock_field_text = $(palette_ink_mix "$hypr_palette" color13)
+\$lock_capslock = rgb(46, 42, 47)
+\$lock_placeholder = ##2e2a2f99
+\$lock_card_bg = rgba($pr, $pg, $pb, 0.62)
+\$lock_card_border = rgba(46, 42, 47, 0.14)
+\$lock_card_text = rgba(46, 42, 47, 0.8)
+EOF
+  else
+    cat << 'EOF' > "$mode_conf"
+# Dynamic adaptive mode: DARK wallpaper band (classic white glass).
+$lock_date = rgba(255, 255, 255, 0.9)
+$lock_time = rgba(255, 255, 255, 0.95)
+$lock_user = $color9
+$lock_layout = $color8
+$lock_field_border = $color8
+$lock_field_bg = rgba(255, 255, 255, 0.1)
+$lock_field_text = $color13
+$lock_capslock = rgb(255, 255, 255)
+$lock_placeholder = ##ffffff99
+$lock_card_bg = rgba(15, 20, 30, 0.45)
+$lock_card_border = rgba(255, 255, 255, 0.15)
+$lock_card_text = rgba(255, 255, 255, 0.8)
+EOF
+  fi
+}
+
 wallpaper_band_mean=$(detect_wallpaper_band_mean "$wallpaper_path")
 apply_dynamic_waybar_glass "$wallpaper_band_mean"
 
@@ -307,10 +379,11 @@ wallust_targets=(
 )
 wait_for_templates "$start_ts" "${wallust_targets[@]}" || true
 
-# Quickshell + rofi glass branches from the same band measurement, now that
-# the palette they read color15 from is the live one.
+# Quickshell, rofi and hyprlock glass branches from the same band
+# measurement, now that the palette they read color15 from is the live one.
 apply_dynamic_quickshell_glass "$wallpaper_band_mean"
 apply_dynamic_rofi_glass "$wallpaper_band_mean"
+apply_dynamic_hyprlock_glass "$wallpaper_band_mean"
 
 # Normalize Ghostty palette syntax in case ':' was used by older files
 if [ -f "$HOME/.config/ghostty/wallust.conf" ]; then
