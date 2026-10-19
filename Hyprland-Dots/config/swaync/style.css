@@ -2,6 +2,7 @@
 /* swaync colors - wallust / matugen */
 
 @import '../../.config/waybar/wallust/colors-waybar.css';
+@import '../../.config/waybar/wallust/mode-glass.css';
 @import 'layout.css';
 
 @define-color noti-border-color alpha(@color15, 0.20);
@@ -42,7 +43,7 @@
 
 .close-button {
     background: alpha(@danger, 0.70);
-    color: #ffffff;
+    color: @on_accent;
     text-shadow: none;
     padding: 2px 6px;
     border-radius: 10px;
@@ -193,7 +194,7 @@
 
 .widget-title>button:hover {
     background: alpha(@danger, 0.75);
-    color: #ffffff;
+    color: @on_accent;
     border-color: @danger;
 }
 
