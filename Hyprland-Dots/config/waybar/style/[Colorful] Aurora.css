@@ -3,8 +3,8 @@
  * ==========================================================================
  * The LAYOUT of this file is untouched: the selector set, the paddings and the
  * radii are exactly what it shipped with. Only the colour system changed —
- * every colour comes from wallust now, and the three module islands became
- * panes of glass.
+ * wallust supplies the hues and wallust/mode-glass.css the adaptive finish
+ * (smoked glass + light ink, or porcelain + charcoal ink on a bright band).
  *
  * THE IMPORT PATH (the one trap in this file)
  * -------------------------------------------
@@ -38,6 +38,7 @@
  */
 
 @import url("wallust/colors-waybar.css");
+@import url("wallust/mode-glass.css");
 
 
 /* --- Clean Floating Glass Transparency Rule ---
@@ -55,36 +56,23 @@ window#waybar #window,
 
 
 /* ---------------------------------------------------------------------------
- * Tokens — wallust roles
+ * Tokens — adaptive roles
+ *
+ * mode-glass.css resolved the finish already; these aliases keep this file's
+ * vocabulary pointing at the adaptive tokens. edge/ink/on_accent/danger are
+ * inherited as-is: redefining them here would shadow the adaptive values,
+ * because GTK keeps the last @define-color with a given name.
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@color15, 0.11);  /* glass body          */
-@define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
-@define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
+@define-color pane          @pane_glass;
+@define-color tile          @lift;
+@define-color tile_hi       @lift_hi;
+@define-color edge_top      @edge_hi;
 
-@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
-@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+@define-color ink_dim       @ink_muted;
 
-/* The lit edge is what separates a pane of glass from a smear of colour. */
-@define-color edge          alpha(@color14, 0.30);
-@define-color edge_top      alpha(@color15, 0.75);
-
-@define-color ink           @foreground;
-/* Secondary text is @foreground at 0.80, not @color15: @color15 is always the
- * light end of wallust's ramp, so on a light palette it would be light text on
- * a light pane. @foreground tracks the palette's contrast direction. */
-@define-color ink_dim       alpha(@foreground, 0.80);
-
-/* `on_accent` is a literal near-black: CSS cannot branch on the palette, and
- * dark ink on the light accent is the one pairing that stays readable on both
- * a dark and a light palette. */
-@define-color accent        @color15;
+@define-color accent        @accent_ink;
 @define-color accent_pill   alpha(@color15, 0.94);
-@define-color on_accent     #12141a;
 @define-color accent_urgent alpha(@color13, 0.88);
-
-/* Semantic, not decorative: must stay red whatever the wallpaper is. Tuned to
- * clear 4.5:1 on the pane and on the tile fill. */
-@define-color danger        #ffa8a8;
 
 
 * {
@@ -109,9 +97,9 @@ window#waybar.empty #window {
 }
 
 tooltip {
-    background-color: alpha(@color15, 0.11);
+	background-color: @pane_glass;
 	color: @ink;
-	border: 1px solid @edge;
+	border: 1px solid @edge_glass;
 	border-radius: 10px;
 }
 
@@ -119,15 +107,16 @@ tooltip label{
 	color: @ink;
 }
 /*-----module groups----*/
-/* The three islands: wallpaper tint + sheen over Hyprland's blur. The file's
- * own paddings are kept — the pane brings no vertical margin of its own, so an
- * auto-height bar does not grow. */
+/* The three islands: @pane_glass + @edge_glass over Hyprland's blur. The
+ * file's own paddings are kept — the pane brings no vertical margin of its
+ * own, so an auto-height bar does not grow. @shadow_glass is zero on
+ * porcelain, where GTK would turn the shadow into a dark crescent. */
 .modules-left,
 .modules-center,
 .modules-right {
-    background-color: alpha(@color15, 0.11);
-    border: 1px solid alpha(@color15, 0.47);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    background-color: @pane_glass;
+    border: 1px solid @edge_glass;
+    box-shadow: 0 4px 30px @shadow_glass;
     border-radius: 16px;
     padding-left: 4px;
     padding-right: 4px;

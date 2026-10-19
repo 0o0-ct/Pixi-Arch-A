@@ -1,14 +1,14 @@
 /* ---- 💫 https://github.com/JaKooLit 💫 ---- */
 /* Translucent — wallust frosted glass
  * ==========================================================================
- * Every colour now comes from wallust; the literal palette that used to be
- * defined at the top of this file (accent1..6, bgcolor, alert, ...) is gone.
- * wallust.toml declares palette = "dark16", so @background is always a dark
- * tint and @foreground a light ink, and the 0..15 ramp always runs dark ->
- * light, which makes @color15 the lightest accent of the wallpaper. Roles:
+ * Every colour now comes from the live palette; the literal palette that used
+ * to be defined at the top of this file (accent1..6, bgcolor, alert, ...) is
+ * gone. wallust/matugen supply the hues, and wallust/mode-glass.css supplies
+ * the adaptive finish: smoked glass + light ink on a dark band, porcelain +
+ * charcoal ink on a bright one. Roles:
  *
- *   @background -> pane tint           @color15 -> accent: sheen, pill, slider
- *   @foreground -> text + hairlines    @color13 -> urgent pill
+ *   @pane_glass -> the slab          @color15 -> accent: pill, slider
+ *   @ink -> text + hairlines         @color13 -> urgent pill
  *
  * THE IMPORT PATH (the one trap in this file)
  * -------------------------------------------
@@ -19,13 +19,13 @@
  * fails, and on waybar 0.15.0 a failing import does not merely warn: the style
  * load throws and the bar can die outright. Never walk up a level.
  *
- * WHY THE SLAB IS TINTED *AND* LIFTED
- * -----------------------------------
- * A tint built from @background alone is the black-bar failure: @background is
- * the wallpaper's darkest colour, so a tint-only slab reads as a black
- * rectangle, not as glass. The @color15 sheen gradient (0.20 -> 0.12) over the
- * tint is what lifts it. The 38px radius slab is blurred by Hyprland
- * (layerrule blur + ignore_alpha), never by CSS.
+ * THE ADAPTIVE FINISH
+ * -------------------
+ * WallustSwww.sh samples the bar's top strip and rewrites mode-glass.css with
+ * one of two hand-tuned finishes (smoked or porcelain). @pane_glass, @ink and
+ * @shadow_glass come from there, so a bright wallpaper never swallows the
+ * slab. The 38px radius slab is blurred by Hyprland (layerrule blur +
+ * ignore_alpha), never by CSS.
  *
  * LAYOUT IS UNTOUCHED
  * -------------------
@@ -59,6 +59,7 @@
  */
 
 @import url("wallust/colors-waybar.css");
+@import url("wallust/mode-glass.css");
 
 
 /* --- Clean Floating Glass Transparency Rule ---------------------------------
@@ -76,52 +77,39 @@ window#waybar #window,
 
 
 /* ---------------------------------------------------------------------------
- * Tokens — wallust roles
+ * Tokens — adaptive roles
+ *
+ * mode-glass.css resolved the finish already; these aliases keep this file's
+ * vocabulary pointing at the adaptive tokens. edge/ink/on_accent/danger are
+ * inherited as-is: redefining them here would shadow the adaptive values,
+ * because GTK keeps the last @define-color with a given name.
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@color15, 0.11);  /* glass body          */
-@define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
-@define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
+@define-color pane          @pane_glass;
+@define-color tile          @lift;
+@define-color tile_hi       @lift_hi;
+@define-color edge_top      @edge_hi;
 
-@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
-@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+@define-color ink_dim       @ink_muted;
 
-/* The lit edge is what separates a pane of glass from a smear of colour. */
-@define-color edge          alpha(@color14, 0.30);
-@define-color edge_top      alpha(@color15, 0.75);
-
-@define-color ink           @foreground;
-
-/* Dim text is @foreground at 0.80, not @color15: @color15 is always the *light*
- * end of wallust's ramp, so on a light palette it would be light text on a
- * light pane. @foreground tracks the palette's contrast direction. */
-@define-color ink_dim       alpha(@foreground, 0.80);
-
-/* `on_accent` is a literal near-black: CSS cannot branch on the palette, and
- * dark ink on the light accent is the one pairing that reads on both a dark and
- * a light palette. wallust's own accentPrimaryText is #FFFFFF, which is
- * unreadable on a light accent. */
-@define-color accent        @color15;
+@define-color accent        @accent_ink;
 @define-color accent_pill   alpha(@color15, 0.94);
-@define-color on_accent     #12141a;
 @define-color accent_urgent alpha(@color13, 0.88);
 
-/* The six module colours: each is a wallust accent mixed toward @foreground.
- * An accent's ramp position is not guaranteed to be light (color13 is a mid-tone
- * on many wallpapers) and raw it can land almost invisible as text on the dark
- * slab. The mix keeps the wallpaper's hue but borrows the palette's contrast
- * direction — on a light palette @foreground flips to dark and the same rule
- * darkens the text. accent1/2/3 measure 10.8:1, 9.1:1 and 11.0:1 on the live
+/* The six module colours: each is a wallust accent mixed toward @ink. An
+ * accent's ramp position is not guaranteed to be light (color13 is a mid-tone
+ * on many wallpapers) and raw it can land almost invisible as text on the
+ * slab. On the dark branch @ink is @foreground, so the mix is unchanged; on
+ * porcelain @ink is charcoal, so the same rule darkens the text instead of
+ * washing it out. accent1/2/3 measure 10.8:1, 9.1:1 and 11.0:1 on the live
  * wallpaper; a worst-case near-black accent still lands at 5.8:1. */
-@define-color accent1       mix(@color15, @foreground, 0.25);
-@define-color accent2       mix(@color13, @foreground, 0.45);
-@define-color accent3       mix(@color7, @foreground, 0.35);
-@define-color accent4       mix(@color15, @foreground, 0.25);
-@define-color accent5       mix(@color13, @foreground, 0.45);
-@define-color accent6       mix(@color7, @foreground, 0.35);
+@define-color accent1       mix(@color15, @ink, 0.25);
+@define-color accent2       mix(@color13, @ink, 0.45);
+@define-color accent3       mix(@color7, @ink, 0.35);
+@define-color accent4       mix(@color15, @ink, 0.25);
+@define-color accent5       mix(@color13, @ink, 0.45);
+@define-color accent6       mix(@color7, @ink, 0.35);
 
-/* Semantic, not decorative: this must stay red/amber whatever the wallpaper is
- * (tuned to clear 4.5:1 both as text and as a pill fill under on_accent). */
-@define-color danger        #ffa8a8;
+/* @danger arrives from mode-glass.css (dark: #ffa8a8, porcelain: #b3261e). */
 
 
 * {
@@ -134,13 +122,13 @@ window#waybar #window,
 }
 
 /* ---------------------------------------------------------------------------
- * The slab — wallpaper tint underneath, sheen gradient over it, lit top edge,
- * and the 38px radius this style is known for.
+ * The slab — @pane_glass over Hyprland's blur, @edge_glass hairline, and the
+ * 38px radius this style is known for. @shadow_glass is zero on porcelain.
  * ------------------------------------------------------------------------- */
 window#waybar {
-    background-color: alpha(@color15, 0.11);
-    border: 1px solid alpha(@color15, 0.47);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    background-color: @pane_glass;
+    border: 1px solid @edge_glass;
+    box-shadow: 0 4px 30px @shadow_glass;
     border-radius: 38px;
     transition-property: background-color, border-color, color;
     transition-duration: 160ms;
@@ -149,15 +137,15 @@ window#waybar {
 /* The whole window used to be dimmed as a unit. A container dim forces GTK to
  * render the widget group offscreen, so the dim is expressed in alpha instead. */
 window#waybar.hidden {
-	background-color: alpha(@background, 0.25);
+	background-color: @pane_glass;
 	background-image: none;
 	border-color: transparent;
-	color: alpha(@foreground, 0.35);
+	color: alpha(@ink, 0.35);
 }
 
 tooltip {
-    background-color: alpha(@color15, 0.11);
-	border: 1px solid @edge;
+	background-color: @pane_glass;
+	border: 1px solid @edge_glass;
 	border-radius: 10px;
 	color: @ink;
 }

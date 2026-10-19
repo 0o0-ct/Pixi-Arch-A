@@ -2,9 +2,11 @@
 
 /* Aurora Blossom — frosted glass, coloured by the wallpaper
  * ==========================================================================
- * Every colour in this file comes from wallust. Nothing about the look is
- * hardcoded except one near-black ink (see `on_accent`) and the two semantic
- * alert colours, both justified below.
+ * Every colour comes from the live palette: wallust/matugen supply the hues
+ * (wallust/colors-waybar.css) and wallust/mode-glass.css supplies the adaptive
+ * finish — smoked glass + light ink on a dark band, porcelain frosted glass +
+ * charcoal ink on a bright one. Both branches share the token names below, so
+ * this file never branches.
  *
  * THE IMPORT PATH (the one trap in this file)
  * -------------------------------------------
@@ -33,42 +35,14 @@
  *   @color13     -> urgent workspace pill (the mid-tone accent)
  *   @foreground  -> primary text, dim text, tile lift, hairline edge
  *
- * WHY THE PANE IS TINTED *AND* LIFTED
- * -----------------------------------
- * A tint built from @background alone is the black-bar failure: @background is
- * the wallpaper's darkest colour, so on a dark wallpaper the bar reads as a
- * black rectangle, not as glass. The sheen gradient of @color15 is what lifts
- * it — the accent is both the hue and the light that makes the pane sit above
- * the wallpaper. Measured off the screen against the backdrop the bar actually
- * covers (#142725, relative luminance 0.0173, L* 14.0):
- *
- *   pane top    #364142  lum 0.0496  L* 26.1   ->  2.77x the backdrop
- *   pane bottom #293334  lum 0.0309  L* 20.5   ->  1.73x the backdrop
- *
- * BRIGHT WALLPAPERS — the one real trade-off
- * ------------------------------------------
- * The glass is translucent, so a bright backdrop bleeds through and lifts the
- * pane with it: the lighter the wallpaper, the weaker @foreground's contrast.
- * The base tint alpha is the dial that controls this. At 0.74 (0.79 on screen)
- * the pane leans dark enough to stay legible well into the bright range:
- *
- *   dark wallpaper     (16,40,41)     -> pane #364142   7.88:1   (the live case)
- *   bright wallpaper   (180,190,190)  -> pane #576160   4.78:1
- *   bright wallpaper   (220,225,225)  -> pane #606868   4.27:1   <-- starts to go
- *   pure white         (255,255,255)  -> pane #676E6E   3.89:1   <-- fails
- *
- * (Those three are model extrapolations; the model reproduces the live case to
- * within ~2/255, see the pane numbers above.)
- *
- * On a dark wallpaper the alpha is nearly free — 0.62 -> 0.74 moves the pane
- * from #354343 to #364142, two units — so it is spent here on the bright case.
- * For a near-white wallpaper, push @pane to 0.80 (alpha 0.84 on screen), or
- * switch wallust.toml to a `light16` palette: then @foreground flips to dark
- * and the same design reads at 9.29:1 on a light pane.
- *
- * @foreground is used for the tile lift and the hairline edge on purpose: it
- * is light on a dark palette (a lit edge) and dark on a light palette (a
- * shadowed edge), so the glass keeps its edge either way.
+ * THE ADAPTIVE FINISH (mode-glass.css)
+ * ------------------------------------
+ * WallustSwww.sh samples the top band of the wallpaper (the 7% strip the bar
+ * covers) and rewrites wallust/mode-glass.css with one of two hand-tuned
+ * finishes: smoked glass + light ink below 0.55, porcelain frosted glass +
+ * charcoal ink at or above it. The porcelain branch also zeroes the shadow,
+ * because GTK compresses a translucent box-shadow into a dark crescent hugging
+ * the island edge. This file consumes those tokens; it does not define them.
  *
  * THE GLASS ITSELF IS NOT DONE HERE
  * ---------------------------------
@@ -80,8 +54,8 @@
  *
  * PERFORMANCE (the user is fighting heat; these are not stylistic choices)
  * -----------------------------------------------------------------------
- *   - no box-shadow anywhere: it is the most expensive thing for GTK's CPU
- *     renderer, and 54 of the 55 styles in this repo use it
+ *   - a single box-shadow, on the islands only, read from @shadow_glass (the
+ *     porcelain branch zeroes it); no other shadow is added
  *   - no opacity on containers: translucency is rgba()/alpha(), so GTK never
  *     has to render a widget group offscreen
  *   - transitions animate only background-color / border-color / color
@@ -91,6 +65,7 @@
  */
 
 @import url("wallust/colors-waybar.css");
+@import url("wallust/mode-glass.css");
 
 
 /* --- Clean Floating Glass Transparency Rule ---------------------------------
@@ -109,40 +84,23 @@ window#waybar #window,
 
 
 /* ---------------------------------------------------------------------------
- * Tokens — wallust roles
+ * Tokens — adaptive roles
+ *
+ * mode-glass.css resolved the finish already; these aliases keep this file's
+ * vocabulary pointing at the adaptive tokens. edge/ink/on_accent/danger are
+ * inherited as-is: redefining them here would shadow the adaptive values,
+ * because GTK keeps the last @define-color with a given name.
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@color15, 0.11);  /* glass body          */
-@define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
-@define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
+@define-color pane          @pane_glass;
+@define-color tile          @lift;
+@define-color tile_hi       @lift_hi;
+@define-color edge_top      @edge_hi;
 
-@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
-@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+@define-color ink_dim       @ink_muted;
 
-/* The lit edge is what separates a pane of glass from a smear of colour. */
-@define-color edge          alpha(@color14, 0.30);
-@define-color edge_top      alpha(@color15, 0.75);
-
-@define-color ink           @foreground;
-/* Secondary text is @foreground at 0.80, not @color15: @color15 is always the
- * *light* end of wallust's ramp, so on a light palette it would be light text
- * on a light pane. @foreground tracks the palette's contrast direction, and at
- * the same alpha it also measures brighter (5.11:1 vs 4.77:1 on the tile). */
-@define-color ink_dim       alpha(@foreground, 0.80);
-
-/* Accents. `on_accent` is a literal near-black: CSS cannot branch on the
- * palette, and a dark ink on the light accent is the one pairing that stays
- * readable on both a dark and a light palette. wallust's own
- * accentPrimaryText is #FFFFFF, which is unreadable on a light accent. */
-@define-color accent        @color15;
+@define-color accent        @accent_ink;
 @define-color accent_pill   alpha(@color15, 0.94);
-@define-color on_accent     #12141a;
 @define-color accent_urgent alpha(@color13, 0.88);
-
-/* Semantic, not decorative: these must stay red/amber whatever the wallpaper
- * is. Tuned to clear 4.5:1 on both the pane and the tile fill (5.73:1 and
- * 5.06:1 as text, 10.01:1 as a pill fill under on_accent). A saturated red
- * like #ff6b6b only reaches 3.7:1 here, which is why it is this light. */
-@define-color danger        #ffa8a8;
 
 
 /* ---------------------------------------------------------------------------
@@ -173,16 +131,16 @@ window#waybar.empty #window {
 /* ---------------------------------------------------------------------------
  * The three panes of glass
  *
- * background-color is the wallpaper tint, background-image is the sheen that
- * falls from the lit top edge to the dim bottom one. GTK paints the colour
- * first and the gradient over it, so the two together are the glass.
+ * The material is @pane_glass, the lit edge @edge_glass, and Hyprland blurs
+ * whatever sits behind them (the window itself stays transparent). The shadow
+ * comes from @shadow_glass, which the porcelain branch sets to zero.
  * ------------------------------------------------------------------------- */
 .modules-left,
 .modules-center,
 .modules-right {
-    background-color: alpha(@color15, 0.11);
-    border: 1px solid alpha(@color15, 0.47);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    background-color: @pane_glass;
+    border: 1px solid @edge_glass;
+    box-shadow: 0 4px 30px @shadow_glass;
     border-radius: 16px;
     padding: 3px 6px;
     margin: 3px 0;
@@ -367,8 +325,8 @@ window#waybar.empty #window {
  * Tooltips — the same glass, denser so the text always reads
  * ------------------------------------------------------------------------- */
 tooltip {
-    background-color: alpha(@color15, 0.11);
-	border: 1px solid @edge;
+	background-color: @pane_glass;
+	border: 1px solid @edge_glass;
 	border-radius: 12px;
 	color: @ink;
 }
