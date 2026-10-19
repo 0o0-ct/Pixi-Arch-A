@@ -14,6 +14,11 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
+# zsh-syntax-highlighting: the plugin paints inline comments with fg=black,
+# i.e. ANSI 0, which sits at the wallpaper-derived background luminance and
+# disappears while typing. ANSI 8 is the adaptive mid-grey (color8).
+ZSH_HIGHLIGHT_STYLES[comment]='fg=8,bold'
+
 # Check archlinux plugin commands here
 # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/archlinux
 
