@@ -1,7 +1,10 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
 /* Main Config (wallpaper) */
 
-@import "~/.config/rofi/config.rasi"  
+@import "~/.config/rofi/config.rasi"
+
+/* Adaptive glass tokens (smoked / porcelain) from the wallpaper pipeline */
+@import "~/.config/rofi/wallust/mode-glass.rasi"  
 
 /* ---- Configuration ---- */ 
 configuration {
@@ -13,8 +16,8 @@ window {
   height: inherit;
   border: 1px solid;
   border-radius: 20px;
-  border-color: rgba(255, 255, 255, 0.40);
-  background-color: rgba(255, 255, 255, 0.11);
+  border-color: @edge-glass;
+  background-color: @pane;
   transparency: "real";
 }
 
@@ -29,8 +32,8 @@ mainbox {
 inputbar {
   border: 1px;
   border-radius: 14px;
-  border-color: rgba(255, 255, 255, 0.22);
-  background-color: rgba(255, 255, 255, 0.08);
+  border-color: @edge-hi;
+  background-color: @lift-hi;
   padding: 10px 16px;
   margin: 0px 0px 14px 0px;
 }
@@ -62,20 +65,20 @@ element {
   spacing: 6px;
   border-radius: 14px;
   margin: 0px;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: @element-bg;
   border: 1px;
-  border-color: rgba(255, 255, 255, 0.10);
+  border-color: @element-edge;
 }
 
 element normal.normal,
 element alternate.normal {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: @element-bg;
 }
 
 element selected.normal {
   background-color: @selected;
   border: 1px solid;
-  border-color: rgba(255, 255, 255, 0.45);
+  border-color: @selected-edge;
   border-radius: 14px;
 }
 

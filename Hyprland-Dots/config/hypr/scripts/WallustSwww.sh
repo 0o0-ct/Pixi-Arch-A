@@ -191,6 +191,71 @@ apply_dynamic_quickshell_glass() {
 EOF
 }
 
+# Same two finishes, for rofi: the Frosted base theme and the wallpaper
+# selector consume these tokens instead of hardcoded whites, so a bright
+# wallpaper can never wash the menus out either. Concrete rgba() values
+# because rasi cannot compose alpha() over variables. Lives in
+# $HOME/.config/rofi/wallust/mode-glass.rasi; never edit that file by hand.
+apply_dynamic_rofi_glass() {
+  local band_mean="$1"
+  local mode_rasi="$HOME/.config/rofi/wallust/mode-glass.rasi"
+  local palette_css="$HOME/.config/waybar/wallust/colors-waybar.css"
+  local base=""
+  base=$(sed -n 's/^@define-color[[:space:]]\+color15[[:space:]]\+\(#[0-9a-fA-F]\{6\}\).*/\1/p' "$palette_css" 2>/dev/null | head -n 1 || true)
+  [[ -n "$base" ]] || base="#EAE7EC"
+
+  # color15 -> r,g,b for the porcelain pane
+  local pr=234 pg=231 pb=236
+  if [[ "$base" =~ ^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$ ]]; then
+    pr=$((16#${BASH_REMATCH[1]})); pg=$((16#${BASH_REMATCH[2]})); pb=$((16#${BASH_REMATCH[3]}))
+  fi
+
+  mkdir -p "$(dirname "$mode_rasi")"
+
+  if [[ -n "$band_mean" ]] && awk "BEGIN{exit !($band_mean >= 0.55)}"; then
+    cat << EOF > "$mode_rasi"
+/* Dynamic adaptive mode: LIGHT wallpaper band (porcelain frosted glass). */
+/* The window is the same pane the waybar uses: color15 at 62%. */
+* {
+    pane:           rgba($pr, $pg, $pb, 0.62);
+    pane-soft:      rgba(46, 42, 47, 0.03);
+    element-bg:     rgba(46, 42, 47, 0.04);
+    element-edge:   rgba(46, 42, 47, 0.08);
+    lift:           rgba(46, 42, 47, 0.06);
+    lift-hi:        rgba(46, 42, 47, 0.10);
+    edge:           rgba(46, 42, 47, 0.12);
+    edge-soft:      rgba(46, 42, 47, 0.14);
+    edge-hi:        rgba(46, 42, 47, 0.20);
+    edge-strong:    rgba(46, 42, 47, 0.26);
+    selected-edge:  rgba(46, 42, 47, 0.30);
+    edge-glass:     rgba(46, 42, 47, 0.14);
+    ink:            #2E2A2F;
+    placeholder:    rgba(46, 42, 47, 0.55);
+}
+EOF
+  else
+    cat << 'EOF' > "$mode_rasi"
+/* Dynamic adaptive mode: DARK wallpaper band (smoked glass + light ink). */
+* {
+    pane:           rgba(255, 255, 255, 0.11);
+    pane-soft:      rgba(255, 255, 255, 0.03);
+    element-bg:     rgba(255, 255, 255, 0.04);
+    element-edge:   rgba(255, 255, 255, 0.08);
+    lift:           rgba(255, 255, 255, 0.06);
+    lift-hi:        rgba(255, 255, 255, 0.08);
+    edge:           rgba(255, 255, 255, 0.12);
+    edge-soft:      rgba(255, 255, 255, 0.15);
+    edge-hi:        rgba(255, 255, 255, 0.22);
+    edge-strong:    rgba(255, 255, 255, 0.35);
+    selected-edge:  rgba(255, 255, 255, 0.45);
+    edge-glass:     rgba(255, 255, 255, 0.47);
+    ink:            @foreground;
+    placeholder:    rgba(255, 255, 255, 0.45);
+}
+EOF
+  fi
+}
+
 wallpaper_band_mean=$(detect_wallpaper_band_mean "$wallpaper_path")
 apply_dynamic_waybar_glass "$wallpaper_band_mean"
 
@@ -242,9 +307,10 @@ wallust_targets=(
 )
 wait_for_templates "$start_ts" "${wallust_targets[@]}" || true
 
-# Quickshell glass branch from the same band measurement, now that the
-# palette it reads color15 from is the live one.
+# Quickshell + rofi glass branches from the same band measurement, now that
+# the palette they read color15 from is the live one.
 apply_dynamic_quickshell_glass "$wallpaper_band_mean"
+apply_dynamic_rofi_glass "$wallpaper_band_mean"
 
 # Normalize Ghostty palette syntax in case ':' was used by older files
 if [ -f "$HOME/.config/ghostty/wallust.conf" ]; then
