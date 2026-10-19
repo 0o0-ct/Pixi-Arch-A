@@ -42,7 +42,7 @@ Rectangle {
             MaterialSymbol {
                 text: WifiService.wifiEnabled ? "wifi" : "wifi_off"
                 iconSize: 22
-                color: WifiService.wifiEnabled ? Theme.accent : Theme.textDim
+                color: WifiService.wifiEnabled ? Theme.accentText : Theme.textDim
                 font.family: Theme.iconFontFamily
             }
 
@@ -66,7 +66,7 @@ Rectangle {
                     anchors.centerIn: parent
                     text: "refresh"
                     iconSize: 18
-                    color: WifiService.connecting ? Theme.accent : Theme.textPrimary
+                    color: WifiService.connecting ? Theme.accentText : Theme.textPrimary
                     font.family: Theme.iconFontFamily
                 }
 

@@ -60,7 +60,7 @@ Item {
                 anchors.centerIn: parent
                 visible: avatarImage.status !== Image.Ready
                 text: (CcSystem.userName || "?").charAt(0).toUpperCase()
-                color: Theme.accent
+                color: Theme.accentText
                 font.pixelSize: Appearance.font.pixelSize.textLarge
                 font.weight: Font.DemiBold
             }

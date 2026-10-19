@@ -40,7 +40,7 @@ Item {
             StyledText {
                 text: root.notification?.appName ?? ""
                 visible: text.length > 0
-                color: Theme.accent
+                color: Theme.accentText
                 font.pixelSize: Appearance.font.pixelSize.textSmall
                 font.weight: Font.DemiBold
                 elide: Text.ElideRight

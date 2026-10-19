@@ -41,7 +41,7 @@ Rectangle {
             MaterialSymbol {
                 text: "volume_up"
                 iconSize: 22
-                color: Theme.accent
+                color: Theme.accentText
                 font.family: Theme.iconFontFamily
             }
 
@@ -128,13 +128,13 @@ Rectangle {
                 radius: 15
                 color: muteHover.hovered ? Theme.tileHoverBg : Theme.tileIconBg
                 border.width: 1
-                border.color: CcSystem.volumeMuted ? Theme.accent : Theme.tileBorder
+                border.color: CcSystem.volumeMuted ? Theme.accentText : Theme.tileBorder
 
                 MaterialSymbol {
                     anchors.centerIn: parent
                     text: CcSystem.volumeMuted ? "volume_off" : "volume_up"
                     iconSize: 17
-                    color: CcSystem.volumeMuted ? Theme.accent : Theme.textPrimary
+                    color: CcSystem.volumeMuted ? Theme.accentText : Theme.textPrimary
                     font.family: Theme.iconFontFamily
                 }
 

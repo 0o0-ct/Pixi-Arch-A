@@ -54,7 +54,7 @@ ColumnLayout {
         radius: 10
         color: Theme.tileIconBg
         border.width: 1
-        border.color: passwordInput.activeFocus ? Theme.accent : Theme.tileBorder
+        border.color: passwordInput.activeFocus ? Theme.accentText : Theme.tileBorder
 
         TextInput {
             id: passwordInput

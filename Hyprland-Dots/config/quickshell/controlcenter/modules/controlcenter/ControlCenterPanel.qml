@@ -62,9 +62,9 @@ PanelWindow {
         anchors.topMargin: Theme.panelMargin
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 20
-        color: Qt.rgba(1, 1, 1, 0.10)
+        color: Theme.cardFill
         border.width: 1
-        border.color: Qt.rgba(1, 1, 1, 0.30)
+        border.color: Theme.cardEdge
         clip: true
 
         // Specular Top Highlight line (::before)
@@ -76,8 +76,8 @@ PanelWindow {
             gradient: Gradient {
                 orientation: Gradient.Horizontal
                 GradientStop { position: 0.0; color: "transparent" }
-                GradientStop { position: 0.2; color: Qt.rgba(1, 1, 1, 0.80) }
-                GradientStop { position: 0.8; color: Qt.rgba(1, 1, 1, 0.80) }
+                GradientStop { position: 0.2; color: Theme.cardSpecular }
+                GradientStop { position: 0.8; color: Theme.cardSpecular }
                 GradientStop { position: 1.0; color: "transparent" }
             }
         }

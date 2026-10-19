@@ -46,7 +46,7 @@ Rectangle {
             MaterialSymbol {
                 text: CcSystem.bluetoothEnabled ? "bluetooth" : "bluetooth_disabled"
                 iconSize: 22
-                color: CcSystem.bluetoothEnabled ? Theme.accent : Theme.textDim
+                color: CcSystem.bluetoothEnabled ? Theme.accentText : Theme.textDim
                 font.family: Theme.iconFontFamily
             }
 
@@ -70,7 +70,7 @@ Rectangle {
                     anchors.centerIn: parent
                     text: "refresh"
                     iconSize: 18
-                    color: CcSystem.bluetoothScanning ? Theme.accent : Theme.textPrimary
+                    color: CcSystem.bluetoothScanning ? Theme.accentText : Theme.textPrimary
                     font.family: Theme.iconFontFamily
                 }
 
@@ -154,7 +154,7 @@ Rectangle {
                     radius: 10
                     color: devHover.hovered ? Theme.tileHoverBg : Theme.tileIconBg
                     border.width: 1
-                    border.color: modelData.connected ? Theme.accent : Theme.tileBorder
+                    border.color: modelData.connected ? Theme.accentText : Theme.tileBorder
 
                     HoverHandler { id: devHover }
 
@@ -167,7 +167,7 @@ Rectangle {
                         MaterialSymbol {
                             text: root.getDeviceIcon(modelData.name)
                             iconSize: 20
-                            color: modelData.connected ? Theme.accent : Theme.textPrimary
+                            color: modelData.connected ? Theme.accentText : Theme.textPrimary
                             font.family: Theme.iconFontFamily
                         }
 
@@ -247,7 +247,7 @@ Rectangle {
                 StyledText {
                     Layout.fillWidth: true
                     text: CcSystem.bluetoothScanning ? "BUSCANDO DISPOSITIVOS CERCANOS…" : "DISPOSITIVOS DISPONIBLES"
-                    color: CcSystem.bluetoothScanning ? Theme.accent : Theme.textDim
+                    color: CcSystem.bluetoothScanning ? Theme.accentText : Theme.textDim
                     font.pixelSize: Appearance.font.pixelSize.textSmall - 1
                     font.weight: Font.Bold
                 }

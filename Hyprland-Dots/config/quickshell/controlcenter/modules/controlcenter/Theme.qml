@@ -21,6 +21,10 @@ import "root:/modules/common/functions/color_utils.js" as ColorUtils
  *
  * Nothing else in the panel knows about wallust: every component keeps asking
  * for the roles below (`Theme.panelBg`, `Theme.tileBg`, ...).
+ *
+ * The glass *branch* is external too: `~/.config/quickshell/mode-glass.json`
+ * (written by the wallpaper script on every change) picks smoked glass or
+ * porcelain, so a bright wallpaper can never swallow the card again.
  */
 Singleton {
     id: theme
@@ -121,6 +125,20 @@ Singleton {
         return base + "/quickshell/qml_color.json"
     }
 
+    /**
+     * Branch file from the same wallpaper run: `{"branch": "dark"|"light",
+     * "base": "#rrggbb"}`. "light" means the band behind the panels is bright
+     * enough to swallow white smoke, so the card switches to porcelain; `base`
+     * is wallust color15, the porcelain tint (the waybar pane uses it too).
+     */
+    readonly property string modePath: {
+        const configHome = Quickshell.env("XDG_CONFIG_HOME")
+        const base = (configHome && configHome.length > 0)
+            ? configHome
+            : (Quickshell.env("HOME") ?? "") + "/.config"
+        return base + "/quickshell/mode-glass.json"
+    }
+
     /** Print the palette in use to the journal on load / wallpaper change. */
     readonly property bool logPalette: true
 
@@ -166,6 +184,8 @@ Singleton {
             alphaTile: alphaTile,
             alphaTileIcon: alphaTileIcon,
             panelAlpha: panelAlpha,
+            porcelain: porcelain,
+            porcelainBase: porcelainBase,
         }
     }
 
@@ -179,11 +199,23 @@ Singleton {
         palette = palette ?? {}
         t = t ?? tuning()
 
-        const bg = sanitizeColor(palette.windowBackground, "#161217")
-        const primary = sanitizeColor(palette.primaryText, "#EAE0E7")
-        const surfaceText = sanitizeColor(palette.surfaceText, "#EAE0E7")
-        const secondary = sanitizeColor(palette.secondaryText, "#CFC3CD")
-        const border = sanitizeColor(palette.borderPrimary, "#cba6f7")
+        // The two finishes of the same glass. In porcelain the wallust palette
+        // only supplies the accent: the porcelain base (wallust color15), the
+        // charcoal ink and every wash between them are the finish itself.
+        const porcelain = t.porcelain === true
+        const ink = "#2E2A2F"
+
+        const bg = porcelain
+            ? sanitizeColor(t.porcelainBase, "#EAE7EC")
+            : sanitizeColor(palette.windowBackground, "#161217")
+        const primary = porcelain ? ink : sanitizeColor(palette.primaryText, "#EAE0E7")
+        const surfaceText = porcelain ? ink : sanitizeColor(palette.surfaceText, "#EAE0E7")
+        // Porcelain's muted ink, flattened over the base — the same 0.78 the
+        // waybar porcelain uses for `ink_muted`.
+        const secondary = porcelain
+            ? hexOf(overHex(ink, 0.78, bg))
+            : sanitizeColor(palette.secondaryText, "#CFC3CD")
+        const border = porcelain ? ink : sanitizeColor(palette.borderPrimary, "#cba6f7")
         const accent = sanitizeColor(palette.accentPrimary, "#E5B6F2")
         const accentText = sanitizeColor(palette.accentPrimaryText, "#452152")
 
@@ -208,10 +240,16 @@ Singleton {
         const textSecondary = readable(secondary, panelFlat, [surfaceText, primary], t)
         // wallust's template hardcodes accentPrimaryText to #FFFFFF, which is
         // unreadable on a light accent such as color7, so that token is only
-        // kept when it really reads on the accent.
-        const onAccent = readable(accentText, onAccentBackdrops, [primary, bg], t)
+        // kept when it really reads on the accent. Porcelain prefers its own
+        // ink on the accent and falls back to white when the accent is dark.
+        const onAccent = readable(porcelain ? ink : accentText, onAccentBackdrops, [primary, bg], t)
         const textDimAmount = dimTo(textSecondary, tileFlat, 0.30, t)
         const onActiveDimAmount = dimTo(onAccent, activeBottomFlat, 0.25, t)
+
+        // Accents used as *ink* (glyphs, labels, borders): on porcelain the
+        // pastel accent would vanish, so it is pulled toward the ink instead —
+        // the same move the waybar glass makes with its accents.
+        const accentInk = porcelain ? hexOf(mix(accent, ink, 0.25)) : accent
 
         return {
             panelFlat: panelFlat,
@@ -219,19 +257,29 @@ Singleton {
             activeBottomFlat: activeBottomFlat,
 
             accent: rgba(accent, 1),
+            accentText: rgba(accentInk, 1),
             onAccent: rgba(onAccent, 1),
 
-            panelBg: rgba(surface(t.tintPanel), t.panelAlpha),
-            panelBorder: rgba(border, 0.45),
+            // Card chrome: the white smoke of the dark branch, or the
+            // porcelain pane / ink hairline of the waybar light branch
+            // (pane = color15 at 0.62, edge = ink at 0.14, no specular).
+            cardFill: porcelain ? rgba(bg, 0.62) : Qt.rgba(1, 1, 1, 0.10),
+            cardEdge: porcelain ? rgba(ink, 0.14) : Qt.rgba(1, 1, 1, 0.30),
+            cardSpecular: porcelain ? rgba(ink, 0) : Qt.rgba(1, 1, 1, 0.80),
 
-            tileBg: rgba(surface(t.tintTile), 1 - t.alphaTile),
-            tileBgHover: rgba(surface(t.tintTileHover), 1 - t.alphaTile),
-            tileBorder: rgba(border, 0.28),
-            tileIconBg: rgba(surface(t.tintTileIcon), 1 - t.alphaTileIcon),
+            panelBg: porcelain ? rgba(bg, 0.62) : rgba(surface(t.tintPanel), t.panelAlpha),
+            panelBorder: porcelain ? rgba(ink, 0.14) : rgba(border, 0.45),
+
+            // Porcelain lifts are charcoal washes (waybar: lift 0.06 /
+            // lift_hi 0.11 / edge 0.10), not accent tints.
+            tileBg: porcelain ? rgba(ink, 0.06) : rgba(surface(t.tintTile), 1 - t.alphaTile),
+            tileBgHover: porcelain ? rgba(ink, 0.11) : rgba(surface(t.tintTileHover), 1 - t.alphaTile),
+            tileBorder: porcelain ? rgba(ink, 0.10) : rgba(border, 0.28),
+            tileIconBg: porcelain ? rgba(ink, 0.06) : rgba(surface(t.tintTileIcon), 1 - t.alphaTileIcon),
             // The active tile's icon container has to stay on the accent side of
             // the contrast split: the glyph drawn on it is `onAccent`, while the
             // tile behind it is the accent gradient.
-            tileIconBgActive: rgba(surface(0.88), 0.80),
+            tileIconBgActive: porcelain ? rgba(ink, 0.14) : rgba(surface(0.88), 0.80),
 
             activeTop: rgba(accent, 0.94),
             activeBottom: rgba(surface(0.85), 0.90),
@@ -242,10 +290,10 @@ Singleton {
             textDim: rgba(textSecondary, 1 - textDimAmount),
             textOnActiveDim: rgba(onAccent, 1 - onActiveDimAmount),
 
-            iconButtonHover: rgba(textPrimary, 0.10),
-            trackDim: rgba(textPrimary, 0.16),
-            trackFill: rgba(textPrimary, 0.88),
-            divider: rgba(border, 0.22),
+            iconButtonHover: porcelain ? rgba(ink, 0.06) : rgba(textPrimary, 0.10),
+            trackDim: porcelain ? rgba(ink, 0.16) : rgba(textPrimary, 0.16),
+            trackFill: porcelain ? rgba(ink, 0.88) : rgba(textPrimary, 0.88),
+            divider: porcelain ? rgba(ink, 0.14) : rgba(border, 0.22),
 
             contrast: {
                 primaryOnPanel: contrastRatio(textPrimary, panelFlat),
@@ -279,6 +327,9 @@ Singleton {
 
     property color accent: "#E5B6F2"
 
+    /** `accent` used as ink (glyphs, labels, borders); porcelain darkens it. */
+    property color accentText: "#E5B6F2"
+
     /** Assigned by `applyRoles()` — see the note above. */
     property color onAccent
 
@@ -306,6 +357,16 @@ Singleton {
     property color trackFill: "#EAE0E7"
     property color divider: "#4C444D"
 
+    /** Porcelain branch state, applied by `applyMode()` (mode-glass.json). */
+    property bool porcelain: false
+    property string porcelainBase: "#EAE7EC"
+    property string appliedModeText: ""
+
+    /** Floating card chrome: smoked white, or porcelain + ink hairline. */
+    property color cardFill: Qt.rgba(1, 1, 1, 0.10)
+    property color cardEdge: Qt.rgba(1, 1, 1, 0.30)
+    property color cardSpecular: Qt.rgba(1, 1, 1, 0.80)
+
     /** Opaque stand-ins for the two text backdrops, for contrast reporting. */
     property string panelFlat: "#161217"
     property string tileFlat: "#1F1A1F"
@@ -316,6 +377,7 @@ Singleton {
         theme.roles = r
 
         theme.accent = r.accent
+        theme.accentText = r.accentText
         theme.onAccent = r.onAccent
 
         theme.panelBg = r.panelBg
@@ -340,6 +402,10 @@ Singleton {
         theme.trackDim = r.trackDim
         theme.trackFill = r.trackFill
         theme.divider = r.divider
+
+        theme.cardFill = r.cardFill
+        theme.cardEdge = r.cardEdge
+        theme.cardSpecular = r.cardSpecular
 
         theme.panelFlat = r.panelFlat
         theme.tileFlat = r.tileFlat
@@ -571,6 +637,51 @@ Singleton {
         onLoadedChanged: {
             if (loaded)
                 theme.applyPalette(text())
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  GLASS BRANCH
+    // ══════════════════════════════════════════════════════════════════════
+
+    /**
+     * Applies a freshly read `mode-glass.json` (see `modePath`).
+     *
+     * The wallpaper script rewrites it next to the palette on every change.
+     * A missing or half-written file keeps the current finish: the watch
+     * fires again when the completed contents land.
+     */
+    function applyMode(text) {
+        if (text === theme.appliedModeText)
+            return
+
+        let parsed
+        try {
+            parsed = JSON.parse(text)
+        } catch (error) {
+            return
+        }
+        if (!parsed || typeof parsed !== "object")
+            return
+
+        theme.appliedModeText = text
+        const lightBranch = parsed.branch === "light"
+        theme.porcelain = lightBranch
+        if (lightBranch)
+            theme.porcelainBase = sanitizeColor(parsed.base, "#EAE7EC")
+        theme.applyRoles()
+    }
+
+    FileView {
+        id: modeFileView
+        path: Qt.resolvedUrl(theme.modePath)
+        watchChanges: true
+
+        onFileChanged: reload()
+        onTextChanged: theme.applyMode(text())
+        onLoadedChanged: {
+            if (loaded)
+                theme.applyMode(text())
         }
     }
 }

@@ -105,7 +105,7 @@ Rectangle {
                 visible: coverImg.status !== Image.Ready || !root.hasMedia
                 text: "music_note"
                 iconSize: 26
-                color: root.hasMedia ? Theme.accent : Theme.textDim
+                color: root.hasMedia ? Theme.accentText : Theme.textDim
                 font.family: Theme.iconFontFamily
             }
         }

@@ -33,7 +33,7 @@ Rectangle {
     radius: 10
     color: (rowHover.hovered && !root.connected) || root.promptForThis ? Theme.tileHoverBg : Theme.tileIconBg
     border.width: 1
-    border.color: root.connected ? Theme.accent : Theme.tileBorder
+    border.color: root.connected ? Theme.accentText : Theme.tileBorder
 
     HoverHandler {
         id: rowHover
@@ -55,7 +55,7 @@ Rectangle {
         MaterialSymbol {
             text: "wifi"
             iconSize: 20
-            color: root.connected ? Theme.accent : Theme.textPrimary
+            color: root.connected ? Theme.accentText : Theme.textPrimary
             font.family: Theme.iconFontFamily
         }
 
@@ -90,7 +90,7 @@ Rectangle {
                         : root.secured ? "Protegida"
                         : "Abierta"
                     color: root.connected ? "#4ade80"
-                        : root.busy ? Theme.accent
+                        : root.busy ? Theme.accentText
                         : Theme.textDim
                     font.pixelSize: Appearance.font.pixelSize.textSmall - 1
                 }
@@ -102,7 +102,7 @@ Rectangle {
             visible: root.busy
             text: "refresh"
             iconSize: 18
-            color: Theme.accent
+            color: Theme.accentText
             font.family: Theme.iconFontFamily
 
             RotationAnimator on rotation {

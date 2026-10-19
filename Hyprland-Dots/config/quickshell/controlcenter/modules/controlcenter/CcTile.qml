@@ -83,7 +83,7 @@ Item {
                 text: tile.icon
                 iconSize: Theme.tileIconSize
                 font.family: Theme.iconFontFamily
-                color: tile.active ? Theme.onAccent : Theme.accent
+                color: tile.active ? Theme.onAccent : Theme.accentText
 
                 Behavior on color {
                     ColorAnimation { duration: Theme.colorDuration }

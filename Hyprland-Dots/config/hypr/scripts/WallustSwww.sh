@@ -164,6 +164,33 @@ EOF
   fi
 }
 
+# Same two finishes, for the Quickshell panels: Theme.qml watches this file
+# and swaps the floating card to porcelain when the band is light. `base` is
+# wallust color15 — the same key the waybar pane is tinted with — read from
+# the freshly written palette so both surfaces share one material.
+# Lives in $HOME/.config/quickshell/mode-glass.json; never edit it by hand.
+apply_dynamic_quickshell_glass() {
+  local band_mean="$1"
+  local mode_json="$HOME/.config/quickshell/mode-glass.json"
+  local palette_css="$HOME/.config/waybar/wallust/colors-waybar.css"
+  local base=""
+  base=$(sed -n 's/^@define-color[[:space:]]\+color15[[:space:]]\+\(#[0-9a-fA-F]\{6\}\).*/\1/p' "$palette_css" 2>/dev/null | head -n 1 || true)
+  [[ -n "$base" ]] || base="#EAE7EC"
+
+  local branch="dark"
+  if [[ -n "$band_mean" ]] && awk "BEGIN{exit !($band_mean >= 0.55)}"; then
+    branch="light"
+  fi
+
+  mkdir -p "$(dirname "$mode_json")"
+  cat << EOF > "$mode_json"
+{
+  "branch": "$branch",
+  "base": "$base"
+}
+EOF
+}
+
 wallpaper_band_mean=$(detect_wallpaper_band_mean "$wallpaper_path")
 apply_dynamic_waybar_glass "$wallpaper_band_mean"
 
@@ -215,6 +242,9 @@ wallust_targets=(
 )
 wait_for_templates "$start_ts" "${wallust_targets[@]}" || true
 
+# Quickshell glass branch from the same band measurement, now that the
+# palette it reads color15 from is the live one.
+apply_dynamic_quickshell_glass "$wallpaper_band_mean"
 
 # Normalize Ghostty palette syntax in case ':' was used by older files
 if [ -f "$HOME/.config/ghostty/wallust.conf" ]; then

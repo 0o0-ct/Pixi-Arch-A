@@ -31,7 +31,7 @@ Rectangle {
     radius: 10
     color: (rowHover.hovered && !root.active) ? Theme.tileHoverBg : Theme.tileIconBg
     border.width: 1
-    border.color: root.active ? Theme.accent : Theme.tileBorder
+    border.color: root.active ? Theme.accentText : Theme.tileBorder
 
     HoverHandler {
         id: rowHover
@@ -53,7 +53,7 @@ Rectangle {
         MaterialSymbol {
             text: CcSystem.audioNodeIcon(root.node)
             iconSize: 20
-            color: root.active ? Theme.accent : Theme.textPrimary
+            color: root.active ? Theme.accentText : Theme.textPrimary
             font.family: Theme.iconFontFamily
         }
 
