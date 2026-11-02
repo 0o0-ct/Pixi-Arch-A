@@ -108,7 +108,7 @@ Restart=on-failure
 RestartSec=10
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical-session.target
 EOF
 
 printf "${OK} Systemd service created\n"

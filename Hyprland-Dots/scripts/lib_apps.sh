@@ -1,13 +1,30 @@
 #!/usr/bin/env bash
 # Ayudantes para habilitar apps y selección de editor.
 
+# Ayudante para añadir líneas exec-once de forma idempotente y segura
+sa_append_once() {
+  local file="$1"
+  local line="$2"
+  local present_re="${3:-}"
+  mkdir -p "$(dirname "$file")"
+  touch "$file"
+  # Normalizar salto de línea final antes de añadir una exec-once nueva
+  if [ -s "$file" ] && [ -n "$(tail -c 1 "$file" 2>/dev/null)" ]; then
+    printf '\n' >>"$file"
+  fi
+  if [ -n "$present_re" ]; then
+    grep -Eq -- "$present_re" "$file" && return 0
+  elif grep -Fqx -- "$line" "$file"; then
+    return 0
+  fi
+  printf '%s\n' "$line" >>"$file"
+}
+
 enable_asusctl() {
   local log="$1"
   if command -v asusctl >/dev/null 2>&1; then
     local OVERLAY_SA="config/hypr/configs/Startup_Apps.conf"
-    mkdir -p "$(dirname "$OVERLAY_SA")"
-    touch "$OVERLAY_SA"
-    grep -qx 'exec-once = rog-control-center' "$OVERLAY_SA" || echo 'exec-once = rog-control-center' >>"$OVERLAY_SA"
+    sa_append_once "$OVERLAY_SA" 'exec-once = rog-control-center' '^\s*exec-once\s*=\s*rog-control-center'
   fi
 }
 
@@ -15,9 +32,7 @@ enable_blueman() {
   local log="$1"
   if command -v blueman-applet >/dev/null 2>&1; then
     local OVERLAY_SA="config/hypr/configs/Startup_Apps.conf"
-    mkdir -p "$(dirname "$OVERLAY_SA")"
-    touch "$OVERLAY_SA"
-    grep -qx 'exec-once = blueman-applet' "$OVERLAY_SA" || echo 'exec-once = blueman-applet' >>"$OVERLAY_SA"
+    sa_append_once "$OVERLAY_SA" 'exec-once = blueman-applet' '^\s*exec-once\s*=\s*(blueman-applet)'
   fi
 }
 
@@ -26,9 +41,7 @@ enable_ags() {
   if command -v ags >/dev/null 2>&1; then
     echo "${INFO:-[INFO]} AGS detectado - habilitando en scripts de inicio y actualización" 2>&1 | tee -a "$log"
     local OVERLAY_SA="config/hypr/configs/Startup_Apps.conf"
-    mkdir -p "$(dirname "$OVERLAY_SA")"
-    touch "$OVERLAY_SA"
-    grep -qx 'exec-once = ags' "$OVERLAY_SA" || echo 'exec-once = ags' >>"$OVERLAY_SA"
+    sa_append_once "$OVERLAY_SA" 'exec-once = ags' '^\s*exec-once\s*=\s*ags(\s|$)'
     sed -i '/#ags -q && ags &/s/^#//' config/hypr/scripts/RefreshNoWaybar.sh
     sed -i '/#ags -q && ags &/s/^#//' config/hypr/scripts/Refresh.sh
   fi
@@ -39,9 +52,7 @@ enable_quickshell() {
   if command -v qs >/dev/null 2>&1; then
     echo "${INFO:-[INFO]} Quickshell detectado - habilitando en scripts de inicio y actualización" 2>&1 | tee -a "$log"
     local OVERLAY_SA="config/hypr/configs/Startup_Apps.conf"
-    mkdir -p "$(dirname "$OVERLAY_SA")"
-    touch "$OVERLAY_SA"
-    grep -qx 'exec-once = qs' "$OVERLAY_SA" || echo 'exec-once = qs' >>"$OVERLAY_SA"
+    sa_append_once "$OVERLAY_SA" 'exec-once = qs' '^\s*exec-once\s*=\s*qs(\s|$)'
     sed -i '/#pkill qs && qs &/s/^#//' config/hypr/scripts/RefreshNoWaybar.sh
     sed -i '/#pkill qs && qs &/s/^#//' config/hypr/scripts/Refresh.sh
   fi
@@ -50,9 +61,8 @@ enable_quickshell() {
 ensure_keybinds_init() {
   local log="$1"
   local OVERLAY_SA="config/hypr/configs/Startup_Apps.conf"
-  mkdir -p "$(dirname "$OVERLAY_SA")"
-  if ! grep -qx 'exec-once = \$scriptsDir/KeybindsLayoutInit.sh' "$OVERLAY_SA"; then
-    echo 'exec-once = $scriptsDir/KeybindsLayoutInit.sh' >>"$OVERLAY_SA"
+  sa_append_once "$OVERLAY_SA" 'exec-once = $scriptsDir/KeybindsLayoutInit.sh'
+  if grep -Fqx -- 'exec-once = $scriptsDir/KeybindsLayoutInit.sh' "$OVERLAY_SA"; then
     echo "${INFO:-[INFO]} Añadido KeybindsLayoutInit.sh a la configuración de aplicaciones de inicio" 2>&1 | tee -a "$log"
   fi
 }
