@@ -14,14 +14,14 @@ hl.config({
         numlock_by_default = true,
         left_handed = false,
         follow_mouse = 1,
-        float_switch_override_focus = false,
+        float_switch_override_focus = 1,
         touchpad = {
             disable_while_typing = true,
             natural_scroll = true,
             clickfinger_behavior = false,
             middle_button_emulation = true,
             tap_to_click = true,
-            drag_lock = false,
+            drag_lock = 0,
         },
     },
 
@@ -35,7 +35,6 @@ hl.config({
     },
 
     dwindle = {
-        pseudotile = true,
         preserve_split = true,
         smart_split = false,
         smart_resizing = false,
@@ -43,13 +42,11 @@ hl.config({
 
     master = {
         new_status = "master",
-        new_on_top = 1,
+        new_on_top = true,
         mfact = 0.5,
     },
 
     gestures = {
-        workspace_swipe = true,
-        workspace_swipe_fingers = 3,
         workspace_swipe_distance = 500,
         workspace_swipe_invert = true,
         workspace_swipe_min_speed_to_force = 30,
@@ -61,7 +58,6 @@ hl.config({
     misc = {
         disable_hyprland_logo = true,
         disable_splash_rendering = true,
-        vfr = true,
         vrr = 1,
         mouse_move_enables_dpms = true,
         enable_swallow = true,
@@ -69,6 +65,10 @@ hl.config({
         focus_on_activate = false,
         initial_workspace_tracking = 0,
         middle_click_paste = false,
+    },
+
+    debug = {
+        vfr = true,
     },
 
     xwayland = {
