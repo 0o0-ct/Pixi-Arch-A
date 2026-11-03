@@ -19,7 +19,7 @@ elif [[ "${1:-}" == "toggle" ]]; then
         pkill -RTMIN+9 waybar 2>/dev/null || true
         notify-send -u low -i "$iDIR/ja.png" "Modo Infinito Activado ☕" "La pantalla NUNCA se apagará ni se bloqueará."
     else
-        hyprctl dispatch exec hypridle >/dev/null 2>&1 || nohup hypridle >/dev/null 2>&1 &
+        hyprctl dispatch 'hl.dsp.exec_cmd("hypridle")' >/dev/null 2>&1 || nohup hypridle >/dev/null 2>&1 &
         sleep 0.2
         pkill -RTMIN+9 waybar 2>/dev/null || true
         notify-send -u low -i "$iDIR/ja.png" "Modo Estándar Activado ⏱️" "Bloqueo automático de pantalla tras 15 minutos."

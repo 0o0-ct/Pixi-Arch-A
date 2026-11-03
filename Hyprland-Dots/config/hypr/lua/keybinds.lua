@@ -97,7 +97,25 @@ bind("SUPER + CTRL + D", hl.dsp.layout("removemaster"), { description = "elimina
 bind("SUPER + I", hl.dsp.layout("addmaster"), { description = "agregar master" })
 bind("SUPER + CTRL + Return", hl.dsp.layout("swapwithmaster"), { description = "intercambiar con master" })
 bind("SUPER + SHIFT + I", hl.dsp.layout("togglesplit"), { description = "alternar division dwindle" })
-bind("SUPER + J", hl.dsp.layout("togglesplit"), { description = "alternar division dwindle" })
+bind("SUPER + J", function()
+    if hl.get_config("general.layout") == "dwindle" then
+        hl.dispatch(hl.dsp.window.cycle_next())
+    else
+        hl.dispatch(hl.dsp.layout("cyclenext"))
+    end
+end, { description = "ciclar al siguiente" })
+bind("SUPER + K", function()
+    if hl.get_config("general.layout") == "dwindle" then
+        hl.dispatch(hl.dsp.window.cycle_next({ next = false }))
+    else
+        hl.dispatch(hl.dsp.layout("cycleprev"))
+    end
+end, { description = "ciclar al anterior" })
+bind("SUPER + O", function()
+    if hl.get_config("general.layout") == "dwindle" then
+        hl.dispatch(hl.dsp.layout("togglesplit"))
+    end
+end, { description = "alternar division dwindle" })
 
 -- =========================================================================
 -- 5. GRUPOS DE VENTANAS (NATIVE DISPATCHERS)
@@ -125,10 +143,10 @@ bind("SUPER + CTRL + Up", hl.dsp.window.move({ direction = "up" }), { descriptio
 bind("SUPER + CTRL + Down", hl.dsp.window.move({ direction = "down" }), { description = "mover ventana aba" })
 
 -- Redimensionar ventanas activas (hl.dsp.window.resize)
-bind("SUPER + SHIFT + Left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }), { description = "redimensionar izq (-50)", repeat_rate = true })
-bind("SUPER + SHIFT + Right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }), { description = "redimensionar der (+50)", repeat_rate = true })
-bind("SUPER + SHIFT + Up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }), { description = "redimensionar arr (-50)", repeat_rate = true })
-bind("SUPER + SHIFT + Down", hl.dsp.window.resize({ x = 0, y = 50, relative = true }), { description = "redimensionar aba (+50)", repeat_rate = true })
+bind("SUPER + SHIFT + Left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }), { description = "redimensionar izq (-50)", repeating = true })
+bind("SUPER + SHIFT + Right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }), { description = "redimensionar der (+50)", repeating = true })
+bind("SUPER + SHIFT + Up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }), { description = "redimensionar arr (-50)", repeating = true })
+bind("SUPER + SHIFT + Down", hl.dsp.window.resize({ x = 0, y = 50, relative = true }), { description = "redimensionar aba (+50)", repeating = true })
 
 -- Intercambiar ventanas (hl.dsp.window.swap)
 bind("SUPER + ALT + Left", hl.dsp.window.swap({ direction = "left" }), { description = "intercambiar ventana izq" })
@@ -203,14 +221,13 @@ bind("ALT + F6", exec(scriptsDir .. "/ScreenShot.sh --active"), { description = 
 -- =========================================================================
 -- 9. CONTROL DE AUDIO Y MEDIOS (TECLAS MULTIMEDIA)
 -- =========================================================================
-bind("XF86AudioRaiseVolume", exec(scriptsDir .. "/Volume.sh --inc"), { locked = true, repeat_rate = true, description = "subir volumen" })
-bind("XF86AudioLowerVolume", exec(scriptsDir .. "/Volume.sh --dec"), { locked = true, repeat_rate = true, description = "bajar volumen" })
-bind("ALT + XF86AudioRaiseVolume", exec(scriptsDir .. "/Volume.sh --inc-precise"), { locked = true, repeat_rate = true, description = "subir volumen preciso" })
-bind("ALT + XF86AudioLowerVolume", exec(scriptsDir .. "/Volume.sh --dec-precise"), { locked = true, repeat_rate = true, description = "bajar volumen preciso" })
+bind("XF86AudioRaiseVolume", exec(scriptsDir .. "/Volume.sh --inc"), { locked = true, repeating = true, description = "subir volumen" })
+bind("XF86AudioLowerVolume", exec(scriptsDir .. "/Volume.sh --dec"), { locked = true, repeating = true, description = "bajar volumen" })
+bind("ALT + XF86AudioRaiseVolume", exec(scriptsDir .. "/Volume.sh --inc-precise"), { locked = true, repeating = true, description = "subir volumen preciso" })
+bind("ALT + XF86AudioLowerVolume", exec(scriptsDir .. "/Volume.sh --dec-precise"), { locked = true, repeating = true, description = "bajar volumen preciso" })
 bind("XF86AudioMute", exec(scriptsDir .. "/Volume.sh --toggle"), { locked = true, description = "silenciar audio" })
 bind("XF86AudioMicMute", exec(scriptsDir .. "/Volume.sh --toggle-mic"), { locked = true, description = "silenciar micrófono" })
 
-bind("XF86AudioPlayPause", exec(scriptsDir .. "/MediaCtrl.sh --pause"), { locked = true, description = "reproducir/pausar" })
 bind("XF86AudioPause", exec(scriptsDir .. "/MediaCtrl.sh --pause"), { locked = true, description = "pausar" })
 bind("XF86AudioPlay", exec(scriptsDir .. "/MediaCtrl.sh --pause"), { locked = true, description = "reproducir" })
 bind("XF86AudioNext", exec(scriptsDir .. "/MediaCtrl.sh --nxt"), { locked = true, description = "siguiente pista" })
@@ -223,10 +240,10 @@ bind("XF86Rfkill", exec(scriptsDir .. "/AirplaneMode.sh"), { locked = true, desc
 -- =========================================================================
 -- 10. TECLAS ESPECÍFICAS DE PORTÁTILES (BRILLO, TECLADO, VENTILADORES)
 -- =========================================================================
-bind("XF86MonBrightnessDown", exec(scriptsDir .. "/Brightness.sh --dec"), { locked = true, repeat_rate = true, description = "bajar brillo monitor" })
-bind("XF86MonBrightnessUp", exec(scriptsDir .. "/Brightness.sh --inc"), { locked = true, repeat_rate = true, description = "subir brillo monitor" })
-bind("XF86KbdBrightnessDown", exec(scriptsDir .. "/BrightnessKbd.sh --dec"), { locked = true, repeat_rate = true, description = "bajar brillo teclado" })
-bind("XF86KbdBrightnessUp", exec(scriptsDir .. "/BrightnessKbd.sh --inc"), { locked = true, repeat_rate = true, description = "subir brillo teclado" })
+bind("XF86MonBrightnessDown", exec(scriptsDir .. "/Brightness.sh --dec"), { locked = true, repeating = true, description = "bajar brillo monitor" })
+bind("XF86MonBrightnessUp", exec(scriptsDir .. "/Brightness.sh --inc"), { locked = true, repeating = true, description = "subir brillo monitor" })
+bind("XF86KbdBrightnessDown", exec(scriptsDir .. "/BrightnessKbd.sh --dec"), { locked = true, repeating = true, description = "bajar brillo teclado" })
+bind("XF86KbdBrightnessUp", exec(scriptsDir .. "/BrightnessKbd.sh --inc"), { locked = true, repeating = true, description = "subir brillo teclado" })
 bind("XF86TouchpadToggle", exec(scriptsDir .. "/TouchPad.sh"), { description = "alternar touchpad" })
 
 -- Teclas Asus ROG / TUF
