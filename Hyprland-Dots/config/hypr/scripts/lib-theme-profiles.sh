@@ -468,7 +468,7 @@ tp_reload() {
       pgrep -x waybar >/dev/null 2>&1 || break
       sleep 0.2
     done
-    hyprctl dispatch exec waybar >/dev/null 2>&1 || true
+    waybar >/dev/null 2>&1 &
     tp_info "  reload : waybar reiniciado (restart real, no SIGUSR2)"
   else
     tp_info "  reload : waybar no está corriendo; no se arranca"

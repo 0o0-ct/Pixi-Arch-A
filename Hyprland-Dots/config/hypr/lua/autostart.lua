@@ -10,9 +10,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(home .. "/.config/hypr/initial-boot.sh")
 
     -- Daemons principales de la interfaz
-    hl.exec_cmd("waybar")
     hl.exec_cmd("hypridle")
-    hl.exec_cmd("awww-daemon")
+    hl.exec_cmd("bash -c 'command -v awww-daemon && exec awww-daemon; command -v swww-daemon && exec swww-daemon'")
 
     -- Quickshell overview
     hl.exec_cmd("command -v qs && qs -c overview")
@@ -34,4 +33,7 @@ hl.on("hyprland.start", function()
 
     -- Atajos y disposición de teclado inicial
     hl.exec_cmd("test -f " .. scriptsDir .. "/KeybindsLayoutInit.sh && " .. scriptsDir .. "/KeybindsLayoutInit.sh")
+
+    -- Lanzar Refresh.sh (con Waybar, Wallust y temas sincronizados)
+    hl.exec_cmd("sleep 0.5 && " .. scriptsDir .. "/Refresh.sh")
 end)
