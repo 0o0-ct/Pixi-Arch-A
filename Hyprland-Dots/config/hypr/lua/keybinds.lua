@@ -9,7 +9,7 @@ local scriptsDir = home .. "/.config/hypr/scripts"
 local userScripts = home .. "/.config/hypr/UserScripts"
 
 local terminal = scriptsDir .. "/KittyRotate.sh"
-local fileManager = "thunar"
+local fileManager = "nautilus"
 
 -- -------------------------------------------------------------------------
 -- Helper functions para binding
@@ -74,9 +74,9 @@ bind("SUPER + SHIFT + Q", exec(scriptsDir .. "/KillActiveProcess.sh"), { descrip
 bind("SUPER + Space", hl.dsp.window.float(), { description = "flotar ventana actual" })
 bind("SUPER + ALT + Space", exec("hyprctl dispatch workspaceopt allfloat"), { description = "flotar todas las ventanas" })
 bind("SUPER + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "pantalla completa" })
-bind("SUPER + CTRL + F", hl.dsp.window.fullscreen({ mode = "maximize" }), { description = "maximizar ventana" })
+bind("SUPER + CTRL + F", hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "maximizar ventana" })
 bind("SUPER + P", hl.dsp.window.pseudo(), { description = "alternar pseudo dwindle" })
-bind("ALT + Tab", hl.dsp.focus({ window = "next" }), { description = "ciclar ventana siguiente" })
+bind("ALT + Tab", exec("hyprctl dispatch cyclenext"), { description = "ciclar ventana siguiente" })
 
 -- Opciones de sistema y efectos
 bind("SUPER + ALT + O", exec(scriptsDir .. "/ChangeBlur.sh"), { description = "alternar desenfoque" })
@@ -98,39 +98,39 @@ bind("SUPER + CTRL + D", exec("hyprctl dispatch layoutmsg removemaster"), { desc
 bind("SUPER + I", exec("hyprctl dispatch layoutmsg addmaster"), { description = "agregar master" })
 bind("SUPER + CTRL + Return", exec("hyprctl dispatch layoutmsg swapwithmaster"), { description = "intercambiar con master" })
 bind("SUPER + SHIFT + I", exec("hyprctl dispatch layoutmsg togglesplit"), { description = "alternar division dwindle" })
-bind("SUPER + J", hl.dsp.layout("togglesplit"), { description = "alternar division dwindle" })
+bind("SUPER + J", exec("hyprctl dispatch layoutmsg togglesplit"), { description = "alternar division dwindle" })
 bind("SUPER + M", exec("hyprctl dispatch splitratio 0.3"), { description = "establecer proporcion de division a 0.3" })
 
 -- =========================================================================
 -- 5. GRUPOS DE VENTANAS
 -- =========================================================================
-bind("SUPER + G", hl.dsp.group.toggle(), { description = "alternar grupo" })
-bind("SUPER + CTRL + Tab", hl.dsp.group.cycle({ direction = "f" }), { description = "siguiente en grupo" })
-bind("SUPER + CTRL + SHIFT + Tab", hl.dsp.group.cycle({ direction = "b" }), { description = "anterior en grupo" })
-bind("SUPER + CTRL + K", hl.dsp.group.move_in({ direction = "l" }), { description = "mover a la izq dentro del grupo" })
-bind("SUPER + CTRL + L", hl.dsp.group.move_in({ direction = "r" }), { description = "mover a la der dentro del grupo" })
-bind("SUPER + CTRL + H", hl.dsp.group.move_out(), { description = "sacar activa del grupo" })
+bind("SUPER + G", exec("hyprctl dispatch togglegroup"), { description = "alternar grupo" })
+bind("SUPER + CTRL + Tab", exec("hyprctl dispatch changegroupactive f"), { description = "siguiente en grupo" })
+bind("SUPER + CTRL + SHIFT + Tab", exec("hyprctl dispatch changegroupactive b"), { description = "anterior en grupo" })
+bind("SUPER + CTRL + K", exec("hyprctl dispatch moveintogroup l"), { description = "mover a la izq dentro del grupo" })
+bind("SUPER + CTRL + L", exec("hyprctl dispatch moveintogroup r"), { description = "mover a la der dentro del grupo" })
+bind("SUPER + CTRL + H", exec("hyprctl dispatch moveoutofgroup"), { description = "sacar activa del grupo" })
 
 -- =========================================================================
 -- 6. NAVEGACIÓN, MOVIMIENTO, REDIMENSIONADO E INTERCAMBIO
 -- =========================================================================
 -- Foco (movefocus)
-bind("SUPER + Left", hl.dsp.focus({ direction = "l" }), { description = "enfocar izq" })
-bind("SUPER + Right", hl.dsp.focus({ direction = "r" }), { description = "enfocar der" })
-bind("SUPER + Up", hl.dsp.focus({ direction = "u" }), { description = "enfocar arr" })
-bind("SUPER + Down", hl.dsp.focus({ direction = "d" }), { description = "enfocar aba" })
+bind("SUPER + Left", exec("hyprctl dispatch movefocus l"), { description = "enfocar izq" })
+bind("SUPER + Right", exec("hyprctl dispatch movefocus r"), { description = "enfocar der" })
+bind("SUPER + Up", exec("hyprctl dispatch movefocus u"), { description = "enfocar arr" })
+bind("SUPER + Down", exec("hyprctl dispatch movefocus d"), { description = "enfocar aba" })
 
 -- Mover ventanas (movewindow)
-bind("SUPER + CTRL + Left", hl.dsp.window.move({ direction = "l" }), { description = "mover ventana izq" })
-bind("SUPER + CTRL + Right", hl.dsp.window.move({ direction = "r" }), { description = "mover ventana der" })
-bind("SUPER + CTRL + Up", hl.dsp.window.move({ direction = "u" }), { description = "mover ventana arr" })
-bind("SUPER + CTRL + Down", hl.dsp.window.move({ direction = "d" }), { description = "mover ventana aba" })
+bind("SUPER + CTRL + Left", exec("hyprctl dispatch movewindow l"), { description = "mover ventana izq" })
+bind("SUPER + CTRL + Right", exec("hyprctl dispatch movewindow r"), { description = "mover ventana der" })
+bind("SUPER + CTRL + Up", exec("hyprctl dispatch movewindow u"), { description = "mover ventana arr" })
+bind("SUPER + CTRL + Down", exec("hyprctl dispatch movewindow d"), { description = "mover ventana aba" })
 
 -- Redimensionar ventanas activas (resizeactive)
-bind("SUPER + SHIFT + Left", hl.dsp.window.resize({ delta = { -50, 0 } }), { description = "redimensionar izq (-50)", repeat_rate = true })
-bind("SUPER + SHIFT + Right", hl.dsp.window.resize({ delta = { 50, 0 } }), { description = "redimensionar der (+50)", repeat_rate = true })
-bind("SUPER + SHIFT + Up", hl.dsp.window.resize({ delta = { 0, -50 } }), { description = "redimensionar arr (-50)", repeat_rate = true })
-bind("SUPER + SHIFT + Down", hl.dsp.window.resize({ delta = { 0, 50 } }), { description = "redimensionar aba (+50)", repeat_rate = true })
+bind("SUPER + SHIFT + Left", exec("hyprctl dispatch resizeactive -50 0"), { description = "redimensionar izq (-50)", repeat_rate = true })
+bind("SUPER + SHIFT + Right", exec("hyprctl dispatch resizeactive 50 0"), { description = "redimensionar der (+50)", repeat_rate = true })
+bind("SUPER + SHIFT + Up", exec("hyprctl dispatch resizeactive 0 -50"), { description = "redimensionar arr (-50)", repeat_rate = true })
+bind("SUPER + SHIFT + Down", exec("hyprctl dispatch resizeactive 0 50"), { description = "redimensionar aba (+50)", repeat_rate = true })
 
 -- Intercambiar ventanas (swapwindow)
 bind("SUPER + ALT + Left", exec("hyprctl dispatch swapwindow l"), { description = "intercambiar ventana izq" })
@@ -150,8 +150,8 @@ bind("SUPER + mouse_down", exec("hyprctl dispatch workspace e+1"), { description
 bind("SUPER + mouse_up", exec("hyprctl dispatch workspace e-1"), { description = "espacio anterior" })
 
 -- Espacio de trabajo especial (Scratchpad)
-bind("SUPER + U", hl.dsp.workspace.toggle_special("special"), { description = "alternar espacio especial" })
-bind("SUPER + SHIFT + U", hl.dsp.window.move({ workspace = "special:special" }), { description = "mover a espacio especial" })
+bind("SUPER + U", exec("hyprctl dispatch togglespecialworkspace"), { description = "alternar espacio especial" })
+bind("SUPER + SHIFT + U", exec("hyprctl dispatch movetoworkspace special"), { description = "mover a espacio especial" })
 
 -- Desplazamiento de ventanas a espacios anterior/siguiente con brackets [ y ]
 bind("SUPER + SHIFT + bracketleft", exec("hyprctl dispatch movetoworkspace -1"), { description = "mover a espacio anterior" })
@@ -166,16 +166,16 @@ for i = 1, 10 do
     local code = tostring(9 + i) -- 10 = key 1, ..., 19 = key 0
 
     -- Ir a espacio de trabajo
-    bind("SUPER + " .. key, hl.dsp.focus({ workspace = ws }), { description = "espacio " .. ws })
-    bind("SUPER + code:" .. code, hl.dsp.focus({ workspace = ws }), { description = "espacio " .. ws })
+    bind("SUPER + " .. key, exec("hyprctl dispatch workspace " .. ws), { description = "espacio " .. ws })
+    bind("SUPER + code:" .. code, exec("hyprctl dispatch workspace " .. ws), { description = "espacio " .. ws })
 
     -- Mover ventana activa y seguir
-    bind("SUPER + SHIFT + " .. key, hl.dsp.window.move({ workspace = ws, follow = true }), { description = "mover a espacio " .. ws })
-    bind("SUPER + SHIFT + code:" .. code, hl.dsp.window.move({ workspace = ws, follow = true }), { description = "mover a espacio " .. ws })
+    bind("SUPER + SHIFT + " .. key, exec("hyprctl dispatch movetoworkspace " .. ws), { description = "mover a espacio " .. ws })
+    bind("SUPER + SHIFT + code:" .. code, exec("hyprctl dispatch movetoworkspace " .. ws), { description = "mover a espacio " .. ws })
 
     -- Mover ventana activa en silencio
-    bind("SUPER + CTRL + " .. key, hl.dsp.window.move({ workspace = ws, follow = false }), { description = "mover silencioso a espacio " .. ws })
-    bind("SUPER + CTRL + code:" .. code, hl.dsp.window.move({ workspace = ws, follow = false }), { description = "mover silencioso a espacio " .. ws })
+    bind("SUPER + CTRL + " .. key, exec("hyprctl dispatch movetoworkspacesilent " .. ws), { description = "mover silencioso a espacio " .. ws })
+    bind("SUPER + CTRL + code:" .. code, exec("hyprctl dispatch movetoworkspacesilent " .. ws), { description = "mover silencioso a espacio " .. ws })
 end
 
 -- Mover espacio de trabajo entre monitores
@@ -247,5 +247,21 @@ bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true, description = "m
 bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true, description = "redimensionar ventana" })
 
 -- Magnificador de escritorio (zoom factor)
-bind("SUPER + ALT + mouse_down", exec('hyprctl keyword cursor:zoom_factor "$(hyprctl getoption cursor:zoom_factor | awk \'NR==1 {factor = $2; if (factor < 1) {factor = 1}; print factor * 2.0}\')"'), { description = "acercar zoom" })
-bind("SUPER + ALT + mouse_up", exec('hyprctl keyword cursor:zoom_factor "$(hyprctl getoption cursor:zoom_factor | awk \'NR==1 {factor = $2; if (factor < 1) {factor = 1}; print factor / 2.0}\')"'), { description = "alejar zoom" })
+-- Magnificador de escritorio (zoom factor) usando función Lua nativa
+bind("SUPER + ALT + mouse_down", function()
+    local current = 1.0
+    if hl.get_config and hl.get_config("cursor.zoom_factor") then
+        current = tonumber(hl.get_config("cursor.zoom_factor")) or 1.0
+    end
+    local new_factor = math.min(current * 1.5, 5.0)
+    hl.config({ cursor = { zoom_factor = new_factor } })
+end, { description = "acercar zoom" })
+
+bind("SUPER + ALT + mouse_up", function()
+    local current = 1.0
+    if hl.get_config and hl.get_config("cursor.zoom_factor") then
+        current = tonumber(hl.get_config("cursor.zoom_factor")) or 1.0
+    end
+    local new_factor = math.max(current / 1.5, 1.0)
+    hl.config({ cursor = { zoom_factor = new_factor } })
+end, { description = "alejar zoom" })

@@ -16,7 +16,7 @@ hl.on("hyprland.start", function()
     -- Quickshell overview
     hl.exec_cmd("command -v qs && qs -c overview")
 
-    -- Thunar daemon para inicio instantáneo del explorador
+    -- Gestor de archivos daemon para inicio instantáneo (thunar si existe como servicio de fondo)
     hl.exec_cmd("command -v thunar && thunar --daemon")
 
     -- Portapapeles (cliphist)
