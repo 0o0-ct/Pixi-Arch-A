@@ -67,20 +67,19 @@ bind("SUPER + CTRL + B", exec(scriptsDir .. "/WaybarStyles.sh"), { description =
 bind("SUPER + ALT + B", exec(scriptsDir .. "/WaybarLayout.sh"), { description = "menu de diseño waybar" })
 
 -- =========================================================================
--- 3. GESTIÓN DE VENTANAS Y ESTADOS
+-- 3. GESTIÓN DE VENTANAS Y ESTADOS (NATIVE DISPATCHERS)
 -- =========================================================================
 bind("SUPER + Q", hl.dsp.window.close(), { description = "cerrar ventana activa" })
 bind("SUPER + SHIFT + Q", exec(scriptsDir .. "/KillActiveProcess.sh"), { description = "terminar proceso activo" })
 bind("SUPER + Space", hl.dsp.window.float(), { description = "flotar ventana actual" })
-bind("SUPER + ALT + Space", exec("hyprctl dispatch workspaceopt allfloat"), { description = "flotar todas las ventanas" })
 bind("SUPER + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "pantalla completa" })
 bind("SUPER + CTRL + F", hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "maximizar ventana" })
 bind("SUPER + P", hl.dsp.window.pseudo(), { description = "alternar pseudo dwindle" })
-bind("ALT + Tab", exec("hyprctl dispatch cyclenext"), { description = "ciclar ventana siguiente" })
+bind("ALT + Tab", hl.dsp.window.cycle_next(), { description = "ciclar ventana siguiente" })
 
 -- Opciones de sistema y efectos
 bind("SUPER + ALT + O", exec(scriptsDir .. "/ChangeBlur.sh"), { description = "alternar desenfoque" })
-bind("SUPER + CTRL + O", exec("hyprctl setprop active opaque toggle"), { description = "alternar opacidad de ventana" })
+bind("SUPER + CTRL + O", hl.dsp.window.set_prop({ prop = "opaque", value = "toggle" }), { description = "alternar opacidad de ventana" })
 bind("SUPER + SHIFT + G", exec(scriptsDir .. "/GameMode.sh"), { description = "alternar modo de juego" })
 
 -- Sesión y bloqueo
@@ -88,76 +87,75 @@ bind("SUPER + L", exec(scriptsDir .. "/LockScreen.sh"), { description = "bloquea
 bind("CTRL + ALT + L", exec(scriptsDir .. "/LockScreen.sh"), { description = "bloquear pantalla" })
 bind("CTRL + ALT + P", exec(scriptsDir .. "/Wlogout.sh"), { description = "menu de energia" })
 bind("SUPER + Escape", exec(scriptsDir .. "/Wlogout.sh"), { description = "menu de salida" })
-bind("CTRL + ALT + Delete", exec("hyprctl dispatch exit 0"), { description = "salir de Hyprland" })
+bind("CTRL + ALT + Delete", hl.dsp.exit(), { description = "salir de Hyprland" })
 
 -- =========================================================================
--- 4. DISEÑOS (MASTER & DWINDLE)
+-- 4. DISEÑOS (MASTER & DWINDLE - NATIVE DISPATCHERS)
 -- =========================================================================
 bind("SUPER + ALT + L", exec(scriptsDir .. "/ChangeLayout.sh"), { description = "alternar diseño master/dwindle" })
-bind("SUPER + CTRL + D", exec("hyprctl dispatch layoutmsg removemaster"), { description = "eliminar master" })
-bind("SUPER + I", exec("hyprctl dispatch layoutmsg addmaster"), { description = "agregar master" })
-bind("SUPER + CTRL + Return", exec("hyprctl dispatch layoutmsg swapwithmaster"), { description = "intercambiar con master" })
-bind("SUPER + SHIFT + I", exec("hyprctl dispatch layoutmsg togglesplit"), { description = "alternar division dwindle" })
-bind("SUPER + J", exec("hyprctl dispatch layoutmsg togglesplit"), { description = "alternar division dwindle" })
-bind("SUPER + M", exec("hyprctl dispatch splitratio 0.3"), { description = "establecer proporcion de division a 0.3" })
+bind("SUPER + CTRL + D", hl.dsp.layout("removemaster"), { description = "eliminar master" })
+bind("SUPER + I", hl.dsp.layout("addmaster"), { description = "agregar master" })
+bind("SUPER + CTRL + Return", hl.dsp.layout("swapwithmaster"), { description = "intercambiar con master" })
+bind("SUPER + SHIFT + I", hl.dsp.layout("togglesplit"), { description = "alternar division dwindle" })
+bind("SUPER + J", hl.dsp.layout("togglesplit"), { description = "alternar division dwindle" })
 
 -- =========================================================================
--- 5. GRUPOS DE VENTANAS
+-- 5. GRUPOS DE VENTANAS (NATIVE DISPATCHERS)
 -- =========================================================================
-bind("SUPER + G", exec("hyprctl dispatch togglegroup"), { description = "alternar grupo" })
-bind("SUPER + CTRL + Tab", exec("hyprctl dispatch changegroupactive f"), { description = "siguiente en grupo" })
-bind("SUPER + CTRL + SHIFT + Tab", exec("hyprctl dispatch changegroupactive b"), { description = "anterior en grupo" })
-bind("SUPER + CTRL + K", exec("hyprctl dispatch moveintogroup l"), { description = "mover a la izq dentro del grupo" })
-bind("SUPER + CTRL + L", exec("hyprctl dispatch moveintogroup r"), { description = "mover a la der dentro del grupo" })
-bind("SUPER + CTRL + H", exec("hyprctl dispatch moveoutofgroup"), { description = "sacar activa del grupo" })
-
--- =========================================================================
--- 6. NAVEGACIÓN, MOVIMIENTO, REDIMENSIONADO E INTERCAMBIO
--- =========================================================================
--- Foco (movefocus)
-bind("SUPER + Left", exec("hyprctl dispatch movefocus l"), { description = "enfocar izq" })
-bind("SUPER + Right", exec("hyprctl dispatch movefocus r"), { description = "enfocar der" })
-bind("SUPER + Up", exec("hyprctl dispatch movefocus u"), { description = "enfocar arr" })
-bind("SUPER + Down", exec("hyprctl dispatch movefocus d"), { description = "enfocar aba" })
-
--- Mover ventanas (movewindow)
-bind("SUPER + CTRL + Left", exec("hyprctl dispatch movewindow l"), { description = "mover ventana izq" })
-bind("SUPER + CTRL + Right", exec("hyprctl dispatch movewindow r"), { description = "mover ventana der" })
-bind("SUPER + CTRL + Up", exec("hyprctl dispatch movewindow u"), { description = "mover ventana arr" })
-bind("SUPER + CTRL + Down", exec("hyprctl dispatch movewindow d"), { description = "mover ventana aba" })
-
--- Redimensionar ventanas activas (resizeactive)
-bind("SUPER + SHIFT + Left", exec("hyprctl dispatch resizeactive -50 0"), { description = "redimensionar izq (-50)", repeat_rate = true })
-bind("SUPER + SHIFT + Right", exec("hyprctl dispatch resizeactive 50 0"), { description = "redimensionar der (+50)", repeat_rate = true })
-bind("SUPER + SHIFT + Up", exec("hyprctl dispatch resizeactive 0 -50"), { description = "redimensionar arr (-50)", repeat_rate = true })
-bind("SUPER + SHIFT + Down", exec("hyprctl dispatch resizeactive 0 50"), { description = "redimensionar aba (+50)", repeat_rate = true })
-
--- Intercambiar ventanas (swapwindow)
-bind("SUPER + ALT + Left", exec("hyprctl dispatch swapwindow l"), { description = "intercambiar ventana izq" })
-bind("SUPER + ALT + Right", exec("hyprctl dispatch swapwindow r"), { description = "intercambiar ventana der" })
-bind("SUPER + ALT + Up", exec("hyprctl dispatch swapwindow u"), { description = "intercambiar ventana arr" })
-bind("SUPER + ALT + Down", exec("hyprctl dispatch swapwindow d"), { description = "intercambiar ventana aba" })
+bind("SUPER + G", hl.dsp.group.toggle(), { description = "alternar grupo" })
+bind("SUPER + CTRL + Tab", hl.dsp.group.next(), { description = "siguiente en grupo" })
+bind("SUPER + CTRL + SHIFT + Tab", hl.dsp.group.prev(), { description = "anterior en grupo" })
+bind("SUPER + CTRL + K", hl.dsp.window.move({ into_group = "left" }), { description = "mover a la izq dentro del grupo" })
+bind("SUPER + CTRL + L", hl.dsp.window.move({ into_group = "right" }), { description = "mover a la der dentro del grupo" })
+bind("SUPER + CTRL + H", hl.dsp.window.move({ out_of_group = true }), { description = "sacar activa del grupo" })
 
 -- =========================================================================
--- 7. ESPACIOS DE TRABAJO (WORKSPACES)
+-- 6. NAVEGACIÓN, MOVIMIENTO, REDIMENSIONADO E INTERCAMBIO (NATIVE DISPATCHERS)
+-- =========================================================================
+-- Foco (hl.dsp.focus)
+bind("SUPER + Left", hl.dsp.focus({ direction = "left" }), { description = "enfocar izq" })
+bind("SUPER + Right", hl.dsp.focus({ direction = "right" }), { description = "enfocar der" })
+bind("SUPER + Up", hl.dsp.focus({ direction = "up" }), { description = "enfocar arr" })
+bind("SUPER + Down", hl.dsp.focus({ direction = "down" }), { description = "enfocar aba" })
+
+-- Mover ventanas en dirección (hl.dsp.window.move)
+bind("SUPER + CTRL + Left", hl.dsp.window.move({ direction = "left" }), { description = "mover ventana izq" })
+bind("SUPER + CTRL + Right", hl.dsp.window.move({ direction = "right" }), { description = "mover ventana der" })
+bind("SUPER + CTRL + Up", hl.dsp.window.move({ direction = "up" }), { description = "mover ventana arr" })
+bind("SUPER + CTRL + Down", hl.dsp.window.move({ direction = "down" }), { description = "mover ventana aba" })
+
+-- Redimensionar ventanas activas (hl.dsp.window.resize)
+bind("SUPER + SHIFT + Left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }), { description = "redimensionar izq (-50)", repeat_rate = true })
+bind("SUPER + SHIFT + Right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }), { description = "redimensionar der (+50)", repeat_rate = true })
+bind("SUPER + SHIFT + Up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }), { description = "redimensionar arr (-50)", repeat_rate = true })
+bind("SUPER + SHIFT + Down", hl.dsp.window.resize({ x = 0, y = 50, relative = true }), { description = "redimensionar aba (+50)", repeat_rate = true })
+
+-- Intercambiar ventanas (hl.dsp.window.swap)
+bind("SUPER + ALT + Left", hl.dsp.window.swap({ direction = "left" }), { description = "intercambiar ventana izq" })
+bind("SUPER + ALT + Right", hl.dsp.window.swap({ direction = "right" }), { description = "intercambiar ventana der" })
+bind("SUPER + ALT + Up", hl.dsp.window.swap({ direction = "up" }), { description = "intercambiar ventana arr" })
+bind("SUPER + ALT + Down", hl.dsp.window.swap({ direction = "down" }), { description = "intercambiar ventana aba" })
+
+-- =========================================================================
+-- 7. ESPACIOS DE TRABAJO (WORKSPACES - NATIVE DISPATCHERS)
 -- =========================================================================
 -- Navegación relativa
-bind("SUPER + Tab", exec("hyprctl dispatch workspace m+1"), { description = "siguiente espacio" })
-bind("SUPER + SHIFT + Tab", exec("hyprctl dispatch workspace m-1"), { description = "espacio anterior" })
-bind("SUPER + Period", exec("hyprctl dispatch workspace e+1"), { description = "siguiente espacio" })
-bind("SUPER + Comma", exec("hyprctl dispatch workspace e-1"), { description = "espacio anterior" })
-bind("SUPER + mouse_down", exec("hyprctl dispatch workspace e+1"), { description = "siguiente espacio" })
-bind("SUPER + mouse_up", exec("hyprctl dispatch workspace e-1"), { description = "espacio anterior" })
+bind("SUPER + Tab", hl.dsp.focus({ workspace = "m+1" }), { description = "siguiente espacio" })
+bind("SUPER + SHIFT + Tab", hl.dsp.focus({ workspace = "m-1" }), { description = "espacio anterior" })
+bind("SUPER + Period", hl.dsp.focus({ workspace = "e+1" }), { description = "siguiente espacio" })
+bind("SUPER + Comma", hl.dsp.focus({ workspace = "e-1" }), { description = "espacio anterior" })
+bind("SUPER + mouse_down", hl.dsp.focus({ workspace = "e+1" }), { description = "siguiente espacio" })
+bind("SUPER + mouse_up", hl.dsp.focus({ workspace = "e-1" }), { description = "espacio anterior" })
 
 -- Espacio de trabajo especial (Scratchpad)
-bind("SUPER + U", exec("hyprctl dispatch togglespecialworkspace"), { description = "alternar espacio especial" })
-bind("SUPER + SHIFT + U", exec("hyprctl dispatch movetoworkspace special"), { description = "mover a espacio especial" })
+bind("SUPER + U", hl.dsp.workspace.toggle_special("special"), { description = "alternar espacio especial" })
+bind("SUPER + SHIFT + U", hl.dsp.window.move({ workspace = "special:special" }), { description = "mover a espacio especial" })
 
 -- Desplazamiento de ventanas a espacios anterior/siguiente con brackets [ y ]
-bind("SUPER + SHIFT + bracketleft", exec("hyprctl dispatch movetoworkspace -1"), { description = "mover a espacio anterior" })
-bind("SUPER + SHIFT + bracketright", exec("hyprctl dispatch movetoworkspace +1"), { description = "mover a siguiente espacio" })
-bind("SUPER + CTRL + bracketleft", exec("hyprctl dispatch movetoworkspacesilent -1"), { description = "mover silencioso a espacio anterior" })
-bind("SUPER + CTRL + bracketright", exec("hyprctl dispatch movetoworkspacesilent +1"), { description = "mover silencioso a siguiente espacio" })
+bind("SUPER + SHIFT + bracketleft", hl.dsp.window.move({ workspace = "-1", follow = true }), { description = "mover a espacio anterior" })
+bind("SUPER + SHIFT + bracketright", hl.dsp.window.move({ workspace = "+1", follow = true }), { description = "mover a siguiente espacio" })
+bind("SUPER + CTRL + bracketleft", hl.dsp.window.move({ workspace = "-1", follow = false }), { description = "mover silencioso a espacio anterior" })
+bind("SUPER + CTRL + bracketright", hl.dsp.window.move({ workspace = "+1", follow = false }), { description = "mover silencioso a siguiente espacio" })
 
 -- Espacios numéricos 1 a 10 (con teclas normales y keycodes 10 a 19 para soporte multinacional)
 for i = 1, 10 do
@@ -166,23 +164,23 @@ for i = 1, 10 do
     local code = tostring(9 + i) -- 10 = key 1, ..., 19 = key 0
 
     -- Ir a espacio de trabajo
-    bind("SUPER + " .. key, exec("hyprctl dispatch workspace " .. ws), { description = "espacio " .. ws })
-    bind("SUPER + code:" .. code, exec("hyprctl dispatch workspace " .. ws), { description = "espacio " .. ws })
+    bind("SUPER + " .. key, hl.dsp.focus({ workspace = ws }), { description = "espacio " .. ws })
+    bind("SUPER + code:" .. code, hl.dsp.focus({ workspace = ws }), { description = "espacio " .. ws })
 
     -- Mover ventana activa y seguir
-    bind("SUPER + SHIFT + " .. key, exec("hyprctl dispatch movetoworkspace " .. ws), { description = "mover a espacio " .. ws })
-    bind("SUPER + SHIFT + code:" .. code, exec("hyprctl dispatch movetoworkspace " .. ws), { description = "mover a espacio " .. ws })
+    bind("SUPER + SHIFT + " .. key, hl.dsp.window.move({ workspace = ws, follow = true }), { description = "mover a espacio " .. ws })
+    bind("SUPER + SHIFT + code:" .. code, hl.dsp.window.move({ workspace = ws, follow = true }), { description = "mover a espacio " .. ws })
 
     -- Mover ventana activa en silencio
-    bind("SUPER + CTRL + " .. key, exec("hyprctl dispatch movetoworkspacesilent " .. ws), { description = "mover silencioso a espacio " .. ws })
-    bind("SUPER + CTRL + code:" .. code, exec("hyprctl dispatch movetoworkspacesilent " .. ws), { description = "mover silencioso a espacio " .. ws })
+    bind("SUPER + CTRL + " .. key, hl.dsp.window.move({ workspace = ws, follow = false }), { description = "mover silencioso a espacio " .. ws })
+    bind("SUPER + CTRL + code:" .. code, hl.dsp.window.move({ workspace = ws, follow = false }), { description = "mover silencioso a espacio " .. ws })
 end
 
 -- Mover espacio de trabajo entre monitores
-bind("SUPER + CTRL + F9", exec("hyprctl dispatch movecurrentworkspacetomonitor l"), { description = "mover espacio al monitor izq" })
-bind("SUPER + CTRL + F10", exec("hyprctl dispatch movecurrentworkspacetomonitor r"), { description = "mover espacio al monitor der" })
-bind("SUPER + CTRL + F11", exec("hyprctl dispatch movecurrentworkspacetomonitor u"), { description = "mover espacio al monitor arr" })
-bind("SUPER + CTRL + F12", exec("hyprctl dispatch movecurrentworkspacetomonitor d"), { description = "mover espacio al monitor aba" })
+bind("SUPER + CTRL + F9", hl.dsp.workspace.move({ monitor = "left" }), { description = "mover espacio al monitor izq" })
+bind("SUPER + CTRL + F10", hl.dsp.workspace.move({ monitor = "right" }), { description = "mover espacio al monitor der" })
+bind("SUPER + CTRL + F11", hl.dsp.workspace.move({ monitor = "up" }), { description = "mover espacio al monitor arr" })
+bind("SUPER + CTRL + F12", hl.dsp.workspace.move({ monitor = "down" }), { description = "mover espacio al monitor aba" })
 
 -- =========================================================================
 -- 8. CAPTURAS DE PANTALLA
