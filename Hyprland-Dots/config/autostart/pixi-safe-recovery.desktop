@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Pixi Safe Mode Recovery
+Comment=Carga la config de Hyprland automaticamente si la sesion arranca en Safe Mode
+# Nota: el instalador (scripts/lib_copy.sh) sustituye USER_HOME por $HOME
+Exec=USER_HOME/.config/hypr/scripts/SafeModeRecovery.sh
+Icon=preferences-system
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

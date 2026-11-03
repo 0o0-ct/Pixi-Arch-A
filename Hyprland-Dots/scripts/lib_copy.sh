@@ -187,7 +187,23 @@ copy_phase2() {
       echo "${ERROR:-[ERROR]} - El directorio config/$DIR_NAME no existe para ser copiado." 2>&1 | tee -a "$log"
     fi
   done
-  
+
+  # Copiar autostarts del repo (sin pisar los del usuario) y resolver USER_HOME.
+  # Incluye pixi-safe-recovery.desktop: recupera la config real si Hyprland
+  # arranca en Safe Mode (ver config/hypr/scripts/SafeModeRecovery.sh).
+  if [ -d "config/autostart" ]; then
+    mkdir -p "$HOME/.config/autostart"
+    cp -rn "config/autostart/." "$HOME/.config/autostart/" 2>&1 | tee -a "$log"
+    for AF in config/autostart/*.desktop; do
+      [ -f "$AF" ] || continue
+      local DEST_AUTOSTART="$HOME/.config/autostart/$(basename "$AF")"
+      if [ -f "$DEST_AUTOSTART" ]; then
+        sed -i "s|USER_HOME|$HOME|g" "$DEST_AUTOSTART" 2>&1 | tee -a "$log"
+      fi
+    done
+    echo "${OK:-[OK]} - Autostarts instalados en ~/.config/autostart." 2>&1 | tee -a "$log"
+  fi
+
   # Reemplazar placeholder USER_HOME en matugen template (MacTahoe theme path)
   local MATUGEN_TPL="$HOME/.config/matugen/templates/gtk-colors.css"
   if [ -f "$MATUGEN_TPL" ]; then
