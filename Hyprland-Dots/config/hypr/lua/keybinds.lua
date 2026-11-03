@@ -74,9 +74,9 @@ bind("SUPER + SHIFT + Q", exec(scriptsDir .. "/KillActiveProcess.sh"), { descrip
 bind("SUPER + Space", hl.dsp.window.float(), { description = "flotar ventana actual" })
 bind("SUPER + ALT + Space", exec("hyprctl dispatch workspaceopt allfloat"), { description = "flotar todas las ventanas" })
 bind("SUPER + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "pantalla completa" })
-bind("SUPER + CTRL + F", hl.dsp.window.fullscreen({ mode = "maximize" }), { description = "maximizar ventana" })
+bind("SUPER + CTRL + F", hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "maximizar ventana" })
 bind("SUPER + P", hl.dsp.window.pseudo(), { description = "alternar pseudo dwindle" })
-bind("ALT + Tab", hl.dsp.focus({ window = "next" }), { description = "ciclar ventana siguiente" })
+bind("ALT + Tab", exec("hyprctl dispatch cyclenext"), { description = "ciclar ventana siguiente" })
 
 -- Opciones de sistema y efectos
 bind("SUPER + ALT + O", exec(scriptsDir .. "/ChangeBlur.sh"), { description = "alternar desenfoque" })
@@ -98,18 +98,18 @@ bind("SUPER + CTRL + D", exec("hyprctl dispatch layoutmsg removemaster"), { desc
 bind("SUPER + I", exec("hyprctl dispatch layoutmsg addmaster"), { description = "agregar master" })
 bind("SUPER + CTRL + Return", exec("hyprctl dispatch layoutmsg swapwithmaster"), { description = "intercambiar con master" })
 bind("SUPER + SHIFT + I", exec("hyprctl dispatch layoutmsg togglesplit"), { description = "alternar division dwindle" })
-bind("SUPER + J", hl.dsp.layout("togglesplit"), { description = "alternar division dwindle" })
+bind("SUPER + J", exec("hyprctl dispatch layoutmsg togglesplit"), { description = "alternar division dwindle" })
 bind("SUPER + M", exec("hyprctl dispatch splitratio 0.3"), { description = "establecer proporcion de division a 0.3" })
 
 -- =========================================================================
 -- 5. GRUPOS DE VENTANAS
 -- =========================================================================
-bind("SUPER + G", hl.dsp.group.toggle(), { description = "alternar grupo" })
-bind("SUPER + CTRL + Tab", hl.dsp.group.cycle({ direction = "f" }), { description = "siguiente en grupo" })
-bind("SUPER + CTRL + SHIFT + Tab", hl.dsp.group.cycle({ direction = "b" }), { description = "anterior en grupo" })
-bind("SUPER + CTRL + K", hl.dsp.group.move_in({ direction = "l" }), { description = "mover a la izq dentro del grupo" })
-bind("SUPER + CTRL + L", hl.dsp.group.move_in({ direction = "r" }), { description = "mover a la der dentro del grupo" })
-bind("SUPER + CTRL + H", hl.dsp.group.move_out(), { description = "sacar activa del grupo" })
+bind("SUPER + G", exec("hyprctl dispatch togglegroup"), { description = "alternar grupo" })
+bind("SUPER + CTRL + Tab", exec("hyprctl dispatch changegroupactive f"), { description = "siguiente en grupo" })
+bind("SUPER + CTRL + SHIFT + Tab", exec("hyprctl dispatch changegroupactive b"), { description = "anterior en grupo" })
+bind("SUPER + CTRL + K", exec("hyprctl dispatch moveintogroup l"), { description = "mover a la izq dentro del grupo" })
+bind("SUPER + CTRL + L", exec("hyprctl dispatch moveintogroup r"), { description = "mover a la der dentro del grupo" })
+bind("SUPER + CTRL + H", exec("hyprctl dispatch moveoutofgroup"), { description = "sacar activa del grupo" })
 
 -- =========================================================================
 -- 6. NAVEGACIÓN, MOVIMIENTO, REDIMENSIONADO E INTERCAMBIO
