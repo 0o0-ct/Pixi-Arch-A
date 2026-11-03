@@ -36,9 +36,9 @@ if f then
             local hex = val:match("^rgb%((%x+)%)$")
             local hex_a = val:match("^rgba%((%x+)%)$")
             if hex then
-                M.colors[var] = "0xff" .. hex
+                M.colors[var] = "rgba(" .. hex .. "ff)"
             elseif hex_a then
-                M.colors[var] = "0x" .. hex_a
+                M.colors[var] = "rgba(" .. hex_a .. ")"
             else
                 M.colors[var] = val
             end

@@ -9,6 +9,16 @@ hl.window_rule({
     center = true,
 })
 
+-- GNOME Files (Nautilus) macOS Tahoe Glass Rules
+hl.window_rule({
+    match = { class = "^(org\\.gnome\\.Nautilus)$" },
+    float = true,
+    size = { 1100, 700 },
+    center = true,
+    opacity = { 0.92, 0.88 },
+    rounding = 16,
+})
+
 -- Picture-in-Picture (PiP para Firefox, Chrome, etc.)
 hl.window_rule({
     match = { title = "^([Pp]icture[-\\s]?[Ii]n[-\\s]?[Pp]icture)$" },
@@ -30,6 +40,8 @@ local float_classes = {
     "^(swappy)$",
     "^(yad)$",
     "^(zenity)$",
+    "^(file-roller)$",
+    "^(org\\.gnome\\.FileRoller)$",
 }
 
 for _, cls in ipairs(float_classes) do
@@ -39,9 +51,9 @@ for _, cls in ipairs(float_classes) do
     })
 end
 
--- Diálogos modales y confirmaciones
+-- Diálogos modales y confirmaciones (Nautilus y gestores de archivos)
 hl.window_rule({
-    match = { title = "^(Open File|Save File|Confirm to replace files|File Operation Progress)$" },
+    match = { title = "^(Open File|Save File|Confirm to replace files|File Operation Progress|Extract archive|Compress)$" },
     float = true,
     center = true,
 })

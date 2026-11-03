@@ -9,7 +9,7 @@ local scriptsDir = home .. "/.config/hypr/scripts"
 local userScripts = home .. "/.config/hypr/UserScripts"
 
 local terminal = scriptsDir .. "/KittyRotate.sh"
-local fileManager = "thunar"
+local fileManager = "nautilus"
 
 -- -------------------------------------------------------------------------
 -- Helper functions para binding
@@ -247,5 +247,21 @@ bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true, description = "m
 bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true, description = "redimensionar ventana" })
 
 -- Magnificador de escritorio (zoom factor)
-bind("SUPER + ALT + mouse_down", exec('hyprctl keyword cursor:zoom_factor "$(hyprctl getoption cursor:zoom_factor | awk \'NR==1 {factor = $2; if (factor < 1) {factor = 1}; print factor * 2.0}\')"'), { description = "acercar zoom" })
-bind("SUPER + ALT + mouse_up", exec('hyprctl keyword cursor:zoom_factor "$(hyprctl getoption cursor:zoom_factor | awk \'NR==1 {factor = $2; if (factor < 1) {factor = 1}; print factor / 2.0}\')"'), { description = "alejar zoom" })
+-- Magnificador de escritorio (zoom factor) usando función Lua nativa
+bind("SUPER + ALT + mouse_down", function()
+    local current = 1.0
+    if hl.get_config and hl.get_config("cursor.zoom_factor") then
+        current = tonumber(hl.get_config("cursor.zoom_factor")) or 1.0
+    end
+    local new_factor = math.min(current * 1.5, 5.0)
+    hl.config({ cursor = { zoom_factor = new_factor } })
+end, { description = "acercar zoom" })
+
+bind("SUPER + ALT + mouse_up", function()
+    local current = 1.0
+    if hl.get_config and hl.get_config("cursor.zoom_factor") then
+        current = tonumber(hl.get_config("cursor.zoom_factor")) or 1.0
+    end
+    local new_factor = math.max(current / 1.5, 1.0)
+    hl.config({ cursor = { zoom_factor = new_factor } })
+end, { description = "alejar zoom" })
