@@ -420,7 +420,7 @@ fi
 if pidof waybar >/dev/null 2>&1; then
   pkill -x waybar 2>/dev/null || true
   sleep 0.3
-  hyprctl dispatch exec waybar >/dev/null 2>&1 || true
+  waybar >/dev/null 2>&1 &
 fi
 
 # Automatically sync SDDM wallpaper with the new desktop wallpaper

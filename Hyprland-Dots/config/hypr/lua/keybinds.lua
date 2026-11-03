@@ -26,7 +26,16 @@ hl.bind("SUPER + L", hl.dsp.exec_cmd(scriptsDir .. "/LockScreen.sh"), { descript
 hl.bind("SUPER + Escape", hl.dsp.exec_cmd(scriptsDir .. "/Wlogout.sh"), { description = "Menú de salida" })
 hl.bind("SUPER + V", hl.dsp.exec_cmd(scriptsDir .. "/ClipManager.sh"), { description = "Gestor de portapapeles" })
 hl.bind("SUPER + W", hl.dsp.exec_cmd(scriptsDir .. "/WallustSwww.sh"), { description = "Ciclador de wallpaper y tema" })
+
+-- Recargas y barra Waybar
 hl.bind("SUPER + R", hl.dsp.exec_cmd(scriptsDir .. "/Refresh.sh"), { description = "Refrescar interfaz y Waybar" })
+hl.bind("SUPER + ALT + R", hl.dsp.exec_cmd(scriptsDir .. "/Refresh.sh"), { description = "Recargar barra y menus" })
+hl.bind("SUPER + CTRL + ALT + B", hl.dsp.exec_cmd("pkill -SIGUSR1 waybar"), { description = "Alternar visibilidad de Waybar" })
+hl.bind("SUPER + CTRL + B", hl.dsp.exec_cmd(scriptsDir .. "/WaybarStyles.sh"), { description = "Menú de estilos Waybar" })
+hl.bind("SUPER + ALT + B", hl.dsp.exec_cmd(scriptsDir .. "/WaybarLayout.sh"), { description = "Menú de diseño Waybar" })
+
+-- Overviews y paneles
+hl.bind("SUPER + A", hl.dsp.exec_cmd(scriptsDir .. "/OverviewToggle.sh"), { description = "Vista general de escritorio" })
 hl.bind("SUPER + B", hl.dsp.exec_cmd(scriptsDir .. "/OverviewToggle.sh"), { description = "Vista general de ventanas" })
 hl.bind("SUPER + N", hl.dsp.exec_cmd(scriptsDir .. "/NetworkMenu.sh"), { description = "Menú de red Wi-Fi" })
 hl.bind("SUPER + Period", hl.dsp.exec_cmd(scriptsDir .. "/RofiEmoji.sh"), { description = "Selector de emojis" })
@@ -69,8 +78,8 @@ for i = 1, 10 do
 end
 
 -- Espacio de trabajo especial (Scratchpad)
-hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("special"))
-hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:special" }))
+hl.bind("SUPER + U", hl.dsp.workspace.toggle_special("special"))
+hl.bind("SUPER + SHIFT + U", hl.dsp.window.move({ workspace = "special:special" }))
 
 -- Atajos con ratón (mover y redimensionar arrastrando)
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
