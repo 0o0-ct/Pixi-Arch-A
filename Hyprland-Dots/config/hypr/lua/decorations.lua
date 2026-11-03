@@ -6,11 +6,13 @@ local colors = require("lua.colors").colors
 
 hl.config({
     general = {
-        active_border = {
-            colors = { colors.active_border_1, colors.active_border_2 },
-            angle = 45,
+        col = {
+            active_border = {
+                colors = { colors.active_border_1, colors.active_border_2 },
+                angle = 45,
+            },
+            inactive_border = colors.color8 or "rgba(595959aa)",
         },
-        inactive_border = colors.color8 or "rgba(595959aa)",
     },
 
     decoration = {
