@@ -22,12 +22,20 @@ if [[ -z "$touchpad_device" && -f "$laptops_conf" ]]; then
     )"
 fi
 
+# Fallback: detectar automáticamente el touchpad del sistema
+if [[ -z "$touchpad_device" ]] && command -v jq >/dev/null 2>&1; then
+    touchpad_device="$(
+        hyprctl devices -j 2>/dev/null \
+            | jq -r '.mice[]? | select(.name | test("touchpad"; "i")) | .name' \
+            | head -n1
+    )"
+fi
+
 if [[ -z "$touchpad_device" ]]; then
-    notify-send -u low -i "$notif" " Touchpad" " Nombre del dispositivo no configurado (revisa Laptops.conf)"
+    notify-send -u low -i "$notif" " Touchpad" " No se detectó ningún touchpad (define \$Touchpad_Device en Laptops.conf)"
     exit 1
 fi
 
-touchpad_keyword="${TOUCHPAD_KEYWORD:-device:${touchpad_device}:enabled}"
 status_file="${XDG_RUNTIME_DIR:-/tmp}/touchpad.status"
 
 enable_touchpad() {
