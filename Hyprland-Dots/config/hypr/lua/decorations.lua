@@ -54,14 +54,5 @@ hl.config({
             bottom = false,
         },
 
-        -- Layer rules
-        layer = {
-            tooltip = { blur = false },
-            draggable_message = { blur = false },
-            combined = { blur = false },
-            wallpaper = { blur = false },
-            ghost = { blur = false },
-            overlay = { blur = false },
-        },
     },
 })
