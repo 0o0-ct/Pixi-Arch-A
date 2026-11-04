@@ -7,18 +7,18 @@ hl.config({
         -- General de decoraciones
         blur = {
             size = 8,
-            pass = 1,
-            alpha = 0.06
-        },
-        blur:active = {
-            size = 8,
-            pass = 1,
-            alpha = 0.06
-        },
-        blur:inactive = {
-            size = 6,
-            pass = 1,
-            alpha = 0.04
+            passes = 1,
+            noise = 0.0,
+            contrast = 1.0,
+            brightness = 1.0,
+            vibrancy = 0.0,
+            vibrancy_darkness = 0.5,
+            new_optimizations = true,
+            xray = false,
+            ignore_opacity = true,
+            popups = false,
+            popups_ignorealpha = 0.2,
+            special = false,
         },
 
         -- Vibrancy y transparencia
