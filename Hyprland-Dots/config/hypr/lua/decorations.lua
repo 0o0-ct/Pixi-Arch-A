@@ -21,38 +21,21 @@ hl.config({
             special = false,
         },
 
-        -- Vibrancy y transparencia
+        -- Transparencia de ventanas
         active_opacity = 1.0,
         inactive_opacity = 1.0,
-        fading = true,
-        fade_duration = 0.4,
-        opacity_step = 0.02,
 
-        -- Resaltado de ventana activa
-        active_window_border = {
-            size = 2,
-            color = "#FF4136FF",
-            style = "solid"
-        },
-        inactive_window_border = {
-            size = 1,
-            color = "#FF413633",
-            style = "solid"
-        },
-
-        -- Efectos de ventana
+        -- Sombras
         shadow = {
-            size = 12,
-            h_offset = 0,
-            v_offset = 4,
-            blur = 16,
-            color = "#00000088"
-        },
-        rounded_corners = {
-            enable = true,
-            size = 10,
-            bottom = false,
+            enabled = true,
+            range = 12,
+            render_power = 3,
+            color = 0x00000088,
+            offset = 4,
         },
 
+        -- Esquinas redondeadas
+        rounding = 10,
+        rounding_power = 2,
     },
 })
