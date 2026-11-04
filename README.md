@@ -19,8 +19,8 @@
 </div>
 
 > [!IMPORTANT]
-> **Pixi-Arch-A** es una ramificación personalizada y de alto rendimiento de Arch Linux, diseñada para ofrecer una estética distintiva. Combina la velocidad de **Arch Linux** con el dinamismo del compositor **Hyprland**, sobre un diseño de **Cristal Esmerilado (Frosted Glassmorphism)** coherente, con tonos oscuros e iluminación carmesí.
->
+> **Pixi-Arch-A** es una ramificación personalizada y de alto rendimiento de Arch Linux, diseñada para ofrecer una estética distintiva. Combina la velocidad de **Arch Linux** con el dinamismo del compositor **Hyprland**, sobre un diseño de **Cristal Esmerilado (Frosted Glassmorphism)** cohúltimo (Frosted Glassmorphism)** coherente, con tonos oscuros e iluminación carmesí.
+
 > Incluye un instalador completamente interactivo en español, pensado para ofrecer una experiencia hispanohablante fluida y un acabado visual cuidado al detalle en cada componente.
 
 ---
@@ -30,8 +30,9 @@
 - [Características principales](#características-principales)
 - [Stack tecnológico](#stack-tecnológico)
 - [Compatibilidad y requisitos del sistema](#compatibilidad-y-requisitos-del-sistema)
-- [Instalación](#instalación)
-- [Actualización](#actualización)
+- [📦 Instalación](#📦-instalación)
+- [🔄 Actualización](#🔄-actualización)
+- [🗑️ Descargar la configuración antes de la actualización](#-descargar-la-configuración-antes-de-la-actualización)
 - [Atajos de teclado y uso](#atajos-de-teclado-y-uso)
 - [Bloqueo e inactividad](#bloqueo-e-inactividad)
 - [Optimización y modo de juego](#optimización-y-modo-de-juego)
@@ -58,7 +59,7 @@
 | Tecnología | Propósito |
 |---|---|
 | **Arch Linux** | Distribución base |
-| **Hyprland 0.57+** | Compositor Wayland (configuración en formato Lua) |
+| **Hyprland 0.57+** | Compositor Wayland (configuración en formato **Lua**) |
 | **Waybar** | Barra superior/inferior |
 | **Rofi** | Lanzador de aplicaciones / menús |
 | **Kitty / Ghostty / WezTerm** | Terminales (soporta múltiples) |
@@ -73,51 +74,43 @@
 
 ---
 
-## Configuración en Lua (Hyprland 0.57+)
+## 📦 Instalación
 
-> Este repositorio usa **Lua** para la configuración de Hyprland, no el formato clásico `.conf` (hyprlang).
+> El instalador es totalmente interactivo y está en español. Solo tienes que ejecutar el script.
 
-### Estructura Lua
+### Requisitos del sistema
 
-```
-Hyprland-Dots/config/hypr/
-├── hyprland.lua            # Punto de entrada principal
-└── lua/                    # Módulos Lua (carga modular)
-    ├── monitors.lua
-    ├── env.lua
-    ├── autostart.lua
-    ├── settings.lua
-    ├── decorations.lua
-    ├── animations.lua
-    ├── keybinds.lua
-    ├── rules.lua
-    └── colors.lua
-```
-
-### Cambios de configuración
-
-| Configuración | En .conf (antiguo) | En Lua (nuevo) |
-|---|---|---|
-| Atajo | `bind = SUPER, Return, exec, script` | `hl.bind("SUPER + Return", exec(script))` |
-| Regla de ventana | `windowrule = match:class, opts` | `hl.window_rule({ match = { class = "..." }, ... })` |
-| Decoración | `blur = 8` | `hl.config({ decoration = { blur = { size = 8 } } })` |
-| Autostart | `exec-once = cmd` | `hl.on("hyprland.start", ...)` |
-
-### Carpeta de respaldo
-
-Los archivos originales `.conf` se han movido a [Hyprland-Dots-Old/](/Hyprland-Dots-Old/) para auditoría y compatibilidad.
+- **Arch Linux** (distribución base)
+- **Hyprland** (installado automáticamente por el instalador)
+- Al menos **2 GB de RAM** (4 GB recomendados)
+- **SSD** recomendado para el sistema operativo
+- Conexión a internet durante la instalación
 
 ---
 
-## Instalación
+### Método 1: Instalación desde cero (recomendado)
 
-Ver el script `install.sh` para la instalación interactiva.
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/0o0-ct/Pixi-Arch-A.git ~/Pixi-Arch-A
+
+# 2. Acceder al directorio
+cd ~/Pixi-Arch-A
+
+# 3. Dar permisos de ejecución
+chmod +x install.sh
+
+# 4. Ejecutar el instalador interactivo
+./install.sh
+```
+
+El instalador te guiará paso a paso: selección de paquetes, configuración de teclado, temas, fondos de pantalla, etc.
 
 ---
 
-## Actualización
+### Método 2: Actualizar una instalación existente
 
-Para actualizar:
+Si ya tienes el sistema instalado y quieres actualizar los archivos:
 
 ```bash
 # 1. Acceder al directorio del proyecto
@@ -125,8 +118,74 @@ cd ~/Pixi-Arch-A
 
 # 2. Traer los últimos cambios desde el repositorio
 git fetch origin main
+
 git reset --hard origin/main
+
+# 3. Reejecutar el instalador para aplicar las actualizaciones
+./install.sh
 ```
+
+> El instalador detecta automáticamente los paquetes ya instalados y solo aplica las nuevas configuraciones estéticas sin tocar la parte funcional.
+
+---
+
+### 📁 Estructura de la configuración después de la instalación
+
+```
+~/.config/hypr/
+├── hyprland.lua                    # 🟢 Punto de entrada principal (Lua)
+├── lua/                            # 🟢 Módulos Lua (carga modular)
+│   ├── monitors.lua
+│   ├── env.lua
+│   ├── autostart.lua
+│   ├── settings.lua
+│   ├── decorations.lua
+│   ├── animations.lua
+│   ├── keybinds.lua
+│   ├── rules.lua
+│   └── colors.lua
+├── scripts/                        # Scripts de utilidad
+├── configs/                        # Configuraciones de aplicaciones
+│   └── Startup_Apps.conf            # (generado por el instalador)
+└── ...                             # Otros archivos generados
+```
+
+> La configuración de Hyprland no usa `.conf` (hyprlang) sino **Lua**, para compatibilidad con **Hyprland 0.57+**.
+
+---
+
+## 🔄 Actualización
+
+Para actualizar los archivos del proyecto:
+
+```bash
+# 1. Acceder al directorio del proyecto
+cd ~/Pixi-Arch-A
+
+# 2. Traer los últimos cambios desde el repositorio
+git fetch origin main
+
+git reset --hard origin/main
+
+# 3. Volver a ejecutar el instalador para aplicar las actualizaciones
+./install.sh
+```
+
+---
+
+## 🗑️ Descargar la configuración antes de la actualización
+
+> Si necesitas conservar tu configuración personal antes de actualizar, se recomienda hacer una copia de seguridad de la carpeta `~/.config/hypr/`.
+
+```bash
+# Crear una copia de seguridad de la configuración actual
+cp -r ~/.config/hypr ~/.config/hypr-backup-$(date +%Y%m%d)
+
+# O restaurar desde una copia anterior
+cp -r ~/.config/hypr-backup-20241104 ~/.config/hypr
+```
+
+El proyecto también incluye una carpeta `Hyprland-Dots-Old/` en el repositorio que contiene los archivos originales `.conf` de la migración.
 
 ---
 
@@ -154,171 +213,6 @@ git reset --hard origin/main
 ## Bloqueo e inactividad
 
 Toda la gestión de inactividad de la pantalla se centraliza en `hypridle` (configurado vía Lua).
-
-- **Aviso de inactividad** — a los **9 minutos** (`timeout = 540`) recibirás una notificación en el sistema.
-- **Bloqueo de seguridad** — a los **10 minutos** (`timeout = 600`) la sesión se bloquea automáticamente mediante `loginctl lock-session`, que activa el protector de pantalla seguro `hyprlock`.
-
----
-
-## Optimización y modo de juego
-
-**Script de optimización del sistema**
-
-Limpia cachés, elimina paquetes huérfanos, borra logs y optimiza la gestión de RAM:
-
-```bash
-bash ~/.config/hypr/scripts/system-optimize.sh
-```
-
-**Modo de juego (GameMode)**
-
-- Alterna con **`SUPER + SHIFT + G`** (o desde el menú de configuraciones rápidas). Desactiva animaciones, sombras y fondo animado para liberar VRAM y CPU.
-- **GPU Nvidia dedicada en portátiles híbridos:** añade `prime-run %command%` en las opciones de lanzamiento de Steam o Lutris.
-- **Feral GameMode:** para títulos exigentes, usa `gamemoderun %command%` y forzar CPU/GPU a máxima frecuencia.
-
----
-
-<div align="center">
-
-## Créditos
-
-> [!NOTE]
-> Este proyecto es un *fork* y una personalización profunda basada en el excelente instalador y dotfiles de **JaKooLit** ([Arch-Hyprland](https://github.com/JaKooLit/Arch-Hyprland)). Gracias por la base sólida, la arquitectura del script y la inspiración original que hicieron posible este entorno de escritorio.
-
-</div>
-| **Waybar** | Barra superior/inferior |
-| **Rofi** | Lanzador de aplicaciones / menús |
-| **Kitty / Ghostty / WezTerm** | Terminales (soporta múltiples) |
-| **Wallust** | Generación de paletas de colores desde el wallpaper |
-| **Swaync** | Notificaciones |
-| **Wlogout** | Menú de cierre de sesión |
-| **AGS (Aylur's GTK Shell)** | Widgets GTK personalizados |
-| **QuickShell** | Widgets/QML |
-| **Btop** | Monitor del sistema |
-| **Cava** | Visualizador de audio |
-| **Fastfetch** | Info del sistema |
-| **SDDM** | Display manager |
-| **PipeWire** | Audio |
-| **Zsh + Oh My Zsh** | Shell |
-| **Kvantum / qt5ct / qt6ct** | Temas Qt |
-| **Swappy** | Screenshots |
-| **Nautilus / Thunar** | Gestores de archivos |
-| **macOS Tahoe Theme** | GTK theme + iconos + SF Pro fonts (estilo Finder) |
-| **Yay / Paru** | AUR helpers |
-
----
-
-## Compatibilidad y requisitos del sistema
-
-Para garantizar una experiencia fluida con las animaciones de cristal esmerilado, ten en cuenta lo siguiente:
-
-**Distribuciones compatibles**
-- ✅ **Principal:** Arch Linux (instalación base o `archinstall`)
-- ✅ **Derivados de Arch:** EndeavourOS, ArcoLinux, CachyOS, Garuda Linux — se recomienda una instalación mínima/limpia para evitar conflictos con entornos preexistentes
-- ❌ **No compatible:** Debian, Ubuntu, Fedora, Linux Mint, o cualquier distribución no basada en pacman/Arch
-
-**Hardware recomendado**
-
-| Componente | Recomendación |
-|---|---|
-| **GPU AMD Radeon** | Muy recomendado — soporte nativo y perfecto con Wayland/Hyprland |
-| **GPU Intel** | Totalmente compatible y fluido de forma nativa |
-| **GPU Nvidia** | Compatible mediante controladores propietarios; el instalador detecta la GPU y aplica parches/variables de entorno automáticamente (experiencia variable según el modelo) |
-| **Almacenamiento** | SSD o NVMe altamente recomendado, para cargas instantáneas y caché de imágenes |
-| **RAM** | Mínimo 4 GB — se recomiendan **8 GB o más** para multitarea con transparencia/blur sin cuellos de botella |
-
----
-
-## Instalación
-
-Instalación completamente automática en un solo bloque:
-
-```bash
-cd ~
-rm -rf Pixi-Arch-A
-git clone https://github.com/0o0-ct/Pixi-Arch-A.git
-cd Pixi-Arch-A
-chmod +x install.sh
-./install.sh
-```
-
-<details>
-<summary><b>Ver los pasos en detalle</b></summary>
-
-**1. Clonar el repositorio**
-
-Usa HTTPS para descargar el proyecto de forma segura y rápida, sin necesidad de llaves SSH:
-
-```bash
-git clone https://github.com/0o0-ct/Pixi-Arch-A.git ~/Pixi-Arch-A
-```
-
-**2. Acceder al directorio**
-
-```bash
-cd ~/Pixi-Arch-A
-```
-
-**3. Dar permisos de ejecución al script**
-
-```bash
-chmod +x install.sh
-```
-
-**4. Ejecutar el instalador**
-
-Inicia el instalador oficial, interactivo y en español, y sigue las instrucciones en pantalla:
-
-```bash
-./install.sh
-```
-
-</details>
-
----
-
-## Actualización
-
-Si ya tienes el sistema instalado y quieres aplicar las últimas mejoras, parches y personalizaciones:
-
-```bash
-# 1. Acceder al directorio del proyecto
-cd ~/Pixi-Arch-A
-
-# 2. Traer los últimos cambios desde el repositorio
-git fetch origin main
-git reset --hard origin/main
-
-# 3. Volver a ejecutar el instalador para aplicar las actualizaciones
-./install.sh
-```
-
-> [!TIP]
-> El instalador detecta automáticamente los paquetes ya instalados y solo aplica los nuevos perfiles y configuraciones estéticas, de forma segura.
-
----
-
-## Atajos de teclado y uso
-
-| Atajo | Acción |
-|---|---|
-| `SUPER + L` | Bloquea la pantalla al instante, con desenfoque e información en tiempo real (`hyprlock` + `hypridle`) |
-| `SUPER + D` | Abre el lanzador Rofi, con estética de cristal esmerilado adaptada a la paleta del wallpaper |
-| `SUPER + Enter` | Abre una terminal Kitty translúcida |
-| `CTRL + SUPER + Espacio` | Alterna el idioma del teclado (Español por defecto / Inglés) |
-| `SUPER + SHIFT + G` | Activa o desactiva el Modo de Juego |
-
-Alternar la paleta del logo de Fastfetch en la terminal:
-
-```bash
-~/.config/fastfetch/toggle-color-gradient.py
-```
-
----
-
-## Bloqueo e inactividad
-
-Toda la gestión de inactividad de la pantalla se centraliza en `hypridle.conf`:
 
 - **Aviso de inactividad** — a los **9 minutos** (`timeout = 540`) recibirás una notificación en el sistema.
 - **Bloqueo de seguridad** — a los **10 minutos** (`timeout = 600`) la sesión se bloquea automáticamente mediante `loginctl lock-session`, que activa el protector de pantalla seguro `hyprlock`.
