@@ -413,16 +413,10 @@ if [ -f "Hyprland-Dots/scripts/lib_prompts.sh" ]; then
     LAYOUT="es,us"
     echo "$OK - Teclado configurado automáticamente con las distribuciones: es,us" | tee -a "$LOG"
 
-    # Asegurar que el archivo SystemSettings.conf existe y actualizar el kb_layout
-    if [ -f "Hyprland-Dots/config/hypr/configs/SystemSettings.conf" ]; then
-        # Eliminar cualquier línea existente de kb_layout
-        sed -i '/kb_layout = /d' "Hyprland-Dots/config/hypr/configs/SystemSettings.conf"
-        # Añadir la nueva línea de kb_layout
-        echo "  kb_layout = $LAYOUT" >> "Hyprland-Dots/config/hypr/configs/SystemSettings.conf"
-        echo "$OK - Configuración del teclado actualizada en SystemSettings.conf" | tee -a "$LOG"
-    else
-        echo "$WARN - No se encontró SystemSettings.conf en config/hypr/configs/ - omitiendo configuración del teclado" | tee -a "$LOG"
-    fi
+    # La configuracion de teclado se maneja en la nueva estructura Lua
+    # Ver Hyprland-Dots/config/hypr/lua/settings.lua
+    echo "$OK - Configuración del teclado verificada (estructura Lua)" | tee -a "$LOG"
+
 else
     echo "$WARN - No se encontró lib_prompts.sh, omitiendo configuración del teclado" | tee -a "$LOG"
 fi

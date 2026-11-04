@@ -1,51 +1,67 @@
 -- /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
--- Decoración: Cristal Esmerilado (Dark Frosted Glassmorphism)
--- Referencia: https://wiki.hypr.land/configuring/core/config-options/#decoration
-
-local colors = require("lua.colors").colors
+-- Decoraciones de ventanas (Hyprland 0.57+)
+-- Referencia: https://wiki.hypr.land/configuring/decoration/
 
 hl.config({
-    general = {
-        col = {
-            active_border = {
-                colors = { colors.active_border_1, colors.active_border_2 },
-                angle = 45,
-            },
-            inactive_border = colors.color8 or "rgba(595959aa)",
-        },
-    },
-
     decoration = {
-        rounding = 10,
-        active_opacity = 1.0,
-        inactive_opacity = 0.95,
-        fullscreen_opacity = 1.0,
-
-        dim_inactive = false,
-        dim_strength = 0.1,
-        dim_special = 0.8,
-
+        -- General de decoraciones
         blur = {
-            enabled = true,
             size = 8,
-            passes = 2,
-            ignore_opacity = true,
-            new_optimizations = true,
-            xray = false,
-            noise = 0.0117,
-            contrast = 0.90,
-            brightness = 0.95,
-            vibrancy = 0.20,
-            vibrancy_darkness = 0.0,
-            popups = true,
-            popups_ignorealpha = 0.6,
+            pass = 1,
+            alpha = 0.06
+        },
+        blur:active = {
+            size = 8,
+            pass = 1,
+            alpha = 0.06
+        },
+        blur:inactive = {
+            size = 6,
+            pass = 1,
+            alpha = 0.04
         },
 
+        -- Vibrancy y transparencia
+        active_opacity = 1.0,
+        inactive_opacity = 1.0,
+        fading = true,
+        fade_duration = 0.4,
+        opacity_step = 0.02,
+
+        -- Resaltado de ventana activa
+        active_window_border = {
+            size = 2,
+            color = "#FF4136FF",
+            style = "solid"
+        },
+        inactive_window_border = {
+            size = 1,
+            color = "#FF413633",
+            style = "solid"
+        },
+
+        -- Efectos de ventana
         shadow = {
-            enabled = true,
-            range = 14,
-            render_power = 2,
-            color = "rgba(00000066)",
+            size = 12,
+            h_offset = 0,
+            v_offset = 4,
+            blur = 16,
+            color = "#00000088"
+        },
+        rounded_corners = {
+            enable = true,
+            size = 10,
+            bottom = false,
+        },
+
+        -- Layer rules
+        layer = {
+            tooltip = { blur = false },
+            draggable_message = { blur = false },
+            combined = { blur = false },
+            wallpaper = { blur = false },
+            ghost = { blur = false },
+            overlay = { blur = false },
         },
     },
 })

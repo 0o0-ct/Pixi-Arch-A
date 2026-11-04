@@ -1,8 +1,9 @@
 -- /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
--- Opciones de sistema: input, general, misc, gestures, layout
+-- Opciones de sistema: input, general, misc, gestures, layout (Hyprland 0.57+)
 -- Referencia: https://wiki.hypr.land/configuring/core/config-options/
 
 hl.config({
+    -- Input (teclado y ratón)
     input = {
         kb_layout = "es,us",
         kb_variant = "",
@@ -25,6 +26,7 @@ hl.config({
         },
     },
 
+    -- General (gaps, bordes, layout)
     general = {
         gaps_in = 4,
         gaps_out = 8,
@@ -34,18 +36,21 @@ hl.config({
         allow_tearing = false,
     },
 
+    -- Dwindle layout (split)
     dwindle = {
         preserve_split = true,
         smart_split = false,
         smart_resizing = false,
     },
 
+    -- Master layout
     master = {
         new_status = "master",
         new_on_top = true,
         mfact = 0.5,
     },
 
+    -- Gestiures
     gestures = {
         workspace_swipe_distance = 500,
         workspace_swipe_invert = true,
@@ -55,6 +60,7 @@ hl.config({
         workspace_swipe_forever = true,
     },
 
+    -- Misc (diversos)
     misc = {
         disable_hyprland_logo = true,
         disable_splash_rendering = true,
@@ -67,10 +73,12 @@ hl.config({
         middle_click_paste = false,
     },
 
+    -- Debug
     debug = {
         vfr = true,
     },
 
+    -- Xwayland (compatibilidad con aplicaciones X11)
     xwayland = {
         enabled = true,
         force_zero_scaling = true,

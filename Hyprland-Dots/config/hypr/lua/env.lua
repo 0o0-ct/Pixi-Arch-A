@@ -1,32 +1,24 @@
 -- /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
--- Variables de entorno para Hyprland
--- Referencia: https://wiki.hypr.land/configuring/core/environment-variables/
+-- Variables de entorno y paths (Hyprland 0.57+)
 
-hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
-hl.env("XDG_SESSION_TYPE", "wayland")
-hl.env("XDG_SESSION_DESKTOP", "Hyprland")
+local home = os.getenv("HOME") or ""
+local configDir = home .. "/.config/hypr"
+local scriptsDir = configDir .. "/scripts"
+local userScripts = configDir .. "/UserScripts"
 
--- QT Environment
-hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
-hl.env("QT_QPA_PLATFORM", "wayland;xcb")
-hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
-hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
+-- Exportar variables de entorno para usarse en scripts
+os.setenv("HYPR_CONFIG_DIR", configDir)
+os.setenv("HYPR_SCRIPTS_DIR", scriptsDir)
+os.setenv("HYPR_USER_SCRIPTS_DIR", userScripts)
 
--- GDK / GTK Environment
-hl.env("GDK_BACKEND", "wayland,x11,*")
-hl.env("CLUTTER_BACKEND", "wayland")
+-- Linux containers y entornos especiales
+local isContainer = os.getenv("container") ~= nil or
+    os.getenv("container_name") ~= nil or
+    os.getenv("container_id") ~= nil
 
--- Mozilla / Firefox
-hl.env("MOZ_ENABLE_WAYLAND", "1")
+if isContainer then
+    os.setenv("HYPRLAND_INSTANCE_SIGNATURE", "pixi-arch-a-container")
+end
 
--- Electron apps
-hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
-
--- Java / JetBrains (Android Studio, IntelliJ)
-hl.env("_JAVA_AWT_WM_NONREPARENTING", "1")
-
--- Cursor Theme & Size
-hl.env("XCURSOR_THEME", "Bibata-Modern-Ice")
-hl.env("XCURSOR_SIZE", "24")
-hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Ice")
-hl.env("HYPRCURSOR_SIZE", "24")
+-- Hacer accesible al usuario a través de los scripts
+os.setenv("XDG_CONFIG_HOME", home .. "/.config")
