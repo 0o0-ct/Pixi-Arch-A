@@ -58,7 +58,134 @@
 | Tecnología | Propósito |
 |---|---|
 | **Arch Linux** | Distribución base |
-| **Hyprland** | Compositor Wayland (ventanas, animaciones) |
+| **Hyprland 0.57+** | Compositor Wayland (configuración en formato Lua) |
+| **Waybar** | Barra superior/inferior |
+| **Rofi** | Lanzador de aplicaciones / menús |
+| **Kitty / Ghostty / WezTerm** | Terminales (soporta múltiples) |
+| **Wallust + Matugen** | Generación de paletas de colores desde el wallpaper |
+| **Swaync** | Notificaciones |
+| **Wlogout** | Menú de cierre de sesión |
+| **AGS (Aylur's GTK Shell)** | Widgets GTK personalizados |
+| **QuickShell** | Widgets/QML |
+| **Btop** | Monitor del sistema |
+| **Cava** | Visualizador de audio |
+| **Fastfetch** | Estadísticas del sistema |
+
+---
+
+## Configuración en Lua (Hyprland 0.57+)
+
+> Este repositorio usa **Lua** para la configuración de Hyprland, no el formato clásico `.conf` (hyprlang).
+
+### Estructura Lua
+
+```
+Hyprland-Dots/config/hypr/
+├── hyprland.lua            # Punto de entrada principal
+└── lua/                    # Módulos Lua (carga modular)
+    ├── monitors.lua
+    ├── env.lua
+    ├── autostart.lua
+    ├── settings.lua
+    ├── decorations.lua
+    ├── animations.lua
+    ├── keybinds.lua
+    ├── rules.lua
+    └── colors.lua
+```
+
+### Cambios de configuración
+
+| Configuración | En .conf (antiguo) | En Lua (nuevo) |
+|---|---|---|
+| Atajo | `bind = SUPER, Return, exec, script` | `hl.bind("SUPER + Return", exec(script))` |
+| Regla de ventana | `windowrule = match:class, opts` | `hl.window_rule({ match = { class = "..." }, ... })` |
+| Decoración | `blur = 8` | `hl.config({ decoration = { blur = { size = 8 } } })` |
+| Autostart | `exec-once = cmd` | `hl.on("hyprland.start", ...)` |
+
+### Carpeta de respaldo
+
+Los archivos originales `.conf` se han movido a [Hyprland-Dots-Old/](/Hyprland-Dots-Old/) para auditoría y compatibilidad.
+
+---
+
+## Instalación
+
+Ver el script `install.sh` para la instalación interactiva.
+
+---
+
+## Actualización
+
+Para actualizar:
+
+```bash
+# 1. Acceder al directorio del proyecto
+cd ~/Pixi-Arch-A
+
+# 2. Traer los últimos cambios desde el repositorio
+git fetch origin main
+git reset --hard origin/main
+```
+
+---
+
+## Atajos de teclado y uso
+
+| Atajo | Acción |
+|---|---|
+| `SUPER + L` | Bloquea la pantalla al instante, con desenfoque e información en tiempo real (`hyprlock` + `hypridle`) |
+| `SUPER + D` | Abre el lanzador Rofi, con estética de cristal esmerilado adaptada a la paleta del wallpaper |
+| `SUPER + Enter` | Abre una terminal Kitty translúcida |
+| `CTRL + SUPER + Espacio` | Alterna el idioma del teclado (Español por defecto / Inglés) |
+| `SUPER + SHIFT + G` | Activa o desactiva el Modo de Juego |
+
+| Atajo | Acción |
+|---|---|
+| `SUPER + Q` | Cerrar ventana activa |
+| `SUPER + Space` | Flotar ventana actual |
+| `SUPER + SHIFT + F` | Pantalla completa |
+| `SUPER + CTRL + F` | Maximizar ventana |
+| `SUPER + P` | Alternar pseudo dwindle |
+| `ALT + Tab` | Ciclar ventana siguiente |
+
+---
+
+## Bloqueo e inactividad
+
+Toda la gestión de inactividad de la pantalla se centraliza en `hypridle` (configurado vía Lua).
+
+- **Aviso de inactividad** — a los **9 minutos** (`timeout = 540`) recibirás una notificación en el sistema.
+- **Bloqueo de seguridad** — a los **10 minutos** (`timeout = 600`) la sesión se bloquea automáticamente mediante `loginctl lock-session`, que activa el protector de pantalla seguro `hyprlock`.
+
+---
+
+## Optimización y modo de juego
+
+**Script de optimización del sistema**
+
+Limpia cachés, elimina paquetes huérfanos, borra logs y optimiza la gestión de RAM:
+
+```bash
+bash ~/.config/hypr/scripts/system-optimize.sh
+```
+
+**Modo de juego (GameMode)**
+
+- Alterna con **`SUPER + SHIFT + G`** (o desde el menú de configuraciones rápidas). Desactiva animaciones, sombras y fondo animado para liberar VRAM y CPU.
+- **GPU Nvidia dedicada en portátiles híbridos:** añade `prime-run %command%` en las opciones de lanzamiento de Steam o Lutris.
+- **Feral GameMode:** para títulos exigentes, usa `gamemoderun %command%` y forzar CPU/GPU a máxima frecuencia.
+
+---
+
+<div align="center">
+
+## Créditos
+
+> [!NOTE]
+> Este proyecto es un *fork* y una personalización profunda basada en el excelente instalador y dotfiles de **JaKooLit** ([Arch-Hyprland](https://github.com/JaKooLit/Arch-Hyprland)). Gracias por la base sólida, la arquitectura del script y la inspiración original que hicieron posible este entorno de escritorio.
+
+</div>
 | **Waybar** | Barra superior/inferior |
 | **Rofi** | Lanzador de aplicaciones / menús |
 | **Kitty / Ghostty / WezTerm** | Terminales (soporta múltiples) |
