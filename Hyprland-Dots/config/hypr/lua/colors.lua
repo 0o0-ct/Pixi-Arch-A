@@ -50,8 +50,8 @@ local colors = {
 
 -- Exportar colores a variables de entorno para aplicaciones externas
 local home = os.getenv("HOME") or ""
-os.setenv("PIXI_PRIMARY_BACKGROUND", colors.primary.background)
-os.setenv("PIXI_SECONDARY_BACKGROUND", colors.secondary.background)
+hl.env("PIXI_PRIMARY_BACKGROUND", colors.primary.background)
+hl.env("PIXI_SECONDARY_BACKGROUND", colors.secondary.background)
 
 -- Nota: La paleta real se aplica mediante AGSColors (AGS) y Qtct (Qt)
 -- El sistema de paletas se gestiona vía matugen.

@@ -21,10 +21,6 @@ local function exec(cmd)
     return hl.dsp.exec_cmd(cmd)
 end
 
-local function dispatch(dispatcher, args)
-    return hl.dsp.dispatch(dispatcher, args or {})
-end
-
 -- =========================================================================
 -- 1. APLICACIONES BÁSICAS Y LANZADORES
 -- =========================================================================
@@ -37,7 +33,7 @@ bind("SUPER + SHIFT + Return", exec(scriptsDir .. "/Dropterminal.sh " .. termina
 
 -- Búsquedas, utilidades y menús
 bind("SUPER + S", exec(scriptsDir .. "/RofiSearch.sh"), { description = "busqueda web" })
-bind("SUPER + CTRL + S", dispatch("windowmenu"), { description = "selector de ventanas" })
+bind("SUPER + CTRL + S", exec("rofi -show window"), { description = "selector de ventanas" })
 bind("SUPER + ALT + E", exec(scriptsDir .. "/RofiEmoji.sh"), { description = "menu de emojis" })
 bind("SUPER + ALT + C", exec(userScripts .. "/RofiCalc.sh"), { description = "calculadora" })
 bind("SUPER + H", exec(scriptsDir .. "/KeyHints.sh"), { description = "ayuda y atajos" })
@@ -94,6 +90,6 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(scriptsDir .. "/StartupApps.sh")
 end)
 
-hl.on("hyprland.configure", function()
+hl.on("config.reloaded", function()
     hl.exec_cmd(scriptsDir .. "/ThemeChanger.sh reload")
 end)
