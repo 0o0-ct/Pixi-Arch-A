@@ -31,7 +31,7 @@ hl.config({
             range = 12,
             render_power = 3,
             color = 0x00000088,
-            offset = 4,
+            offset = "0 4",
         },
 
         -- Esquinas redondeadas

@@ -4,36 +4,37 @@
 
 -- Definir curvas personalizadas
 hl.curve("md3_decel", {
+    type = "bezier",
     control = {
         { x = 0.0, y = 0.0 },
         { x = 0.3, y = 0.3 },
         { x = 0.7, y = 0.7 },
         { x = 1.0, y = 1.0 },
     },
-    bezier = true,
 })
 
 hl.curve("ease_out", {
+    type = "bezier",
     control = {
         { x = 0.0, y = 0.0 },
         { x = 0.3, y = 0.1 },
         { x = 0.7, y = 0.9 },
         { x = 1.0, y = 1.0 },
     },
-    bezier = true,
 })
 
 hl.curve("ease_in", {
+    type = "bezier",
     control = {
         { x = 0.0, y = 0.0 },
         { x = 0.3, y = 0.1 },
         { x = 0.7, y = 0.5 },
         { x = 1.0, y = 1.0 },
     },
-    bezier = true,
 })
 
 hl.curve("bounce", {
+    type = "bezier",
     control = {
         { x = 0.0, y = 0.0 },
         { x = 0.2, y = 0.3 },
@@ -42,7 +43,6 @@ hl.curve("bounce", {
         { x = 0.8, y = 0.2 },
         { x = 1.0, y = 1.0 },
     },
-    bezier = true,
 })
 
 -- Configurar animaciones de ventanas
