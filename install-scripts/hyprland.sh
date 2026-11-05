@@ -5,6 +5,8 @@
 hypr_eco=(
   hypridle
   hyprlock
+  hyprsunset
+  hyprpolkitagent
 )
 
 hypr=(
@@ -29,7 +31,10 @@ LOG="Install-Logs/install-$(date +%d-%H%M%S)_hyprland.log"
 
 # Check if Hyprland is installed
 if command -v Hyprland >/dev/null 2>&1; then
-  printf "$NOTE - ${YELLOW} Hyprland is ya instalado.${RESET} No action required.\n"
+  current_ver=$(Hyprland --version 2>/dev/null | head -n 1 | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' | head -n 1)
+  printf "$NOTE - ${YELLOW}Hyprland ya está instalado (versión detectada: ${current_ver:-desconocida}).${RESET}\n"
+  printf "$INFO - ${SKY_BLUE}Asegurando que Hyprland esté actualizado a la última versión disponible (0.57+ Lua)...${RESET}\n"
+  install_package_f "hyprland"
 else
   printf "$INFO - Hyprland not found. ${SKY_BLUE} Instalando Hyprland...${RESET}\n"
   for HYPRLAND in "${hypr[@]}"; do
@@ -38,13 +43,14 @@ else
 fi
 
 # Hyprland -eco packages
-printf "${NOTE} - Instalando ${SKY_BLUE}other Hyprland-eco packages${RESET} .......\n"
+printf "${NOTE} - Instalando / actualizando ${SKY_BLUE}paquetes del ecosistema Hyprland${RESET} .......\n"
 for HYPR in "${hypr_eco[@]}"; do
-  if ! command -v "$HYPR" >/dev/null 2>&1; then
-    printf "$INFO - ${YELLOW}$HYPR${RESET} not found. Instalando ${YELLOW}$HYPR...${RESET}\n"
+  if ! command -v "$HYPR" >/dev/null 2>&1 && ! pacman -Qi "$HYPR" >/dev/null 2>&1; then
+    printf "$INFO - ${YELLOW}$HYPR${RESET} no encontrado. Instalando ${YELLOW}$HYPR...${RESET}\n"
     install_package "$HYPR" "$LOG"
   else
-    printf "$NOTE - ${YELLOW} $HYPR is ya instalado.${RESET} No action required.\n"
+    printf "$NOTE - ${YELLOW}$HYPR${RESET} ya instalado. Asegurando última versión...\n"
+    install_package_f "$HYPR"
   fi
 done
 
