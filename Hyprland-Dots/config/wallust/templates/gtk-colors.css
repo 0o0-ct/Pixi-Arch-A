@@ -1,7 +1,7 @@
 /* ---- 💫 Pixi-Arch-A × macOS Tahoe 💫 ---- */
 /* Wallust template - GTK4 colors + macOS Tahoe design */
 
-@import url("file:////home/c0o0c/.themes/MacTahoe-Dark/gtk-4.0/gtk.css");
+@import url("file://USER_HOME/.themes/MacTahoe-Dark/gtk-4.0/gtk.css");
 
 /* ===== COLORES DINÁMICOS (wallust) ===== */
 @define-color accent_color {{color4}};
@@ -34,17 +34,22 @@
 window,
 window.background,
 .nautilus-window {
-    background-color: transparent !important;
-    background-image: none !important;
+    background-color: alpha(@window_bg_color, 0.90);
+    background-image: none;
 }
 
-window > *,
-window box,
-window paned,
-window stack,
-window overlay,
-window viewport,
-window > box > stack,
-window > box > paned {
+.nautilus-window headerbar {
+    background-color: alpha(@headerbar_bg_color, 0.85);
+    border-bottom: 1px solid alpha(@headerbar_border_color, 0.35);
+}
+
+.nautilus-window .sidebar-pane,
+.nautilus-window placessidebar {
+    background-color: alpha(@sidebar_bg_color, 0.75);
+}
+
+.nautilus-window .view,
+.nautilus-window scrolledwindow,
+.nautilus-window stack {
     background-color: transparent;
 }

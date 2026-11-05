@@ -204,12 +204,13 @@ copy_phase2() {
     echo "${OK:-[OK]} - Autostarts instalados en ~/.config/autostart." 2>&1 | tee -a "$log"
   fi
 
-  # Reemplazar placeholder USER_HOME en matugen template (MacTahoe theme path)
-  local MATUGEN_TPL="$HOME/.config/matugen/templates/gtk-colors.css"
-  if [ -f "$MATUGEN_TPL" ]; then
-    sed -i "s|USER_HOME|$HOME|g" "$MATUGEN_TPL" 2>&1 | tee -a "$log"
-    echo "${OK:-[OK]} - Ruta de tema MacTahoe actualizada en matugen template." 2>&1 | tee -a "$log"
-  fi
+  # Reemplazar placeholder USER_HOME en templates (MacTahoe theme path)
+  for TPL in "$HOME/.config/matugen/templates/gtk-colors.css" "$HOME/.config/wallust/templates/gtk-colors.css"; do
+    if [ -f "$TPL" ]; then
+      sed -i "s|USER_HOME|$HOME|g" "$TPL" 2>&1 | tee -a "$log"
+      echo "${OK:-[OK]} - Ruta de tema MacTahoe actualizada en $TPL." 2>&1 | tee -a "$log"
+    fi
+  done
 
   # Copiar configuraciones de GTK3 y GTK4 (Nautilus & Portal Glass style)
   for GTK_DIR in gtk-3.0 gtk-4.0; do

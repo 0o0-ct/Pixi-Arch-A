@@ -117,19 +117,12 @@ EOF
 # ─── 6. GTK settings.ini ───────────────────────────────────────────
 printf "${INFO} Configurando ${SKY_BLUE}GTK settings.ini${RESET}...\n"
 
-for GTK_CONF in "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"; do
-  mkdir -p "$GTK_CONF"
-  if [ -f "$GTK_CONF/settings.ini" ]; then
-    sed -i 's/^gtk-theme-name=.*/gtk-theme-name=MacTahoe-Dark/' "$GTK_CONF/settings.ini" 2>/dev/null
-    sed -i 's/^gtk-icon-theme-name=.*/gtk-icon-theme-name=MacTahoe-Dark/' "$GTK_CONF/settings.ini" 2>/dev/null
-    sed -i 's/^gtk-font-name=.*/gtk-font-name=SF Pro Text 11/' "$GTK_CONF/settings.ini" 2>/dev/null
-    sed -i 's/^gtk-cursor-theme-name=.*/gtk-cursor-theme-name=macOS/' "$GTK_CONF/settings.ini" 2>/dev/null
-    echo "${OK} settings.ini actualizado en $GTK_CONF"
-  else
-    cat > "$GTK_CONF/settings.ini" << 'EOF'
+# GTK 3.0
+mkdir -p "$HOME/.config/gtk-3.0"
+cat > "$HOME/.config/gtk-3.0/settings.ini" << 'EOF'
 [Settings]
 gtk-theme-name=MacTahoe-Dark
-gtk-icon-theme-name=MacTahoe-Dark
+gtk-icon-theme-name=MacTahoe-dark
 gtk-font-name=SF Pro Text 11
 gtk-cursor-theme-name=macOS
 gtk-cursor-theme-size=24
@@ -145,28 +138,51 @@ gtk-xft-hintstyle=hintslight
 gtk-xft-rgba=rgb
 gtk-application-prefer-dark-theme=1
 EOF
-    echo "${OK} settings.ini creado en $GTK_CONF"
-  fi
-done
+echo "${OK} settings.ini configurado en $HOME/.config/gtk-3.0"
 
-# Aplicar cursor dinámicamente si gsettings / hyprctl están disponibles
+# GTK 4.0 (sin claves obsoletas de GTK2/3)
+mkdir -p "$HOME/.config/gtk-4.0"
+cat > "$HOME/.config/gtk-4.0/settings.ini" << 'EOF'
+[Settings]
+gtk-theme-name=MacTahoe-Dark
+gtk-icon-theme-name=MacTahoe-dark
+gtk-font-name=SF Pro Text 11
+gtk-cursor-theme-name=macOS
+gtk-cursor-theme-size=24
+gtk-enable-event-sounds=1
+gtk-enable-input-feedback-sounds=0
+gtk-xft-antialias=1
+gtk-xft-hinting=1
+gtk-xft-hintstyle=hintslight
+gtk-xft-rgba=rgb
+gtk-application-prefer-dark-theme=1
+EOF
+echo "${OK} settings.ini configurado en $HOME/.config/gtk-4.0"
+
+# Aplicar temas, cursor y terminal via gsettings / hyprctl dinámicamente
 if command -v gsettings >/dev/null 2>&1; then
+  gsettings set org.gnome.desktop.interface gtk-theme "MacTahoe-Dark" 2>/dev/null || true
+  gsettings set org.gnome.desktop.interface icon-theme "MacTahoe-dark" 2>/dev/null || true
+  gsettings set org.gnome.desktop.interface font-name "SF Pro Text 11" 2>/dev/null || true
+  gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" 2>/dev/null || true
   gsettings set org.gnome.desktop.interface cursor-theme "macOS" 2>/dev/null || true
   gsettings set org.gnome.desktop.interface cursor-size 24 2>/dev/null || true
+  if gsettings list-schemas 2>/dev/null | grep -q "com.github.stunkymonkey.nautilus-open-any-terminal"; then
+    gsettings set com.github.stunkymonkey.nautilus-open-any-terminal terminal "kitty" 2>/dev/null || true
+  fi
 fi
 if command -v hyprctl >/dev/null 2>&1; then
   hyprctl setcursor macOS 24 2>/dev/null || true
 fi
 
-# ─── 7. Matugen template: reemplazar placeholder con HOME real ──────
-printf "${INFO} Configurando ${SKY_BLUE}matugen template${RESET}...\n"
-MATUGEN_TPL="$HOME/.config/matugen/templates/gtk-colors.css"
-if [ -f "$MATUGEN_TPL" ]; then
-  sed -i "s|USER_HOME|$HOME|g" "$MATUGEN_TPL"
-  echo "${OK} Ruta de tema MacTahoe actualizada en $MATUGEN_TPL"
-else
-  echo "${NOTE} No se encontró $MATUGEN_TPL (se copiará con los dotfiles)"
-fi
+# ─── 7. Matugen y Wallust templates: reemplazar placeholder con HOME real ──────
+printf "${INFO} Configurando ${SKY_BLUE}templates de color (matugen y wallust)${RESET}...\n"
+for TPL in "$HOME/.config/matugen/templates/gtk-colors.css" "$HOME/.config/wallust/templates/gtk-colors.css"; do
+  if [ -f "$TPL" ]; then
+    sed -i "s|USER_HOME|$HOME|g" "$TPL"
+    echo "${OK} Ruta de tema MacTahoe actualizada en $TPL"
+  fi
+done
 
 printf "\n%.0s" {1..2}
 echo "${OK} ${SKY_BLUE}macOS Tahoe Theme${RESET} instalado correctamente."

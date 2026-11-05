@@ -27,6 +27,7 @@ end
 -- =========================================================================
 -- Gestores de archivos y ventanas estilo macOS Tahoe
 hl.window_rule({ match = { class = "org.gnome.Nautilus" }, float = true, size = { 1100, 700 }, center = true, opacity = 0.95 })
+hl.window_rule({ match = { class = "nautilus" }, float = true, size = { 1100, 700 }, center = true, opacity = 0.95 })
 hl.window_rule({ match = { class = "thunar" }, float = true, size = { 1000, 650 }, center = true })
 
 -- Controles de audio y conexiones
