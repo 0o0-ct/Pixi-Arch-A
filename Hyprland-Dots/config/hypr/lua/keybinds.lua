@@ -169,7 +169,7 @@ bind("SUPER + M", hl.dsp.layout("splitratio 0.3"), { description = "establecer p
 -- =========================================================================
 -- 7. RATÓN
 -- =========================================================================
-hl.bind("SUPER + mouse:272", hl.dsp.exec_cmd("hyprctl dispatch movewindow"), { drag = true, description = "mover ventana con el raton" })
+hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { drag = true, description = "mover ventana con el raton" })
 hl.bind("SUPER + mouse:3", hl.dsp.window.resize(), { drag = true, description = "redimensionar ventana con el raton" })
 hl.bind("SUPER + ALT + mouse:4", hl.dsp.exec_cmd(scriptsDir .. "/Zoom.sh in"), { description = "acercar zoom" })
 hl.bind("SUPER + ALT + mouse:5", hl.dsp.exec_cmd(scriptsDir .. "/Zoom.sh out"), { description = "alejar zoom" })
