@@ -220,6 +220,7 @@ end, { description = "ciclar ventana siguiente" })
 -- =========================================================================
 -- 12. EVENTOS DE HYPRLAND
 -- =========================================================================
-hl.on("config.reloaded", function()
-    hl.exec_cmd(scriptsDir .. "/ThemeChanger.sh reload")
-end)
+-- Desactivado: al hacer 'hyprctl reload' no abrir el selector de temas
+-- hl.on("config.reloaded", function()
+--     hl.exec_cmd(scriptsDir .. "/ThemeChanger.sh reload")
+-- end)
