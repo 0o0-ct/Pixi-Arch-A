@@ -5,14 +5,9 @@
 local home = os.getenv("HOME") or ""
 local scriptsDir = home .. "/.config/hypr/scripts"
 
--- Ejecutar scripts de autostart
+-- Arranque idempotente de daemons de sesión (portapapeles, swww, hypridle,
+-- waybar, polkit, hyprsunset). StartupApps.sh comprueba procesos antes de
+-- lanzarlos, así que es seguro ejecutarlo en cada inicio.
 hl.on("hyprland.start", function()
-    -- Menú de bienvenida / inicio
-    hl.exec_cmd(scriptsDir .. "/StartupMenu.sh")
-
-    -- Notificaciones de inicio
-    hl.exec_cmd("notify-send -i " .. scriptsDir .. "/assets/logo.png " .. scriptsDir .. "/StartupMenu.sh")
-
-    -- Mostrar que Hyprland está listo
-    hl.exec_cmd("hyprctl keyword general:style_show_fps 0")
+    hl.exec_cmd(scriptsDir .. "/StartupApps.sh")
 end)

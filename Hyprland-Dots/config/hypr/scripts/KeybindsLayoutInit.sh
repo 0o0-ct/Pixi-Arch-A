@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
 # /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
-# Initialize J/K keybinds so they always cycle windows globally (no layout-specific behavior)
-# This avoids double-actions when layouts change.
+# Compatibilidad Hyprland 0.57+.
+# SUPER+J / SUPER+K ahora se declaran en lua/keybinds.lua y ya no necesitan
+# registrarse dinámicamente con hyprctl keyword (eliminado en 0.57).
+# Se conserva este script como no-op para llamadas antiguas.
 
-set -euo pipefail
-
-# Always reset and bind SUPER+J/K the same way on startup
-hyprctl keyword unbind SUPER,J || true
-hyprctl keyword unbind SUPER,K || true
-
-# Cycle windows globally: J = next, K = previous
-hyprctl keyword bind SUPER,J,cyclenext
-hyprctl keyword bind SUPER,K,cyclenext,prev
+exit 0

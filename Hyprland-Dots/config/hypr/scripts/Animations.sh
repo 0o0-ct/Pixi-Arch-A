@@ -1,31 +1,39 @@
 #!/usr/bin/env bash
 # /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
-# For applying Animations from different users
+# Aplica presets de animaciones Lua (Hyprland 0.57+)
 
-# Check if rofi is already running
-if pidof rofi > /dev/null; then
-  pkill rofi
-fi
+set -uo pipefail
 
-# Variables
 iDIR="$HOME/.config/swaync/images"
-SCRIPTSDIR="$HOME/.config/hypr/scripts"
 animations_dir="$HOME/.config/hypr/animations"
-UserConfigs="$HOME/.config/hypr/UserConfigs"
+user_config="$HOME/.config/hypr/UserConfigs/UserAnimations.lua"
 rofi_theme="$HOME/.config/rofi/config-Animations.rasi"
-msg='❗NOTA:❗ Esto copiará las animaciones en UserAnimations.conf'
-# list of animation files, sorted alphabetically with numbers first
-animations_list=$(find -L "$animations_dir" -maxdepth 1 -type f | sed 's/.*\///' | sed 's/\.conf$//' | sort -V)
+msg='❗NOTA:❗ El preset se guarda en UserAnimations.lua y se recarga Hyprland'
 
-# Rofi Menu
-chosen_file=$(echo "$animations_list" | rofi -i -dmenu -config $rofi_theme -mesg "$msg")
+# Cerrar rofi si ya está abierto
+pkill rofi >/dev/null 2>&1 || true
 
-# Check if a file was selected
-if [[ -n "$chosen_file" ]]; then
-    full_path="$animations_dir/$chosen_file.conf"    
-    cp "$full_path" "$UserConfigs/UserAnimations.conf"    
-    notify-send -u low -i "$iDIR/ja.png" "$chosen_file" "Hyprland Animation Loaded"
+# Lista de presets .lua, ordenados
+animations_list=$(find -L "$animations_dir" -maxdepth 1 -type f -name '*.lua' -printf '%f\n' 2>/dev/null | sed 's/\.lua$//' | sort -V)
+
+if [[ -z "$animations_list" ]]; then
+    notify-send -u low -i "$iDIR/ja.png" "Animaciones" "No hay presets en $animations_dir" 2>/dev/null || true
+    exit 1
 fi
 
-sleep 1
-"$SCRIPTSDIR/RefreshNoWaybar.sh"
+chosen_file=$(printf '%s\n' "$animations_list" | rofi -dmenu -i -config "$rofi_theme" -mesg "$msg" -p "Animaciones")
+
+[[ -z "${chosen_file:-}" ]] && exit 0
+
+full_path="$animations_dir/$chosen_file.lua"
+if [[ ! -f "$full_path" ]]; then
+    notify-send -u low -i "$iDIR/ja.png" "Animaciones" "Preset no encontrado: $chosen_file" 2>/dev/null || true
+    exit 1
+fi
+
+mkdir -p "$(dirname "$user_config")"
+cp -f "$full_path" "$user_config"
+
+hyprctl reload >/dev/null 2>&1
+
+notify-send -u low -i "$iDIR/ja.png" "$chosen_file" "Animaciones aplicadas" 2>/dev/null || true

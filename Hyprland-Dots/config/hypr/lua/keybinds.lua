@@ -170,9 +170,13 @@ bind("SUPER + M", hl.dsp.layout("splitratio 0.3"), { description = "establecer p
 -- 7. RATÓN
 -- =========================================================================
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true, description = "mover ventana con el raton" })
+hl.bind("SUPER + mouse:1", hl.dsp.window.drag(), { drag = true, description = "mover ventana con el raton" })
+hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { drag = true, description = "redimensionar ventana con el raton" })
 hl.bind("SUPER + mouse:3", hl.dsp.window.resize(), { drag = true, description = "redimensionar ventana con el raton" })
 hl.bind("SUPER + ALT + mouse:4", hl.dsp.exec_cmd(scriptsDir .. "/Zoom.sh in"), { description = "acercar zoom" })
 hl.bind("SUPER + ALT + mouse:5", hl.dsp.exec_cmd(scriptsDir .. "/Zoom.sh out"), { description = "alejar zoom" })
+hl.bind("SUPER + ALT + mouse_up", hl.dsp.exec_cmd(scriptsDir .. "/Zoom.sh in"), { description = "acercar zoom" })
+hl.bind("SUPER + ALT + mouse_down", hl.dsp.exec_cmd(scriptsDir .. "/Zoom.sh out"), { description = "alejar zoom" })
 
 -- =========================================================================
 -- 8. CAPTURAS DE PANTALLA
@@ -218,9 +222,12 @@ bind("ALT + Tab", function()
 end, { description = "ciclar ventana siguiente" })
 
 -- =========================================================================
--- 12. EVENTOS DE HYPRLAND
+-- 12. ATAJOS PERSONALIZADOS DEL USUARIO (UserConfigs)
 -- =========================================================================
--- Desactivado: al hacer 'hyprctl reload' no abrir el selector de temas
--- hl.on("config.reloaded", function()
---     hl.exec_cmd(scriptsDir .. "/ThemeChanger.sh reload")
--- end)
+local user_keybinds = home .. "/.config/hypr/UserConfigs/UserKeybinds.lua"
+local f_uk = io.open(user_keybinds, "r")
+if f_uk then
+    f_uk:close()
+    pcall(dofile, user_keybinds)
+end
+

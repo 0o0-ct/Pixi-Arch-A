@@ -20,7 +20,7 @@ case "$selected_option" in
         $HOME/.config/hypr/scripts/LockScreen.sh
         ;;
     *Logout*)
-        hyprctl dispatch exit 0
+        hyprctl eval 'hl.dsp.exit()'
         ;;
     *Suspend*)
         systemctl suspend

@@ -1,39 +1,58 @@
 #!/usr/bin/env bash
 # /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
-# searchable habilitado keybinds using rofi (supports bindd descriptions)
+# Buscador de atajos de teclado usando los binds vivos de Hyprland.
 
-# kill yad to not interfere with this binds
-pkill yad || true
+set -uo pipefail
 
-# check if rofi is already running
-if pidof rofi > /dev/null; then
-  pkill rofi
-fi
-
-# define the config files
-keybinds_conf="$HOME/.config/hypr/configs/Keybinds.conf"
-user_keybinds_conf="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
-laptop_conf="$HOME/.config/hypr/UserConfigs/Laptops.conf"
 rofi_theme="$HOME/.config/rofi/config-keybinds.rasi"
 msg='☣️ NOTA ☣️: Hacer clic con el ratón o pulsar ENTER NO tendrá función'
 
-# collect raw bind lines (strip end-of-line comments) from available files
-files=("$keybinds_conf" "$user_keybinds_conf")
-[[ -f "$laptop_conf" ]] && files+=("$laptop_conf")
+# Cerrar yad/rofi para no interferir
+pkill yad >/dev/null 2>&1 || true
+pkill rofi >/dev/null 2>&1 || true
 
-# Parse binds using the python script for speed
-# The last argument must be the user config for override logic to work correctly
-display_keybinds=$("$HOME/.config/hypr/scripts/keybinds_parser.py" "${files[@]}")
+friendly_key() {
+    case "$1" in
+        Return)       printf 'Enter' ;;
+        space)        printf 'Espacio' ;;
+        Print)        printf 'Impr Pant' ;;
+        mouse:272)    printf 'clic izquierdo' ;;
+        mouse:273)    printf 'clic derecho' ;;
+        mouse_down)   printf 'rueda abajo' ;;
+        mouse_up)     printf 'rueda arriba' ;;
+        bracketleft)  printf '[' ;;
+        bracketright) printf ']' ;;
+        period)       printf '.' ;;
+        comma)        printf ',' ;;
+        *)            printf '%s' "$1" ;;
+    esac
+}
 
-# Check for suggestions file created by python script
-if [[ -f "/tmp/hypr_keybind_suggestions_file" ]]; then
-  suggestions_file=$(cat "/tmp/hypr_keybind_suggestions_file")
-  rm "/tmp/hypr_keybind_suggestions_file"
-  if [[ -n "$suggestions_file" && -f "$suggestions_file" ]]; then
-     count=$(wc -l < "$suggestions_file")
-     msg="$msg | Overrides missing unbind: $count (suggestions: $suggestions_file)"
-  fi
+mods_label() {
+    local mod="$1" label=""
+    if (( mod & 64 )); then label+="SUPER + "; fi
+    if (( mod & 4 ));  then label+="CTRL + "; fi
+    if (( mod & 8 ));  then label+="ALT + "; fi
+    if (( mod & 1 ));  then label+="SHIFT + "; fi
+    printf '%s' "$label"
+}
+
+# Los binds Lua guardan la descripción en "description".
+display_keybinds=$(
+    hyprctl -j binds 2>/dev/null |
+    jq -r '.[] | select(.description != null and .description != "") | "\(.modmask)\t\(.key)\t\(.description)"' |
+    while IFS=$'\t' read -r mod key desc; do
+        printf '%-34s %s\n' "$(mods_label "$mod")$(friendly_key "$key")" "$desc"
+    done |
+    sort -u
+)
+
+if [[ -z "$display_keybinds" ]]; then
+    notify-send -u low "Atajos" "No se pudieron leer los atajos de Hyprland" 2>/dev/null || true
+    exit 1
 fi
 
-# use rofi to display the keybinds
-printf '%s\n' "$display_keybinds" | rofi -dmenu -i -config "$rofi_theme" -mesg "$msg"
+printf '%s\n' "$display_keybinds" |
+    rofi -dmenu -i -config "$rofi_theme" -mesg "$msg" -p "Atajos" >/dev/null
+
+exit 0

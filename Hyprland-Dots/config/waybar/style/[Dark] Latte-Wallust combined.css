@@ -47,6 +47,7 @@
  */
 
 @import url("wallust/colors-waybar.css");
+@import url("wallust/mode-glass.css");
 @import "../waybar/style/catppuccin-themes/latte.css";
 
 /* --- Clean Floating Glass Transparency Rule ---------------------------------
