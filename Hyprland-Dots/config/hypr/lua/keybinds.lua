@@ -29,7 +29,7 @@ end
 -- 1. APLICACIONES BÁSICAS Y LANZADORES
 -- =========================================================================
 bind("SUPER + Return", exec(terminal), { description = "abrir terminal" })
-bind("SUPER + D", exec("pkill rofi || true && rofi -show drun -modi drun,filebrowser,run,window"), { description = "lanzador de aplicaciones" })
+bind("SUPER + D", exec("pkill rofi || true && rofi -show drun"), { description = "lanzador de aplicaciones" })
 bind("SUPER + B", exec('xdg-open "https://"'), { description = "abrir navegador predeterminado" })
 bind("SUPER + E", exec(fileManager), { description = "administrador de archivos" })
 bind("SUPER + A", exec(scriptsDir .. "/OverviewToggle.sh"), { description = "vista general del escritorio" })
