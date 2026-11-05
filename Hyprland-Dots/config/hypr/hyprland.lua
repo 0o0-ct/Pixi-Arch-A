@@ -1,7 +1,5 @@
 -- /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
 -- Archivo principal de configuración para Hyprland 0.57+ (Lua)
--- Repositorio: https://github.com/0o0-ct/Pixi-Arch-A
--- Migración: .conf (hyprlang) -> Lua (Nuevo Hyprland 0.57+)
 -- Referencia: https://wiki.hypr.land/configuring/
 
 -- Ajustar package.path para cargar módulos locales en ~/.config/hypr/
