@@ -71,6 +71,8 @@ hl.config({
         focus_on_activate = false,
         initial_workspace_tracking = 0,
         middle_click_paste = false,
+        animate_manual_resizes = true,
+        animate_mouse_windowdragging = true,
     },
 
     -- Debug
