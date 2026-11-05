@@ -1,45 +1,13 @@
 -- /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
--- Animaciones y curvas (Hyprland 0.57+)
--- Referencia: https://wiki.hypr.land/configuring/core/animations/
+-- Animaciones básicas (Hyprland 0.57+)
+-- Mínimo funcional para evitar errores de config
 
--- Definir curvas personalizadas
-hl.curve("md3_decel", {
-    type = "bezier",
-    points = {
-        { 0.3, 0.3 },
-        { 0.7, 0.7 },
-    },
-})
+-- Curvas estándar (copiadas del ejemplo oficial de Hyprland)
+hl.curve("linear",   { type = "bezier", points = { {0, 0},       {1, 1}       } })
+hl.curve("quick",    { type = "bezier", points = { {0.15, 0},    {0.1, 1}     } })
+hl.curve("easy",     { type = "spring", mass = 1, stiffness = 238.1191, damping = 24.21279333 })
 
-hl.curve("ease_out", {
-    type = "bezier",
-    points = {
-        { 0.3, 0.1 },
-        { 0.7, 0.9 },
-    },
-})
-
-hl.curve("ease_in", {
-    type = "bezier",
-    points = {
-        { 0.3, 0.1 },
-        { 0.7, 0.5 },
-    },
-})
-
-hl.curve("bounce", {
-    type = "spring",
-    mass = 1,
-    damping = 12,
-    stiffness = 60,
-})
-
--- Configurar animaciones de ventanas (estilo Hyprland 0.57)
-hl.animation({ leaf = "global",        enabled = true,  speed = 10,   bezier = "md3_decel" })
-hl.animation({ leaf = "windows",       enabled = true,  speed = 4.79, spring = "bounce" })
-hl.animation({ leaf = "windowsIn",     enabled = true,  speed = 4.1,  spring = "bounce", style = "popin 60%" })
-hl.animation({ leaf = "windowsOut",    enabled = true,  speed = 1.49, bezier = "ease_in",  style = "popin 30%" })
-hl.animation({ leaf = "layers",        enabled = true,  speed = 3.81, bezier = "ease_out" })
-hl.animation({ leaf = "fadeIn",        enabled = true,  speed = 1.73, bezier = "ease_out" })
-hl.animation({ leaf = "fadeOut",       enabled = true,  speed = 1.46, bezier = "ease_in" })
-hl.animation({ leaf = "workspaces",    enabled = true,  speed = 1.94, bezier = "ease_out", style = "fade" })
+-- Animaciones mínimas activadas
+hl.animation({ leaf = "global",    enabled = true, speed = 10,   bezier = "linear" })
+hl.animation({ leaf = "windows",   enabled = true, speed = 5,    spring = "easy" })
+hl.animation({ leaf = "workspaces",enabled = true, speed = 2,    bezier = "linear" })

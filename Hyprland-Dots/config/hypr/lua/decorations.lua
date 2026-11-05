@@ -1,41 +1,27 @@
 -- /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
--- Decoraciones de ventanas (Hyprland 0.57+)
--- Referencia: https://wiki.hypr.land/configuring/decoration/
+-- Decoraciones básicas (Hyprland 0.57+)
+-- Mínimo funcional para evitar errores de config
 
 hl.config({
     decoration = {
-        -- General de decoraciones
+        -- Blur básico (claves validadas en 0.57)
         blur = {
-            size = 8,
-            passes = 1,
-            noise = 0.0,
-            contrast = 1.0,
+            enabled   = true,
+            size      = 8,
+            passes    = 1,
+            noise     = 0.0,
+            contrast  = 1.0,
             brightness = 1.0,
-            vibrancy = 0.0,
-            vibrancy_darkness = 0.5,
-            new_optimizations = true,
-            xray = false,
-            ignore_opacity = true,
-            popups = false,
-            popups_ignorealpha = 0.2,
-            special = false,
+            vibrancy  = 0.0,
+            xray      = false,
         },
 
-        -- Transparencia de ventanas
-        active_opacity = 1.0,
+        -- Transparencia
+        active_opacity   = 1.0,
         inactive_opacity = 1.0,
 
-        -- Sombras
-        shadow = {
-            enabled = true,
-            range = 12,
-            render_power = 3,
-            color = 0x00000088,
-            offset = "0 4",
-        },
-
         -- Esquinas redondeadas
-        rounding = 10,
-        rounding_power = 2,
+        rounding        = 10,
+        rounding_power  = 2,
     },
 })
