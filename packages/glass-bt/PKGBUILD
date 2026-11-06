@@ -1,0 +1,21 @@
+# Maintainer: 0o0-ct <https://github.com/0o0-ct/Pixi-Arch-A>
+pkgname=glass-bt
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Native glassmorphism Bluetooth manager for Hyprland/Wayland written in Rust"
+arch=('x86_64')
+url="https://github.com/0o0-ct/Pixi-Arch-A"
+license=('MIT')
+depends=('gtk4' 'gtk4-layer-shell' 'bluez' 'bluez-utils')
+makedepends=('rust' 'cargo')
+provides=('glass-bt')
+conflicts=('glass-bt-bin')
+
+build() {
+    cargo build --release --locked
+}
+
+package() {
+    install -Dm755 "target/release/glass-bt" "$pkgdir/usr/bin/glass-bt"
+    install -Dm644 "README.md" "$pkgdir/usr/share/doc/$pkgname/README.md"
+}

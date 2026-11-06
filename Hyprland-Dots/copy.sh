@@ -606,11 +606,13 @@ if command -v awww >/dev/null 2>&1; then
   fi
 fi
 
-# Blueman Glassmorphism launcher compatibility in ~/.local/bin
-if [ -f "$HOME/.config/hypr/scripts/BluemanGlass.py" ]; then
-  mkdir -p "$HOME/.local/bin"
-  chmod +x "$HOME/.config/hypr/scripts/BluemanGlass.py"
-  ln -sf "$HOME/.config/hypr/scripts/BluemanGlass.py" "$HOME/.local/bin/blueman-manager"
+# Glass Bluetooth Manager (glass-bt) nativo en ~/.local/bin
+mkdir -p "$HOME/.local/bin"
+if [ -f "$PARENT_DIR/files/glass-bt" ]; then
+  chmod +x "$PARENT_DIR/files/glass-bt"
+  cp -f "$PARENT_DIR/files/glass-bt" "$HOME/.local/bin/glass-bt"
+elif [ -f "$PARENT_DIR/packages/glass-bt/target/release/glass-bt" ]; then
+  install -m 755 "$PARENT_DIR/packages/glass-bt/target/release/glass-bt" "$HOME/.local/bin/glass-bt"
 fi
 
 # Patch tray status icons (Ethernet, Bluetooth, Wi-Fi) with Pixi-Arch-A Monet palette

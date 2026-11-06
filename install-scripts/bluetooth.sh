@@ -5,7 +5,8 @@
 blue=(
   bluez
   bluez-utils
-  blueman
+  gtk4
+  gtk4-layer-shell
 )
 
 ## ADVERTENCIA: ¡NO EDITES MÁS ALLÁ DE ESTA LÍNEA SI NO SABES LO QUE ESTÁS HACIENDO! ##
@@ -34,5 +35,21 @@ printf "${NOTE} Instalando ${SKY_BLUE}Bluetooth${RESET} Packages...\n"
 
 printf " Activating ${YELLOW}Bluetooth${RESET} Services...\n"
 sudo systemctl enable --now bluetooth.service 2>&1 | tee -a "$LOG"
+
+# Instalar Glass Bluetooth (glass-bt) nativo en /usr/local/bin y ~/.local/bin
+if [ -f "$PARENT_DIR/files/glass-bt" ]; then
+  printf "${NOTE} Instalando gestor nativo ${SKY_BLUE}glass-bt${RESET} en /usr/local/bin y ~/.local/bin...\n"
+  sudo install -m 755 "$PARENT_DIR/files/glass-bt" /usr/local/bin/glass-bt 2>&1 | tee -a "$LOG"
+  mkdir -p "$HOME/.local/bin"
+  install -m 755 "$PARENT_DIR/files/glass-bt" "$HOME/.local/bin/glass-bt" 2>&1 | tee -a "$LOG"
+elif [ -d "$PARENT_DIR/packages/glass-bt" ] && command -v cargo >/dev/null 2>&1; then
+  printf "${NOTE} Compilando gestor nativo ${SKY_BLUE}glass-bt${RESET} desde el código fuente...\n"
+  cargo build --release --manifest-path "$PARENT_DIR/packages/glass-bt/Cargo.toml" 2>&1 | tee -a "$LOG"
+  if [ -f "$PARENT_DIR/packages/glass-bt/target/release/glass-bt" ]; then
+    sudo install -m 755 "$PARENT_DIR/packages/glass-bt/target/release/glass-bt" /usr/local/bin/glass-bt 2>&1 | tee -a "$LOG"
+    mkdir -p "$HOME/.local/bin"
+    install -m 755 "$PARENT_DIR/packages/glass-bt/target/release/glass-bt" "$HOME/.local/bin/glass-bt" 2>&1 | tee -a "$LOG"
+  fi
+fi
 
 printf "\n%.0s" {1..2}
