@@ -18,18 +18,43 @@ NOTE="[${YELLOW}NOTE${RESET}]"
 INFO="[${BLUE}INFO${RESET}]"
 ERROR="[${RED}ERROR${RESET}]"
 
-echo "${INFO} Iniciando purga de fondos antiguos y descarga de nueva biblioteca 4K..."
-
-# Limpieza total de fondos anteriores para evitar duplicados
-echo "${NOTE} Limpiando biblioteca anterior..."
-find "$REPO_WALLPAPERS_DIR" -type f -not -name "download_wallpapers.sh" -delete
-if [ -d "$SYSTEM_WALLPAPERS_DIR" ]; then
-  find "$SYSTEM_WALLPAPERS_DIR" -type f -delete
-fi
+echo "${INFO} Iniciando sincronización y descarga de fondos de pantalla en resolución original..."
 
 # Asegurar que las carpetas existan
 mkdir -p "$REPO_WALLPAPERS_DIR"
 mkdir -p "$SYSTEM_WALLPAPERS_DIR"
+
+# --- Fase 1: Colección Oficial Pixi-Arch-A (Google Drive - Calidad Original 4K/5K/6K) ---
+echo -e "\n${BLUE}=== Descargando Colección Oficial de Google Drive (56 Fondos Originales) ===${RESET}"
+GDRIVE_FOLDER_ID="16vPvkWS0ZHDxAmHMb4okFNr0FwDJBJ-t"
+GDRIVE_URL="https://drive.google.com/drive/folders/$GDRIVE_FOLDER_ID"
+
+# Asegurar que gdown esté disponible en el sistema
+if ! command -v gdown &>/dev/null && [ ! -f "$HOME/.local/bin/gdown" ]; then
+  echo "${INFO} Preparando herramienta gdown..."
+  pip install --user --break-system-packages gdown >/dev/null 2>&1 || true
+fi
+
+GDOWN_CMD="$(command -v gdown 2>/dev/null || echo "$HOME/.local/bin/gdown")"
+
+if [ -x "$GDOWN_CMD" ]; then
+  TEMP_GDRIVE=$(mktemp -d)
+  "$GDOWN_CMD" --folder "$GDRIVE_URL" -O "$TEMP_GDRIVE/" 2>&1 | grep -E "Downloading|completed" || true
+  if [ -d "$TEMP_GDRIVE" ]; then
+    find "$TEMP_GDRIVE" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.jpeg" -o -iname "*.webp" \) | while read -r img; do
+      base_name=$(basename "$img" | tr -s ' ' '_')
+      if [ ! -f "$REPO_WALLPAPERS_DIR/$base_name" ]; then
+        cp -f "$img" "$REPO_WALLPAPERS_DIR/$base_name"
+        echo "  ${OK} Guardado: $base_name"
+      else
+        echo "  ${NOTE} Ya existe: $base_name (Omitido)"
+      fi
+    done
+    rm -rf "$TEMP_GDRIVE"
+  fi
+else
+  echo "${NOTE} No se pudo inicializar gdown. Continuando con fuentes secundarias..."
+fi
 
 # Lista de URLs 4K de Wallhaven (80 imágenes)
 declare -a WALLHAVEN_URLS=(
@@ -235,19 +260,19 @@ download_image() {
   fi
 }
 
-# --- Fase 1: Wallhaven (4K Directo) ---
+# --- Fase 2: Wallhaven (4K Directo) ---
 echo -e "\n${BLUE}=== Descargando de Wallhaven (4K Nativo) ===${RESET}"
 for url in "${WALLHAVEN_URLS[@]}"; do
   download_image "$url" "$REPO_WALLPAPERS_DIR"
 done
 
-# --- Fase 2: Pexels (Original Máxima Resolución 4K+) ---
+# --- Fase 3: Pexels (Original Máxima Resolución 4K+) ---
 echo -e "\n${BLUE}=== Descargando de Pexels (Calidad Ultra HD) ===${RESET}"
 for url in "${PEXELS_URLS[@]}"; do
   download_image "$url" "$REPO_WALLPAPERS_DIR"
 done
 
-# --- Fase 3: Copiar al Sistema ---
+# --- Fase 4: Copiar al Sistema ---
 echo -e "\n${BLUE}=== Sincronizando con la carpeta activa del sistema ($SYSTEM_WALLPAPERS_DIR) ===${RESET}"
 if cp -R "$REPO_WALLPAPERS_DIR"/* "$SYSTEM_WALLPAPERS_DIR/"; then
   # Eliminar el propio script de descarga de la carpeta activa del sistema para no contaminar
@@ -257,7 +282,7 @@ else
   echo "${ERROR} Error al copiar los archivos a $SYSTEM_WALLPAPERS_DIR"
 fi
 
-# --- Fase 4: Autoregenerar tema del sistema con Wallust ---
+# --- Fase 5: Autoregenerar tema del sistema con Wallust ---
 echo -e "\n${BLUE}=== Sincronizando tema estético global con Wallust ===${RESET}"
 # Buscamos la primera imagen descargada para inicializar el tema
 FIRST_WALL=$(find "$SYSTEM_WALLPAPERS_DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.jpeg" \) | head -n 1)
