@@ -21,5 +21,5 @@ env = _JAVA_AWT_WM_NONREPARENTING,1
 env = SDL_VIDEODRIVER,wayland,x11
 env = CLUTTER_BACKEND,wayland
 
-### Aquamarine GPU Routing ###
-env = AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1 # Prioritize Intel integrated GPU (card2) as primary for laptop screen and Nvidia (card1) as secondary to eliminate rendering latency
+### Aquamarine GPU Routing (Gestionado automáticamente por detect-gpu.sh y lua/env.lua) ###
+# env = AQ_DRM_DEVICES,/dev/dri/cardX:/dev/dri/cardY
