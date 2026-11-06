@@ -54,16 +54,16 @@ ShellRoot {
         IpcHandler {
             target: "panel"
 
-            function toggle() {
-                panel.toggle()
+            function toggle(targetScreen: string) {
+                panel.toggle(targetScreen)
             }
 
             function close() {
                 panel.dismiss()
             }
 
-            function open() {
-                panel.reveal()
+            function open(targetScreen: string) {
+                panel.reveal(targetScreen)
             }
         }
     }

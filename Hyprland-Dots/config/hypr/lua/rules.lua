@@ -34,7 +34,7 @@ hl.window_rule({ match = { class = "thunar" }, float = true, size = { 1000, 650 
 hl.window_rule({ match = { class = "org.pulseaudio.pavucontrol" }, float = true, size = { 800, 550 }, center = true })
 hl.window_rule({ match = { class = "pavucontrol" }, float = true, size = { 800, 550 }, center = true })
 hl.window_rule({ match = { class = "nm-connection-editor" }, float = true, center = true })
-hl.window_rule({ match = { class = "blueman-manager" }, float = true, center = true })
+hl.window_rule({ match = { class = "blueman-manager" }, float = true, size = { 750, 520 }, center = true, opacity = { 0.88, 0.78 } })
 
 -- Diálogos y visores
 hl.window_rule({ match = { class = "feh" }, float = true, center = true })
