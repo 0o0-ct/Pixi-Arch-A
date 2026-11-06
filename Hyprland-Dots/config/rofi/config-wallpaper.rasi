@@ -1,97 +1,79 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-/* Main Config (wallpaper) */
+/* Main Config (wallpaper) - galería de miniaturas limpia */
 
 @import "~/.config/rofi/config.rasi"
+@import "~/.config/rofi/wallust/mode-glass.rasi"
 
-/* Adaptive glass tokens (smoked / porcelain) from the wallpaper pipeline */
-@import "~/.config/rofi/wallust/mode-glass.rasi"  
-
-/* ---- Configuration ---- */ 
 configuration {
-  modi: "drun";
+  modi: "dmenu";
+  show-icons: true;
+  disable-history: true;
+  sort: false;
 }
 
 window {
-  width: 75%;
-  height: inherit;
+  location: center;
+  anchor: center;
+  width: 62%;
   border: 1px solid;
-  border-radius: 20px;
+  border-radius: 24px;
   border-color: @edge-glass;
   background-color: @pane;
   transparency: "real";
 }
 
-/* ---- Mainbox ---- */
 mainbox {
-  children:
-    [ "inputbar", "listview"];
+  children: [ "listview" ];
   background-color: transparent;
   padding: 24px;
+  spacing: 0px;
 }
 
-inputbar {
-  border: 1px;
-  border-radius: 14px;
-  border-color: @edge-hi;
-  background-color: @lift-hi;
-  padding: 10px 16px;
-  margin: 0px 0px 14px 0px;
-}
-
-entry {
-  expand: true;
-  placeholder: " 🎞️ Buscar / Elegir Fondo";
-  horizontal-align: 0.5;
-  background-color: transparent;
-}
-
-/* ---- Listview ---- */
 listview {
   columns: 6;
   lines: 2;
-  spacing: 20px;
-  padding: 10px;
+  spacing: 16px;
+  padding: 4px;
   flow: horizontal;
-  fixed-width: true;
-  fixed-height: true;
   cycle: true;
+  fixed-height: false;
+  scrollbar: false;
   background-color: transparent;
 }
 
-/* ---- Element ---- */
 element {
   orientation: vertical;
-  padding: 10px;
-  spacing: 6px;
-  border-radius: 14px;
+  padding: 6px;
   margin: 0px;
-  background-color: @element-bg;
-  border: 1px;
+  border-radius: 16px;
+  border: 2px solid;
   border-color: @element-edge;
+  background-color: @element-bg;
+  cursor: pointer;
+  children: [ "element-icon" ];
 }
 
 element normal.normal,
 element alternate.normal {
   background-color: @element-bg;
+  border-color: @element-edge;
 }
 
 element selected.normal {
   background-color: @selected;
-  border: 1px solid;
+  border: 2px solid;
   border-color: @selected-edge;
-  border-radius: 14px;
+  border-radius: 16px;
 }
 
 element-icon {
-    text-color:                  inherit;
-    size:                        10%;
-    margin:                      -30px;
-    cursor:                      inherit;
+  size: 130px;
+  cursor: inherit;
+  horizontal-align: 0.5;
+  vertical-align: 0.5;
+  background-color: transparent;
 }
 
 element-text {
-  vertical-align: 0.5;
-  horizontal-align: 0.5;
-  padding: 6px;
-  margin: 6px;
+  enabled: false;
 }

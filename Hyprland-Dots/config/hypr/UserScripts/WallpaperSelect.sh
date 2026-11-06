@@ -48,9 +48,9 @@ fi
 scale_factor=$(hyprctl monitors -j | jq -r --arg mon "$focused_monitor" '.[] | select(.name == $mon) | .scale')
 monitor_height=$(hyprctl monitors -j | jq -r --arg mon "$focused_monitor" '.[] | select(.name == $mon) | .height')
 
-icon_size=$(echo "scale=1; ($monitor_height * 3) / ($scale_factor * 150)" | bc)
-adjusted_icon_size=$(echo "$icon_size" | awk '{if ($1 < 15) $1 = 20; if ($1 > 25) $1 = 25; print $1}')
-rofi_override="element-icon{size:${adjusted_icon_size}%;}"
+calc_icon_size=$(echo "scale=0; ($monitor_height * 130) / ($scale_factor * 1080)" | bc 2>/dev/null || echo 130)
+[[ -z "$calc_icon_size" || "$calc_icon_size" -lt 80 ]] && calc_icon_size=130
+rofi_override="element-icon{size:${calc_icon_size}px;}"
 
 # Kill existing wallpaper daemons for video
 kill_wallpaper_for_video() {
@@ -77,7 +77,7 @@ RANDOM_PIC="${PICS[$((RANDOM % ${#PICS[@]}))]}"
 RANDOM_PIC_NAME=". aleatorio"
 
 # Rofi command
-rofi_command="rofi -i -show -dmenu -config $rofi_theme -theme-str $rofi_override"
+rofi_command="rofi -i -dmenu -config $rofi_theme -theme-str $rofi_override"
 
 # Sorting Wallpapers
 menu() {
