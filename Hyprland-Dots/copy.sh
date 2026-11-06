@@ -510,8 +510,13 @@ printf "\n%.0s" {1..1}
 # wallpaper stuff
 PICTURES_DIR="$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")"
 mkdir -p "$PICTURES_DIR/wallpapers"
-if cp -r wallpapers "$PICTURES_DIR/"; then
-  echo "${OK} ¡Se copiaron algunos ${MAGENTA}fondos de pantalla${RESET} con éxito!" | tee -a "$LOG"
+mkdir -p "$HOME/Pictures/wallpapers"
+[ -d "$HOME/Imágenes" ] && mkdir -p "$HOME/Imágenes/wallpapers"
+
+if cp -rf wallpapers/. "$PICTURES_DIR/wallpapers/"; then
+  cp -rf wallpapers/. "$HOME/Pictures/wallpapers/" 2>/dev/null || true
+  [ -d "$HOME/Imágenes" ] && cp -rf wallpapers/. "$HOME/Imágenes/wallpapers/" 2>/dev/null || true
+  echo "${OK} ¡Se copiaron todos los ${MAGENTA}fondos de pantalla oficiales${RESET} con éxito!" | tee -a "$LOG"
 else
   echo "${ERROR} Error al copiar algunos ${YELLOW}fondos de pantalla${RESET}" | tee -a "$LOG"
 fi

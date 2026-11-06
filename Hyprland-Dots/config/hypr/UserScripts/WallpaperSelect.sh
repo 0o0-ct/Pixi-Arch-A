@@ -5,7 +5,15 @@
 # WALLPAPERS PATH
 terminal=kitty
 PICTURES_DIR="$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")"
-wallDIR="$PICTURES_DIR/wallpapers"
+wall_dirs=()
+[[ -d "$PICTURES_DIR/wallpapers" ]] && wall_dirs+=("$PICTURES_DIR/wallpapers")
+[[ -d "$HOME/Pictures/wallpapers" && "$HOME/Pictures/wallpapers" != "$PICTURES_DIR/wallpapers" ]] && wall_dirs+=("$HOME/Pictures/wallpapers")
+[[ -d "$HOME/Imágenes/wallpapers" && "$HOME/Imágenes/wallpapers" != "$PICTURES_DIR/wallpapers" ]] && wall_dirs+=("$HOME/Imágenes/wallpapers")
+
+if [ ${#wall_dirs[@]} -eq 0 ]; then
+  wall_dirs+=("$PICTURES_DIR/wallpapers")
+fi
+wallDIR="${wall_dirs[0]}"
 SCRIPTSDIR="$HOME/.config/hypr/scripts"
 wallpaper_current="$HOME/.config/hypr/wallpaper_effects/.wallpaper_current"
 
@@ -60,7 +68,7 @@ kill_wallpaper_for_image() {
 }
 
 # Retrieve wallpapers (both images & videos)
-mapfile -d '' PICS < <(find -L "${wallDIR}" -type f \( \
+mapfile -d '' PICS < <(find -L "${wall_dirs[@]}" -type f \( \
   -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o \
   -iname "*.bmp" -o -iname "*.tiff" -o -iname "*.webp" -o \
   -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.mov" -o -iname "*.webm" \) -print0)
@@ -73,7 +81,18 @@ rofi_command="rofi -i -show -dmenu -config $rofi_theme -theme-str $rofi_override
 
 # Sorting Wallpapers
 menu() {
-  readarray -t sorted_options < <(printf '%s\n' "${PICS[@]}" | sort)
+  declare -A seen_names
+  local unique_pics=()
+  for p in "${PICS[@]}"; do
+    local bname
+    bname=$(basename "$p")
+    if [[ -z "${seen_names[$bname]}" ]]; then
+      seen_names["$bname"]=1
+      unique_pics+=("$p")
+    fi
+  done
+
+  readarray -t sorted_options < <(printf '%s\n' "${unique_pics[@]}" | sort -V)
 
   # Safe thumbnail for random option to prevent crash/freeze on raw unstripped image
   local random_pic_name
@@ -201,7 +220,7 @@ main() {
   choice_basename=$(basename "$choice" | sed 's/\(.*\)\.[^.]*$/\1/')
 
   # Search for the selected file in the wallpapers directory, including subdirectories
-  selected_file=$(find "$wallDIR" -iname "$choice_basename.*" -print -quit)
+  selected_file=$(find "${wall_dirs[@]}" -iname "$choice_basename.*" -print -quit)
 
   if [[ -z "$selected_file" ]]; then
     echo "File not found. Selected choice: $choice"

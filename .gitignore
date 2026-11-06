@@ -1,6 +1,6 @@
-# Ignore wallpapers images but keep the download script
-Hyprland-Dots/wallpapers/*
-!Hyprland-Dots/wallpapers/download_wallpapers.sh
+# Ignorar descargas externas masivas de Wallhaven/Pexels, pero mantener la coleccion oficial de fondos Pixi-Arch-A
+Hyprland-Dots/wallpapers/wallhaven-*
+Hyprland-Dots/wallpapers/pexels-*
 
 # Ignore system installation logs and build leftovers
 yay-bin/

@@ -426,30 +426,37 @@ echo "${INFO} Configurando el sistema de fondos de pantalla...${RESET}" | tee -a
 
 # Si la carpeta de wallpapers existe, copiar los wallpapers predeterminados
 if [ -d "Hyprland-Dots/wallpapers" ]; then
-    PICTURES_DIR="$HOME/Pictures"
+    PICTURES_DIR="$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")"
     SYSTEM_WALLPAPERS_DIR="$PICTURES_DIR/wallpapers"
 
     echo "$NOTE - Usando la colección de wallpapers predeterminados de Pixi-Arch-A..." | tee -a "$LOG"
 
-    # Asegurar que las carpetas existan
+    # Asegurar que las carpetas existan (soporte XDG, Pictures e Imágenes)
     mkdir -p "$SYSTEM_WALLPAPERS_DIR"
+    mkdir -p "$HOME/Pictures/wallpapers"
+    [ -d "$HOME/Imágenes" ] && mkdir -p "$HOME/Imágenes/wallpapers"
+
+    # Copiar TODOS los wallpapers oficiales a las carpetas del sistema
+    echo "$INFO - Copiando colección oficial completa de wallpapers..." | tee -a "$LOG"
+    cp -rf Hyprland-Dots/wallpapers/. "$SYSTEM_WALLPAPERS_DIR/"
+    cp -rf Hyprland-Dots/wallpapers/. "$HOME/Pictures/wallpapers/" 2>/dev/null || true
+    [ -d "$HOME/Imágenes" ] && cp -rf Hyprland-Dots/wallpapers/. "$HOME/Imágenes/wallpapers/" 2>/dev/null || true
 
     # Contar el número total de wallpapers disponibles
-    TOTAL_WALLPAPERS=$(find "Hyprland-Dots/wallpapers" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) | wc -l)
+    TOTAL_WALLPAPERS=$(find "$SYSTEM_WALLPAPERS_DIR" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" -o -name "*.webp" \) | wc -l)
 
     if [ "$TOTAL_WALLPAPERS" -gt 0 ]; then
-        # Seleccionar un wallpaper aleatorio
-        RANDOM_WALLPAPER=$(find "Hyprland-Dots/wallpapers" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) | shuf -n 1)
-        echo "$INFO - Seleccionado wallpaper aleatorio: $(basename "$RANDOM_WALLPAPER")" | tee -a "$LOG"
-
-        # Copiar el wallpaper al directorio del sistema
-        cp -f "$RANDOM_WALLPAPER" "$SYSTEM_WALLPAPERS_DIR/"
+        # Seleccionar un wallpaper aleatorio inicial
+        RANDOM_WALLPAPER=$(find "$SYSTEM_WALLPAPERS_DIR" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" -o -name "*.webp" \) | shuf -n 1)
+        echo "$INFO - Seleccionado wallpaper aleatorio inicial: $(basename "$RANDOM_WALLPAPER")" | tee -a "$LOG"
 
         # Guardar el path del wallpaper actual en .wallpaper_current
-        WALLPAPER_PATH="$SYSTEM_WALLPAPERS_DIR/$(basename "$RANDOM_WALLPAPER")"
+        WALLPAPER_PATH="$RANDOM_WALLPAPER"
+        mkdir -p "Hyprland-Dots/config/hypr/wallpaper_effects" "$HOME/.config/hypr/wallpaper_effects"
         echo "$WALLPAPER_PATH" > "Hyprland-Dots/config/hypr/wallpaper_effects/.wallpaper_current"
+        echo "$WALLPAPER_PATH" > "$HOME/.config/hypr/wallpaper_effects/.wallpaper_current"
 
-        echo "$OK - Wallpaper copiado a $WALLPAPER_PATH" | tee -a "$LOG"
+        echo "$OK - Wallpaper inicial configurado en $WALLPAPER_PATH ($TOTAL_WALLPAPERS wallpapers instalados)" | tee -a "$LOG"
 
         # Ejecutar Wallust para generar el tema de color si wallust está instalado
         if command -v wallust >/dev/null 2>&1; then
