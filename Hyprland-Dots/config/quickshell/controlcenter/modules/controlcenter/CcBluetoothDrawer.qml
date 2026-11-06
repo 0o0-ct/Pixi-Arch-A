@@ -6,27 +6,33 @@ import "root:/modules/common/widgets"
 import "root:/services"
 
 /**
- * Expandable Bluetooth device management drawer.
- * Displays paired/saved devices, connection status, device actions,
- * scan for nearby devices, and power toggle.
+ * Expandable Bluetooth device management drawer — Frosted Glass Chicklets Style.
+ * Harmonized with Waybar Oglo Chicklets aesthetic and Wallust dynamic palette.
  */
-Rectangle {
+Item {
     id: root
 
-    implicitHeight: contentCol.implicitHeight + 24
-    radius: Theme.tileRadius
-    color: Theme.tileBg
-    border.width: 1
-    border.color: Theme.tileBorder
-    clip: true
+    implicitHeight: contentCol.implicitHeight + 12
 
     function getDeviceIcon(name) {
         const lower = (name ?? "").toLowerCase()
+        if (lower.includes("mouse") || lower.includes("ratón") || lower.includes("raton")
+            || lower.includes("steren") || lower.includes("com-5890"))
+            return "mouse"
         if (lower.includes("jbl") || lower.includes("beam") || lower.includes("headphone")
-            || lower.includes("buds") || lower.includes("airpod") || lower.includes("ear") || lower.includes("steren"))
+            || lower.includes("buds") || lower.includes("airpod") || lower.includes("ear")
+            || lower.includes("diadema") || lower.includes("bt20"))
             return "headphones"
-        if (lower.includes("speaker") || lower.includes("sound") || lower.includes("party") || lower.includes("audio"))
+        if (lower.includes("speaker") || lower.includes("sound") || lower.includes("party")
+            || lower.includes("audio") || lower.includes("parlante"))
             return "speaker"
+        if (lower.includes("phone") || lower.includes("teléfono") || lower.includes("telefono")
+            || lower.includes("k1ev3r") || lower.includes("galaxy") || lower.includes("iphone"))
+            return "smartphone"
+        if (lower.includes("watch") || lower.includes("reloj"))
+            return "watch"
+        if (lower.includes("tv") || lower.includes("box") || lower.includes("claro"))
+            return "tv"
         return "bluetooth"
     }
 
@@ -35,19 +41,28 @@ Rectangle {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.margins: 12
-        spacing: 10
+        spacing: 12
 
-        // ── Header ────────────────────────────────────────────────────────
+        // ── Header (Waybar Chicklet Style) ────────────────────────────────
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
 
-            MaterialSymbol {
-                text: CcSystem.bluetoothEnabled ? "bluetooth" : "bluetooth_disabled"
-                iconSize: 22
-                color: CcSystem.bluetoothEnabled ? Theme.accentText : Theme.textDim
-                font.family: Theme.iconFontFamily
+            Rectangle {
+                width: 32
+                height: 32
+                radius: 16
+                color: CcSystem.bluetoothEnabled ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.20) : Qt.rgba(1, 1, 1, 0.08)
+                border.width: 1
+                border.color: CcSystem.bluetoothEnabled ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.40) : Theme.tileBorder
+
+                MaterialSymbol {
+                    anchors.centerIn: parent
+                    text: CcSystem.bluetoothEnabled ? "bluetooth" : "bluetooth_disabled"
+                    iconSize: 20
+                    color: CcSystem.bluetoothEnabled ? Theme.accentText : Theme.textDim
+                    font.family: Theme.iconFontFamily
+                }
             }
 
             StyledText {
@@ -60,10 +75,12 @@ Rectangle {
 
             // Scan / Refresh button
             Rectangle {
-                width: 28
-                height: 28
-                radius: 14
-                color: scanHover.hovered ? Theme.tileHoverBg : "transparent"
+                width: 30
+                height: 30
+                radius: 15
+                color: scanHover.hovered ? Theme.tileHoverBg : Qt.rgba(1, 1, 1, 0.08)
+                border.width: 1
+                border.color: Theme.tileBorder
                 visible: CcSystem.bluetoothEnabled
 
                 MaterialSymbol {
@@ -82,37 +99,14 @@ Rectangle {
                 }
             }
 
-            // Open Blueman Settings button
+            // Power Switch Button (Pill chicklet)
             Rectangle {
-                width: 28
+                width: 62
                 height: 28
                 radius: 14
-                color: setHover.hovered ? Theme.tileHoverBg : "transparent"
-
-                MaterialSymbol {
-                    anchors.centerIn: parent
-                    text: "settings"
-                    iconSize: 18
-                    color: Theme.textPrimary
-                    font.family: Theme.iconFontFamily
-                }
-
-                HoverHandler { id: setHover }
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: CcSystem.runDetached(["blueman-manager"])
-                }
-            }
-
-            // Power Switch Button
-            Rectangle {
-                width: 60
-                height: 26
-                radius: 13
-                color: CcSystem.bluetoothEnabled ? Theme.accent : Theme.tileIconBg
+                color: CcSystem.bluetoothEnabled ? Theme.accent : Qt.rgba(1, 1, 1, 0.12)
                 border.width: 1
-                border.color: Theme.tileBorder
+                border.color: CcSystem.bluetoothEnabled ? Theme.accent : Theme.tileBorder
 
                 StyledText {
                     anchors.centerIn: parent
@@ -138,42 +132,52 @@ Rectangle {
 
             // Section Label: Paired Devices
             StyledText {
-                text: "DISPOSITIVOS GUARDADOS"
+                text: "DISPOSITIVOS VINCULADOS"
                 color: Theme.textDim
                 font.pixelSize: Appearance.font.pixelSize.textSmall - 1
                 font.weight: Font.Bold
             }
 
-            // Paired Devices List
+            // Paired Devices List (Chicklets)
             Repeater {
                 model: CcSystem.bluetoothPairedDevices
 
                 delegate: Rectangle {
                     Layout.fillWidth: true
-                    implicitHeight: 46
-                    radius: 10
-                    color: devHover.hovered ? Theme.tileHoverBg : Theme.tileIconBg
+                    implicitHeight: 48
+                    radius: 14
+                    color: devHover.hovered 
+                        ? (modelData.connected ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.22) : Theme.tileHoverBg)
+                        : (modelData.connected ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.12) : Qt.rgba(1, 1, 1, 0.06))
                     border.width: 1
-                    border.color: modelData.connected ? Theme.accentText : Theme.tileBorder
+                    border.color: modelData.connected ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.50) : Theme.tileBorder
 
                     HoverHandler { id: devHover }
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 10
+                        anchors.leftMargin: 12
                         anchors.rightMargin: 10
-                        spacing: 10
+                        spacing: 12
 
-                        MaterialSymbol {
-                            text: root.getDeviceIcon(modelData.name)
-                            iconSize: 20
-                            color: modelData.connected ? Theme.accentText : Theme.textPrimary
-                            font.family: Theme.iconFontFamily
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: modelData.connected ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.25) : Qt.rgba(1, 1, 1, 0.08)
+
+                            MaterialSymbol {
+                                anchors.centerIn: parent
+                                text: root.getDeviceIcon(modelData.name)
+                                iconSize: 18
+                                color: modelData.connected ? Theme.accentText : Theme.textPrimary
+                                font.family: Theme.iconFontFamily
+                            }
                         }
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 0
+                            spacing: 1
 
                             StyledText {
                                 Layout.fillWidth: true
@@ -185,11 +189,11 @@ Rectangle {
                             }
 
                             RowLayout {
-                                spacing: 4
+                                spacing: 5
                                 Rectangle {
-                                    width: 6
-                                    height: 6
-                                    radius: 3
+                                    width: 7
+                                    height: 7
+                                    radius: 3.5
                                     color: modelData.connected ? "#4ade80" : Theme.textDim
                                 }
                                 StyledText {
@@ -200,12 +204,14 @@ Rectangle {
                             }
                         }
 
-                        // Connect / Disconnect button
+                        // Connect / Disconnect button (Frosted Glass Chicklet)
                         Rectangle {
-                            implicitWidth: 86
+                            implicitWidth: 92
                             implicitHeight: 28
                             radius: 14
-                            color: modelData.connected ? "#ef4444" : Theme.accent
+                            color: modelData.connected ? Qt.rgba(0.92, 0.26, 0.26, 0.85) : Theme.accent
+                            border.width: 1
+                            border.color: modelData.connected ? "#ef4444" : Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.60)
 
                             StyledText {
                                 anchors.centerIn: parent
@@ -254,10 +260,10 @@ Rectangle {
 
                 // Scan trigger button
                 Rectangle {
-                    implicitWidth: 70
-                    implicitHeight: 22
-                    radius: 11
-                    color: Theme.tileIconBg
+                    implicitWidth: 72
+                    implicitHeight: 24
+                    radius: 12
+                    color: Qt.rgba(1, 1, 1, 0.10)
                     border.width: 1
                     border.color: Theme.tileBorder
                     visible: !CcSystem.bluetoothScanning
@@ -283,20 +289,20 @@ Rectangle {
 
                 delegate: Rectangle {
                     Layout.fillWidth: true
-                    implicitHeight: 40
-                    radius: 8
-                    color: Theme.tileIconBg
+                    implicitHeight: 44
+                    radius: 12
+                    color: Qt.rgba(1, 1, 1, 0.06)
                     border.width: 1
                     border.color: Theme.tileBorder
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 10
+                        anchors.leftMargin: 12
                         anchors.rightMargin: 10
-                        spacing: 8
+                        spacing: 10
 
                         MaterialSymbol {
-                            text: "bluetooth"
+                            text: root.getDeviceIcon(modelData.name)
                             iconSize: 18
                             color: Theme.textDim
                             font.family: Theme.iconFontFamily
@@ -311,9 +317,9 @@ Rectangle {
                         }
 
                         Rectangle {
-                            implicitWidth: 64
-                            implicitHeight: 24
-                            radius: 12
+                            implicitWidth: 72
+                            implicitHeight: 26
+                            radius: 13
                             color: Theme.accent
 
                             StyledText {
@@ -338,9 +344,11 @@ Rectangle {
         // ── Content when Bluetooth is OFF ─────────────────────────────────
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: 48
-            radius: 10
-            color: Theme.tileIconBg
+            implicitHeight: 52
+            radius: 14
+            color: Qt.rgba(1, 1, 1, 0.06)
+            border.width: 1
+            border.color: Theme.tileBorder
             visible: !CcSystem.bluetoothEnabled
 
             RowLayout {

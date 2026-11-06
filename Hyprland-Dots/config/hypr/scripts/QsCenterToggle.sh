@@ -21,17 +21,16 @@ if ! pgrep -f "qs -c $config" >/dev/null 2>&1; then
     setsid qs -c "$config" >/dev/null 2>&1 &
     for _ in $(seq 1 60); do
         if [ -n "$target_mon" ]; then
-            qs -c "$config" ipc call panel toggle "$target_mon" >/dev/null 2>&1 && exit 0
-        else
-            qs -c "$config" ipc call panel toggle >/dev/null 2>&1 && exit 0
+            qs -c "$config" ipc call panel toggleOn "$target_mon" >/dev/null 2>&1 && exit 0
         fi
+        qs -c "$config" ipc call panel toggle >/dev/null 2>&1 && exit 0
         sleep 0.05
     done
     exit 1
 fi
 
 if [ -n "$target_mon" ]; then
-    qs -c "$config" ipc call panel toggle "$target_mon" >/dev/null 2>&1
+    qs -c "$config" ipc call panel toggleOn "$target_mon" >/dev/null 2>&1 || qs -c "$config" ipc call panel toggle >/dev/null 2>&1
 else
     qs -c "$config" ipc call panel toggle >/dev/null 2>&1
 fi

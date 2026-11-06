@@ -26,3 +26,184 @@
 @define-color sidebar_fg_color @window_fg_color;
 @define-color sidebar_border_color @window_bg_color;
 @define-color sidebar_backdrop_color @window_bg_color;
+
+/* ==========================================================================
+ * Blueman Manager — macOS Frosted Glass & Morphism Styling
+ * Matches Waybar frosted glass islands & Wallust dynamic palette
+ * ========================================================================== */
+
+window#manager_window,
+window#manager_window.background,
+window.blueman-manager,
+window.glass-window {
+    background-color: alpha(@window_bg_color, 0.70);
+    border-radius: 20px;
+    border: 1px solid alpha(@accent_color, 0.40);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.50);
+}
+
+window#manager_window #grid,
+window.blueman-manager #grid {
+    background-color: transparent;
+}
+
+/* Menubar: integrated frosted title ribbon */
+window#manager_window menubar,
+window.blueman-manager menubar {
+    background-color: alpha(@window_bg_color, 0.35);
+    border-bottom: 1px solid alpha(@window_fg_color, 0.08);
+    padding: 6px 14px;
+    color: @window_fg_color;
+}
+
+window#manager_window menubar > menuitem,
+window.blueman-manager menubar > menuitem {
+    padding: 4px 12px;
+    border-radius: 8px;
+    color: alpha(@window_fg_color, 0.85);
+}
+
+window#manager_window menubar > menuitem:hover,
+window.blueman-manager menubar > menuitem:hover {
+    background-color: alpha(@accent_color, 0.25);
+    color: @accent_color;
+}
+
+/* Toolbar: translucent soft control bar */
+window#manager_window toolbar,
+window.blueman-manager toolbar {
+    background-color: alpha(@window_fg_color, 0.02);
+    border-bottom: 1px solid alpha(@window_fg_color, 0.08);
+    padding: 8px 14px;
+}
+
+window#manager_window toolbar button,
+window.blueman-manager toolbar button,
+window#manager_window toolbar toolbutton button,
+window.blueman-manager toolbar toolbutton button {
+    border-radius: 10px;
+    padding: 6px 10px;
+    background-color: alpha(@window_fg_color, 0.05);
+    border: 1px solid alpha(@window_fg_color, 0.12);
+    color: @window_fg_color;
+    margin: 0 3px;
+}
+
+window#manager_window toolbar button:hover,
+window.blueman-manager toolbar button:hover,
+window#manager_window toolbar toolbutton button:hover,
+window.blueman-manager toolbar toolbutton button:hover {
+    background-color: alpha(@accent_color, 0.30);
+    border-color: alpha(@accent_color, 0.55);
+    color: #ffffff;
+}
+
+/* Modern search input */
+window#manager_window entry,
+window.blueman-manager entry {
+    border-radius: 12px;
+    padding: 6px 14px;
+    background-color: alpha(@window_fg_color, 0.08);
+    border: 1px solid alpha(@window_fg_color, 0.15);
+    color: @window_fg_color;
+}
+
+window#manager_window entry:focus,
+window.blueman-manager entry:focus {
+    border-color: @accent_color;
+    background-color: alpha(@window_fg_color, 0.14);
+}
+
+/* Scrolled list container */
+window#manager_window scrolledwindow,
+window.blueman-manager scrolledwindow,
+window#manager_window scrolledwindow viewport,
+window.blueman-manager scrolledwindow viewport {
+    background-color: transparent;
+    border-style: none;
+    border-width: 0;
+}
+
+/* Device List Treeview */
+window#manager_window treeview,
+window.blueman-manager treeview,
+treeview#GenericList,
+treeview.blueman-devicelist,
+.blueman-devicelist {
+    background-color: transparent;
+    color: @window_fg_color;
+    border-style: none;
+    border-width: 0;
+    padding: 8px 12px;
+    -GtkTreeView-vertical-separator: 8;
+    -GtkTreeView-horizontal-separator: 10;
+}
+
+window#manager_window treeview:hover,
+window.blueman-manager treeview:hover,
+treeview#GenericList:hover,
+.blueman-devicelist:hover {
+    background-color: alpha(@window_fg_color, 0.04);
+}
+
+/* Modern Chicklet Selection Pill (Frosted Glass Chicklet instead of solid blue bar) */
+window#manager_window treeview:selected,
+window.blueman-manager treeview:selected,
+window#manager_window treeview:selected:focus,
+window.blueman-manager treeview:selected:focus,
+window#manager_window treeview.view:selected,
+window.blueman-manager treeview.view:selected,
+window#manager_window treeview.view:selected:focus,
+window.blueman-manager treeview.view:selected:focus,
+treeview#GenericList:selected,
+treeview#GenericList:selected:focus,
+treeview#GenericList.view:selected,
+treeview#GenericList.view:selected:focus,
+.blueman-devicelist:selected,
+.blueman-devicelist:selected:focus,
+.blueman-devicelist.view:selected,
+.blueman-devicelist.view:selected:focus,
+.chicklet-list:selected,
+.chicklet-list:selected:focus,
+.chicklet-list.view:selected,
+.chicklet-list.view:selected:focus {
+    background-color: alpha(@accent_color, 0.40);
+    border: 1px solid alpha(@accent_color, 0.70);
+    border-radius: 12px;
+    color: #ffffff;
+}
+
+/* Statusbar */
+window#manager_window box#statusbar,
+window.blueman-manager box#statusbar,
+window#manager_window statusbar,
+window.blueman-manager statusbar {
+    background-color: alpha(@window_bg_color, 0.35);
+    border-top: 1px solid alpha(@window_fg_color, 0.08);
+    padding: 5px 16px;
+    color: alpha(@window_fg_color, 0.70);
+    font-size: 11px;
+}
+
+/* Modern thin glass scrollbar */
+window#manager_window scrollbar trough,
+window.blueman-manager scrollbar trough {
+    background-color: transparent;
+    border-style: none;
+    border-width: 0;
+}
+
+window#manager_window scrollbar slider,
+window.blueman-manager scrollbar slider {
+    background-color: alpha(@window_fg_color, 0.20);
+    border-radius: 8px;
+    min-width: 6px;
+    min-height: 24px;
+    border-style: none;
+    border-width: 0;
+}
+
+window#manager_window scrollbar slider:hover,
+window.blueman-manager scrollbar slider:hover {
+    background-color: alpha(@accent_color, 0.50);
+}

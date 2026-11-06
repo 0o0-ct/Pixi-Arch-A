@@ -606,6 +606,13 @@ if command -v awww >/dev/null 2>&1; then
   fi
 fi
 
+# Blueman Glassmorphism launcher compatibility in ~/.local/bin
+if [ -f "$HOME/.config/hypr/scripts/BluemanGlass.py" ]; then
+  mkdir -p "$HOME/.local/bin"
+  chmod +x "$HOME/.config/hypr/scripts/BluemanGlass.py"
+  ln -sf "$HOME/.config/hypr/scripts/BluemanGlass.py" "$HOME/.local/bin/blueman-manager"
+fi
+
 # Patch tray status icons (Ethernet, Bluetooth, Wi-Fi) with Pixi-Arch-A Monet palette
 if [ -f "$SCRIPT_DIR/scripts/patch-tray-icons.sh" ]; then
   bash "$SCRIPT_DIR/scripts/patch-tray-icons.sh" 2>&1 | tee -a "$LOG"

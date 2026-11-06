@@ -4,3 +4,4 @@ Name=Blueman Applet
 Exec=blueman-applet
 Hidden=true
 X-GNOME-Autostart-enabled=false
+

@@ -66,16 +66,17 @@ PanelWindow {
         onActivated: panel.panelState.dismiss()
     }
 
-    // ── Floating card (same glass spec as the control center) ─────────────
+    // ── Floating card (frosted glass matching Waybar chicklets) ───────────
     Rectangle {
         id: card
         z: 1
         width: Theme.panelWidth
         height: content.implicitHeight + Theme.panelPadding * 2
         anchors.top: parent.top
-        anchors.topMargin: Theme.panelMargin
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: 20
+        anchors.topMargin: 44
+        anchors.right: parent.right
+        anchors.rightMargin: 16
+        radius: 18
         color: Theme.cardFill
         border.width: 1
         border.color: Theme.cardEdge
