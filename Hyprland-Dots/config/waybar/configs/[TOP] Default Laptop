@@ -32,8 +32,9 @@
 
 "modules-center": [
 	"custom/separator#blank",
-  "group/app_drawer",
-	"custom/swaync", "custom/dot_update",
+	"group/app_drawer",
+	"custom/swaync",
+	"custom/dot_update",
 	"hyprland/workspaces#rw",
 	"clock",
 	"custom/weather",
@@ -44,6 +45,7 @@
 "modules-right": [
 	"tray",
 	"network#speed",
+	"bluetooth",
 	"group/laptop",
 	"group/mobo_drawer",
 	"group/audio",

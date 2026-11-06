@@ -44,7 +44,8 @@ for _prs in "${_ps[@]}"; do
 done
 
 # Relaunch waybar
-waybar &
+nohup waybar >/dev/null 2>&1 &
+disown
 
 # Dynamically adjust swaync position and size based on active Waybar layout
 positionX="right"

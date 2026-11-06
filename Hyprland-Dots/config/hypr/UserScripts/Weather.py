@@ -94,14 +94,14 @@ SESSION.headers.update({"User-Agent": UA})
 WEATHER_ICONS = {
     "sunnyDay": "󰖙",
     "clearNight": "󰖔",
-    "cloudyFoggyDay": "",
-    "cloudyFoggyNight": "",
-    "rainyDay": "",
-    "rainyNight": "",
-    "snowyIcyDay": "",
-    "snowyIcyNight": "",
-    "severe": "",
-    "default": "",
+    "cloudyFoggyDay": "󰖕",
+    "cloudyFoggyNight": "󰼱",
+    "rainyDay": "󰖗",
+    "rainyNight": "󰖖",
+    "snowyIcyDay": "󰖘",
+    "snowyIcyNight": "󰖘",
+    "severe": "󰖓",
+    "default": "󰖐",
 }
 
 WMO_STATUS = {
@@ -630,7 +630,7 @@ def build_hourly_precip(forecast: JSONDict) -> str:
         if not window:
             return ""
         parts = [f"{int(p)}%" if p is not None else "-" for p in window]
-        return " (next 6h) " + " ".join(parts)
+        return "󰖗 (next 6h) " + " ".join(parts)
     except Exception:
         return ""
 
@@ -658,7 +658,7 @@ def build_weather_strings(cur: JSONDict, cur_units: JSONDict, daily: JSONDict, d
     dtemp_unit = cast(str, daily_units.get("temperature_2m_min", temp_unit))
     tmin_str = f"{int(round(tmin_val))}{dtemp_unit}" if tmin_val is not None else ""
     tmax_str = f"{int(round(tmax_val))}{dtemp_unit}" if tmax_val is not None else ""
-    min_max = f"  {tmin_str}\t\t  {tmax_str}" if tmin_str and tmax_str else ""
+    min_max = f"󰔏  {tmin_str}\t\t󰔑  {tmax_str}" if tmin_str and tmax_str else ""
 
     return temp_str, feels_str, is_day, code, icon, status, min_max
 
@@ -669,19 +669,19 @@ def build_weather_details(cur: JSONDict, cur_units: JSONDict) -> Tuple[str, str,
     wind_unit = cast(str, cur_units.get("wind_speed_10m", ""))
     if wind_val is None:
         log_debug(f"Unexpected type for wind_speed_10m: {type(wind_val_raw)}")
-    wind_text = f"  {int(round(wind_val))}{wind_unit}" if wind_val is not None else ""
+    wind_text = f"󰖝  {int(round(wind_val))}{wind_unit}" if wind_val is not None else ""
 
     hum_val_raw = cur.get("relative_humidity_2m")
     hum_val = coerce_float(hum_val_raw)
     if hum_val is None:
         log_debug(f"Unexpected type for relative_humidity_2m: {type(hum_val_raw)}")
-    humidity_text = f"  {int(hum_val)}%" if hum_val is not None else ""
+    humidity_text = f"󰖌  {int(hum_val)}%" if hum_val is not None else ""
 
     vis_val_raw = cur.get("visibility")
     vis_val = coerce_float(vis_val_raw)
     if vis_val is None:
         log_debug(f"Unexpected type for visibility: {type(vis_val_raw)}")
-    visibility_text = f"  {format_visibility(vis_val)}" if vis_val is not None else ""
+    visibility_text = f"󰈈  {format_visibility(vis_val)}" if vis_val is not None else ""
 
     return wind_text, humidity_text, visibility_text
 
