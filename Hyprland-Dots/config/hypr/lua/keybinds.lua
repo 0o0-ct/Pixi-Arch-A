@@ -58,6 +58,7 @@ bind("SUPER + ALT + L", exec(scriptsDir .. "/ChangeLayout.sh"), { description = 
 -- 2. TEMAS, FONDOS Y WAYBAR
 -- =========================================================================
 bind("SUPER + T", exec(scriptsDir .. "/ThemeChanger.sh"), { description = "selector de tema global Wallust" })
+bind("SUPER + ALT + I", exec(userScripts .. "/IconThemeSelector.sh"), { description = "selector de temas de iconos" })
 bind("SUPER + W", exec(userScripts .. "/WallpaperSelect.sh"), { description = "seleccionar fondo" })
 bind("SUPER + SHIFT + W", exec(userScripts .. "/WallpaperEffects.sh"), { description = "efectos de fondo" })
 bind("CTRL + ALT + W", exec(userScripts .. "/WallpaperRandom.sh"), { description = "fondo aleatorio" })

@@ -58,4 +58,33 @@ if ! command -v papirus-folders &>/dev/null && [ ! -f "$HOME/.local/bin/papirus-
     chmod +x "$HOME/.local/bin/papirus-folders"
 fi
 
+# Installing WhiteSur Icon Theme (Apple iOS / macOS)
+if [ ! -d "$HOME/.icons/WhiteSur-dark" ]; then
+    echo "$NOTE Instalando colección de iconos Apple WhiteSur (iOS)..." 2>&1 | tee -a "$LOG"
+    TEMP_WS=$(mktemp -d)
+    if git clone --depth=1 https://github.com/vinceliuice/WhiteSur-icon-theme.git "$TEMP_WS/WhiteSur" 2>&1 | tee -a "$LOG"; then
+        "$TEMP_WS/WhiteSur/install.sh" -d "$HOME/.local/share/icons" -a 2>&1 | tee -a "$LOG"
+        mkdir -p "$HOME/.icons"
+        cp -rn "$HOME/.local/share/icons/WhiteSur"* "$HOME/.icons/" 2>/dev/null || true
+    fi
+    rm -rf "$TEMP_WS"
+fi
+
+# Installing Samsung One UI & Planet Icon Themes
+if [ ! -d "$HOME/.icons/OneUI-dark" ]; then
+    echo "$NOTE Instalando colección de iconos Samsung One UI..." 2>&1 | tee -a "$LOG"
+    TEMP_OUI=$(mktemp -d)
+    if git clone --depth=1 https://github.com/mjkim0727/OneUI-Icons.git "$TEMP_OUI/OneUI" 2>&1 | tee -a "$LOG"; then
+        mkdir -p "$HOME/.local/share/icons" "$HOME/.icons"
+        cp -r "$TEMP_OUI/OneUI/OneUI"* "$HOME/.local/share/icons/" 2>/dev/null || true
+        cp -r "$TEMP_OUI/OneUI/OneUI"* "$HOME/.icons/" 2>/dev/null || true
+    fi
+    if git clone --depth=1 https://github.com/mjkim0727/Planet-icons.git "$TEMP_OUI/Planet" 2>&1 | tee -a "$LOG"; then
+        cp -r "$TEMP_OUI/Planet/src/Planet"* "$HOME/.local/share/icons/" 2>/dev/null || true
+        cp -r "$TEMP_OUI/Planet/src/Planet"* "$HOME/.icons/" 2>/dev/null || true
+        gtk-update-icon-cache -f "$HOME/.local/share/icons/Planet"* 2>/dev/null || true
+    fi
+    rm -rf "$TEMP_OUI"
+fi
+
 printf "\n%.0s" {1..2}
