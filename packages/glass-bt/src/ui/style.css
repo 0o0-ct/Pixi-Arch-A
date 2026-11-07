@@ -338,7 +338,7 @@ entry.glass-search:focus {
     box-shadow: inset 0 1px 1px alpha(@primary, 0.25);
 }
 
-/* Squircle Tile para icono de dispositivo (44x44px) */
+/* Squircle Tile para icono de dispositivo (44x44px) perfectamente centrado */
 .device-squircle {
     min-width: 44px;
     min-height: 44px;
@@ -347,7 +347,7 @@ entry.glass-search:focus {
     box-shadow: inset 0 1px 1px alpha(@color15, 0.35);
     border: 1px solid alpha(@color15, 0.12);
     margin-right: 12px;
-    padding: 8px;
+    padding: 0;
     color: @text_primary;
 }
 
