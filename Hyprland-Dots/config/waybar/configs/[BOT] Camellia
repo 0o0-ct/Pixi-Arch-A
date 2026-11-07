@@ -45,7 +45,9 @@
 	"power-profiles-daemon",
 	"battery", "custom/hypridle",
 	"clock#3", 
-	"network"],
+	"bluetooth",
+	"network"
+	],
 
 // Additional modules //
 "pulseaudio/slider": {

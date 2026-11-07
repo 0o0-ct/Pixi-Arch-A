@@ -37,6 +37,8 @@
 "modules-right": [
 	"mpris",
 	"tray",
+	"bluetooth",
+	
 	"backlight#vertical",
 	"pulseaudio/slider",
 	"pulseaudio#microphone_vertical",

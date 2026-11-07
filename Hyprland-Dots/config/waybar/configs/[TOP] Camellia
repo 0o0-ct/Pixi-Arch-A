@@ -44,7 +44,9 @@
 	"power-profiles-daemon",
 	"battery",
 	"clock#3", 
+	"bluetooth",
 	"network",
+	
 	"custom/hypridle", "custom/nightlight"],
 
 // Additional modules //

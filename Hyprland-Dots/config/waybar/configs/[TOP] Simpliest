@@ -22,6 +22,8 @@
 "modules-left": [	 
 	"hyprland/workspaces",
 	"tray",
+	"bluetooth",
+	
 	"mpris", 
 	],
     

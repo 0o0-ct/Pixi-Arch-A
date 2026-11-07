@@ -15,12 +15,12 @@ if [ -z "$config" ]; then
     exit 2
 fi
 
-# Delegar Bluetooth a glass-bt (nativo Rust con frosted glassmorphism)
+# Delegar Bluetooth a glass-bt (nativo Rust centrado en monitor y arrastrable)
 if [ "$config" = "btcenter" ]; then
     if pidof glass-bt >/dev/null 2>&1; then
         killall glass-bt
     else
-        glass-bt --layer &
+        glass-bt &
     fi
     exit 0
 fi

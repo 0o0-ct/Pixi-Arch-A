@@ -42,7 +42,9 @@
 	], 
 
 "modules-right": [
+	"bluetooth",
 	"network#speed",
+	
 	"group/connections",
 	"custom/separator#line",
 	"tray",

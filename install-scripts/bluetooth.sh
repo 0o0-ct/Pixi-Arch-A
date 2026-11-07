@@ -52,4 +52,13 @@ elif [ -d "$PARENT_DIR/packages/glass-bt" ] && command -v cargo >/dev/null 2>&1;
   fi
 fi
 
+# Limpiar paneles y servicios Bluetooth antiguos (btcenter, blueman)
+systemctl --user stop btcenter.service 2>/dev/null || true
+systemctl --user disable btcenter.service 2>/dev/null || true
+rm -f "$HOME/.config/systemd/user/btcenter.service"
+rm -f "$HOME/.config/systemd/user/graphical-session.target.wants/btcenter.service"
+rm -rf "$HOME/.config/quickshell/btcenter"
+rm -f "$HOME/.config/autostart/blueman.desktop"
+rm -f "$HOME/.config/hypr/scripts/BluemanGlass.py"
+
 printf "\n%.0s" {1..2}

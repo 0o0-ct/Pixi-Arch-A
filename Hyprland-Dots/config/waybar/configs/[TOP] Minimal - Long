@@ -30,6 +30,8 @@
 	"mpris",
 	"custom/swaync", "custom/dot_update",
 	"tray",
+	"bluetooth",
+	
 	],
 "modules-center": [
 	"clock",

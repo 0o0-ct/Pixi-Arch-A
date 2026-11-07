@@ -43,6 +43,8 @@
 	"custom/separator#blank",
 	"temperature",
 	"custom/separator#blank",	
-	"network"],
+	"bluetooth",
+	"network"
+	],
 
 }	

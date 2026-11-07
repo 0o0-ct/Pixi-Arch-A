@@ -22,3 +22,35 @@
  @define-color color13 {{color13}};
  @define-color color14 {{color14}};
  @define-color color15 {{color15}}; 
+@define-color primary {{color14}};
+@define-color on_primary {{background}};
+
+/* ---- Bluetooth Module (Resaltado como Squircle / Pill llamativo) ---- */
+window#waybar #bluetooth {
+    color: #ffffff;
+    background-color: @primary;
+    border-radius: 8px;
+    padding: 1px 7px;
+    margin: 3px 4px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.30);
+}
+
+window#waybar #bluetooth.connected {
+    color: #ffffff;
+    background-color: @primary;
+    box-shadow: 0 0 6px alpha(@primary, 0.55);
+}
+
+window#waybar #bluetooth.disabled,
+window#waybar #bluetooth.off {
+    color: alpha(@foreground, 0.45);
+    background-color: alpha(@foreground, 0.10);
+    box-shadow: none;
+}
+
+window#waybar #bluetooth:hover {
+    background-color: alpha(@primary, 0.85);
+    color: #ffffff;
+}

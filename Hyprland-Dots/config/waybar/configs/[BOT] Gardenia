@@ -28,7 +28,9 @@
 "modules-left": [
 	"clock#5", 
 	"mpris", 
-	"tray", 
+	"tray",
+	"bluetooth",
+	 
 	"custom/swaync", "custom/dot_update"
 	],
 	  

@@ -35,6 +35,8 @@
 "modules-right": [
 	"mpris",
 	"tray",
+	"bluetooth",
+	
 	"custom/swaync", "custom/dot_update",
 	"backlight#vertical",
 	"pulseaudio#microphone_vertical",

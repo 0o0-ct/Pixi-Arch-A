@@ -23,7 +23,9 @@
         "group/tray_drawer",
         "connections",
         "clock",
-        "network#speed",
+        "bluetooth",
+	"network#speed",
+	
 
         "custom/separator#blank_2",
       ],

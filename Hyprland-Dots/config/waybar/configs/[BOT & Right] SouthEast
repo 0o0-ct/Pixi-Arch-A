@@ -37,7 +37,7 @@
     
 "modules-right": [
     //"network",
-    //"bluetooth",
+    "bluetooth",
 	"custom/weather",
     "battery", 
     "backlight",

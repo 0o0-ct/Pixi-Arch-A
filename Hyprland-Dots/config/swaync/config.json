@@ -86,7 +86,7 @@
               },
               {
                   "label": "󰂯",
-                  "command": "blueman-manager"
+                  "command": "glass-bt"
               }
           ]
       }

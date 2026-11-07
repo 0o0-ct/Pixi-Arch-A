@@ -19,7 +19,14 @@
 # Si swaync estuviera activo, ambos pelearían por el nombre y las
 # notificaciones se comportarían de forma errática.
 
-qs_panels=(audiocenter btcenter controlcenter netcenter)
+# Paneles activos de QuickShell (btcenter reemplazado por el gestor nativo glass-bt)
+qs_panels=(audiocenter controlcenter netcenter)
+
+# Limpiar servicio residual de btcenter si existía
+systemctl --user stop btcenter.service 2>/dev/null || true
+systemctl --user disable btcenter.service 2>/dev/null || true
+rm -f "$HOME/.config/systemd/user/btcenter.service"
+rm -f "$HOME/.config/systemd/user/graphical-session.target.wants/btcenter.service"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

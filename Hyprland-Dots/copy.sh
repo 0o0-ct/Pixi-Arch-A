@@ -285,7 +285,6 @@ layout=$(prompt_detect_layout)
 prompt_keyboard_layout "$layout" "$LOG"
 
 enable_asusctl "$LOG"
-enable_blueman "$LOG"
 enable_ags "$LOG"
 enable_quickshell "$LOG"
 ensure_keybinds_init "$LOG"
@@ -614,6 +613,15 @@ if [ -f "$PARENT_DIR/files/glass-bt" ]; then
 elif [ -f "$PARENT_DIR/packages/glass-bt/target/release/glass-bt" ]; then
   install -m 755 "$PARENT_DIR/packages/glass-bt/target/release/glass-bt" "$HOME/.local/bin/glass-bt"
 fi
+
+# Limpiar paneles y servicios Bluetooth antiguos (btcenter, blueman)
+systemctl --user stop btcenter.service 2>/dev/null || true
+systemctl --user disable btcenter.service 2>/dev/null || true
+rm -f "$HOME/.config/systemd/user/btcenter.service"
+rm -f "$HOME/.config/systemd/user/graphical-session.target.wants/btcenter.service"
+rm -rf "$HOME/.config/quickshell/btcenter"
+rm -f "$HOME/.config/autostart/blueman.desktop"
+rm -f "$HOME/.config/hypr/scripts/BluemanGlass.py"
 
 # Patch tray status icons (Ethernet, Bluetooth, Wi-Fi) with Pixi-Arch-A Monet palette
 if [ -f "$SCRIPT_DIR/scripts/patch-tray-icons.sh" ]; then

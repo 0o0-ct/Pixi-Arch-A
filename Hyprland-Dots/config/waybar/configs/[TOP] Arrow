@@ -25,7 +25,9 @@
 		"custom/arrow9",
 		"pulseaudio",
 		"custom/arrow8",
-		"network",
+		"bluetooth",
+	"network",
+	
 		"custom/arrow7",
 		"memory",
 		"custom/arrow6",

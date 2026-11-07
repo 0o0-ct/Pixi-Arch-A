@@ -46,7 +46,9 @@
 
 "modules-right": [
 	"tray",
+	"bluetooth",
 	"network#speed",
+	
 	"custom/separator#dot-line",
 	"group/mobo_drawer",
 	"custom/separator#line",  

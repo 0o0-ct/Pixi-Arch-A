@@ -24,6 +24,8 @@
 	"group/mobo_drawer",
 	"hyprland/workspaces#rw",
 	"tray",
+	"bluetooth",
+	
 	"mpris", 
 	],
     

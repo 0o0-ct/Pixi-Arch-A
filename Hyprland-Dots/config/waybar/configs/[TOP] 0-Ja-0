@@ -25,6 +25,8 @@
 	"custom/hypridle",
 	"custom/separator#blank",
 	"tray",
+	"bluetooth",
+	
 	"custom/separator#blank",
 	"clock",
 	"custom/separator#blank_2",

@@ -52,8 +52,9 @@ impl Header {
         subtitle_label.add_css_class("panel-subtitle");
         text_box.append(&subtitle_label);
 
-        // Área de título arrastrable (WindowHandle envuelve únicamente icono y texto para no capturar clics de botones)
+        // Área de título arrastrable con cursor interactivo
         let drag_handle = gtk4::WindowHandle::new();
+        drag_handle.set_cursor_from_name(Some("grab"));
         let title_box = Box::new(Orientation::Horizontal, 10);
         title_box.set_hexpand(true);
         title_box.append(&icon_tile);

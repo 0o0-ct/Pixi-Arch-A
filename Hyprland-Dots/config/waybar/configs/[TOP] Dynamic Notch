@@ -42,6 +42,8 @@
 		
 "modules-right": [
 	"tray",
+	"bluetooth",
+	
 	"custom/separator#blank_2",
 	"clock",
 	"custom/separator#blank_2",

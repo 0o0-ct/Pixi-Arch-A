@@ -24,18 +24,18 @@ fn get_wallust_css_path() -> String {
 fn build_theme_css() -> String {
     let wallust_path = get_wallust_css_path();
     let wallust_palette = std::fs::read_to_string(&wallust_path).unwrap_or_else(|_| {
-        "@define-color primary #67FFF0;\n\
-         @define-color on_primary #003734;\n\
-         @define-color primary_container #004f4b;\n\
-         @define-color on_primary_container #e0fffa;\n\
-         @define-color secondary #a8eae2;\n\
-         @define-color tertiary #ffd9e1;\n\
-         @define-color surface #10141e;\n\
-         @define-color surface_container #1a1e28;\n\
-         @define-color on_surface #e7e0e8;\n\
-         @define-color foreground #e7e0e8;\n\
-         @define-color color14 #67FFF0;\n\
-         @define-color color15 #e0fffa;\n".to_string()
+        "@define-color primary #b0c6ff;\n\
+         @define-color on_primary #142f60;\n\
+         @define-color primary_container #2e4578;\n\
+         @define-color on_primary_container #d9e2ff;\n\
+         @define-color secondary #bfc6dc;\n\
+         @define-color tertiary #dfbbde;\n\
+         @define-color surface #121318;\n\
+         @define-color surface_container #1e1f25;\n\
+         @define-color on_surface #e2e2e9;\n\
+         @define-color foreground #e2e2e9;\n\
+         @define-color color14 #b0c6ff;\n\
+         @define-color color15 #d9e2ff;\n".to_string()
     });
 
     let dev_css_path = "/home/c0o0c/Proyectos/glass-bt/src/ui/style.css";
@@ -73,16 +73,30 @@ impl UiApp {
             let initial_css = build_theme_css();
             provider.load_from_data(&initial_css);
 
-            // ── 1. Recarga en caliente al cambiar el Wallpaper (Wallust) ──────
+            // ── 1. Recarga en caliente al cambiar el Wallpaper (Matugen / Wallust) ──────
+            // Monitoreamos el directorio completo para capturar reemplazos atómicos (sed / matugen rename)
+            let home = std::env::var("HOME").unwrap_or_else(|_| "/home/c0o0c".to_string());
+            let wallust_dir = format!("{home}/.config/waybar/wallust");
+            let dir_file = gio::File::for_path(&wallust_dir);
+            if let Ok(monitor) = dir_file.monitor_directory(gio::FileMonitorFlags::NONE, gio::Cancellable::NONE) {
+                let p = provider.clone();
+                monitor.connect_changed(move |_, file, _, _| {
+                    let name = file.basename().map(|b| b.to_string_lossy().to_string()).unwrap_or_default();
+                    if name == "colors-waybar.css" || name.contains("colors") {
+                        let new_css = build_theme_css();
+                        p.load_from_data(&new_css);
+                    }
+                });
+            }
+
+            // Monitoreo directo del archivo por si el FS emite eventos de archivo individual
             let wallust_path = get_wallust_css_path();
             let wallust_file = gio::File::for_path(&wallust_path);
             if let Ok(monitor) = wallust_file.monitor_file(gio::FileMonitorFlags::NONE, gio::Cancellable::NONE) {
                 let p = provider.clone();
-                monitor.connect_changed(move |_, _, _, event| {
-                    if event == gio::FileMonitorEvent::ChangesDoneHint || event == gio::FileMonitorEvent::Changed {
-                        let new_css = build_theme_css();
-                        p.load_from_data(&new_css);
-                    }
+                monitor.connect_changed(move |_, _, _, _| {
+                    let new_css = build_theme_css();
+                    p.load_from_data(&new_css);
                 });
             }
 

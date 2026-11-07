@@ -42,6 +42,8 @@
 
 "modules-right": [
 	"tray",
+	"bluetooth",
+	
 	"group/laptop",
 	"group/mobo_drawer",
 	"group/audio",
