@@ -164,9 +164,24 @@ impl BtWindow {
         list_container.append(&unknown_list);
 
         scrolled.set_child(Some(&list_container));
+        scrolled.set_vexpand(true);
         main_panel.append(&scrolled);
 
-        window.set_child(Some(&main_panel));
+        // Contenedor raíz para mantener el panel centrado con proporciones perfectas en pantalla completa
+        let root_box = Box::new(Orientation::Vertical, 0);
+        root_box.set_hexpand(true);
+        root_box.set_vexpand(true);
+        root_box.set_halign(gtk4::Align::Fill);
+        root_box.set_valign(gtk4::Align::Fill);
+
+        main_panel.set_halign(gtk4::Align::Center);
+        main_panel.set_valign(gtk4::Align::Center);
+        main_panel.set_hexpand(false);
+        main_panel.set_vexpand(true);
+        main_panel.set_size_request(460, -1);
+
+        root_box.append(&main_panel);
+        window.set_child(Some(&root_box));
 
         Self {
             window,

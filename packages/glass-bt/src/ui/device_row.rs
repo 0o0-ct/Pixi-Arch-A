@@ -17,7 +17,7 @@ impl DeviceRow {
         }
         container.set_hexpand(true);
 
-        // Squircle Tile para icono de dispositivo (44x44px) con Lucide Icons
+        // Squircle Tile fijo (44x44px) para icono de dispositivo con Lucide Icons
         let icon_box = Box::new(Orientation::Vertical, 0);
         icon_box.add_css_class("device-squircle");
         match info.device_type {
@@ -35,13 +35,15 @@ impl DeviceRow {
             icon_box.add_css_class("connected");
         }
         icon_box.set_valign(gtk4::Align::Center);
+        icon_box.set_halign(gtk4::Align::Center);
+        icon_box.set_size_request(44, 44);
+        icon_box.set_hexpand(false);
+        icon_box.set_vexpand(false);
 
         let icon_svg = device_type_svg(info.device_type);
         let icon = create_icon_image(icon_svg, "#ffffff", 22);
         icon.set_halign(gtk4::Align::Center);
         icon.set_valign(gtk4::Align::Center);
-        icon.set_hexpand(true);
-        icon.set_vexpand(true);
         icon_box.append(&icon);
         container.append(&icon_box);
 

@@ -20,17 +20,19 @@ impl Header {
         container.set_hexpand(true);
         container.set_valign(gtk4::Align::Center);
 
-        // Icono Bluetooth dentro de un squircle sutil con color dinámico
+        // Icono Bluetooth dentro de un squircle fijo (44x44) con color dinámico
         let icon_tile = Box::new(Orientation::Vertical, 0);
         icon_tile.add_css_class("device-squircle");
         icon_tile.add_css_class("accent");
         icon_tile.set_valign(gtk4::Align::Center);
+        icon_tile.set_halign(gtk4::Align::Center);
+        icon_tile.set_size_request(44, 44);
+        icon_tile.set_hexpand(false);
+        icon_tile.set_vexpand(false);
 
         let icon_image = create_icon_image(svgs::BLUETOOTH, "#ffffff", 22);
         icon_image.set_halign(gtk4::Align::Center);
         icon_image.set_valign(gtk4::Align::Center);
-        icon_image.set_hexpand(true);
-        icon_image.set_vexpand(true);
         icon_tile.append(&icon_image);
 
         // Textos (Título y subtítulo)
