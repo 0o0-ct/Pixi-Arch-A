@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import "functions"
 
 Singleton {
@@ -14,6 +15,84 @@ Singleton {
     property QtObject rounding
     property QtObject font
     property QtObject sizes
+
+    // Generated once per wallpaper change by pixi_colors.py.  The overview
+    // runs as its own Quickshell instance, so it cannot rely on the control
+    // center's Theme singleton to read this file.
+    readonly property string palettePath: {
+        const configHome = Quickshell.env("XDG_CONFIG_HOME")
+        const base = (configHome && configHome.length > 0)
+            ? configHome
+            : (Quickshell.env("HOME") ?? "") + "/.config"
+        return base + "/quickshell/qml_color.json"
+    }
+    property string appliedPaletteText: ""
+
+    function applyPalette(fileContent) {
+        if (fileContent === root.appliedPaletteText)
+            return
+
+        let json
+        try {
+            json = JSON.parse(fileContent)
+        } catch (error) {
+            return
+        }
+        if (!json || typeof json !== "object")
+            return
+
+        root.appliedPaletteText = fileContent
+
+        // New format: full M3 roles under "m3".  Only assign properties that
+        // this Appearance exposes; the file contains roles used by other
+        // shells too.
+        const source = (json.m3 && typeof json.m3 === "object") ? json.m3 : null
+        if (source) {
+            for (const key in source) {
+                const camel = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase())
+                const m3Key = `m3${camel}`
+                if (root.m3colors[m3Key] !== undefined)
+                    root.m3colors[m3Key] = source[key]
+            }
+        } else {
+            // Legacy wallust top-level keys.
+            const legacy = {
+                accentPrimary: "m3primary",
+                accentSecondary: "m3secondary",
+                selectionBackground: "m3secondaryContainer",
+                windowBackground: "m3background",
+                surfaceText: "m3onSurface",
+                secondaryText: "m3onSurfaceVariant",
+                borderPrimary: "m3outline",
+                borderSecondary: "m3outlineVariant",
+                shadowColor: "m3shadow"
+            }
+            for (const key in legacy) {
+                if (json[key] !== undefined)
+                    root.m3colors[legacy[key]] = json[key]
+            }
+        }
+
+        if (json.mode === "light" || json.mode === "dark")
+            root.m3colors.darkmode = json.mode !== "light"
+        else if (typeof json.darkmode === "boolean")
+            root.m3colors.darkmode = json.darkmode
+    }
+
+    FileView {
+        id: paletteFile
+        path: Qt.resolvedUrl(root.palettePath)
+        watchChanges: true
+        onFileChanged: reload()
+        onTextChanged: {
+            if (text().length > 0)
+                root.applyPalette(text())
+        }
+        onLoadedChanged: {
+            if (loaded)
+                root.applyPalette(text())
+        }
+    }
 
     m3colors: QtObject {
         property bool darkmode: true

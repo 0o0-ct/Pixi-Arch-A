@@ -1,111 +1,73 @@
 #!/usr/bin/env bash
 # /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
-# Scripts for refreshing ags, waybar, rofi, swaync, wallust
+# Refresh the shell chrome after a layout/style change.
+#
+# Colour regeneration is owned by pixi_colors.py and WallustSwww.sh.  This
+# script deliberately does not run Wallust, does not kill rofi/AGS/QuickShell,
+# and does not restart SwayNC: restarting them would drop unrelated panels and
+# notifications for a Waybar stylesheet change.  Only Waybar is restarted,
+# because Waybar 0.15 does not reliably re-read a changed @import graph, and
+# SwayNC receives a config/CSS reload so its monitor-aware layout follows.
 
-SCRIPTSDIR=$HOME/.config/hypr/scripts
-UserScripts=$HOME/.config/hypr/UserScripts
+set -uo pipefail
 
-# Define file_exists function
+UserScripts="${HOME}/.config/hypr/UserScripts"
+SwayNCConfig="${HOME}/.config/swaync/config.json"
+SwayNCLayout="${HOME}/.config/swaync/layout.css"
+
 file_exists() {
-  if [ -e "$1" ]; then
-    return 0 # File exists
-  else
-    return 1 # File does not exist
-  fi
+  [ -e "$1" ]
 }
 
-# Kill already running processes cleanly
-_ps=(waybar rofi swaync ags qs)
-for _prs in "${_ps[@]}"; do
-  if pidof "${_prs}" >/dev/null; then
-    pkill "${_prs}"
-  fi
-done
-
-# Wait up to 1 second for clean exit (allows cleanup traps to run)
-for i in {1..10}; do
-  still_running=false
-  for _prs in "${_ps[@]}"; do
-    if pidof "${_prs}" >/dev/null; then
-      still_running=true
-    fi
-  done
-  if [ "$still_running" = false ]; then
-    break
-  fi
-  sleep 0.1
-done
-
-# Force kill any remaining stubborn processes
-for _prs in "${_ps[@]}"; do
-  if pidof "${_prs}" >/dev/null; then
-    pkill -9 "${_prs}"
-  fi
-done
-
-# Relaunch waybar
-nohup waybar >/dev/null 2>&1 &
-disown
-
-# Dynamically adjust swaync position and size based on active Waybar layout
+# ---------------------------------------------------------------------------
+# SwayNC layout follows the active Waybar config (top/bottom/left/right).
+# ---------------------------------------------------------------------------
 positionX="right"
 positionY="top"
 width=450
 height=720
 
-if [ -L "$HOME/.config/waybar/config" ]; then
-  layout_name=$(basename "$(readlink -f "$HOME/.config/waybar/config")")
-  
-  if [[ "$layout_name" == *"[TOP & BOT]"* ]]; then
-    positionX="right"
-    positionY="bottom"
-  elif [[ "$layout_name" == *"[BOT & Left]"* || "$layout_name" == *"[BOT & LEFT]"* ]]; then
-    positionX="left"
-    positionY="bottom"
-  elif [[ "$layout_name" == *"[BOT & Right]"* || "$layout_name" == *"[BOT & RIGHT]"* ]]; then
-    positionX="right"
-    positionY="bottom"
-  elif [[ "$layout_name" == *"[TOP & Left]"* || "$layout_name" == *"[TOP & LEFT]"* ]]; then
-    positionX="left"
-    positionY="top"
-  elif [[ "$layout_name" == *"[TOP & Right]"* || "$layout_name" == *"[TOP & RIGHT]"* ]]; then
-    positionX="right"
-    positionY="top"
-  elif [[ "$layout_name" == *"[LEFT]"* ]]; then
-    positionX="left"
-    positionY="bottom"
-  elif [[ "$layout_name" == *"[RIGHT]"* ]]; then
-    positionX="right"
-    positionY="bottom"
-  elif [[ "$layout_name" == *"[BOT]"* ]]; then
-    positionX="right"
-    positionY="bottom"
-  elif [[ "$layout_name" == *"[TOP]"* ]]; then
-    positionX="right"
-    positionY="top"
-  fi
+if [ -L "${HOME}/.config/waybar/config" ]; then
+  layout_name=$(basename "$(readlink -f "${HOME}/.config/waybar/config")")
 
-  # Determine size (width/height) based on the final positionX and layout style
-  if [[ "$positionX" == "left" ]]; then
+  case "$layout_name" in
+    *"[TOP & BOT]"*) positionX="right"; positionY="bottom" ;;
+    *"[BOT & Left]"*|*"[BOT & LEFT]"*) positionX="left"; positionY="bottom" ;;
+    *"[BOT & Right]"*|*"[BOT & RIGHT]"*) positionX="right"; positionY="bottom" ;;
+    *"[TOP & Left]"*|*"[TOP & LEFT]"*) positionX="left"; positionY="top" ;;
+    *"[TOP & Right]"*|*"[TOP & RIGHT]"*) positionX="right"; positionY="top" ;;
+    *"[LEFT]"*) positionX="left"; positionY="bottom" ;;
+    *"[RIGHT]"*) positionX="right"; positionY="bottom" ;;
+    *"[BOT]"*) positionX="right"; positionY="bottom" ;;
+    *"[TOP]"*) positionX="right"; positionY="top" ;;
+  esac
+
+  if [ "$positionX" = "left" ]; then
     width=720
     height=450
-  elif [[ "$positionX" == "right" ]] && [[ "$layout_name" == *"[RIGHT]"* ]]; then
+  elif [ "$positionX" = "right" ] && [[ "$layout_name" == *"[RIGHT]"* ]]; then
     width=720
     height=450
+  fi
+fi
+
+if [ -f "$SwayNCConfig" ] && command -v jq >/dev/null 2>&1; then
+  tmp="${SwayNCConfig}.pixi.$$"
+  if jq --arg px "$positionX" --arg py "$positionY" \
+        --argjson w "$width" --argjson h "$height" \
+        '.positionX = $px | .positionY = $py
+         | ."control-center-width" = $w
+         | ."control-center-height" = $h' \
+        "$SwayNCConfig" > "$tmp"; then
+    mv "$tmp" "$SwayNCConfig"
   else
-    width=450
-    height=720
+    rm -f "$tmp"
   fi
 fi
 
-if [ -f "$HOME/.config/swaync/config.json" ] && which jq >/dev/null 2>&1; then
-  jq --arg px "$positionX" --arg py "$positionY" --argjson w "$width" --argjson h "$height" '.positionX = $px | .positionY = $py | ."control-center-width" = $w | ."control-center-height" = $h' "$HOME/.config/swaync/config.json" > "$HOME/.config/swaync/config.json.tmp" && mv "$HOME/.config/swaync/config.json.tmp" "$HOME/.config/swaync/config.json"
-fi
-
-# Write dynamic CSS layout configuration for SwayNC columns
-LAYOUT_CSS="$HOME/.config/swaync/layout.css"
+# SwayNC's two-column layout is CSS rather than a widget property.
 if [ "$width" -eq 720 ]; then
-  cat <<EOF > "$LAYOUT_CSS"
+  cat > "${SwayNCLayout}.tmp.$$" <<'EOF'
 /* Horizontal Layout - Two Columns */
 .control-center, .control-center > box {
     display: flex;
@@ -120,7 +82,7 @@ if [ "$width" -eq 720 ]; then
 }
 EOF
 else
-  cat <<EOF > "$LAYOUT_CSS"
+  cat > "${SwayNCLayout}.tmp.$$" <<'EOF'
 /* Vertical Layout - Single Column */
 .control-center, .control-center > box {
     display: flex;
@@ -135,16 +97,37 @@ else
 }
 EOF
 fi
+mv "${SwayNCLayout}.tmp.$$" "$SwayNCLayout"
 
-# relaunch ags
-sleep 0.3
-ags run >/dev/null 2>&1 &
-disown
+# Reload SwayNC in place.  -R re-reads config.json, -rs re-reads style.css.
+if pgrep -x swaync >/dev/null 2>&1 && command -v swaync-client >/dev/null 2>&1; then
+  swaync-client -R -rs >/dev/null 2>&1 || true
+fi
 
-# Relaunching rainbow borders if the script exists
-sleep 1
+# ---------------------------------------------------------------------------
+# Waybar: restart only this process.  A style/layout switch cannot be applied
+# by a CSS reload on 0.15, and a full desktop restart would be far too broad.
+# ---------------------------------------------------------------------------
+if pgrep -x waybar >/dev/null 2>&1; then
+  pkill -x waybar >/dev/null 2>&1 || true
+  for _ in $(seq 1 20); do
+    pgrep -x waybar >/dev/null 2>&1 || break
+    sleep 0.1
+  done
+  if pgrep -x waybar >/dev/null 2>&1; then
+    pkill -9 -x waybar >/dev/null 2>&1 || true
+    sleep 0.1
+  fi
+fi
+
+if command -v waybar >/dev/null 2>&1; then
+  nohup waybar >/dev/null 2>&1 &
+  disown || true
+fi
+
+# Rainbow borders are a separate decoration; keep the existing opt-in.
 if file_exists "${UserScripts}/RainbowBorders.sh"; then
-  ${UserScripts}/RainbowBorders.sh &
+  "${UserScripts}/RainbowBorders.sh" >/dev/null 2>&1 &
 fi
 
 exit 0

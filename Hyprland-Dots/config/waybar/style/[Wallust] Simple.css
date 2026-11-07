@@ -10,47 +10,38 @@
  * between them must keep alpha 0 or they get blurred too and stop reading as
  * separate panes of glass.
  *
- * @background is the wallpaper's darkest colour, so on a dark wallpaper the pane
- * would read as a black rectangle; the @color15 sheen gradient is what lifts it
- * into glass. @foreground is the text and the lit top edge, @color15 at high
- * alpha is the accent pill, with dark ink on top.
+ * The adaptive finish is resolved per wallpaper band by mode-glass.css.  Bright
+ * wallpapers behind the bar switch to porcelain with dark ink; dark wallpapers
+ * keep the smoked-glass look.  These aliases point this file's vocabulary at
+ * those tokens.  Never redefine @ink, @edge, @on_accent or @danger here: GTK
+ * keeps the last @define-color with a given name, so a local literal would
+ * shadow the adaptive value again.
  *
  * The import is relative to ~/.config/waybar/ because waybar loads the symlink
- * style.css: "../wallust/..." resolves to ~/.config/wallust/ and a failed import
- * kills the bar on reload.
+ * style.css; a failed import kills the bar on reload.
  *
- * Performance: no box-shadow, no opacity on containers, transitions animate only
- * background-color/border-color/color, and the dead `gradient_f` animation (it
- * had no @keyframes anywhere) plus the 3s battery blink are gone.
+ * Performance: no box-shadow animation, no opacity on containers, transitions
+ * animate only background-color/border-color/color, and the dead `gradient_f`
+ * animation plus the 3s battery blink are gone.
  */
 
 @import url("wallust/colors-waybar.css");
+@import url("wallust/mode-glass.css");
 
 
 /* ---------------------------------------------------------------------------
- * Tokens — wallust roles
+ * Tokens — adaptive aliases
  * ------------------------------------------------------------------------- */
-@define-color pane          alpha(@color15, 0.11);  /* glass body          */
-@define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
-@define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
+@define-color pane          @pane_glass;  /* glass body          */
+@define-color tile          @lift;        /* workspace tile      */
+@define-color tile_hi       @lift_hi;
+@define-color edge_top      @edge_hi;
 
-@define-color tile          alpha(@foreground, 0.05);  /* workspace tile      */
-@define-color tile_hi       alpha(@foreground, 0.13);
+@define-color ink_dim       @ink_muted;
 
-@define-color edge          alpha(@color14, 0.30);
-@define-color edge_top      alpha(@color15, 0.75);
-
-@define-color ink           @foreground;
-@define-color ink_dim       alpha(@foreground, 0.80);
-
-@define-color accent        @color15;
+@define-color accent        @accent_ink;
 @define-color accent_pill   alpha(@color15, 0.94);
-@define-color on_accent     #12141a;
 @define-color accent_urgent alpha(@color13, 0.88);
-
-/* Semantic, not decorative: these must stay red whatever the wallpaper is.
- * Same exception, and the same value, as the reference style. */
-@define-color danger        #ffa8a8;
 
 *{
 font-family: "JetBrainsMono Nerd Font";
@@ -89,7 +80,7 @@ window#waybar.empty #window {
 }
 
 tooltip {
-    background-color: alpha(@color15, 0.11);
+    background-color: @pane;
 	color: @ink;
 	border: 1px solid @edge;
 	border-radius: 10px;
@@ -101,9 +92,9 @@ tooltip {
 .modules-left,
 .modules-center,
 .modules-right {
-    background-color: alpha(@color15, 0.11);
-    border: 1px solid alpha(@color15, 0.47);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    background-color: @pane;
+    border: 1px solid @edge_glass;
+    box-shadow: 0 4px 30px @shadow_glass;
     border-radius: 10px;
     padding-left: 4px;
     padding-right: 4px;

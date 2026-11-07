@@ -48,15 +48,20 @@ TP_LKG_NAME="last-known-good"
 # with the old-vs-new palette while waybar/rofi looked restored.
 TP_COLOR_TARGETS=(
   "$HOME/.config/waybar/wallust/colors-waybar.css"
+  "$HOME/.config/waybar/wallust/mode-glass.css"
   "$HOME/.config/rofi/wallust/colors-rofi.rasi"
+  "$HOME/.config/rofi/wallust/mode-glass.rasi"
   "$HOME/.config/kitty/kitty-themes/01-Wallust.conf"
   "$HOME/.config/hypr/wallust/wallust-hyprland.conf"
+  "$HOME/.config/hypr/wallust/mode-glass-lock.conf"
   "$HOME/.config/ghostty/wallust.conf"
-  "$HOME/.config/cava/config"
   "$HOME/.config/ags/style/abstracts/_variables.scss"
+  "$HOME/.config/ags/style/abstracts/_theme_variables_matugen.scss"
   "$HOME/.config/swaync/wallust/colors-wallust.css"
+  "$HOME/.config/swaync/wallust/mode-glass.css"
   "$HOME/.config/gtk-3.0/gtk.css"
   "$HOME/.config/gtk-4.0/gtk.css"
+  "$HOME/.config/quickshell/qml_color.json"
 )
 
 # The "who am I" paths: which rofi theme, which waybar config + style, which

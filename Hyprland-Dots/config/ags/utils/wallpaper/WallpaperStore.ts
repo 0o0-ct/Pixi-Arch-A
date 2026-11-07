@@ -14,7 +14,7 @@ import options from "options";
 import Fuse from "../fuse.js";
 import type { WallpaperItem } from "utils/picker/types.ts";
 import type { ThemeProperties } from "./types.ts";
-import { monitorFile } from "ags/file.ts";
+import { monitorFile, readFile } from "ags/file.ts";
 
 interface WallpaperSettings {
   directory: Accessor<string>;
@@ -74,9 +74,30 @@ export class WallpaperStore extends GObject.Object {
     this.themeCache = new LRUCache(this.settings.maxCacheSize.get());
     this.thumbnailManager = getThumbnailManager();
 
+    this.loadEngineSettings();
     this.setupWatchers();
     this.loadThemeCache();
     this.loadWallpapers();
+  }
+
+  /**
+   * The colour engine's settings.json is the source of truth for the manual
+   * mode/scheme.  Loading it here keeps the picker's controls in sync with
+   * DarkLight, ThemeChanger and the other wallpaper entry points.
+   */
+  private loadEngineSettings(): void {
+    try {
+      const path = `${GLib.get_user_config_dir()}/pixi-colors/settings.json`;
+      const data = JSON.parse(readFile(path));
+      if (data.mode === "auto" || data.mode === "light" || data.mode === "dark") {
+        this.manualMode = data.mode;
+      }
+      if (typeof data.scheme === "string") {
+        this.manualScheme = data.scheme as ThemeProperties["scheme"];
+      }
+    } catch (error) {
+      console.log("No colour engine settings yet; using picker defaults");
+    }
   }
 
   private setupWatchers(): void {
@@ -330,7 +351,15 @@ export class WallpaperStore extends GObject.Object {
         }
       }
 
-      await this.themeApplicator.applyTheme(imagePath, analysis);
+      // Pass the raw picker choice, not the resolved auto result: handing
+      // "light"/"dark" back to the engine would silently turn auto off after
+      // the first wallpaper change.
+      await this.themeApplicator.applyTheme(
+        imagePath,
+        analysis,
+        this.manualMode,
+        this.manualScheme,
+      );
     } catch (error) {
       console.error("Failed to apply wallpaper theme:", error);
     }

@@ -1,1 +1,1 @@
-/home/c0o0c/.config/quickshell/modules/common/Appearance.qml
+../../../modules/common/Appearance.qml

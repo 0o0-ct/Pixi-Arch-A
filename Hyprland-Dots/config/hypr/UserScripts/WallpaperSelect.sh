@@ -179,11 +179,8 @@ apply_image_wallpaper() {
   # Apply wallpaper to all monitors/outputs
   swww img "$image_path" $SWWW_PARAMS
 
-  # Run additional scripts (pass the image path to avoid cache race conditions)
+  # The engine renders every palette and performs the targeted reloads.
   "$SCRIPTSDIR/WallustSwww.sh" "$image_path"
-  sleep 2
-  "$SCRIPTSDIR/Refresh.sh"
-  sleep 1
 
 }
 

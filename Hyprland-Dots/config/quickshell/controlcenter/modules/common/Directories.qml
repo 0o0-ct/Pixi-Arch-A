@@ -1,1 +1,1 @@
-/home/c0o0c/.config/quickshell/modules/common/Directories.qml
+../../../modules/common/Directories.qml

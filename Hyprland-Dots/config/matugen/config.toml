@@ -1,41 +1,12 @@
 # /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
-# Matugen 4.2.0 Material Design 3 Configuration
+# Matugen 4.2.0 configuration.
+#
+# IMPORTANT: this file deliberately declares no [templates.*] targets.
+# pixi_colors.py owns every generated consumer file and seeds Matugen with the
+# colour selected by Wallust.  Matugen is only invoked in --dry-run mode to
+# return M3 roles as JSON; it must never write a live consumer.
 
 [config]
 reload_apps = false
 
-[templates.waybar]
-input_path = "~/.config/matugen/templates/colors-waybar.css"
-output_path = "~/.config/waybar/wallust/colors-waybar.css"
-
-[templates.quickshell]
-input_path = "~/.config/matugen/templates/qml_color.json"
-output_path = "~/.config/quickshell/qml_color.json"
-
-[templates.hyprland]
-input_path = "~/.config/matugen/templates/colors-hyprland.conf"
-output_path = "~/.config/hypr/wallust/wallust-hyprland.conf"
-
-[templates.rofi]
-input_path = "~/.config/matugen/templates/colors-rofi.rasi"
-output_path = "~/.config/rofi/wallust/colors-rofi.rasi"
-
-[templates.ghostty]
-input_path = "~/.config/matugen/templates/colors-ghostty.conf"
-output_path = "~/.config/ghostty/wallust.conf"
-
-[templates.kitty]
-input_path = "~/.config/matugen/templates/colors-kitty.conf"
-output_path = "~/.config/kitty/kitty-themes/01-Wallust.conf"
-
-[templates.swaync]
-input_path = "~/.config/matugen/templates/colors-swaync.css"
-output_path = "~/.config/swaync/wallust/colors-wallust.css"
-
-[templates.gtk3]
-input_path = "~/.config/matugen/templates/gtk-colors-gtk3.css"
-output_path = "~/.config/gtk-3.0/gtk.css"
-
-[templates.gtk4]
-input_path = "~/.config/matugen/templates/gtk-colors.css"
-output_path = "~/.config/gtk-4.0/gtk.css"
+[templates]

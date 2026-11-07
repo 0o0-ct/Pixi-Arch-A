@@ -1,67 +1,52 @@
 import GLib from "gi://GLib";
 import { execAsync } from "ags/process";
 import type { ThemeProperties } from "./types";
-import { writeFileAsync } from "ags/file";
 
+/**
+ * Applies a wallpaper theme through the single colour engine.
+ *
+ * pixi_colors.py owns every generated palette (Waybar, Rofi, Hyprland, AGS,
+ * QuickShell, SwayNC, Kitty, Ghostty and GTK).  AGS must not call Matugen or
+ * write _theme_variables_matugen.scss itself: doing so races the engine and
+ * leaves different consumers on different generations.
+ */
 export class ThemeApplicator {
   async applyTheme(
     imagePath: string,
     analysis: ThemeProperties,
+    requestedMode: ThemeProperties["mode"] = analysis.mode,
+    requestedScheme: ThemeProperties["scheme"] = analysis.scheme,
   ): Promise<void> {
-    await Promise.all([
-      this.applyMatugen(imagePath, analysis),
-      this.writeThemeVariables(analysis),
-    ]);
+    await this.applyEngine(imagePath, requestedMode, requestedScheme);
 
     this.sendNotification(imagePath, analysis).catch((error) => {
       console.warn("Failed to send theme notification:", error);
     });
   }
 
-  private async applyMatugen(
+  private async applyEngine(
     imagePath: string,
-    analysis: ThemeProperties,
+    mode: ThemeProperties["mode"],
+    scheme: ThemeProperties["scheme"],
   ): Promise<void> {
-    const matugen = GLib.find_program_in_path("matugen");
-    if (!matugen) {
-      console.warn("matugen not found, skipping color theme generation");
-      return;
+    const engine = `${GLib.get_user_config_dir()}/hypr/scripts/WallustSwww.sh`;
+
+    if (!GLib.file_test(engine, GLib.FileTest.EXISTS)) {
+      throw new Error(`colour engine not found: ${engine}`);
     }
 
     try {
       await execAsync([
-        matugen,
-        "-t",
-        analysis.scheme,
-        "-m",
-        analysis.mode,
-        "--source-color-index",
-        "0",
-        "image",
+        engine,
         imagePath,
+        "--mode",
+        mode,
+        "--scheme",
+        scheme,
+        "--persist",
       ]);
     } catch (error) {
-      console.error("Failed to run matugen:", error);
-      throw error;
-    }
-  }
-
-  private async writeThemeVariables(analysis: ThemeProperties): Promise<void> {
-    try {
-      const configDir = GLib.get_user_config_dir();
-      const scssFile = `${configDir}/ags/style/abstracts/_theme_variables_matugen.scss`;
-
-      const content = [
-        "",
-        "/* Theme mode and scheme variables */",
-        `$darkmode: ${analysis.mode === "dark"};`,
-        `$material-color-scheme: "${analysis.scheme}";`,
-        "",
-      ].join("\n");
-
-      writeFileAsync(scssFile, content);
-    } catch (error) {
-      console.error("Failed to write theme variables:", error);
+      console.error("Failed to run colour engine:", error);
       throw error;
     }
   }

@@ -34,9 +34,9 @@ if [ ! -f "$HOME/.config/hypr/.initial_startup_done" ]; then
             fi
         fi
     fi
-    # Initialize wallust and wallpaper
+    # Initialize the colour pipeline and wallpaper.  The engine resolves the
+    # current image, renders every palette and reloads the live consumers.
 	if [ -f "$wallpaper" ]; then
-		wallust run -s $wallpaper > /dev/null 
 		swww query || swww-daemon && $swww $wallpaper $effect
 	    "$scriptsDir/WallustSwww.sh" > /dev/null 2>&1 & 
 	fi

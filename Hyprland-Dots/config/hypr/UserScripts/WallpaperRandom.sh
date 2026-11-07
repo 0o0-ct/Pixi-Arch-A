@@ -23,10 +23,6 @@ SWWW_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration
 # Apply wallpaper to all monitors/outputs
 swww query || awww-daemon || swww-daemon && swww img "${RANDOMPICS}" $SWWW_PARAMS
 
-wait $!
-"$SCRIPTSDIR/WallustSwww.sh" "${RANDOMPICS}" &&
-
-wait $!
-sleep 2
-"$SCRIPTSDIR/Refresh.sh"
+# Generate colours and reload the consumers (the engine owns both steps).
+"$SCRIPTSDIR/WallustSwww.sh" "${RANDOMPICS}"
 

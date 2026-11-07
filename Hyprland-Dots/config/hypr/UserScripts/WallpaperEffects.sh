@@ -48,11 +48,8 @@ no-effects() {
     # Apply wallpaper to all monitors/outputs
     swww img "$wallpaper_current" $SWWW_PARAMS &&
     wait $!
-    "$SCRIPTSDIR/WallustSwww.sh" "$wallpaper_current" &&
-    wait $!
-    # Refresh rofi, waybar, wallust palettes
-	sleep 2
-	"$SCRIPTSDIR/Refresh.sh"
+    # The engine renders every palette and reloads the consumers.
+    "$SCRIPTSDIR/WallustSwww.sh" "$wallpaper_current"
 
     notify-send -u low -i "$iDIR/ja.png" "No wallpaper" "effects applied"
     # copying wallpaper for rofi menu
@@ -89,10 +86,9 @@ main() {
 
             sleep 2
   
-            "$SCRIPTSDIR/WallustSwww.sh" "$wallpaper_output" &
-            sleep 1
-            # Refresh rofi, waybar, wallust palettes
-            "${SCRIPTSDIR}/Refresh.sh"
+            # Synchronous so the palettes and the reloads come from the
+            # wallpaper that is actually on screen.
+            "$SCRIPTSDIR/WallustSwww.sh" "$wallpaper_output"
             notify-send -u low -i "$iDIR/ja.png" "$choice" "effects applied"
         else
             echo "Effect '$choice' not recognized."
