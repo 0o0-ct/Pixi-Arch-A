@@ -35,7 +35,6 @@ hl.window_rule({ match = { class = "thunar" }, float = true, size = { 1000, 650 
 hl.window_rule({ match = { class = "org.pulseaudio.pavucontrol" }, float = true, size = { 800, 550 }, center = true })
 hl.window_rule({ match = { class = "pavucontrol" }, float = true, size = { 800, 550 }, center = true })
 hl.window_rule({ match = { class = "nm-connection-editor" }, float = true, center = true })
-hl.window_rule({ match = { class = "blueman-manager" }, float = true, size = { 750, 520 }, center = true, opacity = "0.88 0.78" })
 hl.window_rule({ match = { class = "com.pixi.glassbt" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
 hl.window_rule({ match = { class = "glass-bt" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
 

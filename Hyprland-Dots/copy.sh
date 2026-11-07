@@ -615,6 +615,9 @@ elif [ -f "$PARENT_DIR/packages/glass-bt/target/release/glass-bt" ]; then
 fi
 
 # Limpiar paneles y servicios Bluetooth antiguos (btcenter, blueman)
+if pacman -Qq blueman >/dev/null 2>&1; then
+  sudo pacman -Rns --noconfirm blueman 2>/dev/null || true
+fi
 systemctl --user stop btcenter.service 2>/dev/null || true
 systemctl --user disable btcenter.service 2>/dev/null || true
 rm -f "$HOME/.config/systemd/user/btcenter.service"
@@ -622,6 +625,48 @@ rm -f "$HOME/.config/systemd/user/graphical-session.target.wants/btcenter.servic
 rm -rf "$HOME/.config/quickshell/btcenter"
 rm -f "$HOME/.config/autostart/blueman.desktop"
 rm -f "$HOME/.config/hypr/scripts/BluemanGlass.py"
+
+# Redirigir cualquier llamada heredada de blueman hacia glass-bt
+rm -f "$HOME/.local/bin/blueman-manager"
+ln -sf "$HOME/.local/bin/glass-bt" "$HOME/.local/bin/blueman-manager"
+
+# Actualizar lanzadores .desktop de Bluetooth
+mkdir -p "$HOME/.local/share/applications"
+cat << 'DESK' > "$HOME/.local/share/applications/glass-bt.desktop"
+[Desktop Entry]
+Name=Bluetooth
+GenericName=Gestor de Bluetooth
+Comment=Gestor de Bluetooth Glassmorphism nativo GTK4
+Exec=glass-bt
+Icon=bluetooth
+Terminal=false
+Type=Application
+Categories=Settings;HardwareSettings;
+Keywords=bluetooth;blueman;bt;wireless;
+DESK
+
+cat << 'DESK' > "$HOME/.local/share/applications/blueman-manager.desktop"
+[Desktop Entry]
+Name=Bluetooth
+GenericName=Gestor de Bluetooth
+Comment=Gestor de Bluetooth Glassmorphism
+Exec=glass-bt
+Icon=bluetooth
+Terminal=false
+Type=Application
+Categories=Settings;HardwareSettings;
+Keywords=bluetooth;blueman;bt;wireless;
+DESK
+
+cat << 'DESK' > "$HOME/.local/share/applications/blueman-adapters.desktop"
+[Desktop Entry]
+Type=Application
+Name=Bluetooth Adapters
+NoDisplay=true
+Hidden=true
+DESK
+
+update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
 # Patch tray status icons (Ethernet, Bluetooth, Wi-Fi) with Pixi-Arch-A Monet palette
 if [ -f "$SCRIPT_DIR/scripts/patch-tray-icons.sh" ]; then

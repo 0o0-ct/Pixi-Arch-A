@@ -454,7 +454,7 @@ if lspci -nn | grep -qi nvidia; then
 fi
 
 if [ -d /sys/class/power_supply/BAT0 ] || [ -d /sys/class/power_supply/BAT1 ]; then
-    echo "  ✓ Laptop: nm-applet y blueman-applet necesarios" | tee -a "$LOG_FILE"
+    echo "  ✓ Laptop: nm-applet y bluetooth necesarios" | tee -a "$LOG_FILE"
 fi
 
 echo -e "\n${YELLOW}Para aplicar: $0 --apply${NC}"

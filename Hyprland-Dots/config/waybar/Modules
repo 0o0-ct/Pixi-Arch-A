@@ -80,7 +80,7 @@
 	"tooltip-format-connected": "{device_enumerate}",
 	"tooltip-format-enumerate-connected": "󰂱 {device_alias} 󰂄 {device_battery_percentage}%",
 	"tooltip": true,
-	"on-click": "$HOME/.config/hypr/scripts/QsCenterToggle.sh btcenter",
+	"on-click": "pidof glass-bt && killall glass-bt || glass-bt",
 	"on-click-right": "pidof glass-bt && killall glass-bt || glass-bt",
 	"on-click-middle": "rfkill toggle bluetooth"
 },
