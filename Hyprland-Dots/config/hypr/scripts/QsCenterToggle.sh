@@ -15,6 +15,16 @@ if [ -z "$config" ]; then
     exit 2
 fi
 
+# Delegar Bluetooth a glass-bt (nativo Rust con frosted glassmorphism)
+if [ "$config" = "btcenter" ]; then
+    if pidof glass-bt >/dev/null 2>&1; then
+        killall glass-bt
+    else
+        glass-bt --layer &
+    fi
+    exit 0
+fi
+
 target_mon=$(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.focused) | .name' 2>/dev/null || true)
 
 if ! pgrep -f "qs -c $config" >/dev/null 2>&1; then

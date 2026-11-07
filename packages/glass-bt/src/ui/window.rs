@@ -48,7 +48,7 @@ impl BtWindow {
             window.set_keyboard_mode(KeyboardMode::OnDemand);
             window.set_anchor(Edge::Top, true);
             window.set_anchor(Edge::Right, true);
-            window.set_margin(Edge::Top, 12);
+            window.set_margin(Edge::Top, 42);
             window.set_margin(Edge::Right, 16);
         }
 
