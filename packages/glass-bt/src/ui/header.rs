@@ -33,6 +33,8 @@ impl Header {
         let icon_image = create_icon_image(svgs::BLUETOOTH, "#ffffff", 22);
         icon_image.set_halign(gtk4::Align::Center);
         icon_image.set_valign(gtk4::Align::Center);
+        icon_image.set_vexpand(true);
+        icon_image.set_hexpand(false);
         icon_tile.append(&icon_image);
 
         // Textos (Título y subtítulo)

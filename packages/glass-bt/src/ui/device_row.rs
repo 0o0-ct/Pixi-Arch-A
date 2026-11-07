@@ -44,6 +44,8 @@ impl DeviceRow {
         let icon = create_icon_image(icon_svg, "#ffffff", 22);
         icon.set_halign(gtk4::Align::Center);
         icon.set_valign(gtk4::Align::Center);
+        icon.set_vexpand(true);
+        icon.set_hexpand(false);
         icon_box.append(&icon);
         container.append(&icon_box);
 
