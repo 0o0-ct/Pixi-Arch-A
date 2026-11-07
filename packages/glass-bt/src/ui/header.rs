@@ -1,6 +1,7 @@
 use gtk4::prelude::*;
 use gtk4::{glib, Box, Button, Image, Label, Orientation, Switch};
 use crate::events::BtCommand;
+use crate::ui::icons::{create_icon_image, create_texture, svgs};
 
 pub struct Header {
     pub container: Box,
@@ -9,6 +10,8 @@ pub struct Header {
     pub scan_button: Button,
     pub power_switch: Switch,
     pub close_button: Button,
+    pub icon_image: Image,
+    pub icon_tile: Box,
 }
 
 impl Header {
@@ -17,15 +20,14 @@ impl Header {
         container.set_hexpand(true);
         container.set_valign(gtk4::Align::Center);
 
-        // Icono Bluetooth dentro de un squircle sutil
+        // Icono Bluetooth dentro de un squircle sutil con color dinámico
         let icon_tile = Box::new(Orientation::Vertical, 0);
         icon_tile.add_css_class("device-squircle");
-        icon_tile.add_css_class("mouse"); // usa gradiente cian
+        icon_tile.add_css_class("accent");
         icon_tile.set_valign(gtk4::Align::Center);
 
-        let icon = Image::from_icon_name("bluetooth-active-symbolic");
-        icon.set_pixel_size(22);
-        icon_tile.append(&icon);
+        let icon_image = create_icon_image(svgs::BLUETOOTH, "#ffffff", 22);
+        icon_tile.append(&icon_image);
 
         // Textos (Título y subtítulo)
         let text_box = Box::new(Orientation::Vertical, 2);
@@ -42,7 +44,7 @@ impl Header {
         subtitle_label.add_css_class("panel-subtitle");
         text_box.append(&subtitle_label);
 
-        // Área de título arrastrable (WindowHandle envuelve únicamente icono y texto para no bloquear clics)
+        // Área de título arrastrable (WindowHandle envuelve únicamente icono y texto para no capturar clics de botones)
         let drag_handle = gtk4::WindowHandle::new();
         let title_box = Box::new(Orientation::Horizontal, 10);
         title_box.set_hexpand(true);
@@ -52,11 +54,14 @@ impl Header {
         drag_handle.set_hexpand(true);
         container.append(&drag_handle);
 
-        // Botón de escaneo / refresh
-        let scan_button = Button::from_icon_name("view-refresh-symbolic");
+        // Botón de escaneo / refresh con icono Lucide refresh-cw
+        let scan_button = Button::new();
         scan_button.add_css_class("btn-scan");
         scan_button.set_tooltip_text(Some("Buscar dispositivos cercanos"));
         scan_button.set_valign(gtk4::Align::Center);
+
+        let scan_img = create_icon_image(svgs::REFRESH_CW, "#ffffff", 16);
+        scan_button.set_child(Some(&scan_img));
 
         let tx_scan = cmd_tx.clone();
         scan_button.connect_clicked(move |_| {
@@ -77,11 +82,14 @@ impl Header {
         });
         container.append(&power_switch);
 
-        // Botón de cerrar ventana
-        let close_button = Button::from_icon_name("window-close-symbolic");
+        // Botón de cerrar ventana con icono Lucide x
+        let close_button = Button::new();
         close_button.add_css_class("btn-close-window");
         close_button.set_tooltip_text(Some("Cerrar ventana (Esc)"));
         close_button.set_valign(gtk4::Align::Center);
+
+        let close_img = create_icon_image(svgs::X, "rgba(255, 255, 255, 0.75)", 16);
+        close_button.set_child(Some(&close_img));
         container.append(&close_button);
 
         Self {
@@ -91,6 +99,8 @@ impl Header {
             scan_button,
             power_switch,
             close_button,
+            icon_image,
+            icon_tile,
         }
     }
 
@@ -101,8 +111,18 @@ impl Header {
             self.subtitle_label.set_text("Bluetooth desactivado");
             self.scan_button.set_sensitive(false);
             self.scan_button.remove_css_class("scanning");
+            self.icon_tile.remove_css_class("accent");
+            self.icon_tile.add_css_class("disabled");
+            if let Some(tex) = create_texture(svgs::BLUETOOTH_OFF, "rgba(255, 255, 255, 0.40)", 22) {
+                self.icon_image.set_paintable(Some(&tex));
+            }
         } else {
             self.scan_button.set_sensitive(true);
+            self.icon_tile.remove_css_class("disabled");
+            self.icon_tile.add_css_class("accent");
+            if let Some(tex) = create_texture(svgs::BLUETOOTH, "#ffffff", 22) {
+                self.icon_image.set_paintable(Some(&tex));
+            }
         }
     }
 
@@ -130,6 +150,9 @@ impl Header {
                 paired_count,
                 if paired_count > 1 { "s" } else { "" }
             ));
+            if let Some(tex) = create_texture(svgs::BLUETOOTH_CONNECTED, "#ffffff", 22) {
+                self.icon_image.set_paintable(Some(&tex));
+            }
         } else if paired_count > 0 {
             self.subtitle_label.set_text(&format!(
                 "{} dispositivo{} guardado{}",
@@ -137,6 +160,9 @@ impl Header {
                 if paired_count > 1 { "s" } else { "" },
                 if paired_count > 1 { "s" } else { "" }
             ));
+            if let Some(tex) = create_texture(svgs::BLUETOOTH, "#ffffff", 22) {
+                self.icon_image.set_paintable(Some(&tex));
+            }
         } else {
             self.subtitle_label.set_text("Sin dispositivos guardados");
         }

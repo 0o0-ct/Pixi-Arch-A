@@ -1,6 +1,7 @@
 use gtk4::prelude::*;
-use gtk4::{Box, Button, Image, Label, Orientation};
+use gtk4::{Box, Button, Label, Orientation};
 use crate::events::{BtCommand, DeviceInfo, DeviceType};
+use crate::ui::icons::{create_icon_image, device_type_svg, svgs};
 
 pub struct DeviceRow {
     pub container: Box,
@@ -16,7 +17,7 @@ impl DeviceRow {
         }
         container.set_hexpand(true);
 
-        // Squircle Tile para icono de dispositivo (44x44px)
+        // Squircle Tile para icono de dispositivo (44x44px) con Lucide Icons
         let icon_box = Box::new(Orientation::Vertical, 0);
         icon_box.add_css_class("device-squircle");
         match info.device_type {
@@ -24,15 +25,19 @@ impl DeviceRow {
             DeviceType::Headset => icon_box.add_css_class("headset"),
             DeviceType::Speaker => icon_box.add_css_class("speaker"),
             DeviceType::Phone => icon_box.add_css_class("phone"),
-            _ => {}
+            DeviceType::Watch => icon_box.add_css_class("watch"),
+            DeviceType::Tv => icon_box.add_css_class("tv"),
+            DeviceType::Gamepad => icon_box.add_css_class("gamepad"),
+            DeviceType::Computer => icon_box.add_css_class("mouse"),
+            DeviceType::Generic => icon_box.add_css_class("accent"),
         }
         if info.connected {
             icon_box.add_css_class("connected");
         }
         icon_box.set_valign(gtk4::Align::Center);
 
-        let icon = Image::from_icon_name(info.device_type.to_gtk_icon());
-        icon.set_pixel_size(22);
+        let icon_svg = device_type_svg(info.device_type);
+        let icon = create_icon_image(icon_svg, "#ffffff", 22);
         icon_box.append(&icon);
         container.append(&icon_box);
 
@@ -49,7 +54,7 @@ impl DeviceRow {
         text_box.append(&name_label);
 
         // Fila de estado (Punto de color + Texto + Batería + Señal)
-        let status_box = Box::new(Orientation::Horizontal, 4);
+        let status_box = Box::new(Orientation::Horizontal, 5);
         status_box.set_halign(gtk4::Align::Start);
         status_box.set_valign(gtk4::Align::Center);
 
@@ -76,11 +81,18 @@ impl DeviceRow {
         }
         status_box.append(&status_label);
 
-        // Badge de batería si BlueZ la expone
+        // Badge de batería si BlueZ la expone (con icono Lucide battery)
         if let Some(bat) = info.battery_percentage {
-            let bat_label = Label::new(Some(&format!("{bat}% 󰥉")));
-            bat_label.add_css_class("badge-battery");
-            status_box.append(&bat_label);
+            let bat_box = Box::new(Orientation::Horizontal, 3);
+            bat_box.add_css_class("badge-battery");
+            bat_box.set_valign(gtk4::Align::Center);
+
+            let bat_icon = create_icon_image(svgs::BATTERY, "rgba(255, 255, 255, 0.85)", 11);
+            bat_box.append(&bat_icon);
+
+            let bat_label = Label::new(Some(&format!("{bat}%")));
+            bat_box.append(&bat_label);
+            status_box.append(&bat_box);
         }
 
         // Barras de intensidad de señal RSSI (en vez de texto crudo "-86 dBm")
@@ -128,10 +140,13 @@ impl DeviceRow {
             }
             actions_box.append(&action_btn);
 
-            // Botón Olvidar / Eliminar (Papelera fantasma)
-            let forget_btn = Button::from_icon_name("user-trash-symbolic");
+            // Botón Olvidar / Eliminar (Papelera Lucide)
+            let forget_btn = Button::new();
             forget_btn.add_css_class("btn-forget");
             forget_btn.set_tooltip_text(Some("Olvidar / Desvincular"));
+            let trash_img = create_icon_image(svgs::TRASH, "rgba(255, 255, 255, 0.65)", 15);
+            forget_btn.set_child(Some(&trash_img));
+
             let tx_forget = cmd_tx;
             let m_forget = mac.clone();
             let forget_clone = forget_btn.clone();

@@ -1,3 +1,4 @@
+pub mod icons;
 pub mod header;
 pub mod device_row;
 pub mod pairing_dialog;
@@ -14,6 +15,34 @@ use crate::events::{BtCommand, BtEvent};
 use self::window::BtWindow;
 
 const STYLE_CSS: &str = include_str!("style.css");
+
+fn get_wallust_css_path() -> String {
+    let home = std::env::var("HOME").unwrap_or_else(|_| "/home/c0o0c".to_string());
+    format!("{home}/.config/waybar/wallust/colors-waybar.css")
+}
+
+fn build_theme_css() -> String {
+    let wallust_path = get_wallust_css_path();
+    let wallust_palette = std::fs::read_to_string(&wallust_path).unwrap_or_else(|_| {
+        "@define-color primary #67FFF0;\n\
+         @define-color on_primary #003734;\n\
+         @define-color primary_container #004f4b;\n\
+         @define-color on_primary_container #e0fffa;\n\
+         @define-color secondary #a8eae2;\n\
+         @define-color tertiary #ffd9e1;\n\
+         @define-color surface #10141e;\n\
+         @define-color surface_container #1a1e28;\n\
+         @define-color on_surface #e7e0e8;\n\
+         @define-color foreground #e7e0e8;\n\
+         @define-color color14 #67FFF0;\n\
+         @define-color color15 #e0fffa;\n".to_string()
+    });
+
+    let dev_css_path = "/home/c0o0c/Proyectos/glass-bt/src/ui/style.css";
+    let base_style = std::fs::read_to_string(dev_css_path).unwrap_or_else(|_| STYLE_CSS.to_string());
+
+    format!("{wallust_palette}\n\n{base_style}")
+}
 
 pub struct UiApp {
     cmd_tx: async_channel::Sender<BtCommand>,
@@ -41,23 +70,31 @@ impl UiApp {
 
         app.connect_startup(|_| {
             let provider = CssProvider::new();
-            let dev_css_path = "/home/c0o0c/Proyectos/glass-bt/src/ui/style.css";
+            let initial_css = build_theme_css();
+            provider.load_from_data(&initial_css);
 
-            if let Ok(css) = std::fs::read_to_string(dev_css_path) {
-                provider.load_from_data(&css);
-            } else {
-                provider.load_from_data(STYLE_CSS);
+            // ── 1. Recarga en caliente al cambiar el Wallpaper (Wallust) ──────
+            let wallust_path = get_wallust_css_path();
+            let wallust_file = gio::File::for_path(&wallust_path);
+            if let Ok(monitor) = wallust_file.monitor_file(gio::FileMonitorFlags::NONE, gio::Cancellable::NONE) {
+                let p = provider.clone();
+                monitor.connect_changed(move |_, _, _, event| {
+                    if event == gio::FileMonitorEvent::ChangesDoneHint || event == gio::FileMonitorEvent::Changed {
+                        let new_css = build_theme_css();
+                        p.load_from_data(&new_css);
+                    }
+                });
             }
 
-            // ── Recarga en caliente del CSS (GIO FileMonitor) ─────────────
+            // ── 2. Recarga en caliente al editar src/ui/style.css ──────────────
+            let dev_css_path = "/home/c0o0c/Proyectos/glass-bt/src/ui/style.css";
             let file = gio::File::for_path(dev_css_path);
             if let Ok(monitor) = file.monitor_file(gio::FileMonitorFlags::NONE, gio::Cancellable::NONE) {
                 let p = provider.clone();
-                let path_str = dev_css_path.to_string();
                 monitor.connect_changed(move |_, _, _, event| {
-                    if (event == gio::FileMonitorEvent::ChangesDoneHint || event == gio::FileMonitorEvent::Changed)
-                        && let Ok(new_css) = std::fs::read_to_string(&path_str) {
-                            p.load_from_data(&new_css);
+                    if event == gio::FileMonitorEvent::ChangesDoneHint || event == gio::FileMonitorEvent::Changed {
+                        let new_css = build_theme_css();
+                        p.load_from_data(&new_css);
                     }
                 });
             }
@@ -78,7 +115,7 @@ impl UiApp {
             {
                 let win_for_search = bt_window.clone();
                 let search_entry = bt_window.borrow().search_entry.clone();
-                search_entry.connect_search_changed(move |entry| {
+                search_entry.connect_changed(move |entry| {
                     win_for_search.borrow_mut().set_filter(entry.text().to_string());
                 });
             }

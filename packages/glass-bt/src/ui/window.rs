@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use gtk4::prelude::*;
 use gtk4::{
-    glib, Application, ApplicationWindow, Box, EventControllerKey, Label, ListBox,
-    Orientation, ScrolledWindow, SearchEntry, Spinner,
+    glib, Application, ApplicationWindow, Box, Entry, EventControllerKey, Label, ListBox,
+    Orientation, ScrolledWindow, Spinner,
 };
 use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
 
@@ -10,10 +10,11 @@ use crate::events::{BtCommand, BtEvent, DeviceInfo};
 use super::header::Header;
 use super::device_row::DeviceRow;
 use super::pairing_dialog::PairingDialog;
+use super::icons::{create_texture, svgs};
 
 pub struct BtWindow {
     pub window: ApplicationWindow,
-    pub search_entry: SearchEntry,
+    pub search_entry: Entry,
     header: Header,
     status_label: Label,
     paired_list: ListBox,
@@ -79,10 +80,13 @@ impl BtWindow {
 
         main_panel.append(&header.container);
 
-        // Barra de búsqueda rápida
-        let search_entry = SearchEntry::new();
+        // Barra de búsqueda rápida con icono Lucide Search
+        let search_entry = Entry::new();
         search_entry.add_css_class("glass-search");
         search_entry.set_placeholder_text(Some("Buscar dispositivo o dirección MAC..."));
+        if let Some(tex) = create_texture(svgs::SEARCH, "rgba(255, 255, 255, 0.45)", 16) {
+            search_entry.set_icon_from_paintable(gtk4::EntryIconPosition::Primary, Some(&tex));
+        }
         main_panel.append(&search_entry);
 
         // Mensaje de estado / notificación
