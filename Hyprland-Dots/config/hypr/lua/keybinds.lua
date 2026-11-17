@@ -58,16 +58,10 @@ bind("SUPER + ALT + L", exec(scriptsDir .. "/ChangeLayout.sh"), { description = 
 bind("SUPER + CTRL + D", exec("pkill -f -SIGRTMIN+1 nwg-dock-hyprland"), { description = "alternar dock" })
 
 -- Alternar pantalla completa / ventana flotante (SUPER + Space)
+-- En Hyprland 0.57+, los closures hl.dsp.* fallan silenciosamente si se pasan
+-- directamente a bind(). Usamos una función raw como workaround.
 bind("SUPER + Space", function()
-    local win = hl.active.window
-    if win then
-        if win.fullscreen then
-            hl.dispatch(hl.dsp.window.set_prop({ prop = "fullscreen", value = false }))
-            hl.dispatch(hl.dsp.window.float())
-        else
-            hl.dispatch(hl.dsp.window.set_prop({ prop = "fullscreen", value = true }))
-        end
-    end
+    hl.dispatch(hl.dsp.window.fullscreen({ action = "toggle" }))
 end, { description = "alternar pantalla completa / ventana flotante" })
 
 -- =========================================================================
