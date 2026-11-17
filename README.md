@@ -194,17 +194,18 @@ El proyecto también incluye una carpeta `Hyprland-Dots-Old/` en el repositorio 
 
 ## 🧩 Dock nwg-dock (macOS style)
 
-El dock **nwg-dock-hyprland** es un dock flotante estilo macOS ubicado en la parte inferior de la pantalla. Incluye comportamiento inteligente de auto-ocultar y hover.
+El dock **nwg-dock-hyprland** es un dock flotante estilo macOS ubicado en la parte inferior de **todos los monitores activos**. Incluye comportamiento inteligente de auto-ocultar y hover.
 
 ### Comportamiento
 
 | Situación | Comportamiento del dock |
 |-----------|------------------------|
-| **Modo ventana** (sin fullscreen) | Siempre visible |
-| **Pantalla completa** (fullscreen) | Se oculta tras **2 segundos** |
+| **Modo ventana** (sin fullscreen) | Siempre visible en todos los monitores |
+| **Pantalla completa** (fullscreen) | Se oculta tras **2 segundos** en todos los monitores |
 | **Ratón en zona inferior** (~40 px del borde) durante fullscreen | Reaparece al pasar el cursor |
 | **Ratón sale de la zona** | Se oculta de nuevo si sigue fullscreen |
 | **Sale de pantalla completa** | Se muestra inmediatamente |
+| **Múltiples monitores** | Una instancia del dock en cada monitor detectado |
 
 ### Comandos y atajos
 
@@ -213,18 +214,20 @@ El dock **nwg-dock-hyprland** es un dock flotante estilo macOS ubicado en la par
 | `SUPER + CTRL + D` | Mostrar / ocultar el dock manualmente |
 | `SUPER + Space` | Alternar pantalla completa de la ventana activa |
 | `SUPER + SHIFT + Space` | Forzar ventana actual a modo flotante |
-| `nohup ~/.config/hypr/scripts/dock_fullscreen_monitor.sh &` | Iniciar monitor de fullscreen (oculta el dock en pantalla completa) |
-| `nohup ~/.config/hypr/scripts/dock_hover_monitor.sh &` | Iniciar monitor de hover (muestra el dock al pasar el ratón por la zona inferior) |
+| `dock_multi_monitor.sh` | Lanza el dock en todos los monitores activos |
 
 ### Scripts relacionados
 
 | Script | Ruta | Propósito |
 |--------|------|-----------|
+| **Multi-monitor** | `~/.config/hypr/scripts/dock_multi_monitor.sh` | **Detecta todos los monitores y lanza el dock en cada uno** |
 | Monitor de fullscreen | `~/.config/hypr/scripts/dock_fullscreen_monitor.sh` | Detecta eventos de fullscreen vía socket de Hyprland y oculta el dock tras 2s |
 | Monitor de hover | `~/.config/hypr/scripts/dock_hover_monitor.sh` | Monitorea la posición del ratón y muestra el dock al entrar en la zona inferior |
 | **Tooltip del dock** | `~/.config/hypr/scripts/dock_tooltip.sh` | **Muestra tooltip 'SUPER + CTRL + D' al mantener el ratón 2s en la zona inferior** |
-| Arranque automático | `~/.config/hypr/scripts/StartupApps.sh` | Inicia el dock con modo `-r` (resident) y todos los monitores al iniciar la sesión |
+| Arranque automático | `~/.config/hypr/scripts/StartupApps.sh` | Inicia dock_multi_monitor.sh y todos los monitores al iniciar la sesión |
 
+> **Dock en todos los monitores:** Cada vez que inicies tu sesión Hyprland, el script `dock_multi_monitor.sh` detecta cuántos monitores tienes conectados y lanza una instancia independiente del dock en la parte inferior de cada uno. Así, tanto si tienes 1 monitor como 10, el dock estará disponible en todas tus pantallas.
+>
 > **Tooltip emergente:** Mantén el ratón en la zona inferior (donde está el dock) durante **2 segundos** y aparecerá una notificación emergente con el comando `SUPER + CTRL + D` para mostrar/ocultar el dock. La notificación dura **3 segundos** y desaparece sola.
 
 ---
