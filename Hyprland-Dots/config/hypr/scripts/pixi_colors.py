@@ -2029,6 +2029,30 @@ class Engine:
         except OSError as exc:
             self.warnings.append(f"could not restart waybar: {exc}")
 
+    def reload_dock(self) -> None:
+        if not shutil.which("nwg-dock-hyprland"):
+            return
+        self.run_cmd(["pkill", "-f", "nwg-dock-hyprland"], timeout=3)
+        time.sleep(0.3)
+        dock_script = HOME / ".config/hypr/scripts/dock_multi_monitor.sh"
+        if not dock_script.is_file():
+            dock_script = Path(__file__).resolve().parent / "dock_multi_monitor.sh"
+        if dock_script.is_file():
+            try:
+                subprocess.Popen(
+                    [str(dock_script)],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    stdin=subprocess.DEVNULL,
+                    start_new_session=True,
+                    cwd=str(HOME),
+                    close_fds=True,
+                )
+                self.reloads.append("dock:restart")
+            except OSError as exc:
+                self.warnings.append(f"could not restart dock: {exc}")
+
+
     def reload_consumers(self, changed: dict[Path, bool] | None, force: bool = False) -> None:
         if self.args.no_reload or not self.settings.get("reload", True):
             return
@@ -2046,6 +2070,7 @@ class Engine:
         )
         if waybar_changed and not self.args.skip_waybar:
             self.reload_waybar()
+            self.reload_dock()
 
         if force or any(
             changed.get(XDG_CONFIG / p, False)

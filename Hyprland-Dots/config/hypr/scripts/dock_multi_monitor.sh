@@ -18,8 +18,10 @@ set -uo pipefail
 # --- Configuración del dock ------------------------------------------------
 DOCK_POS="bottom"
 DOCK_ALIGN="center"
-DOCK_ICON_SIZE=48
-DOCK_MARGIN_BOTTOM=16
+DOCK_ICON_SIZE=40
+DOCK_MARGIN_BOTTOM=12
+# Comando del botón lanzador (los "puntitos" del dock): abre el menú de apps con rofi
+DOCK_LAUNCHER_CMD="$HOME/.config/hypr/scripts/dock_launcher.sh"
 
 # --- Detectar monitores activos -------------------------------------------
 # hyprctl monitors devuelve bloques como:
@@ -51,6 +53,7 @@ launch_dock_on_monitor() {
         -i "${DOCK_ICON_SIZE}" \
         -mb "${DOCK_MARGIN_BOTTOM}" \
         -o "${monitor_name}" \
+        -c "${DOCK_LAUNCHER_CMD}" \
         -m \
         -r \
         >/dev/null 2>&1 &

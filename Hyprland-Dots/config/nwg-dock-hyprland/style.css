@@ -1,14 +1,13 @@
-/* ---- 💫 Pixi-Arch-A Premium Super Glassmorphic Dock 💫 ---- */
+/* ---- 💫 Pixi-Arch-A: Dock unificado con la barra del sistema (waybar) 💫 ----
+   Mismos tokens dinámicos que waybar (wallust + mode-glass), para que el dock
+   siga la paleta del wallpaper igual que la barra de tareas del sistema.
+   Los colores se importan desde ../waybar/wallust/ (mismo origen que waybar). */
 
-/* window = la superficie layer-shell (namespace "nwg-dock").
-   Sin esta regla la ventana hereda el fondo de ventana del tema GTK y aparece
-   una capa base oscura y recta (el "suelo" del dock) bajo la tarjeta de vidrio.
-   OJO: esta regla solo surte efecto porque el fondo generico de ventana vive en
-   el TEMA GTK (prioridad SETTINGS) y no en ~/.config/gtk-3.0/gtk.css
-   (prioridad USER). GTK3 carga el gtk.css del usuario por encima del CSS de
-   cada app (prioridad APPLICATION), asi que con la regla en el usuario ninguna
-   app puede dejar su ventana transparente. Ver ensure_gtk_theme_glass() en
-   pixi_colors.py. */
+@import url("../waybar/wallust/colors-waybar.css");
+@import url("../waybar/wallust/mode-glass.css");
+
+/* window = superficie layer-shell (namespace "nwg-dock"). Transparente para que
+   no aparezca la franja base oscura bajo la tarjeta de vidrio. */
 window,
 window.background {
     background-color: transparent;
@@ -19,38 +18,40 @@ window.background {
     padding: 0;
 }
 
-/* #box = contenedor de iconos: aquí va todo el efecto glassmorphism */
+/* #box = contenedor de iconos: tarjeta de vidrio igual que el slab de waybar */
 #box {
-    background-color: rgba(18, 18, 24, 0.55);
-    border: 1.5px solid rgba(255, 255, 255, 0.35);
-    border-radius: 18px;
-    padding: 6px 14px;
-    box-shadow: none;
+    background-color: @pane_glass;
+    border: 1px solid @edge_glass;
+    border-radius: 24px;
+    padding: 4px 10px;
+    box-shadow: 0 4px 30px @shadow_glass;
 }
 
 button {
     background: transparent;
     border: 1px solid transparent;
     border-radius: 50%;
-    padding: 4px;
-    margin: 0 3px;
+    padding: 2px;
+    margin: 0 2px;
+    color: @ink;
 }
 
 button:hover {
-    background-color: rgba(255, 255, 255, 0.25);
-    border-radius: 50%;
+    background-color: @lift_hi;
+    border-color: @edge;
+    color: @ink;
 }
 
 #active {
     border-bottom: solid 2px;
-    border-color: #a855f7;
+    border-color: @accent_ink;
 }
 
 #open-indicator {
-    background-color: #a855f7;
+    background-color: @accent_ink;
     border-radius: 50%;
     min-width: 5px;
     min-height: 5px;
     margin-top: 3px;
-    box-shadow: 0 0 8px #a855f7;
+    box-shadow: 0 0 8px @accent_ink;
 }

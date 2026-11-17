@@ -61,8 +61,11 @@ bind("SUPER + CTRL + D", exec("pkill -f -SIGRTMIN+1 nwg-dock-hyprland"), { descr
 -- En Hyprland 0.57+, los closures hl.dsp.* fallan silenciosamente si se pasan
 -- directamente a bind(). Usamos una función raw como workaround.
 bind("SUPER + Space", function()
-    hl.dispatch(hl.dsp.window.fullscreen({ action = "toggle" }))
-end, { description = "alternar pantalla completa / ventana flotante" })
+    -- Pantalla completa "maximizada": llena el área de trabajo sin cubrir el
+    -- monitor ni las barras de tareas. El dock se oculta automáticamente y solo
+    -- reaparece al pasar el ratón por su zona. Alterna con la misma tecla.
+    hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized" }))
+end, { description = "maximizar/restaurar ventana (pantalla completa sin cubrir monitor)" })
 
 -- =========================================================================
 -- 2. TEMAS, FONDOS Y WAYBAR
