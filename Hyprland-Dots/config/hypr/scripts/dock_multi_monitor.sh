@@ -27,7 +27,10 @@ DOCK_MARGIN_BOTTOM=16
 #   active workspace: 1
 #   ...
 get_monitor_names() {
-    hyprctl monitors 2>/dev/null | grep -E '^Monitor ' | awk -F'"' '{print $2}'
+    # Hyprland 0.4x: Monitor "eDP-1" (0x1234)
+    # Hyprland 0.57+: Monitor eDP-1 (ID 0):
+    # Soportamos ambos formatos
+    hyprctl monitors 2>/dev/null | grep -E '^Monitor ' | sed -E 's/^Monitor[[:space:]]+//; s/[[:space:]]*\(?ID[[:space:]]*[0-9]+\)?[[:space:]]*:$//; s/^"//; s/"$//'
 }
 
 # --- Función para lanzar el dock en un monitor -----------------------------
