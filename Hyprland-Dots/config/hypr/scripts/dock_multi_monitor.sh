@@ -39,7 +39,7 @@ launch_dock_on_monitor() {
     local instance_id="$2"
 
     # Verificar si ya hay una instancia para este monitor
-    if pgrep -f "nwg-dock-hyprland.*-m ${monitor_name}" >/dev/null 2>&1; then
+    if pgrep -f "nwg-dock-hyprland.*-o ${monitor_name}" >/dev/null 2>&1; then
         echo "[dock-multi] Ya hay una instancia en ${monitor_name}, omitiendo."
         return 0
     fi
@@ -50,7 +50,8 @@ launch_dock_on_monitor() {
         -a "${DOCK_ALIGN}" \
         -i "${DOCK_ICON_SIZE}" \
         -mb "${DOCK_MARGIN_BOTTOM}" \
-        -m "${monitor_name}" \
+        -o "${monitor_name}" \
+        -m \
         -r \
         >/dev/null 2>&1 &
 }
