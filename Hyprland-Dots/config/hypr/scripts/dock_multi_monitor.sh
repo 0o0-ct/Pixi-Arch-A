@@ -12,8 +12,24 @@
 
 set -uo pipefail
 
-[[ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && exit 1
 [[ -z "${XDG_RUNTIME_DIR:-}" ]] && export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+
+# Esperar a que Hyprland esté listo (hyprctl responde) antes de detectar monitores.
+# En el arranque el script puede ejecutarse antes de que el compositor esté disponible.
+for _ in $(seq 1 50); do
+    if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && hyprctl monitors >/dev/null 2>&1; then
+        break
+    fi
+    # Intentar recuperar la firma desde el runtime si no está en el entorno
+    if [[ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+        _sig=$(ls -1 "$XDG_RUNTIME_DIR/hypr" 2>/dev/null | head -1)
+        [[ -n "$_sig" ]] && export HYPRLAND_INSTANCE_SIGNATURE="$_sig"
+    fi
+    sleep 0.2
+done
+
+[[ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && exit 1
+hyprctl monitors >/dev/null 2>&1 || exit 1
 
 # --- Configuración del dock ------------------------------------------------
 DOCK_POS="bottom"
@@ -24,15 +40,13 @@ DOCK_MARGIN_BOTTOM=12
 DOCK_LAUNCHER_CMD="$HOME/.config/hypr/scripts/dock_launcher.sh"
 
 # --- Detectar monitores activos -------------------------------------------
-# hyprctl monitors devuelve bloques como:
-#   Monitor "HDMI-A-1" (0x1234): 1920x1080@60.00Hz
-#   active workspace: 1
-#   ...
+# Soporta los formatos de Hyprland 0.4x ("Monitor \"eDP-1\" (0x1234)") y
+# 0.57+ ("Monitor eDP-1 (ID 0):"). Se usa while-read para no romper con
+# nombres que contengan espacios.
 get_monitor_names() {
-    # Hyprland 0.4x: Monitor "eDP-1" (0x1234)
-    # Hyprland 0.57+: Monitor eDP-1 (ID 0):
-    # Soportamos ambos formatos
-    hyprctl monitors 2>/dev/null | grep -E '^Monitor ' | sed -E 's/^Monitor[[:space:]]+//; s/[[:space:]]*\(?ID[[:space:]]*[0-9]+\)?[[:space:]]*:$//; s/^"//; s/"$//'
+    hyprctl monitors 2>/dev/null \
+        | grep -E '^Monitor ' \
+        | sed -E 's/^Monitor[[:space:]]+//; s/[[:space:]]*\(?ID[[:space:]]*[0-9]+\)?[[:space:]]*:$//; s/^"//; s/"$//'
 }
 
 # --- Función para lanzar el dock en un monitor -----------------------------
@@ -61,10 +75,11 @@ launch_dock_on_monitor() {
 
 # --- Lanza el dock en cada monitor ----------------------------------------
 monitor_count=0
-for mon in $(get_monitor_names); do
+while IFS= read -r mon; do
+    [[ -z "$mon" ]] && continue
     monitor_count=$((monitor_count + 1))
     launch_dock_on_monitor "$mon" "$monitor_count"
-done
+done < <(get_monitor_names)
 
 if [[ "$monitor_count" -eq 0 ]]; then
     echo "[dock-multi] Advertencia: no se detectaron monitores."
