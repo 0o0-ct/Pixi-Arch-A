@@ -2,7 +2,9 @@
 
 KooL's Hyprland-Dots
 
-1.) Suggest not to rename any files in this directory. As this is connected and being sourced from hyprland.conf in ~/.config/hypr
+1.) Suggest not to rename any files in this directory. As this is connected and being sourced from hyprland.lua in ~/.config/hypr (vía los módulos en lua/)
+
+1b.) Atajos personales: van en `UserKeybinds.lua` (Lua, se carga al final de `lua/keybinds.lua`). El archivo `UserKeybinds.conf` ya NO se lee. Presets de animación: `UserAnimations.lua` (igualmente sustituye a `UserAnimations.conf`).
 
 2.) This directory, along with UserScripts directory will NOT be touch when running upgrade.sh
 
