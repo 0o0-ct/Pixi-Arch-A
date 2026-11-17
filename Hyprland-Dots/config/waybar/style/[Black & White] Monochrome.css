@@ -1,0 +1,269 @@
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/*  Black & White MonoChrome
+ *
+ *  Wallust-driven frosted glass. This style already treated
+ *  .modules-left/.modules-center/.modules-right as three separate panes, so
+ *  they now get the full glass treatment: wallpaper tint + a faint sheen
+ *  gradient + a lit top edge, over a fully transparent bar window. The pane
+ *  radius (10px), the bottom hairline and every padding are unchanged.
+ *
+ *  The name is legacy: the palette is now the wallpaper's, which on a dark
+ *  wallpaper still reads near-neutral because most roles come from
+ *  @foreground / @background. @color15 appears only as the pane sheen (the
+ *  thing that keeps a dark wallpaper from producing a black bar) and as the
+ *  accent pill.
+ *
+ *  The import base directory is ~/.config/waybar/ because waybar loads the
+ *  symlink ~/.config/waybar/style.css, so the path must stay exactly
+ *  "wallust/colors-waybar.css". "../wallust/..." resolves to
+ *  ~/.config/wallust/... and a failed import can kill the bar outright.
+ *
+ *  PERFORMANCE: no box-shadow, no opacity on containers, no `transition: all`,
+ *  and the dead `animation: gradient_f` references (that @keyframes exists
+ *  nowhere in this repo) are gone. The battery blink is now a static pill.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@color14, 0.30);
+@define-color edge_top      alpha(@color15, 0.75);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: muted audio and critical states stay red. */
+@define-color danger        #ffa8a8;
+
+
+* {
+	font-family: "JetBrainsMono Nerd Font";
+	font-weight: bold;
+	min-height: 0;
+	/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+	font-size: 97%;
+	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+window#waybar,
+window#waybar.empty,
+window#waybar.empty #window {
+    background-color: transparent;
+    padding: 0px;
+    border: 0px;
+}
+
+tooltip {
+    background-color: alpha(@color15, 0.11);
+	color: @ink;
+	border-radius: 10px;
+	border-width: 2px;
+	border-style: solid;
+	border-color: alpha(@color15, 0.47);
+}
+
+tooltip label{
+	color: @ink;
+}
+/*-----module groups----*/
+/* The islands: the bar window stays fully transparent above so Hyprland's
+ * ignore_alpha leaves the gaps between these panes unblurred. */
+.modules-right {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+.modules-center {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+.modules-left {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+/*-----modules indv----*/
+#taskbar button,
+#workspaces button {
+	color: @ink_dim;
+	text-shadow: none;
+    padding: 0px;
+    border-radius: 9px;
+    padding-left: 4px;
+    padding-right: 4px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+#taskbar button:hover,
+#workspaces button:hover {
+	color: @ink;
+	background-color: @tile_hi;
+    padding-left: 2px;
+    padding-right: 2px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#taskbar button.active,
+#workspaces button.active {
+	color: @on_accent;
+	background-color: @accent_pill;
+    padding-left: 8px;
+    padding-right: 8px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#workspaces button.persistent {
+	border-radius: 10px;
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+	color: @ink;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-right: 6px;
+	padding-left: 6px;
+}
+/*-----Indicators----*/
+#custom-hypridle.notactive,
+#idle_inhibitor.activated {
+	color: @on_accent;
+	background-color: @accent_pill;
+    border-bottom: 8px solid alpha(@color15, 0.11);
+}
+
+#pulseaudio.muted {
+	color: @danger;
+}
+#temperature.critical {
+	color: @danger;
+}
+
+/* Was a blinking animation; a filled pill alerts without repainting forever. */
+#battery.critical:not(.charging) {
+	color: @on_accent;
+	background-color: @danger;
+}
+
+#backlight-slider slider,
+#pulseaudio-slider slider {
+	min-width: 0px;
+	min-height: 0px;
+	opacity: 0;
+	background-image: none;
+	border: none;
+}
+
+#backlight-slider trough,
+#pulseaudio-slider trough {
+	background-color: @tile;
+	min-width: 80px;
+	min-height: 5px;
+	border-radius: 5px;
+}
+
+#backlight-slider highlight,
+#pulseaudio-slider highlight {
+	background-color: @accent;
+	min-height: 10px;
+	border-radius: 5px;
+}

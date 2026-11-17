@@ -1,0 +1,535 @@
+/* ==========================================================================
+ * Glass Bluetooth (glass-bt) — Dynamic Wallpaper Color Palette & Glassmorphism
+ * Wallust / Matugen Integration + One UI / iOS / macOS Tahoe Frosted Glass
+ * ========================================================================== */
+
+/* Paleta de colores base / fallback dinámica (inyectada por Wallust / Matugen) */
+/* (Las definiciones de @primary, @secondary, @surface, @on_surface, etc. provienen de colors-waybar.css) */
+
+/* Roles dinámicos derivados de los colores extraídos del wallpaper */
+@define-color accent_color @primary;
+@define-color accent_fg @on_primary;
+@define-color accent_glow alpha(@primary, 0.50);
+@define-color accent_tint alpha(@primary, 0.22);
+@define-color accent_border alpha(@primary, 0.45);
+@define-color accent_sheen alpha(@color15, 0.75);
+
+@define-color text_primary @on_surface;
+@define-color text_secondary alpha(@on_surface, 0.65);
+@define-color text_dim alpha(@on_surface, 0.40);
+
+@define-color card_bg alpha(@foreground, 0.06);
+@define-color card_bg_hover alpha(@foreground, 0.11);
+@define-color card_border alpha(@color15, 0.10);
+@define-color card_border_hover alpha(@primary, 0.35);
+
+@define-color danger_red #ffb4ab;
+@define-color danger_bg alpha(#ffb4ab, 0.18);
+@define-color danger_border alpha(#ffb4ab, 0.40);
+
+/* Ventana raíz 100% transparente: evita franjas oscuras alrededor del panel */
+window,
+window.background {
+    background: transparent;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+/* Panel flotante de vidrio (Frosted Glass coloreado por el wallpaper) */
+.glass-panel {
+    background-color: alpha(@surface, 0.30);
+    background-image: linear-gradient(145deg, alpha(@color15, 0.18) 0%, alpha(@color15, 0.04) 45%, alpha(@primary, 0.10) 100%);
+    border: 1px solid alpha(@color15, 0.22);
+    border-radius: 28px;
+    box-shadow: inset 0 1px 1.5px 0 alpha(@color15, 0.45);
+    padding: 18px 20px;
+    margin: 0;
+    min-width: 440px;
+}
+
+/* Eliminar fondos sólidos y líneas de contenedores GTK */
+scrolledwindow,
+scrolledwindow.frame,
+scrolledwindow > viewport,
+scrolledwindow > viewport.frame,
+viewport,
+listview,
+list,
+list.device-list,
+list.content,
+list.boxed-list,
+list.boxed-list-separate,
+listbox,
+.device-list,
+scrolledwindow list,
+scrolledwindow viewport list {
+    background: transparent;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-width: 0;
+    border-style: none;
+    border-color: transparent;
+    border-image: none;
+    box-shadow: none;
+    outline: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+}
+
+list > row,
+list.device-list > row,
+list.content > row,
+list.boxed-list > row,
+list.boxed-list-separate > row,
+listbox > row,
+row,
+row + row,
+list > row + row {
+    background: transparent;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-width: 0;
+    border-style: none;
+    border-color: transparent;
+    border-image: none;
+    box-shadow: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+}
+
+list > row:hover,
+list > row:selected,
+list > row:active,
+list > row:focus,
+list.device-list > row:hover,
+list.device-list > row:selected,
+listbox > row:hover,
+listbox > row:selected,
+row:hover,
+row:selected,
+row:active,
+row:focus {
+    background: transparent;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-image: none;
+    box-shadow: none;
+    outline: none;
+}
+
+/* Eliminar líneas y halos de rebote (overshoot / undershoot) */
+scrolledwindow > overshoot,
+scrolledwindow > overshoot.top,
+scrolledwindow > overshoot.bottom,
+scrolledwindow > overshoot.left,
+scrolledwindow > overshoot.right,
+scrolledwindow > undershoot,
+scrolledwindow > undershoot.top,
+scrolledwindow > undershoot.bottom,
+scrolledwindow > undershoot.left,
+scrolledwindow > undershoot.right,
+scrolledwindow.undershoot-top > undershoot.top,
+scrolledwindow.undershoot-bottom > undershoot.bottom,
+overshoot,
+overshoot.top,
+overshoot.bottom,
+undershoot,
+undershoot.top,
+undershoot.bottom {
+    background: none;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+}
+
+/* Contenedor vertical de tarjetas con padding inferior para scroll suave */
+.content-box {
+    background: transparent;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    padding-bottom: 20px;
+}
+
+/* Barra de desplazamiento invisible */
+scrollbar,
+scrollbar.vertical,
+scrollbar.horizontal {
+    opacity: 0;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    -gtk-secondary-caret-color: transparent;
+}
+
+scrollbar slider {
+    opacity: 0;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+/* Tipografía */
+label {
+    color: @text_primary;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.panel-title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: @text_primary;
+}
+
+.panel-subtitle {
+    font-size: 12px;
+    color: @text_secondary;
+    font-weight: 400;
+}
+
+.section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: @text_dim;
+    margin-top: 14px;
+    margin-bottom: 8px;
+    padding-left: 2px;
+}
+
+/* Interruptor estilo iOS tintado con el color del wallpaper */
+switch.ios-switch {
+    min-width: 48px;
+    min-height: 28px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.30);
+    padding: 2px;
+    transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+switch.ios-switch:checked {
+    background-color: @primary;
+    border-color: @primary;
+    box-shadow: 0 0 14px @accent_glow;
+}
+
+switch.ios-switch slider {
+    min-width: 24px;
+    min-height: 24px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    border: none;
+    margin: 0;
+    transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+switch.ios-switch:checked slider {
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.40);
+}
+
+/* Botón de refrescar / escanear */
+.btn-scan {
+    background-color: alpha(@foreground, 0.08);
+    border: 1px solid alpha(@color15, 0.12);
+    border-radius: 14px;
+    color: @text_primary;
+    padding: 6px;
+    min-width: 32px;
+    min-height: 32px;
+    transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-scan:hover {
+    background-color: @accent_tint;
+    border-color: @accent_border;
+    color: @primary;
+}
+
+.btn-scan.scanning {
+    background-color: @accent_tint;
+    border-color: @accent_border;
+    box-shadow: 0 0 10px @accent_glow;
+}
+
+/* Botón de cerrar ventana */
+.btn-close-window {
+    background-color: alpha(@foreground, 0.08);
+    border: 1px solid alpha(@color15, 0.12);
+    border-radius: 14px;
+    color: @text_secondary;
+    padding: 6px;
+    min-width: 32px;
+    min-height: 32px;
+    transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-close-window:hover {
+    background-color: @danger_bg;
+    border-color: @danger_border;
+    color: #ffffff;
+}
+
+/* Buscador de dispositivos */
+search-entry.glass-search,
+entry.glass-search {
+    background-color: alpha(@foreground, 0.07);
+    background-image: none;
+    border: 1px solid alpha(@color15, 0.12);
+    border-radius: 14px;
+    padding: 8px 12px;
+    color: @text_primary;
+    font-size: 12px;
+    transition: all 180ms ease;
+}
+
+entry.glass-search:focus {
+    border-color: @primary;
+    background-color: alpha(@foreground, 0.11);
+    box-shadow: 0 0 0 2px @accent_tint, 0 0 12px @accent_glow;
+}
+
+/* Tarjetas individuales de dispositivos */
+.device-card {
+    background-color: @card_bg;
+    border: 1px solid @card_border;
+    border-radius: 20px;
+    padding: 10px 14px;
+    margin-bottom: 7px;
+    transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.device-card:hover {
+    background-color: @card_bg_hover;
+    border-color: @card_border_hover;
+}
+
+.device-card.connected {
+    background-color: @accent_tint;
+    border: 1px solid @accent_border;
+    box-shadow: inset 0 1px 1px alpha(@primary, 0.25);
+}
+
+/* Squircle Tile para icono de dispositivo (44x44px) perfectamente centrado y con dimensiones fijas */
+.device-squircle {
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 14px;
+    background-image: linear-gradient(135deg, alpha(@color15, 0.15) 0%, alpha(@color15, 0.04) 100%);
+    box-shadow: inset 0 1px 1px alpha(@color15, 0.35);
+    border: 1px solid alpha(@color15, 0.12);
+    margin-right: 12px;
+    padding: 0;
+    color: @text_primary;
+}
+
+.device-squircle.accent,
+.device-squircle.mouse {
+    background-image: linear-gradient(135deg, alpha(@primary, 0.32) 0%, alpha(@primary_container, 0.16) 100%);
+    border-color: @accent_border;
+    color: @primary;
+}
+
+.device-squircle.headset {
+    background-image: linear-gradient(135deg, alpha(@secondary, 0.30) 0%, alpha(@primary_container, 0.14) 100%);
+    border-color: alpha(@secondary, 0.40);
+    color: @secondary;
+}
+
+.device-squircle.speaker {
+    background-image: linear-gradient(135deg, alpha(@tertiary, 0.30) 0%, alpha(@primary_container, 0.14) 100%);
+    border-color: alpha(@tertiary, 0.40);
+    color: @tertiary;
+}
+
+.device-squircle.phone {
+    background-image: linear-gradient(135deg, rgba(52, 199, 89, 0.26) 0%, alpha(@primary, 0.12) 100%);
+    border-color: rgba(52, 199, 89, 0.40);
+    color: #4ADE80;
+}
+
+.device-squircle.watch {
+    background-image: linear-gradient(135deg, rgba(255, 180, 50, 0.28) 0%, alpha(@primary_container, 0.12) 100%);
+    border-color: rgba(255, 180, 50, 0.40);
+    color: #ffcc66;
+}
+
+.device-squircle.gamepad {
+    background-image: linear-gradient(135deg, rgba(255, 120, 80, 0.28) 0%, alpha(@tertiary, 0.15) 100%);
+    border-color: rgba(255, 120, 80, 0.40);
+    color: #ff8c69;
+}
+
+.device-squircle.tv {
+    background-image: linear-gradient(135deg, rgba(90, 150, 255, 0.26) 0%, alpha(@primary, 0.12) 100%);
+    border-color: rgba(90, 150, 255, 0.40);
+    color: #8ab4f8;
+}
+
+.device-squircle.disabled {
+    background-image: none;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: @text_dim;
+    box-shadow: none;
+}
+
+.device-squircle.connected {
+    box-shadow: inset 0 1px 1px alpha(@primary, 0.50), 0 0 12px @accent_tint;
+}
+
+/* Textos de la tarjeta */
+.device-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: @text_primary;
+}
+
+.device-sub {
+    font-size: 11px;
+    color: @text_secondary;
+}
+
+.device-sub.connected {
+    color: @primary;
+    font-weight: 600;
+}
+
+.status-dot-green {
+    background-color: @primary;
+    border-radius: 4px;
+    min-width: 6px;
+    min-height: 6px;
+    margin-right: 5px;
+    box-shadow: 0 0 6px @accent_glow;
+}
+
+.status-dot-dim {
+    background-color: @text_dim;
+    border-radius: 4px;
+    min-width: 6px;
+    min-height: 6px;
+    margin-right: 5px;
+}
+
+.badge-battery {
+    background-color: alpha(@foreground, 0.10);
+    border: 1px solid alpha(@color15, 0.12);
+    border-radius: 8px;
+    padding: 1px 7px;
+    font-size: 10px;
+    font-weight: 600;
+    color: @text_primary;
+    margin-left: 6px;
+}
+
+/* Barras de señal RSSI estilo celular/One UI */
+.signal-box {
+    margin-left: 6px;
+}
+
+.signal-bar {
+    background-color: rgba(255, 255, 255, 0.20);
+    border-radius: 1px;
+    min-width: 2.5px;
+    margin-right: 1.5px;
+}
+
+.signal-bar.active {
+    background-color: @primary;
+}
+
+/* Botones píldora de acción */
+.btn-action {
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border: 1px solid transparent;
+    transition: all 180ms ease;
+}
+
+.btn-connect {
+    background-color: @accent_tint;
+    border-color: @accent_border;
+    color: @color15;
+}
+
+.btn-connect:hover {
+    background-color: @primary;
+    color: @on_primary;
+    box-shadow: 0 0 10px @accent_glow;
+}
+
+.btn-disconnect {
+    background-color: @danger_bg;
+    border-color: @danger_border;
+    color: @danger_red;
+}
+
+.btn-disconnect:hover {
+    background-color: @danger_red;
+    color: #12141a;
+}
+
+.btn-pair {
+    background-color: @accent_tint;
+    border-color: @accent_border;
+    color: @color15;
+}
+
+.btn-pair:hover {
+    background-color: @primary;
+    color: @on_primary;
+    box-shadow: 0 0 10px @accent_glow;
+}
+
+.btn-forget {
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: 6px;
+    border-radius: 12px;
+    min-width: 30px;
+    min-height: 30px;
+    transition: all 160ms ease;
+}
+
+.btn-forget:hover {
+    background-color: @danger_bg;
+    border-color: @danger_border;
+}
+
+/* Diálogo modal */
+.dialog-box {
+    background-color: alpha(@surface, 0.88);
+    border-radius: 24px;
+    border: 1px solid alpha(@color15, 0.25);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.60);
+    padding: 22px;
+}
+
+.dialog-pin {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: @primary;
+    margin: 12px 0;
+}

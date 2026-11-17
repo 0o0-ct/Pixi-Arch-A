@@ -1,0 +1,28 @@
+/* ---- 💫 Pixi-Arch-A × macOS Tahoe 💫 ---- */
+/* Matugen template - GTK3 colors (sin import, el tema se aplica via settings.ini) */
+
+@define-color accent_color #cbcb76;
+@define-color accent_fg_color #323200;
+@define-color accent_bg_color #cbcb76;
+@define-color window_bg_color #14140c;
+@define-color window_fg_color #e6e3d5;
+@define-color view_bg_color #14140c;
+@define-color view_fg_color #e6e3d5;
+@define-color headerbar_bg_color #202018;
+@define-color headerbar_fg_color #e6e3d5;
+@define-color headerbar_border_color #48473a;
+@define-color popover_bg_color #2b2a22;
+@define-color popover_fg_color #e6e3d5;
+@define-color card_bg_color #202018;
+@define-color card_fg_color #e6e3d5;
+@define-color dialog_bg_color #2b2a22;
+@define-color dialog_fg_color #e6e3d5;
+@define-color destructive_color #ffb4ab;
+@define-color destructive_bg_color #ffb4ab;
+@define-color destructive_fg_color #690005;
+@define-color error_bg_color #ffb4ab;
+@define-color error_fg_color #690005;
+@define-color sidebar_bg_color @window_bg_color;
+@define-color sidebar_fg_color @window_fg_color;
+@define-color sidebar_border_color @window_bg_color;
+@define-color sidebar_backdrop_color @window_bg_color;

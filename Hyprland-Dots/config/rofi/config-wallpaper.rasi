@@ -1,0 +1,79 @@
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/* Main Config (wallpaper) - galería de miniaturas limpia */
+
+@import "~/.config/rofi/config.rasi"
+@import "~/.config/rofi/wallust/mode-glass.rasi"
+
+configuration {
+  modi: "dmenu";
+  show-icons: true;
+  disable-history: true;
+  sort: false;
+}
+
+window {
+  location: center;
+  anchor: center;
+  width: 62%;
+  border: 1px solid;
+  border-radius: 24px;
+  border-color: @edge-glass;
+  background-color: @pane;
+  transparency: "real";
+}
+
+mainbox {
+  children: [ "listview" ];
+  background-color: transparent;
+  padding: 24px;
+  spacing: 0px;
+}
+
+listview {
+  columns: 6;
+  lines: 2;
+  spacing: 16px;
+  padding: 4px;
+  flow: horizontal;
+  cycle: true;
+  fixed-height: false;
+  scrollbar: false;
+  background-color: transparent;
+}
+
+element {
+  orientation: vertical;
+  padding: 6px;
+  margin: 0px;
+  border-radius: 16px;
+  border: 2px solid;
+  border-color: @element-edge;
+  background-color: @element-bg;
+  cursor: pointer;
+  children: [ "element-icon" ];
+}
+
+element normal.normal,
+element alternate.normal {
+  background-color: @element-bg;
+  border-color: @element-edge;
+}
+
+element selected.normal {
+  background-color: @selected;
+  border: 2px solid;
+  border-color: @selected-edge;
+  border-radius: 16px;
+}
+
+element-icon {
+  size: 130px;
+  cursor: inherit;
+  horizontal-align: 0.5;
+  vertical-align: 0.5;
+  background-color: transparent;
+}
+
+element-text {
+  enabled: false;
+}

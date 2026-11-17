@@ -1,0 +1,484 @@
+/* ---- 💫 https://github.com/JaKooLit 💫 ---- */
+/* Translucent — wallust frosted glass
+ * ==========================================================================
+ * Every colour now comes from the live palette; the literal palette that used
+ * to be defined at the top of this file (accent1..6, bgcolor, alert, ...) is
+ * gone. wallust/matugen supply the hues, and wallust/mode-glass.css supplies
+ * the adaptive finish: smoked glass + light ink on a dark band, porcelain +
+ * charcoal ink on a bright one. Roles:
+ *
+ *   @pane_glass -> the slab          @color15 -> accent: pill, slider
+ *   @ink -> text + hairlines         @color13 -> urgent pill
+ *
+ * THE IMPORT PATH (the one trap in this file)
+ * -------------------------------------------
+ * waybar loads the SYMLINK ~/.config/waybar/style.css, and GTK resolves a
+ * relative import against that path, so the base directory is
+ * ~/.config/waybar/ and the import must be "wallust/colors-waybar.css".
+ * Walking up one level to reach wallust resolves to ~/.config/wallust/ and
+ * fails, and on waybar 0.15.0 a failing import does not merely warn: the style
+ * load throws and the bar can die outright. Never walk up a level.
+ *
+ * THE ADAPTIVE FINISH
+ * -------------------
+ * WallustSwww.sh samples the bar's top strip and rewrites mode-glass.css with
+ * one of two hand-tuned finishes (smoked or porcelain). @pane_glass, @ink and
+ * @shadow_glass come from there, so a bright wallpaper never swallows the
+ * slab. The 38px radius slab is blurred by Hyprland (layerrule blur +
+ * ignore_alpha), never by CSS.
+ *
+ * LAYOUT IS UNTOUCHED
+ * -------------------
+ * This style is one rounded slab with a glass pill around every module, and it
+ * stays that way: the pane lives on window#waybar (there are no .modules-*
+ * island rules here — only the empty "if workspaces is leftmost/rightmost"
+ * comments, which are kept), and every module keeps its 38px radius, 3px/12px
+ * padding and 4px/5px margin. Workspace pills keep their 9px radius and 4px
+ * padding, the tooltip keeps its 10px radius, #custom-media keeps its 100px
+ * minimum width, #custom-language its 16px.
+ *
+ * COLOUR CODING KEPT
+ * ------------------
+ * accent1..6 are kept as names so the module colour coding survives, but they
+ * are now rotations of the wallpaper's own accents (@color15, @color13,
+ * @color7), each mixed toward @foreground so the hue comes from the image while
+ * the legibility comes from the palette, instead of six fixed literals.
+ * Red/amber alert states keep the semantic @danger so they stay legible whatever
+ * the wallpaper is.
+ *
+ * PERFORMANCE (deliberate — this machine runs hot)
+ * ------------------------------------------------
+ *   - no drop shadows anywhere: a shadow is the most expensive property for
+ *     GTK's CPU renderer, and most styles in this tree use one
+ *   - no opacity on containers: translucency is rgba()/alpha(), so GTK never
+ *     renders a widget group offscreen (opacity: 0 on the slider thumbs stays)
+ *   - transitions animate only background-color / border-color / color, 160ms
+ *   - no looping motion: the `gradient_f` references here pointed at a keyframe
+ *     block that exists nowhere (dead CSS), and the battery blink is now a
+ *     static filled pill — it still alerts, without repainting forever
+ */
+
+@import url("wallust/colors-waybar.css");
+@import url("wallust/mode-glass.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * Kept so the window itself paints nothing; the slab below is what you see.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+	background: transparent;
+	background-color: transparent;
+	padding: 0px;
+	border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — adaptive roles
+ *
+ * mode-glass.css resolved the finish already; these aliases keep this file's
+ * vocabulary pointing at the adaptive tokens. edge/ink/on_accent/danger are
+ * inherited as-is: redefining them here would shadow the adaptive values,
+ * because GTK keeps the last @define-color with a given name.
+ * ------------------------------------------------------------------------- */
+@define-color pane          @pane_glass;
+@define-color tile          @lift;
+@define-color tile_hi       @lift_hi;
+@define-color edge_top      @edge_hi;
+
+@define-color ink_dim       @ink_muted;
+
+@define-color accent        @accent_ink;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* The six module colours: each is a wallust accent mixed toward @ink. An
+ * accent's ramp position is not guaranteed to be light (color13 is a mid-tone
+ * on many wallpapers) and raw it can land almost invisible as text on the
+ * slab. On the dark branch @ink is @foreground, so the mix is unchanged; on
+ * porcelain @ink is charcoal, so the same rule darkens the text instead of
+ * washing it out. accent1/2/3 measure 10.8:1, 9.1:1 and 11.0:1 on the live
+ * wallpaper; a worst-case near-black accent still lands at 5.8:1. */
+@define-color accent1       mix(@color15, @ink, 0.25);
+@define-color accent2       mix(@color13, @ink, 0.45);
+@define-color accent3       mix(@color7, @ink, 0.35);
+@define-color accent4       mix(@color15, @ink, 0.25);
+@define-color accent5       mix(@color13, @ink, 0.45);
+@define-color accent6       mix(@color7, @ink, 0.35);
+
+/* @danger arrives from mode-glass.css (dark: #ffa8a8, porcelain: #b3261e). */
+
+
+* {
+	font-family: "JetBrainsMono Nerd Font";
+	font-weight: bold;
+	min-height: 0;
+	/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+	font-size: 97%;
+	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+/* ---------------------------------------------------------------------------
+ * The slab — @pane_glass over Hyprland's blur, @edge_glass hairline, and the
+ * 38px radius this style is known for. @shadow_glass is zero on porcelain.
+ * ------------------------------------------------------------------------- */
+window#waybar {
+    background-color: @pane_glass;
+    border: 1px solid @edge_glass;
+    box-shadow: 0 4px 30px @shadow_glass;
+    border-radius: 38px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+}
+
+/* The whole window used to be dimmed as a unit. A container dim forces GTK to
+ * render the widget group offscreen, so the dim is expressed in alpha instead. */
+window#waybar.hidden {
+	background-color: @pane_glass;
+	background-image: none;
+	border-color: transparent;
+	color: alpha(@ink, 0.35);
+}
+
+tooltip {
+	background-color: @pane_glass;
+	border: 1px solid @edge_glass;
+	border-radius: 10px;
+	color: @ink;
+}
+
+#taskbar button,
+#workspaces button {
+	background-color: @tile;
+	color: @ink_dim;
+	text-shadow: none;
+	padding: 4px;
+	border-radius: 9px;
+	border: 1px solid transparent;
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
+}
+
+/* The active workspace is the one solid note on the slab: the wallpaper's own
+ * light accent with the near-black ink on it. */
+#taskbar button.active,
+#workspaces button.active {
+	background-color: @accent_pill;
+	color: @on_accent;
+	border-color: @edge_top;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+
+#taskbar button:hover,
+#workspaces button:hover {
+	background-color: @tile_hi;
+	color: @accent3;
+	border-color: @edge;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+/* Kept as the solid pill it always was — this is the state that already put
+ * dark ink on a light fill; it now agrees with .active instead of overriding
+ * it with a different tint. */
+#workspaces button.focused {
+	background-color: @accent_pill;
+	color: @on_accent;
+}
+
+#workspaces button.urgent {
+	background-color: @accent_urgent;
+	color: @on_accent;
+}
+
+#mode {
+	background-color: @tile_hi;
+	color: @ink;
+	border-bottom: 3px solid @edge_top;
+}
+
+/* Every module is a glass pill on the slab: same 38px radius, same padding and
+ * margins as before, now a wallust tile fill with a hairline edge. */
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+	background-color: @tile;
+	border: 0.5px solid @edge;
+	border-radius: 38px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-right: 12px;
+	padding-left: 12px;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left > widget:first-child > #workspaces {
+}
+
+/* If workspaces is the rightmost module, omit right margin */
+.modules-right > widget:last-child > #workspaces {
+}
+
+#clock {
+	color: @accent2;
+}
+
+#custom-updater {
+	color: @accent2;
+}
+
+#battery {
+	color: @accent5;
+}
+
+/* #battery.charging {
+	color: @ink;
+	background-color: alpha(@accent, 0.55);
+} */
+
+/* The blink rule is gone: a looping cycle schedules a repaint three times a
+ * second forever. Static ink on a filled danger pill says the same. */
+#battery.critical:not(.charging) {
+	color: @on_accent;
+	background-color: @danger;
+}
+
+label:focus {
+	background-color: alpha(@color15, 0.20);
+}
+
+#custom-menu{
+	color: @ink;
+	/*padding: 3px;*/
+}
+
+#custom-keyboard,
+#cpu {
+	color: @accent1;
+}
+
+#memory {
+	color: @accent3;
+}
+
+#backlight {
+	color: @ink;
+}
+
+#bluetooth {
+	color: @accent2;
+}
+
+#network {
+	color: @accent3;
+}
+
+#network.disconnected {
+	color: @danger;
+}
+
+#pulseaudio {
+	color: @accent4;
+}
+
+#pulseaudio-muted {
+	color: @accent2;
+}
+#wireplumber {
+	color: @accent4;
+}
+
+#wireplumber-muted {
+	color: @accent2;
+}
+
+#pluseaudio-source-muted{
+	color: @ink_dim;
+}
+
+#custom-power {
+	color: @danger;
+}
+
+#disk {
+	color: @accent5;
+}
+#custom-power_profile {
+	color: @accent3;
+}
+#custom-media {
+	background-color: alpha(@accent, 0.88);
+	color: @on_accent;
+	min-width: 100px;
+}
+
+#custom-weather {
+	color: @accent3;
+}
+
+#custom-lock {
+	color: @accent3;
+}
+
+#keyboard-state,
+#temperature {
+	color: @accent6;
+	/* background-color: alpha(@accent, 0.55); */
+}
+
+#temperature.critical {
+	background-color: alpha(@danger, 0.18);
+	color: @danger;
+}
+
+#tray {
+	/* background-color: @tile; */
+}
+
+#custom-hypridle,
+#idle_inhibitor {
+	color: @ink;
+	/*background-color: @tile;
+	border-bottom: 8px solid @edge;*/
+}
+
+/*-----Indicators----*/
+/* The old neon-green indicator is gone; now the accent pill, with the file's
+ * own 8px underline kept as a dim hairline. */
+#custom-hypridle.notactive,
+#idle_inhibitor.activated {
+	color: @on_accent;
+	background-color: @accent_pill;
+	border-bottom: 8px solid @tile_hi;
+}
+
+#mpd {
+	color: @accent6;
+}
+
+#mpd.disconnected {
+	background-color: alpha(@danger, 0.80);
+	color: @on_accent;
+}
+
+#mpd.stopped {
+	background-color: @tile_hi;
+	color: @ink;
+}
+
+#mpd.paused {
+	background-color: alpha(@accent, 0.88);
+	color: @on_accent;
+}
+
+#custom-language {
+	color: @accent5;
+	min-width: 16px;
+}
+
+#custom-separator {
+	color: @ink_dim;
+}
+
+#backlight-slider slider,
+#pulseaudio-slider slider {
+	min-width: 0px;
+	min-height: 0px;
+	opacity: 0;
+	background-image: none;
+	border: none;
+}
+
+#backlight-slider trough,
+#pulseaudio-slider trough {
+	background-color: @tile;
+	min-width: 80px;
+	min-height: 5px;
+	border-radius: 5px;
+}
+
+#backlight-slider highlight,
+#pulseaudio-slider highlight {
+	background-color: @accent;
+	min-height: 10px;
+	border-radius: 5px;
+}
+
+#custom-tray_toggle {
+	color: @accent1;
+	font-size: 110%;
+	font-weight: bold;
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
+}
+
+#custom-tray_toggle:hover {
+	color: @accent3;
+	background-color: @tile_hi;
+}

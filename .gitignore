@@ -1,0 +1,25 @@
+# Ignorar descargas externas masivas de Wallhaven/Pexels, pero mantener la coleccion oficial de fondos Pixi-Arch-A
+Hyprland-Dots/wallpapers/wallhaven-*
+Hyprland-Dots/wallpapers/pexels-*
+
+# Ignore system installation logs and build leftovers
+yay-bin/
+install-*.log
+Install-Logs/
+
+# Python and virtual environments
+__pycache__/
+.venv/
+venv/
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local color extraction tool source
+extraccion de colores/
+
+# Local non-dotfile folders and external downloaded assets
+yo-github/
+GTK-themes-icons/
+rendimiento.txt

@@ -1,0 +1,277 @@
+/* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
+/* ...............Golden Noir................ */
+/* --- 👍 designed by https://github.com/Krautt  👍 ---
+ *
+ *  Wallust-driven frosted glass. The hardcoded gold/dark palette is gone:
+ *  the gold accent role is now played by the wallpaper's lightest accent
+ *  (@color15), so the layout (the 30px bar radius, the accent-bordered
+ *  centre group, the module paddings) is untouched.
+ *
+ *  The import base directory is ~/.config/waybar/ because waybar loads the
+ *  symlink ~/.config/waybar/style.css, so the path must stay exactly
+ *  "wallust/colors-waybar.css". "../wallust/..." resolves to
+ *  ~/.config/wallust/... and a failed import can kill the bar outright.
+ *
+ *  The pane tint alone is @background, the wallpaper's darkest colour, which
+ *  reads as a black strip on a dark wallpaper; the @color15 sheen gradient is
+ *  what lifts it into glass.
+ *
+ *  PERFORMANCE: no box-shadow, no opacity on containers (the old
+ *  `window#waybar.hidden { opacity: .5 }` is now a dimmer translucent tint),
+ *  no `transition: all`, and the dead `animation: gradient_f` references
+ *  (that @keyframes exists nowhere in this repo) are gone. The battery blink
+ *  is now a static filled pill.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@color14, 0.30);
+@define-color edge_top      alpha(@color15, 0.75);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: critical temperature stays red. */
+@define-color danger        #ffa8a8;
+
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+	min-height: 0;  
+    /* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+    font-size: 97%;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+/* The bar itself is the pane of glass: wallpaper tint, sheen, lit top edge. */
+window#waybar {
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @ink;
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
+    border-radius: 30px;
+}
+
+/* Was `opacity: 0.5`, which forces GTK to render the widget group offscreen;
+ * a dimmer / thinner tint reads the same and costs nothing. */
+window#waybar.hidden {
+    background-color: alpha(@background, 0.37);
+    background-image: linear-gradient(180deg, alpha(@color15, 0.10) 0%, alpha(@color15, 0.06) 100%);
+}
+
+tooltip {
+    background-color: alpha(@color15, 0.11);
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: alpha(@color15, 0.47);
+    color: @ink;
+}
+
+/*-----module groups----*/
+.modules-left,
+.modules-right {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 20px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+/* The accent-bordered centre group: the original gold hairline is now the
+ * wallpaper's own accent. */
+.modules-center {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 20px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+#taskbar button,
+#workspaces button {
+    color: @ink_dim;
+	text-shadow: none;
+    padding: 0px;
+    border-radius: 9px;
+    padding-left: 4px;
+    padding-right: 4px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#taskbar button.active,
+#workspaces button.active {
+    color: @on_accent;
+    background-color: @accent_pill;
+    border-radius: 15px 15px 15px 15px;
+    padding-left: 5px;
+    padding-right: 5px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#workspaces button.focused {
+    color: @ink;
+}
+
+#workspaces button.urgent {
+    color: @on_accent;
+    background-color: @accent_urgent;
+    border-radius: 10px;
+}
+
+#taskbar button:hover,
+#workspaces button:hover {
+    color: @accent;
+    background-color: @tile_hi;
+    border-radius: 15px;
+ 	padding-left: 2px;
+    padding-right: 2px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+    color: @ink;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-right: 5px;
+	padding-left: 5px;
+}
+
+#temperature.critical {
+    color: @on_accent;
+    background-color: alpha(@danger, 0.85);
+}
+
+/*-----Indicators----*/
+#custom-hypridle.notactive,
+#idle_inhibitor.activated {
+	color: @on_accent;
+	background-color: @accent_pill;
+    border-bottom: 8px solid alpha(@color15, 0.11);
+}
+
+/* Was a blinking animation; a filled pill alerts without repainting forever. */
+#battery.critical:not(.charging) {
+	color: @on_accent;
+	background-color: @danger;
+}
+
+#backlight-slider slider,
+#pulseaudio-slider slider {
+  min-height: 7px;
+  min-width: 15px;
+    opacity: 0;
+    background-image: none;
+    border: none;
+}
+
+#backlight-slider trough,
+#pulseaudio-slider trough {
+  min-height: 100px;
+  min-width: 7px;
+    border-radius: 5px;
+    background-color: @tile;
+}
+
+#backlight-slider highlight,
+#pulseaudio-slider highlight {
+  min-width: 5px;
+  border-radius: 5px;
+    background-color: @accent;
+}

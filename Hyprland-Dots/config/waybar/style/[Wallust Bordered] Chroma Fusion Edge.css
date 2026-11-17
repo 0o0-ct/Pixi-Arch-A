@@ -1,0 +1,377 @@
+
+/* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
+/* ....Chroma Fusion Edge .... */
+/* Wallust & Catppuccin - Bordered */
+
+/* Chroma Fusion Edge — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * The LAYOUT of this file is untouched: the 20px fused frame, the 25px module
+ * pills with their 2px borders and 5px margins, the 15px button radius, the
+ * paddings and the 1px tooltip border are exactly what it shipped with. Only
+ * the colour system changed.
+ *
+ * WHAT WENT
+ * ---------
+ *   the hardcoded @define-color block (white/black/text/lightgray/darkgray/
+ *     transparent/teal-trans/cyan) and the aliases built on it
+ *   @import "../waybar/style/catppuccin-themes/latte.css" — a hardcoded
+ *     Catppuccin Latte palette. Its tokens (@sapphire, @flamingo, @rosewater,
+ *     @lavender, @yellow, @teal, @mauve, @sky, @maroon) are all replaced, so
+ *     the import was left on the load path for nothing. catppuccin-themes/ is
+ *     a shared dependency and was NOT modified.
+ *   `opacity: 0.8` on the module pills and `opacity: 1.0` no-ops: opacity on
+ *     containers forces GTK to composite the widget group offscreen. The pills
+ *     are translucent through the rgba() @lift fill instead.
+ *   every reference to the `gradient_f` keyframes (no @keyframes of that name
+ *     exists anywhere in this repository, so they were dead) and the 3s
+ *     looping battery blink, which is now a static filled pill.
+ *   rgba(15,20,30,.55) + `border: 2px solid black` on the bar window: the bar
+ *     window is transparent now, and that 20px frame + border became the three
+ *     module islands, so the gaps between them keep alpha 0 and Hyprland's
+ *     ignore_alpha leaves them unblurred.
+ *
+ * THE IMPORT PATH
+ * ---------------
+ * The file used to import wallust as
+ *   '../../.config/waybar/wallust/colors-waybar.css'
+ * which only ever worked when GTK resolved it against ~/.config/waybar/ (it
+ * climbs out to ~ and back in again). The canonical line is used now: waybar
+ * loads the symlink ~/.config/waybar/style.css, so GTK resolves against
+ * ~/.config/waybar/ and the path must stay exactly
+ * "wallust/colors-waybar.css". "../wallust/colors-waybar.css" resolves to
+ * ~/.config/wallust/... and dies with "Failed to import" — on waybar 0.15.0
+ * that failure takes the bar down, not just the rule.
+ *
+ * THE ADAPTIVE LAYER
+ * ------------------
+ * mode-glass.css carries the glass finishes consumed below (@pane_glass,
+ * @edge_glass, @shadow_glass, @ink, @lift, @edge, @warn, @danger); it is
+ * rewritten by WallustSwww.sh on every wallpaper change. The tokens kept at
+ * the bottom of this list are only the wallpaper-fixed accents.
+ *
+ * ROLE MAPPING (same as [Colorful] Aurora Blossom.css)
+ * ----------------------------------------------------
+ *   @color15 -> accent pill / accent ink      @color13 -> urgent accent
+ *   @danger  -> the one semantic alert colour (critical states, muted
+ *               audio, the power button), kept red on purpose.
+ *
+ * PERFORMANCE: no drop shadows, no opacity on containers, no blanket
+ * transition (only background-color/border-color/color at 160ms), no looping
+ * animation.
+ */
+
+@import url("wallust/colors-waybar.css");
+@import url("wallust/mode-glass.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles (see [Colorful] Aurora Blossom.css for the rationale)
+ *
+ * The adaptive material (pane/edge/shadow glass, ink, lift, edge, warn,
+ * danger) is written by WallustSwww.sh into wallust/mode-glass.css; only the
+ * wallpaper-fixed accents are defined here.
+ * ------------------------------------------------------------------------- */
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color accent_urgent alpha(@color13, 0.88);
+
+
+* {
+	font-family: "JetBrainsMono Nerd Font";
+	font-weight: bold;
+	min-height: 0;	
+	/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+	font-size: 97%;
+	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+window#waybar {
+	background: transparent;
+}
+
+window#waybar.empty,
+window#waybar.empty #window {
+    background-color: transparent;
+    padding: 0px;
+    border: 0px;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * The three panes of glass — the old fused 20px frame, now one per island
+ * ------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: @pane_glass;
+    border: 1px solid @edge_glass;
+    box-shadow: 0 4px 20px @shadow_glass;
+    border-radius: 20px;
+    padding: 3px 6px;
+    margin: 3px 0;
+}
+
+tooltip {
+    background-color: @pane_glass;
+	border-radius: 10px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: @edge_glass;
+	color: @ink;
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar button,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+	background-color: @lift;
+    border-radius: 25px;
+    padding: 0px 10px 0px 10px;
+    margin: 5px;
+    color: @ink;
+    border: 2px solid @edge;
+}
+#custom-power {
+    color: @danger;
+    padding: 0px 0px 0px 7px;
+}
+#backlight {
+	padding: 0px 2px 0px 6px;
+}
+#custom-light_dark,
+#custom-nightlight,
+#custom-menu{
+    color: @ink;
+    padding: 0px 8px 0px 4px;
+}
+
+#custom-weather,
+#custom-updates {
+    color: @ink;
+}
+
+#mpris {
+	padding-right: 2px;
+}
+
+#keyboard-state,
+#clock {
+	color: @ink;
+}
+
+#temperature {
+    color: @ink;
+}
+
+#network {
+	padding-left: 2px;
+	color: @ink;
+}
+
+#custom-swaync,
+#custom-hint,
+#tray {
+	color: @ink;
+}
+
+#taskbar,
+#window {    
+    color: @ink;
+}
+
+#bluetooth,
+#custom-backlight,
+#custom-cycle_wall,
+#custom-keyboard,
+#custom-light_dark {
+    color: @ink;
+}
+
+#custom-lock,
+#custom-hypridle,
+#idle_inhibitor {
+    color: @ink;
+    border-bottom: 8px solid @edge;
+}
+
+/*-----Indicators----*/
+#custom-hypridle.notactive,
+#idle_inhibitor.activated {
+	color: @on_accent;
+	background-color: @accent_pill;
+    border-bottom: 8px solid @edge;
+}
+
+#custom-cava_mviz{
+	color: @ink;
+}
+#workspaces {
+    border-radius: 25px;
+    border: 2px solid @edge;
+    color: @ink;
+    margin: 6px;
+    
+}
+
+#taskbar button,
+#workspaces button {
+    border-radius: 15px;
+    border: 0px;
+    color: @ink_muted;
+    background-color: @lift;
+    padding-left: 2px;
+    padding-right: 2px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+/* The active workspace is the one solid note in the pane: the wallpaper's own
+ * light accent, with dark ink on top. */
+#taskbar button.active,
+#workspaces button.active {
+    color: @on_accent;
+    background: @accent_pill;
+    border-radius: 25px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+#workspaces button.empty {
+    color: @ink;
+}
+
+#taskbar button:hover,
+#workspaces button:hover {
+    color: @ink;
+    background: @lift_hi;
+    border-radius: 15px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+#pulseaudio-slider,
+#pulseaudio {
+	color: @ink;
+}
+
+#pulseaudio.muted {
+    color: @danger;
+}
+
+#memory {
+	color: @ink;
+}
+
+#cpu {
+	color: @ink;
+}
+
+#battery {
+	color: @ink;
+}
+
+#disk {
+	color: @ink;
+}
+
+#temperature.critical {
+    background-color: alpha(@danger, 0.55);
+    color: @on_accent;
+}
+
+/* Was a 3s infinite blink; a filled pill says the same thing and does not
+ * schedule a repaint three times a second forever. */
+#battery.critical:not(.charging) {
+	color: @on_accent;
+	background-color: @danger;
+}
+
+#backlight-slider slider,
+#pulseaudio-slider slider {
+	min-width: 0px;
+	min-height: 0px;
+	opacity: 0;
+	background-image: none;
+	border: none;
+}
+
+#backlight-slider trough,
+#pulseaudio-slider trough {
+	min-width: 80px;
+	min-height: 5px;
+	border-radius: 5px;
+	background-color: @lift;
+}
+
+#backlight-slider highlight,
+#pulseaudio-slider highlight {
+	min-height: 10px;
+	border-radius: 5px;
+	background-color: @accent_ink;
+}

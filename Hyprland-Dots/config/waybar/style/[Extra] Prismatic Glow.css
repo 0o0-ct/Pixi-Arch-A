@@ -1,0 +1,368 @@
+
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+
+/* Prismatic Glow — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Full rationale and the measurements live in [Colorful] Aurora Blossom.css,
+ * the reference implementation. The short version:
+ *
+ *   @background -> pane tint (hue carrier)      @color15 -> sheen + accent
+ *   @foreground -> text, dim text, lit edge     @color13 -> urgent pill
+ *
+ * The @import path is the one trap: GTK resolves it against the directory of
+ * the SYMLINK waybar actually loads (~/.config/waybar/style.css), so it must be
+ * "wallust/colors-waybar.css". "../wallust/..." resolves to ~/.config/wallust/
+ * and a failed import can kill the bar outright on waybar 0.15.0.
+ *
+ * The blur is Hyprland's (`blur 1` + `ignore_alpha`); CSS only paints the tint,
+ * the refraction sheen and the lit edge. That is why window#waybar stays fully
+ * transparent: the gaps must keep alpha 0 so they are not blurred.
+ *
+ * LAYOUT NOTE — this style has no .modules-* islands by design: every module is
+ * its own small pane. The glass treatment therefore goes on the module tiles
+ * themselves (tint + sheen + 1px lit top edge) instead of on an island. Radii,
+ * paddings, margins and font sizes are exactly the originals, and the
+ * prismatic gradient-border motif is kept, re-hued from wallust.
+ *
+ * PERFORMANCE (the user is fighting heat): no box-shadow, no opacity on
+ * containers, transitions only on background-color/border-color/color, the dead
+ * `gradient_f` animation removed and the infinite battery `blink` replaced by a
+ * static filled state.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * The bar window itself stays transparent so the space between the tiles keeps
+ * alpha 0 and Hyprland's ignore_alpha leaves it unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+/* .............Prismatic Glow............ */
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles (same mapping as the reference style)
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.47);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.11);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@color15, 0.47);  /* hairline            */
+@define-color edge_top      alpha(@color15, 0.47);  /* lit top edge        */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+/* Near-black ink is a literal on purpose: CSS cannot branch on the palette and
+ * dark-on-light-accent is the one pairing that reads on dark *and* light
+ * palettes. wallust's own accentPrimaryText is #FFFFFF, unreadable here. */
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic: must stay red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
+@define-color prism_a       @color13;                  /* gradient border     */
+@define-color prism_b       @color15;
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+	min-height: 0;  
+    /* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+    font-size: 97%;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+    
+    border: none;
+    border-radius: 10px;
+    font-size: 97%;
+    min-height: 20px;
+    margin: 0px;
+}
+
+/* Module Styles */
+.module {
+    padding: 2px 4px;
+    margin: 1px 1px;
+}
+
+.modules-left>widget:first-child .module {
+    margin-left: 2px;
+}
+
+/* Special Case: Right Margin for Last Module in Right Section */
+.modules-right>widget:last-child .module {
+    margin-right: 2px;
+}
+
+/* Window Styling */
+window#waybar {
+    background-color: transparent;
+    color: @ink;
+    transition-property: background-color;
+    transition-duration: 160ms;
+}
+
+/* Make window module transparent when no windows present */
+window#waybar.empty #window {
+    background-color: transparent;
+    background: transparent;
+}
+
+/* Tooltip styling — the same glass, denser so the text always reads.
+ * The 2px gradient frame is kept exactly as it was written (the original
+ * shorthand left border-style unset, so it paints nothing today too). */
+menu,
+tooltip {
+    background-color: alpha(@color15, 0.11);
+    border-radius: 10px;
+    border: 2px transparent;
+    border-image: linear-gradient(45deg, @prism_a, @prism_b) 1;
+    padding: 5px;
+}
+
+menu label,
+tooltip label {
+    color: @ink;
+}
+
+/* Workspaces Button Styling */
+#workspaces button {
+    color: @ink_dim;
+    background-color: @tile;
+    border: 1px solid transparent;
+    font-weight: bolder;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+    padding: 2px 5px;
+}
+
+#workspaces button.active {
+    color: @on_accent;
+    background-color: @accent_pill;
+    border-bottom: 2px solid transparent;
+    /* border-top: 2px solid transparent; */
+    border-image: linear-gradient(45deg, @prism_a, @prism_b) 1;
+    padding: 0 10px;
+}
+
+#workspaces button.focused {
+    background-color: @tile_hi;
+}
+
+#workspaces button.visible {
+    color: @ink_dim;
+}
+
+#workspaces button.urgent {
+    background-color: @accent_urgent;
+    color: @on_accent;
+    padding: 0 5px;
+}
+
+#workspaces button:hover {
+    background-color: @tile_hi;
+    border: 1px solid transparent;
+    border-image: linear-gradient(45deg, @prism_a, @prism_b) 1;
+    padding: 0 5px;
+}
+
+/* Taskbar Button Styling */
+#taskbar button {
+    padding: 0 1px;
+}
+
+#taskbar button.active {
+    background-color: @tile_hi;
+    border-bottom: 2px solid transparent;
+    /* border-top: 2px solid transparent; */
+    border-image: linear-gradient(45deg, @prism_a, @prism_b) 1;
+    padding: 0 5px;
+}
+#taskbar button:hover {
+    background-color: @tile_hi;
+    border: 1px solid transparent;
+    border-image: linear-gradient(45deg, @prism_a, @prism_b) 1;
+    padding: 0 5px;
+}
+
+/* Transparent Modules When Empty */
+#taskbar.empty,
+window#waybar.empty {
+    background-color: transparent;
+}
+
+/* Specific Module Styles — each module is its own pane of glass */
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar,
+#temperature,
+#tray,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
+    color: @ink;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#temperature.critical {
+    background-color: alpha(@danger, 0.55);
+    color: @ink;
+}
+
+#network.disconnected,
+#pulseaudio.muted {
+    color: @danger;
+}
+
+#battery.charging,
+#battery.plugged {
+    color: @ink;
+    background-color: @tile;
+}
+
+/* Was an infinite blinking animation: a filled pill says the same thing
+ * without scheduling a repaint forever. */
+#battery.warning:not(.charging) {
+    background-color: alpha(@danger, 0.55);
+    color: @ink;
+}
+#battery.critical:not(.charging) {
+    background-color: @danger;
+    color: @on_accent;
+}
+
+/* Focused Label Background */
+label:focus {
+    background-color: @tile_hi;
+}
+
+/* Keyboard State Styles */
+#keyboard-state>label {
+    padding: 0 5px;
+}
+
+#keyboard-state>label.locked {
+    background-color: @tile;
+}
+
+/* Tray Styles */
+#tray {
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+}
+
+#tray>.passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray>.needs-attention {
+    -gtk-icon-effect: highlight;
+    padding: 0 5px;
+    background-color: alpha(@danger, 0.55);
+}
+
+/* Gradient Module Styles */
+#mpd,
+#mpris,
+#window {
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    border: 1px solid @edge;
+    border-top: 1px solid @edge_top;
+    color: @ink;
+}
+
+#backlight-slider slider,
+#pulseaudio-slider slider {
+	min-width: 0px;
+	min-height: 0px;
+	opacity: 0;
+	background-image: none;
+	border: none;
+}
+
+#backlight-slider trough,
+#pulseaudio-slider trough {
+	min-width: 80px;
+	min-height: 5px;
+	border-radius: 5px;
+	background-color: @tile;
+}
+
+#backlight-slider highlight,
+#pulseaudio-slider highlight {
+	min-height: 10px;
+	border-radius: 5px;
+	background-color: @accent;
+}

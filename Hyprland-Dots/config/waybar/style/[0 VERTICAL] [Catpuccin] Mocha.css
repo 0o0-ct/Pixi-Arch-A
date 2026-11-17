@@ -1,0 +1,294 @@
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/*  Vertical Catpuccin Mocha
+ *  As stated on title, best style for vertical layout waybar config
+ *
+ *  Wallust-driven frosted glass. Every colour now comes from the wallpaper
+ *  palette; the Catppuccin Mocha hardcoding (and its theme @import) is gone.
+ *
+ *  THE IMPORT PATH (the one trap here)
+ *  -----------------------------------
+ *  GTK resolves a relative @import against the file waybar actually loads,
+ *  which is the SYMLINK ~/.config/waybar/style.css. The base directory is
+ *  therefore ~/.config/waybar/ and the path must stay exactly
+ *  "wallust/colors-waybar.css". "../wallust/colors-waybar.css" resolves to
+ *  ~/.config/wallust/... and a failed import can kill the bar outright.
+ *
+ *  VERTICAL LAYOUT NOTE
+ *  --------------------
+ *  This style is a single vertical strip and has always painted the whole
+ *  strip, not separate islands, so window#waybar *is* the pane of glass here.
+ *  Its layout (border-radius 5px, the module paddings and the vertical
+ *  sliders) is untouched.
+ *
+ *  Refraction: the pane tint alone is @background, the wallpaper's darkest
+ *  colour, which reads as a black strip on a dark wallpaper. The @color15
+ *  sheen gradient is what lifts it into glass.
+ *
+ *  PERFORMANCE: no box-shadow, no opacity on containers, no `transition: all`
+ *  (only background-color/border-color/color at 160ms) and no looping
+ *  animations — the battery blink is now a static filled pill.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule --- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@color14, 0.30);
+@define-color edge_top      alpha(@color15, 0.75);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: critical battery / muted audio stay red. */
+@define-color danger        #ffa8a8;
+
+
+* {
+	font-family: "JetBrainsMono Nerd Font";
+	font-weight: bold;
+	min-height: 0;
+	/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+	font-size: 97%;
+	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+
+/* The vertical strip: wallpaper tint + sheen, with a lit top edge. */
+window#waybar {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 5px;
+}
+
+tooltip {
+    background-color: alpha(@color15, 0.11);
+  color: @ink;
+  border-radius: 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: alpha(@color15, 0.47);
+}
+
+tooltip label {
+  color: @ink;
+}
+
+#taskbar button,
+#workspaces button {
+  color: @ink_dim;
+  background-color: transparent;
+  	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-right: 6px;
+	padding-left: 4px;
+}
+
+#taskbar button.active,
+#workspaces button.active {
+  color: @on_accent;
+  background-color: @accent_pill;
+  border-radius: 15px;
+}
+
+#taskbar button.focused,
+#workspaces button.focused {
+  color: @accent;
+  background: transparent;
+  border-radius: 15px;
+}
+
+#workspaces button.urgent {
+  color: @on_accent;
+  background-color: @accent_urgent;
+  border-radius: 15px;
+}
+
+#taskbar button:hover,
+#workspaces button:hover {
+  background-color: @tile_hi;
+  color: @ink;
+  border-radius: 15px;
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar button,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+  color: @ink;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-right: 6px;
+  padding-left: 6px;
+  transition-property: background-color, border-color, color;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
+}
+
+#idle_inhibitor {
+  color: @ink;
+    border-bottom: 8px solid alpha(@color15, 0.11);
+}
+
+#mpris {
+  color: @accent;
+}
+
+#battery {
+  color: @accent;
+  padding-left: 15px;
+  border-radius: 15px 0 0 15px;
+}
+
+/* Was a blinking animation; a filled pill says the same thing and does not
+ * schedule a repaint three times a second forever. No radius is set here on
+ * purpose: #battery's own `15px 0 0 15px` (it is the leftmost module) still
+ * applies, so the fill follows the module's existing shape. */
+#battery.critical:not(.charging) {
+  color: @on_accent;
+  background-color: @danger;
+}
+
+#custom-lock,
+#custom-power {
+  color: @danger;
+  border-radius: 15px;
+  font-weight: bolder;
+  padding-left: 1px;
+}
+
+#network {
+  background-color: transparent;
+  color: @ink;
+}
+
+#backlight {
+  color: @ink;
+}
+
+
+#custom-weather {
+  color: @ink;
+  border-radius: 15px;
+  background-color: transparent;
+}
+
+#custom-menu {
+  color: @ink;
+}
+
+#pulseaudio {
+  background-color: transparent;
+  color: @ink;
+}
+
+#clock,
+#clock-calender {
+  color: @ink;
+}
+
+#backlight-slider slider,
+#pulseaudio-slider slider {
+  min-height: 7px;
+  min-width: 15px;
+  opacity: 0;
+  background-color: alpha(@foreground, 0.55);
+  border-radius: 3px;
+}
+
+#backlight-slider trough,
+#pulseaudio-slider trough {
+  min-height: 100px;
+  min-width: 7px;
+  border-radius: 5px;
+  background-color: @tile;
+}
+
+#backlight-slider highlight,
+#pulseaudio-slider highlight {
+  min-width: 5px;
+  border-radius: 5px;
+  background-color: @accent;
+}

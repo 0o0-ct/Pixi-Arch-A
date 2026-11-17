@@ -1,0 +1,271 @@
+//* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- *//
+/* Waybar Modules - Custom Modules — Modern Vector Iconography (One UI / iOS SF Style) */
+/* Basically created to reduce the lines in Waybar Modules bank */
+/* NOTE: This is only for Custom Modules */
+
+{
+"custom/weather": {
+	"format": "{}",
+	"format-alt": "{alt}: {}",
+	"format-alt-click": "click",
+	"interval": 3600,
+	"return-type": "json",
+	"exec": "$HOME/.config/hypr/UserScripts/WeatherWrap.sh",
+	"exec-if": "test -f $HOME/.config/hypr/UserScripts/WeatherWrap.sh",
+	"tooltip": true
+},
+
+"custom/hyprpicker": {
+	"format": "󰈊",
+	"on-click": "hyprpicker | wl-copy",
+	"tooltip": true,
+	"tooltip-format": "Hyprpicker (Selector de Color)"
+},
+
+"custom/file_manager": {
+	"format": "󰉋 ",
+	"on-click": "$HOME/.config/hypr/scripts/WaybarScripts.sh --files",
+	"tooltip": true,
+	"tooltip-format": "Administrador de Archivos"
+},
+
+"custom/tty": {
+	"format": "󰞷 ",
+	"on-click": "$HOME/.config/hypr/scripts/WaybarScripts.sh --term",
+	"tooltip": true,
+	"tooltip-format": "Terminal"
+},
+
+"custom/browser": {
+	"format": "󰇩 ",
+	"on-click": "xdg-open https://",
+	"tooltip": true,
+	"tooltip-format": "Navegador Web"
+},
+
+"custom/settings": {
+	"format": "󰒓 ",
+	"on-click": "$HOME/.config/hypr/scripts/Kool_Quick_Settings.sh",
+	"tooltip": true,
+	"tooltip-format": "Configuración de Pixi-Arch-A"
+},
+
+"custom/cycle_wall": {
+	"format": "󰸉 ",
+	"on-click": "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh",
+	"on-click-right": "$HOME/.config/hypr/UserScripts/WallpaperRandom.sh",
+	"on-click-middle": "$HOME/.config/hypr/scripts/WaybarStyles.sh",
+	"tooltip": true,
+	"tooltip-format": "Clic Izquierdo: Menú de Fondos\nClic Central: Fondo Aleatorio\nClic Derecho: Menú de Estilos Waybar"
+},
+
+"custom/hint": {
+	"format": "󰌵 TIPS",
+	"on-click": "$HOME/.config/hypr/scripts/KeyHints.sh",
+	"on-click-right": "$HOME/.config/hypr/scripts/KeyBinds.sh",
+	"tooltip": true,
+	"tooltip-format": "Clic Izquierdo: Atajos Rápidos\nClic Derecho: Todos los Atajos de Teclado"
+},
+
+"custom/dot_update": {
+	"format": " 󰚰 ",
+	"on-click": "$HOME/.config/hypr/scripts/KooLsDotsUpdate.sh",
+	"on-click-right": "$HOME/.config/hypr/scripts/Distro_update.sh",
+	"tooltip": true,
+	"tooltip-format": "Clic Izquierdo: Actualizar Personalización Pixi-Arch-A\nClic Derecho: Actualizar Sistema Arch Linux (yay -Syu)"
+},
+
+// Hypridle inhibitor / Screen Idle Toggle (15m vs ∞)
+"custom/hypridle": {
+	"format": "{}",
+	"return-type": "json",
+	"escape": false,
+	"interval": 2,
+	"exec": "$HOME/.config/hypr/scripts/ScreenIdleToggle.sh status",
+	"exec-if": "test -f $HOME/.config/hypr/scripts/ScreenIdleToggle.sh",
+	"on-click": "$HOME/.config/hypr/scripts/ScreenIdleToggle.sh toggle",
+	"on-click-right": "hyprlock",
+	"signal": 9
+},
+
+"custom/keyboard": {
+	"exec": "$HOME/.config/hypr/scripts/KeyboardLayout.sh status",
+	"exec-if": "test -f $HOME/.config/hypr/scripts/KeyboardLayout.sh",
+	"interval": 10,
+	"format": "󰌌 {}",
+	"on-click": "$HOME/.config/hypr/scripts/KeyboardLayout.sh switch"
+},
+
+"custom/light_dark": {
+	"format": "󰔎 ",
+	"on-click": "test -f $HOME/.config/hypr/scripts/DarkLight.sh && $HOME/.config/hypr/scripts/DarkLight.sh",
+	"on-click-right": "test -f $HOME/.config/hypr/scripts/WaybarStyles.sh && $HOME/.config/hypr/scripts/WaybarStyles.sh",
+	"on-click-middle": "test -f $HOME/.config/hypr/UserScripts/WallpaperSelect.sh && $HOME/.config/hypr/UserScripts/WallpaperSelect.sh",
+	"tooltip": true,
+	"tooltip-format": "Clic Izquierdo: Cambiar Fondo Oscuro Aleatorio\nClic Central: Menú de Fondos\nClic Derecho: Menú de Estilos Waybar"
+},
+
+// Night light (Hyprsunset)
+"custom/nightlight": {
+	"format": "󰌵",
+	"on-click": "$HOME/.config/hypr/scripts/Hyprsunset.sh toggle",
+	"on-click-right": "$HOME/.config/hypr/scripts/Hyprsunset.sh menu",
+	"tooltip": true,
+	"tooltip-format": "Luz Nocturna (Hyprsunset)"
+},
+
+"custom/lock": {
+	"format": "󱅞",
+	"on-click": "$HOME/.config/hypr/scripts/LockScreen.sh",
+	"tooltip": true,
+	"tooltip-format": "󱅞 Bloquear Pantalla"
+},
+
+"custom/menu": {
+	"format": " 󰀻 ",
+	"on-click": "pkill rofi || rofi -show drun -modi run,drun,filebrowser,window",
+	"on-click-middle": "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh",
+	"on-click-right": "$HOME/.config/hypr/scripts/WaybarLayout.sh",
+	"tooltip": true,
+	"tooltip-format": "Clic Izquierdo: Menú de Aplicaciones\nClic Central: Selector de Fondos\nClic Derecho: Diseños de Waybar"
+},
+
+// This is a custom cava visualizer
+"custom/cava_mviz": {
+	"exec": "$HOME/.config/hypr/scripts/WaybarCava.sh",
+	"exec-if": "test -f $HOME/.config/hypr/scripts/WaybarCava.sh",
+	"format": "{}"
+},
+
+"custom/playerctl": {
+	"format": "<span>{}</span>",
+	"return-type": "json",
+	"max-length": 25,
+	"exec": "playerctl -a metadata --format '{\"text\": \"{{artist}}  {{markup_escape(title)}}\", \"tooltip\": \"{{playerName}} : {{markup_escape(title)}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F",
+	"exec-if": "command -v playerctl",
+	"on-click-middle": "playerctl play-pause",
+	"on-click": "playerctl previous",
+	"on-click-right": "playerctl next",
+	"scroll-step": 5.0,
+	"on-scroll-up": "$HOME/.config/hypr/scripts/Volume.sh --inc",
+	"on-scroll-down": "$HOME/.config/hypr/scripts/Volume.sh --dec",
+	"smooth-scrolling-threshold": 1
+},
+    
+"custom/power": {
+	"format": " 󰐥 ",
+	"on-click": "$HOME/.config/hypr/scripts/Wlogout.sh",
+	"on-click-right": "$HOME/.config/hypr/scripts/ChangeBlur.sh",
+	"tooltip": true,
+	"tooltip-format": "Clic Izquierdo: Menú de Apagado / Energía\nClic Derecho: Ajustar Desenfoque"
+},
+
+"custom/reboot": {
+	"format": "󰜉",
+	"on-click": "systemctl reboot",
+	"tooltip": true,
+	"tooltip-format": "Reiniciar Sistema"
+},
+    
+"custom/quit": {
+	"format": "󰍃",
+	"on-click": "hyprctl dispatch exit",
+	"tooltip": true,
+	"tooltip-format": "Cerrar Sesión Hyprland"
+},
+
+"custom/swaync": {
+	"tooltip": true,
+	"tooltip-format": "Clic Izquierdo: Centro de Notificaciones\nClic Derecho: Menú de Apagado",
+	"format": "󰂚",
+	"on-click": "qs -c controlcenter ipc call panel toggle",
+	"on-click-right": "command -v ags && ags request -i matshell 'logout' || ~/.config/hypr/scripts/Wlogout.sh"
+},
+
+// NOTE:! This is mainly for Arch and Arch Based Distros  depend: pacman-contrib
+"custom/updater": {
+	"return-type": "json",
+	"exec": "$HOME/.config/hypr/scripts/ArchUpdateCount.sh",
+	"interval": 300,
+	"signal": 8,
+	"on-click": "$HOME/.config/hypr/scripts/Distro_update.sh",
+	"tooltip": true,
+	"escape": false
+},
+
+// Separators
+"custom/separator#dot": {
+	"format": "",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#dot-line": {
+	"format": "",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#line": {
+	"format": "|",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#blank": {
+	"format": "",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#blank_2": {
+	"format": "  ",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#blank_3": {
+	"format": "   ",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/arrow1": {
+	"format": "",
+	"tooltip": false
+},
+"custom/arrow2": {
+	"format": "",
+	"tooltip": false
+},
+"custom/arrow3": {
+	"format": "",
+	"tooltip": false
+},
+"custom/arrow4": {
+	"format": "",
+	"tooltip": false
+},
+"custom/arrow5": {
+	"format": "",
+	"tooltip": false
+},
+"custom/arrow6": {
+	"format": "",
+	"tooltip": false
+},
+"custom/arrow7": {
+	"format": "",
+	"tooltip": false
+},
+"custom/arrow8": {
+	"format": "",
+	"tooltip": false
+},
+"custom/arrow9": {
+	"format": "",
+	"tooltip": false
+},
+"custom/arrow10": {
+	"format": "",
+	"tooltip": false
+},
+"custom/tray_toggle": {
+	"format": "",
+	"tooltip": false
+}
+}

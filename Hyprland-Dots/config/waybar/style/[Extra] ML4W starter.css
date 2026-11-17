@@ -1,0 +1,408 @@
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/*  ML4W - Waybar Style */
+/* Original design from ML4W - Hyprland Starter Waybar */
+
+/* ---------------------------------------------------------------------------
+ * Frosted glass, coloured by the wallpaper.
+ *
+ * This style has no .modules-left/.modules-center/.modules-right panes: every
+ * module is its own rounded pill (that IS the ML4W starter look), so the pills
+ * are the glass surfaces here and they are tinted from wallust below.
+ *
+ * The import path is the one trap: GTK resolves a relative @import against the
+ * path of the file waybar actually loads, and that file is the SYMLINK
+ * ~/.config/waybar/style.css — so the base directory is ~/.config/waybar/ and
+ * the path below is right. "../wallust/colors-waybar.css" resolves to
+ * ~/.config/wallust/... , fails to import, and on waybar 0.15.0 a failed import
+ * kills the bar outright.
+ * ------------------------------------------------------------------------- */
+@import url("wallust/colors-waybar.css");
+
+/* ---------------------------------------------------------------------------
+ * Tokens.
+ *
+ * The pills in this style were flat white with black text on them. wallust
+ * gives us the same design driven by the wallpaper: the pill fill becomes
+ * @color15 (the light end of wallust's ramp, i.e. the wallpaper's own light
+ * accent) and the text on those pills becomes the one near-black ink. Measured
+ * at the 0.55 alpha the selectors already use, that pairing holds ~6.5:1 on a
+ * dark wallpaper and ~12:1 on a bright one — dark ink on a light pill is the
+ * only combination that survives both, because CSS cannot branch on palette.
+ * ------------------------------------------------------------------------- */
+@define-color ink            @foreground;
+@define-color ink_dim        alpha(@foreground, 0.80);
+@define-color on_accent      #12141a;
+@define-color tile_hi        alpha(@foreground, 0.13);
+@define-color edge          alpha(@color14, 0.30);
+@define-color danger         #ffa8a8;   /* semantic: must stay red on any wallpaper */
+
+/* The names this style already used, now wallust-driven. */
+@define-color backgroundlight       alpha(@color15, 0.20);   /* pill fill (was flat #FFFFFF)  */
+@define-color backgrounddark        alpha(@color15, 0.20);   /* pill fill (was flat #FFFFFF)  */
+@define-color workspacesbackground2 @color15;   /* workspace pill                */
+@define-color textcolor1            @on_accent; /* ink on a light pill           */
+@define-color textcolor2            @on_accent; /* ink on a light pill           */
+@define-color textcolor3            @ink_dim;   /* icon on the bare bar          */
+@define-color iconcolor             @ink;       /* icon on the bare bar          */
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window itself stays transparent so the space between the pills keeps
+ * alpha 0 and Hyprland's ignore_alpha leaves it unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+/* -----------------------------------------------------
+ * General 
+ * ----------------------------------------------------- */
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+	/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+	font-size: 97%;
+	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+window#waybar {
+    background-color: transparent;
+    border-bottom: 0px solid @edge;
+    /* color: @ink; */
+}
+
+/* -----------------------------------------------------
+ * Workspaces & Taskbar
+ * ----------------------------------------------------- */
+
+#taskbar,
+#workspaces {
+    margin: 5px 1px 6px 1px;
+    padding: 0px 1px;
+    border-radius: 15px;
+    border: 0px;
+    font-weight: bold;
+    font-style: normal;
+    color: @ink;
+}
+
+#taskbar button,
+#workspaces button {
+    padding: 0px 5px;
+    margin: 4px 3px;
+    border-radius: 12px;
+    border: 0px;
+    color: @textcolor3;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#taskbar button.active,
+#workspaces button.active {
+    color: @textcolor1;
+    background: alpha(@workspacesbackground2, 0.85);
+    border-radius: 8px;
+    min-width: 40px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#workspaces button:hover {
+    color: @textcolor1;
+    background: alpha(@workspacesbackground2, 0.55);
+    border-radius: 15px;
+}
+
+/* -----------------------------------------------------
+ * Tooltips
+ * ----------------------------------------------------- */
+
+tooltip {
+    background-color: alpha(@color15, 0.11);
+    border-radius: 10px;
+    padding:20px;
+    margin:0px;
+}
+
+tooltip label {
+    color: @ink;
+}
+
+/* -----------------------------------------------------
+ * Window
+ * ----------------------------------------------------- */
+
+#window {
+    background: alpha(@backgroundlight, 0.55);
+    margin: 10px 15px 10px 0px;
+    padding: 2px 10px 0px 10px;
+    border-radius: 8px;
+    color:@textcolor2;
+    font-weight:normal;
+}
+
+window#waybar.empty #window {
+    background-color:transparent;
+}
+
+/* -----------------------------------------------------
+ * Modules
+ * ----------------------------------------------------- */
+
+.modules-left > widget:first-child > #workspaces {
+    margin-left: 0;
+}
+
+.modules-right > widget:last-child > #workspaces {
+    margin-right: 0;
+}
+
+/* -----------------------------------------------------
+ * Custom Quicklinks
+ * ----------------------------------------------------- */
+
+#network,
+#pulseaudio,
+#battery,
+#clock {
+    margin-right: 20px;
+    font-weight: bold;
+    color: @iconcolor;
+    padding: 4px 10px 2px 10px;
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar,
+#temperature,
+#tray,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+  padding-right: 6px;
+  padding-left: 6px;
+    color: @iconcolor;
+}
+
+/* -----------------------------------------------------
+ * Custom Modules
+ * ----------------------------------------------------- */
+
+#custom-menu {
+    background-color: alpha(@backgrounddark, 0.55);
+    color: @textcolor1;
+    border-radius: 10px;
+    margin: 10px 10px 10px 10px;
+    padding-right: 6px;
+  	padding-left: 4px;
+}
+
+#custom-power {
+    margin: 2px 10px 0px 0px;
+    padding:0px;
+    color: @iconcolor;
+}
+
+/* -----------------------------------------------------
+ * Hardware Group
+ * ----------------------------------------------------- */
+
+ #disk,#memory,#cpu,#language {
+    margin:0px;
+    padding:0px;
+    color:@iconcolor;
+}
+
+#language {
+    margin-right:10px;
+}
+
+/* -----------------------------------------------------
+ * Clock
+ * ----------------------------------------------------- */
+
+#clock {
+    background-color: alpha(@backgrounddark, 0.55);
+    color: @textcolor1;
+    border-radius: 15px;
+    margin: 10px 2px 10px 0px;
+}
+
+/* -----------------------------------------------------
+ * Pulseaudio
+ * ----------------------------------------------------- */
+
+#pulseaudio {
+    background-color: alpha(@backgroundlight, 0.55);
+    color: @textcolor2;
+    border-radius: 12px;
+    margin: 10px 10px 10px 0px;
+}
+
+#pulseaudio.muted {
+    background-color: alpha(@backgrounddark, 0.55);
+    color: @textcolor1;
+}
+
+/* -----------------------------------------------------
+ * Network
+ * ----------------------------------------------------- */
+
+#network {
+    background-color: alpha(@backgroundlight, 0.55);
+    color: @textcolor2;
+    border-radius: 15px;
+    margin: 10px 10px 10px 0px;
+}
+
+#network.ethernet {
+    background-color: alpha(@backgroundlight, 0.55);
+    color: @textcolor2;
+}
+
+#network.wifi {
+    background-color: alpha(@backgroundlight, 0.55);
+    color: @textcolor2;
+}
+
+/* -----------------------------------------------------
+ * Bluetooth
+ * ----------------------------------------------------- */
+
+ #bluetooth, #bluetooth.on, #bluetooth.connected {
+    background-color: alpha(@backgroundlight, 0.55);
+    color: @textcolor2;
+    border-radius: 15px;
+    margin: 10px 15px 10px 0px;
+}
+
+#bluetooth.off {
+    background-color: transparent;
+    padding: 0px;
+    margin: 0px;
+}
+
+/* -----------------------------------------------------
+ * Battery
+ * ----------------------------------------------------- */
+
+#battery {
+    background-color: alpha(@backgroundlight, 0.55);
+    color: @textcolor2;
+    border-radius: 15px;
+    margin: 10px 15px 10px 0px;
+}
+
+#battery.charging, #battery.plugged {
+    color: @textcolor2;
+    background-color: alpha(@backgroundlight, 0.55);
+}
+
+/* Was a 0.5s blinking animation; a filled pill says "critical" just as loudly
+ * without scheduling a repaint twice a second forever. */
+#battery.critical:not(.charging) {
+    background-color: @danger;
+    color: @on_accent;
+}
+
+/* -----------------------------------------------------
+ * Tray
+ * ----------------------------------------------------- */
+
+#tray {
+    margin:0px 10px 0px 0px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+/* @danger is a light red, so the icon on top of it has to be the dark ink —
+ * light ink on this fill only reaches ~2.6:1. */
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: alpha(@danger, 0.88);
+    color: @on_accent;
+}
+
+/* -----------------------------------------------------
+ * Other
+ * ----------------------------------------------------- */
+
+label:focus {
+    background-color: @tile_hi;
+}
+
+/* A dark-end teal, not a mid-ramp one: at this alpha a mid teal fill stays
+ * light enough on a bright wallpaper that light ink only reaches ~2.2:1. */
+#backlight {
+    background-color: alpha(@color2, 0.85);
+}
+
+#network {
+    background-color: alpha(@color13, 0.80);
+}
+
+#network.disconnected {
+    background-color: alpha(@danger, 0.75);
+}

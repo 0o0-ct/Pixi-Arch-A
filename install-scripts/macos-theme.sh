@@ -1,0 +1,207 @@
+#!/bin/bash
+# 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 #
+# macOS Tahoe Theme: GTK Theme + Icons + SF Pro Fonts #
+
+## ADVERTENCIA: ¡NO EDITES MÁS ALLÁ DE ESTA LÍNEA SI NO SABES LO QUE ESTÁS HACIENDO! ##
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+PARENT_DIR="$SCRIPT_DIR/.."
+cd "$PARENT_DIR" || { echo "${ERROR} Error al cambiar al directorio $PARENT_DIR"; exit 1; }
+
+if ! source "$(dirname "$(readlink -f "$0")")/Global_functions.sh"; then
+  echo "Error al cargar Global_functions.sh"
+  exit 1
+fi
+
+LOG="Install-Logs/install-$(date +%d-%H%M%S)_macos-theme.log"
+
+# ─── 1. Dependencias ────────────────────────────────────────────────
+macos_deps=(sassc git)
+
+printf "${INFO} Instalando ${SKY_BLUE}dependencias del tema macOS${RESET}...\n"
+for PKG in "${macos_deps[@]}"; do
+  install_package "$PKG" "$LOG"
+done
+
+# ─── 2. MacTahoe GTK Theme ─────────────────────────────────────────
+THEME_DIR="$HOME/.themes"
+
+printf "${INFO} Instalando ${SKY_BLUE}MacTahoe GTK Theme${RESET}...\n"
+if [ -d "$THEME_DIR/MacTahoe-Dark" ]; then
+  echo "${OK} MacTahoe-Dark ya está instalado. Omitiendo..."
+else
+  TEMP_DIR=$(mktemp -d)
+  git clone --depth=1 https://github.com/vinceliuice/MacTahoe-gtk-theme.git "$TEMP_DIR/MacTahoe-gtk-theme" 2>&1 | tee -a "$LOG"
+  if [ -d "$TEMP_DIR/MacTahoe-gtk-theme" ]; then
+    cd "$TEMP_DIR/MacTahoe-gtk-theme"
+    ./install.sh -d "$THEME_DIR" 2>&1 | tee -a "$LOG"
+    cd "$PARENT_DIR"
+    echo "${OK} MacTahoe GTK Theme instalado en $THEME_DIR"
+  else
+    echo "${ERROR} No se pudo clonar MacTahoe-gtk-theme"
+  fi
+  rm -rf "$TEMP_DIR"
+fi
+
+# El fondo cristal de ventanas vive en el tema GTK (prioridad SETTINGS) y no en
+# ~/.config/gtk-3.0/gtk.css (prioridad USER): asi cada app puede dejar su
+# ventana transparente, que es lo que necesita el dock nwg-dock para que su
+# superficie layer-shell no herede la capa base oscura.
+if [ -x "$HOME/.config/hypr/scripts/pixi_colors.py" ]; then
+  python3 - "$HOME/.config/hypr/scripts/pixi_colors.py" <<'PY' 2>&1 | tee -a "$LOG"
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("pixi_colors", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+for path in module.ensure_gtk_theme_glass():
+    print(f"{module.ENGINE_NAME}: fondo cristal aplicado a {path}")
+PY
+fi
+
+# ─── 3. MacTahoe Icon Theme ────────────────────────────────────────
+ICON_DIR="$HOME/.icons"
+
+printf "${INFO} Instalando ${SKY_BLUE}MacTahoe Icon Theme${RESET}...\n"
+if [ -d "$ICON_DIR/MacTahoe-dark" ]; then
+  echo "${OK} MacTahoe icons ya están instalados. Omitiendo..."
+else
+  TEMP_DIR=$(mktemp -d)
+  git clone --depth=1 https://github.com/vinceliuice/MacTahoe-icon-theme.git "$TEMP_DIR/MacTahoe-icon-theme" 2>&1 | tee -a "$LOG"
+  if [ -d "$TEMP_DIR/MacTahoe-icon-theme" ]; then
+    cd "$TEMP_DIR/MacTahoe-icon-theme"
+    ./install.sh -d "$ICON_DIR" 2>&1 | tee -a "$LOG"
+    cd "$PARENT_DIR"
+    echo "${OK} MacTahoe Icon Theme instalado en $ICON_DIR"
+  else
+    echo "${ERROR} No se pudo clonar MacTahoe-icon-theme"
+  fi
+  rm -rf "$TEMP_DIR"
+fi
+
+# ─── 4. SF Pro Fonts ───────────────────────────────────────────────
+FONT_DIR="$HOME/.local/share/fonts"
+
+printf "${INFO} Instalando ${SKY_BLUE}SF Pro Fonts${RESET}...\n"
+if fc-list 2>/dev/null | grep -qi "SF Pro"; then
+  echo "${OK} SF Pro ya está instalado. Omitiendo..."
+else
+  mkdir -p "$FONT_DIR"
+  TEMP_DIR=$(mktemp -d)
+  git clone --depth=1 https://github.com/sahibjotsaggu/San-Francisco-Pro-Fonts.git "$TEMP_DIR/SF-Pro" 2>&1 | tee -a "$LOG"
+  if [ -d "$TEMP_DIR/SF-Pro" ]; then
+    # Copiar variantes esenciales
+    cp "$TEMP_DIR/SF-Pro"/SF-Pro-{Regular,Medium,Semibold,Bold}.otf "$FONT_DIR/" 2>/dev/null
+    cp "$TEMP_DIR/SF-Pro"/SF-Pro-Rounded-{Regular,Medium,Semibold,Bold}.otf "$FONT_DIR/" 2>/dev/null
+    cp "$TEMP_DIR/SF-Pro"/SF-Pro-Text-{Regular,Medium,Semibold,Bold}.otf "$FONT_DIR/" 2>/dev/null
+    fc-cache -f "$FONT_DIR" 2>&1 | tee -a "$LOG"
+    echo "${OK} SF Pro Fonts instaladas en $FONT_DIR"
+  else
+    echo "${ERROR} No se pudo clonar San-Francisco-Pro-Fonts"
+  fi
+  rm -rf "$TEMP_DIR"
+fi
+
+# ─── 5. macOS Cursor Theme ─────────────────────────────────────────
+printf "${INFO} Instalando ${SKY_BLUE}macOS Cursor Theme${RESET}...\n"
+if [ -d "$ICON_DIR/macOS" ]; then
+  echo "${OK} macOS cursor ya está instalado. Omitiendo..."
+else
+  TEMP_DIR=$(mktemp -d)
+  curl -sL -o "$TEMP_DIR/macOS.tar.xz" "https://github.com/ful1e5/apple_cursor/releases/download/v2.0.1/macOS.tar.xz" 2>&1 | tee -a "$LOG"
+  curl -sL -o "$TEMP_DIR/macOS-White.tar.xz" "https://github.com/ful1e5/apple_cursor/releases/download/v2.0.1/macOS-White.tar.xz" 2>&1 | tee -a "$LOG"
+  if [ -f "$TEMP_DIR/macOS.tar.xz" ]; then
+    mkdir -p "$ICON_DIR"
+    tar -xf "$TEMP_DIR/macOS.tar.xz" -C "$ICON_DIR/" 2>&1 | tee -a "$LOG"
+    tar -xf "$TEMP_DIR/macOS-White.tar.xz" -C "$ICON_DIR/" 2>&1 | tee -a "$LOG"
+    echo "${OK} macOS Cursor Theme instalado en $ICON_DIR"
+  else
+    echo "${ERROR} No se pudo descargar macOS Cursor Theme"
+  fi
+  rm -rf "$TEMP_DIR"
+fi
+
+# Configurar cursor default para XWayland/apps
+mkdir -p "$ICON_DIR/default"
+cat > "$ICON_DIR/default/index.theme" << 'EOF'
+[Icon Theme]
+Name=Default
+Comment=Default Cursor Theme
+Inherits=macOS
+EOF
+
+# ─── 6. GTK settings.ini ───────────────────────────────────────────
+printf "${INFO} Configurando ${SKY_BLUE}GTK settings.ini${RESET}...\n"
+
+# GTK 3.0
+mkdir -p "$HOME/.config/gtk-3.0"
+cat > "$HOME/.config/gtk-3.0/settings.ini" << 'EOF'
+[Settings]
+gtk-theme-name=MacTahoe-Dark
+gtk-icon-theme-name=MacTahoe-dark
+gtk-font-name=SF Pro Text 11
+gtk-cursor-theme-name=macOS
+gtk-cursor-theme-size=24
+gtk-toolbar-style=GTK_TOOLBAR_ICONS
+gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR
+gtk-button-images=1
+gtk-menu-images=1
+gtk-enable-event-sounds=1
+gtk-enable-input-feedback-sounds=0
+gtk-xft-antialias=1
+gtk-xft-hinting=1
+gtk-xft-hintstyle=hintslight
+gtk-xft-rgba=rgb
+gtk-application-prefer-dark-theme=1
+EOF
+echo "${OK} settings.ini configurado en $HOME/.config/gtk-3.0"
+
+# GTK 4.0 (sin claves obsoletas de GTK2/3)
+mkdir -p "$HOME/.config/gtk-4.0"
+cat > "$HOME/.config/gtk-4.0/settings.ini" << 'EOF'
+[Settings]
+gtk-theme-name=MacTahoe-Dark
+gtk-icon-theme-name=MacTahoe-dark
+gtk-font-name=SF Pro Text 11
+gtk-cursor-theme-name=macOS
+gtk-cursor-theme-size=24
+gtk-enable-event-sounds=1
+gtk-enable-input-feedback-sounds=0
+gtk-xft-antialias=1
+gtk-xft-hinting=1
+gtk-xft-hintstyle=hintslight
+gtk-xft-rgba=rgb
+gtk-application-prefer-dark-theme=1
+EOF
+echo "${OK} settings.ini configurado en $HOME/.config/gtk-4.0"
+
+# Aplicar temas, cursor y terminal via gsettings / hyprctl dinámicamente
+if command -v gsettings >/dev/null 2>&1; then
+  gsettings set org.gnome.desktop.interface gtk-theme "MacTahoe-Dark" 2>/dev/null || true
+  gsettings set org.gnome.desktop.interface icon-theme "MacTahoe-dark" 2>/dev/null || true
+  gsettings set org.gnome.desktop.interface font-name "SF Pro Text 11" 2>/dev/null || true
+  gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" 2>/dev/null || true
+  gsettings set org.gnome.desktop.interface cursor-theme "macOS" 2>/dev/null || true
+  gsettings set org.gnome.desktop.interface cursor-size 24 2>/dev/null || true
+  if gsettings list-schemas 2>/dev/null | grep -q "com.github.stunkymonkey.nautilus-open-any-terminal"; then
+    gsettings set com.github.stunkymonkey.nautilus-open-any-terminal terminal "kitty" 2>/dev/null || true
+  fi
+fi
+if command -v hyprctl >/dev/null 2>&1; then
+  hyprctl setcursor macOS 24 2>/dev/null || true
+fi
+
+# ─── 7. Matugen y Wallust templates: reemplazar placeholder con HOME real ──────
+printf "${INFO} Configurando ${SKY_BLUE}templates de color (matugen y wallust)${RESET}...\n"
+for TPL in "$HOME/.config/matugen/templates/gtk-colors.css" "$HOME/.config/wallust/templates/gtk-colors.css"; do
+  if [ -f "$TPL" ]; then
+    sed -i "s|USER_HOME|$HOME|g" "$TPL"
+    echo "${OK} Ruta de tema MacTahoe actualizada en $TPL"
+  fi
+done
+
+printf "\n%.0s" {1..2}
+echo "${OK} ${SKY_BLUE}macOS Tahoe Theme${RESET} instalado correctamente."
+echo "${NOTE} Reinicia la sesión para aplicar todos los cambios."
+printf "\n%.0s" {1..2}

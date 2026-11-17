@@ -1,0 +1,331 @@
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/* Extra - Combined Modern - transparent */
+
+/* NOTE: This style is NOT vertical layout friendly! */
+
+/* ---------------------------------------------------------------------------
+ * Frosted glass, coloured by the wallpaper.
+ *
+ * The import path is the one trap: GTK resolves a relative @import against the
+ * path of the file waybar actually loads, and that file is the SYMLINK
+ * ~/.config/waybar/style.css — so the base directory is ~/.config/waybar/ and
+ * the path below is right. "../wallust/colors-waybar.css" resolves to
+ * ~/.config/wallust/... , fails to import, and on waybar 0.15.0 a failed import
+ * kills the bar outright.
+ *
+ * This file used to pull in catppuccin-themes/latte.css — a hardcoded LIGHT
+ * palette — for its per-module accent names. Those names are kept below, but
+ * they now resolve to wallust colours taken from the light half of the ramp, so
+ * the whole bar (including every module hue) follows the wallpaper.
+ * ------------------------------------------------------------------------- */
+@import url("wallust/colors-waybar.css");
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles:
+ *   @background  -> pane tint (the wallpaper's dominant dark colour = the hue)
+ *   @color15     -> accent: refraction sheen, active pill, lit edge
+ *   @color13     -> mid-tone accent (urgent)
+ *   @foreground  -> text, slider trough, hairline edge
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@color15, 0.11);
+@define-color sheen_top     alpha(@color15, 0.25);
+@define-color sheen_bot     alpha(@background, 0.08);
+@define-color tile          alpha(@foreground, 0.05);
+@define-color edge          alpha(@color14, 0.30);
+@define-color edge_top      alpha(@color15, 0.75);
+@define-color ink           @foreground;
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+@define-color danger        #ffa8a8;
+
+/* Workspace pills. The file used to tell idle from active with `opacity: 0.4`,
+ * which makes GTK render the widget group offscreen; the hierarchy now lives in
+ * the fills instead. Idle is a dark tint carrying light ink, hover is the light
+ * pill this style always used with the near-black ink on it, and active is that
+ * same pill at full strength — a light fill under light text is the pairing
+ * that collapses on a bright wallpaper, so neither idle state uses one.
+ * Measured against the live palette: idle 13.0:1 (4.5:1 on a bright backdrop),
+ * hover 4.6:1 / 10.4:1, active 10.0:1 / 11.0:1. */
+@define-color ws_idle       alpha(@color15, 0.11);
+@define-color ws_hover      alpha(@color15, 0.55);
+
+/* The per-module accents this file used to import from catppuccin latte.
+ * They stay on the light half of wallust's ramp so they remain readable as text
+ * on the dark pane. */
+@define-color border-color  @edge;
+@define-color peach         @color13;
+@define-color sapphire      @color15;
+@define-color teal          @color13;
+@define-color lavender      @color7;
+@define-color yellow        @color13;
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window itself stays transparent so the space between the panes keeps
+ * alpha 0 and Hyprland's ignore_alpha leaves it unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+	min-height: 0;  
+    /* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+    font-size: 97%;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+window#waybar {
+    background-color: transparent;
+    border-radius: 6px;
+	padding-top: 2px;
+	padding-bottom: 0px;
+	padding-right: 4px;
+	padding-left: 4px;
+}
+
+tooltip {
+    background-color: alpha(@color15, 0.11);
+    border-radius: 12px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: @border-color;
+    color: @ink;
+}
+
+#taskbar button,
+#workspaces button {
+    padding: 0px 3px;
+    margin: 3px 2px;
+    border-radius: 4px;
+    color: @ink;
+    background-color: @ws_idle;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#taskbar button.active,
+#workspaces button.active {
+    color: @on_accent;
+    background-color: @accent_pill;
+    border-radius: 4px;
+    min-width: 30px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#taskbar button:hover,
+#workspaces button:hover {
+    color: @on_accent;
+    background-color: @ws_hover;
+    border-radius: 3px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#workspaces button.focused {
+    color: @ink;
+}
+
+#workspaces button.urgent {
+    color: @on_accent;
+    background-color: @accent_urgent;
+    border-color: @accent_urgent;
+    border-radius: 10px;
+}
+
+/*-----module groups----*/
+/* Left and right are deliberately bare in this style — "transparent" is what
+ * this variant is — so only the centre pane is glass: the wallpaper tint with
+ * the @color15 sheen that lifts it off the backdrop, plus the lit top edge. */
+.modules-left,
+.modules-right {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 0px 0px 45px 45px;
+    padding-left: 10px;
+    padding-right: 6px;
+}
+
+.modules-center {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 0px 0px 45px 45px;
+    padding-left: 10px;
+    padding-right: 6px;
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar button,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+    color: @ink;
+	padding-right: 6px;
+	padding-left: 6px;
+}
+
+#temperature.critical {
+    color: @danger;
+}
+
+#custom-hint {
+	color: @peach;
+	padding-right: 6px;
+	padding-left: 6px;
+}
+
+#pulseaudio.muted {
+    color: @danger;
+}
+
+#temperature.critical {
+    color: @danger;
+}
+
+/* Was a blinking animation; a filled pill says "critical" just as loudly
+ * without scheduling a repaint three times a second forever. */
+#battery.critical:not(.charging) {
+	color: @on_accent;
+	background-color: @danger;
+}
+
+#pulseaudio-slider,
+#pulseaudio {
+	color: @ink;
+}
+
+#backlight-slider slider,
+#pulseaudio-slider slider {
+	min-width: 0px;
+	min-height: 0px;
+	opacity: 0;
+	background-image: none;
+	border: none;
+}
+
+#backlight-slider trough,
+#pulseaudio-slider trough {
+	min-width: 80px;
+	min-height: 5px;
+	border-radius: 5px;
+	background-color: @tile;
+}
+
+#backlight-slider highlight,
+#pulseaudio-slider highlight {
+	min-height: 10px;
+	border-radius: 5px;
+	background-color: @accent;
+}
+
+#custom-hypridle,
+#custom-lock,
+#idle_inhibitor {
+    color: @teal;
+    border-bottom: 8px solid @edge;
+}
+
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+	color: @lavender;
+	padding-right: 6px;
+	padding-left: 6px;
+}
+
+/*-----Indicators----*/
+#custom-hypridle.notactive,
+#idle_inhibitor.activated {
+	color: @accent;
+    border-bottom: 8px solid @edge;
+}
+
+#clock {
+	color: @sapphire;
+    border-radius: 15px;
+}
+
+#custom-updates {
+    color: @yellow;
+}
+
+#custom-swaync{
+    color: @yellow;}

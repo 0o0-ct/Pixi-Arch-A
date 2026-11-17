@@ -1,0 +1,171 @@
+@theme "~/.config/rofi/wallust/colors-rofi.rasi"
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/* KooL Hyprland Rofi Style 10 - Fancy v2 (Glassmorphic Redesign) */
+/* Credit to DaveDavenport & Rasmus Steinke */
+
+/* global settings and color variables */
+* {
+    urgent:      #cc3436;
+    active:      rgba(255, 255, 255, 0.20);
+    spacing:     0em;
+    padding:     0px;
+    background-color: transparent;
+    line-style:  "none";
+}
+
+prompt-box {
+  background-color    : transparent;
+}
+
+prompt {
+  background-color    : transparent;
+  text-color          : #ffffff;
+}
+
+window {
+    border            : 1px;
+    border-radius     : 22px;
+    border-color      : rgba(255, 255, 255, 0.22);
+    background-color  : rgba(10, 12, 18, 0.38);
+}
+
+mainbox {
+    background-color  : transparent;
+    spacing           : 0%;
+}
+
+listview {
+    border-radius     : 16px;
+    border            : 1px;
+    border-color      : rgba(255, 255, 255, 0.10);
+    padding           : 16px;
+    margin            : 20px 30px 30px 30px;
+    background-color  : rgba(255, 255, 255, 0.02);
+    scrollbar         : false;
+    scrollbar-width   : 5px;
+    fixed-height      : true;
+    reverse           : false;
+    spacing           : 6px;
+}
+
+/* ---- Scrollbar ---- */
+scrollbar {
+    border            : 0px;
+    border-radius     : 10px;
+    background-color  : rgba(255, 255, 255, 0.04);
+    handle-color      : rgba(255, 255, 255, 0.14);
+    handle-width      : 2px ;
+    padding           : 0;
+}
+
+element {
+    border            : 0px;
+    border-radius     : 12px;
+    padding           : 8px 12px;
+    margin            : 2px 0px;
+    spacing           : 0.5em;
+    background-color  : transparent;
+    children: [ element-icon, element-text ];
+}
+
+element normal.normal {
+    text-color        : rgba(255, 255, 255, 0.75);
+    background-color  : transparent;
+}
+element normal.urgent {
+    text-color        : @urgent;
+    background-color  : transparent;
+}
+element normal.active {
+    text-color        : #ffffff;
+    background-color  : @active;
+}
+
+element-text selected,
+element selected.normal {
+    border            : 1px;
+    border-color      : rgba(255, 255, 255, 0.25);
+    border-radius     : 12px;
+    text-color        : #ffffff;
+    background-color  : rgba(255, 255, 255, 0.18);
+}
+element selected.urgent {
+    border            : 1px;
+    border-color      : rgba(255, 255, 255, 0.25);
+    border-radius     : 12px;
+    text-color        : #ffffff;
+    background-color  : @urgent;
+}
+element selected.active {
+    border            : 1px;
+    border-color      : rgba(255, 255, 255, 0.25);
+    border-radius     : 12px;
+    text-color        : #ffffff;
+    background-color  : rgba(255, 255, 255, 0.20);
+}
+element alternate.normal {
+    text-color        : rgba(255, 255, 255, 0.75);
+    background-color  : transparent;
+}
+element alternate.urgent {
+    text-color        : @urgent;
+    background-color  : transparent;
+}
+element alternate.active {
+    text-color        : #ffffff;
+    background-color  : transparent;
+}
+
+inputbar {
+    spacing           : 5px;
+    border            : 0px 0px 1px 0px;
+    border-radius     : 0px;
+    border-color      : rgba(255, 255, 255, 0.15);
+    padding           : 14px 20px;
+    background-color  : rgba(255, 255, 255, 0.04);
+    text-color        : #ffffff;
+}
+
+separator {
+    background-color  : rgba(255, 255, 255, 0.10);
+}
+prompt normal.normal {
+    background-color  : transparent;
+    text-color        : #ffffff;
+    padding           : 0px;
+}
+entry normal.normal {
+    background-color  : transparent;
+    text-color        : #ffffff;
+    padding           : 0px;
+}
+case-indicator normal.normal {
+    background-color  : transparent;
+    text-color        : #ffffff;
+    padding           : 0px;
+}
+
+message {
+    margin            : 30px;
+    padding           : 20px;
+    border-radius     : 14px;
+    border            : 1px;
+    border-color      : rgba(255, 255, 255, 0.10);
+    background-color  : rgba(255, 255, 255, 0.02);
+}
+
+textbox {
+    vertical-align: 0.5;
+    horizontal-align: 0.5;
+    text-color: #ffffff;
+}
+
+prompt-colon {
+    spacing           : 0;
+    enabled           : false;
+}
+
+element-text, element-icon {
+  background-color    : inherit;
+  text-color          : inherit;
+}

@@ -1,0 +1,636 @@
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/* Oglo Chicklets — Pure Frosted Glass, Coloured by Wallpaper (Matugen M3)
+ * ==========================================================================
+ * Clean, smooth frosted glass without harsh specular highlights or bottom bevels.
+ * Uses dynamic Wallust & Matugen Material You tokens.
+ */
+
+@import url("wallust/colors-waybar.css");
+@import url("wallust/mode-glass.css");
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window itself stays transparent so the space between the islands
+ * keeps alpha 0 and Hyprland's ignore_alpha leaves it unblurred. */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Tokens — Wallust Extracted Dynamic Frosted Glass Palette
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@color15, 0.11);  /* atmospheric wallpaper-tinted glass */
+@define-color edge          alpha(@color15, 0.20);     /* clean uniform subtle glass border */
+
+@define-color tile          alpha(@foreground, 0.08);  /* subtle tile */
+@define-color tile_hi       alpha(@color15, 0.25);     /* tile hover glow */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.82);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.85);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Translucent Frosted Glass Chicklets - rich dynamic extracted colors */
+@define-color chip          alpha(@color5, 0.45);
+@define-color chip_hi       alpha(@color7, 0.60);
+@define-color chip_alt      alpha(@color6, 0.45);
+@define-color chip_warm     alpha(@color13, 0.45);
+@define-color chip_cool     alpha(@color14, 0.45);
+@define-color chip_light    alpha(@color15, 0.50);
+@define-color chip_neutral  alpha(@color8, 0.40);
+@define-color chip_edge     alpha(@color15, 0.25);
+
+/* Semantic, not decorative: must stay red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
+* {
+    font-family: "JetBrainsMono Nerd Font", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 97%;
+    font-weight: bold;
+}
+
+window#waybar {
+    background-color: transparent;
+    border-bottom: 8px solid transparent;
+    color: @ink;
+}
+
+window#waybar.hidden {
+    background-color: transparent;
+}
+
+/* The three islands: clean frosted glass over Hyprland blur */
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 18px;
+    padding: 2px 6px;
+}
+
+button {
+    all: unset;
+    background-color: @chip;
+    color: @foreground;
+    border: 1px solid @chip_edge;
+    border-radius: 12px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin: 2px 2px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+button:hover {
+    background: inherit;
+    background-color: @chip_hi;
+    color: #ffffff;
+    border-color: alpha(@color15, 0.65);
+}
+
+button.active {
+    background: inherit;
+    background-color: @accent_pill;
+    color: @on_accent;
+    border: 1px solid alpha(#ffffff, 0.70);
+    border-radius: 12px;
+}
+
+#mode {
+    background-color: @chip_neutral;
+    color: @on_accent;
+    border: 1px solid @edge;
+    border-radius: 10px;
+    padding: 2px 8px;
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,	
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+    color: @ink;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-radius: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#window {
+    color: @ink;
+}
+
+#custom-hypridle.active,
+#custom-hypridle.notactive {
+    color: @ink;
+}
+
+#workspaces {
+    background-color: transparent;
+    padding: 0px 1px;
+}
+
+#workspaces button {
+    background-color: @chip_neutral;
+    color: @ink;
+    border: 1px solid @edge;
+    border-radius: 12px;
+    padding: 2px 10px;
+    margin: 2px 2px;
+}
+
+#workspaces button.active {
+    background-color: @accent_pill;
+    color: @on_accent;
+    border: 1px solid alpha(#ffffff, 0.70);
+}
+
+#workspaces button.urgent {
+    background-color: @accent_urgent;
+    color: #ffffff;
+}
+
+#workspaces button:hover {
+    background-color: @chip_hi;
+    color: #ffffff;
+}
+
+#taskbar button {
+    background-color: @chip_neutral;
+    color: @ink;
+    border: 1px solid @edge;
+    border-radius: 12px;
+    padding: 2px 10px;
+    margin: 2px 2px;
+}
+
+#taskbar button.active {
+    background-color: @accent_pill;
+    color: @on_accent;
+}
+
+#custom-swaync,
+#custom-dot_update {
+    background-color: alpha(@color14, 0.50);
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.40);
+    border-radius: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
+}
+
+#custom-weather {
+    background-color: @chip_alt;
+    color: @foreground;
+    border: 1px solid alpha(@color6, 0.40);
+    border-radius: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
+}
+
+#custom-menu {
+    background-color: @chip;
+    color: @foreground;
+    border: 1px solid alpha(@color5, 0.40);
+    border-radius: 12px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin: 2px 2px;
+}
+
+#custom-power {
+    background-color: alpha(@danger, 0.50);
+    color: @foreground;
+    border: 1px solid alpha(@danger, 0.50);
+    border-radius: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
+}
+
+#custom-power_vertical {
+    background-color: alpha(@danger, 0.50);
+    color: @foreground;
+    border: 1px solid alpha(@danger, 0.50);
+    border-radius: 12px;
+    margin: 2px 2px;
+}
+
+#custom-hypridle {
+    background-color: @chip_cool;
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.40);
+    border-radius: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
+}
+
+#custom-hypridle.caffeine {
+    background-color: alpha(@color10, 0.60);
+    color: #ffffff;
+    border: 1px solid alpha(@color10, 0.70);
+}
+
+#clock {
+    background-color: @chip_warm;
+    color: @foreground;
+    border: 1px solid alpha(@color13, 0.40);
+    border-radius: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
+}
+
+#battery {
+    background-color: @chip_cool;
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.40);
+    border-radius: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
+}
+
+#battery.critical:not(.charging) {
+    background-color: alpha(@danger, 0.70);
+    color: #ffffff;
+    border: 1px solid alpha(@danger, 0.70);
+    border-radius: 12px;
+    margin: 2px 2px;
+}
+
+label:focus {
+    background-color: alpha(@color15, 0.20);
+}
+
+#cpu {
+    background-color: @chip;
+    color: @foreground;
+    border: 1px solid alpha(@color5, 0.40);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
+}
+
+#memory {
+    background-color: @chip_hi;
+    color: @foreground;
+    border: 1px solid alpha(@color7, 0.40);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
+}
+
+#disk {
+    background-color: @chip_alt;
+    color: @foreground;
+    border: 1px solid alpha(@color6, 0.40);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
+}
+
+#custom-lock,
+#custom-light_dark,
+#custom-nightlight,
+#backlight,
+#bluetooth {
+    background-color: @chip_cool;
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.40);
+    border-radius: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px 2px;
+}
+
+#network {
+    background-color: @chip_warm;
+    color: @foreground;
+    border: 1px solid alpha(@color13, 0.40);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
+}
+
+#network.disconnected {
+    background-color: alpha(@danger, 0.70);
+    color: #ffffff;
+    border: 1px solid alpha(@danger, 0.70);
+    border-radius: 12px;
+    margin: 2px 2px;
+}
+
+#pulseaudio {
+    background-color: @chip_light;
+    color: @foreground;
+    border: 1px solid alpha(@color11, 0.40);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
+}
+
+#pulseaudio.muted {
+    background-color: @chip_neutral;
+    color: @ink_dim;
+    border: 1px solid alpha(@color8, 0.30);
+    border-radius: 12px;
+    margin: 2px 2px;
+}
+
+#wireplumber {
+    background-color: @chip_hi;
+    color: @foreground;
+    border: 1px solid alpha(@color7, 0.40);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
+}
+
+#wireplumber.muted {
+    background-color: alpha(@danger, 0.70);
+    color: #ffffff;
+    border: 1px solid alpha(@danger, 0.70);
+    border-radius: 12px;
+    margin: 2px 2px;
+}
+
+#custom-media {
+    background-color: @chip_cool;
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.40);
+    border-radius: 12px;
+    min-width: 100px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
+}
+
+#custom-media.custom-spotify {
+    background-color: @chip_cool;
+}
+
+#custom-media.custom-vlc {
+    background-color: @chip_warm;
+}
+
+#temperature {
+    background-color: @chip_warm;
+    color: @foreground;
+    border: 1px solid alpha(@color13, 0.40);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
+}
+
+#temperature.critical {
+    background-color: alpha(@danger, 0.70);
+    color: #ffffff;
+    border: 1px solid alpha(@danger, 0.70);
+    border-radius: 12px;
+    margin: 2px 2px;
+}
+
+#tray {
+    background-color: @chip_warm;
+    color: @foreground;
+    border: 1px solid alpha(@color13, 0.40);
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: alpha(@danger, 0.70);
+}
+
+#idle_inhibitor {
+    background-color: alpha(@color15, 0.20);
+    color: @on_accent;
+    border: 1px solid @edge;
+    border-radius: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 2px 2px;
+}
+
+#idle_inhibitor.activated {
+    background-color: @accent_pill;
+    border: 1px solid alpha(#ffffff, 0.70);
+    color: @on_accent;
+    border-radius: 12px;
+    margin: 2px 2px;
+}
+
+#mpd {
+    background-color: @chip_cool;
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.35);
+    border-radius: 12px;
+    margin: 2px 2px;
+}
+
+#mpd.disconnected {
+    background-color: alpha(@danger, 0.70);
+    color: #ffffff;
+    border: 1px solid alpha(@danger, 0.70);
+    border-radius: 12px;
+    margin: 2px 2px;
+}
+
+#mpd.stopped {
+    background-color: @chip_neutral;
+    color: @ink_dim;
+    border: 1px solid @edge;
+    border-radius: 12px;
+    margin: 2px 2px;
+}
+
+#mpd.paused {
+    background-color: @chip;
+    color: @foreground;
+    border: 1px solid @edge;
+    border-radius: 12px;
+    margin: 2px 2px;
+}
+
+#language {
+    background: @chip_cool;
+    color: @foreground;
+    border: 1px solid alpha(@color14, 0.40);
+    border-radius: 12px;
+    min-width: 16px;
+    margin: 2px 2px;
+}
+
+#keyboard-state {
+    background: @chip_hi;
+    color: @foreground;
+    border: 1px solid alpha(@color7, 0.40);
+    border-radius: 12px;
+    min-width: 16px;
+    margin: 2px 2px;
+}
+
+#keyboard-state > label {
+    padding: 0 5px;
+}
+
+#keyboard-state > label.locked {
+    background: alpha(@color15, 0.20);
+}
+
+#scratchpad {
+    background: alpha(@color15, 0.20);
+    border: 1px solid @edge;
+    border-radius: 12px;
+    margin: 2px 2px;
+}
+
+#scratchpad.empty {
+    background-color: transparent;
+}
+
+tooltip {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid @edge;
+    border-radius: 14px;
+    color: @ink;
+}
+
+tooltip label {
+    color: @ink;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 0px;
+    padding-bottom: 5px;
+}
+
+#pulseaudio-slider slider {
+    min-width: 0px;
+    min-height: 0px;
+    opacity: 0;
+    background-image: none;
+    border: none;
+}
+
+#pulseaudio-slider trough {
+    background-color: @tile;
+    min-width: 80px;
+    min-height: 5px;
+    border-radius: 5px;
+}
+
+#pulseaudio-slider highlight {
+    background-color: @accent;
+    min-height: 10px;
+    border-radius: 5px;
+}
+
+#backlight-slider slider {
+    min-width: 0px;
+    min-height: 0px;
+    opacity: 0;
+    background-image: none;
+    border: none;
+}
+
+#backlight-slider trough {
+    background-color: @tile;
+    min-width: 80px;
+    min-height: 10px;
+    border-radius: 5px;
+}
+
+#backlight-slider highlight {
+    background-color: @accent;
+    min-width: 10px;
+    border-radius: 5px;
+}

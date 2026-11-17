@@ -1,0 +1,12 @@
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+# Matugen 4.2.0 configuration.
+#
+# IMPORTANT: this file deliberately declares no [templates.*] targets.
+# pixi_colors.py owns every generated consumer file and seeds Matugen with the
+# colour selected by Wallust.  Matugen is only invoked in --dry-run mode to
+# return M3 roles as JSON; it must never write a live consumer.
+
+[config]
+reload_apps = false
+
+[templates]

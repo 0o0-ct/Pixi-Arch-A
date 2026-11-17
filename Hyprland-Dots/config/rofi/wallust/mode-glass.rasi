@@ -1,0 +1,18 @@
+/* Dynamic adaptive mode: LIGHT wallpaper band (porcelain frosted glass). */
+/* The window is the same pane the waybar uses: color15 at 62%. */
+* {
+    pane:           rgba(227, 232, 146, 0.62);
+    pane-soft:      rgba(46, 42, 47, 0.03);
+    element-bg:     rgba(46, 42, 47, 0.04);
+    element-edge:   rgba(46, 42, 47, 0.08);
+    lift:           rgba(46, 42, 47, 0.06);
+    lift-hi:        rgba(46, 42, 47, 0.10);
+    edge:           rgba(46, 42, 47, 0.12);
+    edge-soft:      rgba(46, 42, 47, 0.14);
+    edge-hi:        rgba(46, 42, 47, 0.20);
+    edge-strong:    rgba(46, 42, 47, 0.26);
+    selected-edge:  rgba(46, 42, 47, 0.30);
+    edge-glass:     rgba(46, 42, 47, 0.14);
+    ink:            #2E2A2F;
+    placeholder:    rgba(46, 42, 47, 0.55);
+}

@@ -1,0 +1,259 @@
+/* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
+/* .......Mauve....................... */
+/* --- 👍 designed by https://github.com/CelestiaKai  👍 --- */
+
+/* ---------------------------------------------------------------------------
+ * Frosted glass, coloured by the wallpaper.
+ *
+ * The import path is the one trap in this file: GTK resolves a relative
+ * @import against the path of the file waybar actually loads, and that file is
+ * the SYMLINK ~/.config/waybar/style.css, so the base directory is
+ * ~/.config/waybar/ and the path below is right. "../wallust/colors-waybar.css"
+ * resolves to ~/.config/wallust/... , fails to import, and on waybar 0.15.0 a
+ * failed import does not merely warn — the style load throws and the bar dies.
+ * ------------------------------------------------------------------------- */
+@import url("wallust/colors-waybar.css");
+
+/* Tokens — wallust roles:
+ *   @background  -> pane tint (the wallpaper's dominant dark colour = the hue)
+ *   @color15     -> accent: refraction sheen, active pill, lit edge
+ *   @color13     -> mid-tone accent (urgent)
+ *   @foreground  -> text, tile lift, hairline edge
+ */
+@define-color pane          alpha(@color15, 0.11);
+@define-color sheen_top     alpha(@color15, 0.25);
+@define-color sheen_bot     alpha(@background, 0.08);
+@define-color tile          alpha(@foreground, 0.05);
+@define-color edge          alpha(@color14, 0.30);
+@define-color edge_top      alpha(@color15, 0.75);
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+@define-color danger        #ffa8a8;
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window itself stays transparent so the gaps between the panes keep
+ * alpha 0 and Hyprland's ignore_alpha leaves them unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+* {
+	font-family: "JetBrainsMono Nerd Font";
+	font-weight: bold;
+	min-height: 0;		
+	/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+	font-size: 97%;
+	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+window#waybar {
+	background: transparent;
+	color: @ink;
+}
+
+tooltip {
+    background-color: alpha(@color15, 0.11);
+	border-radius: 10px;
+	border-width: 2px;
+	border-style: solid;
+	border-color: alpha(@color15, 0.47);
+	color: @ink;
+}
+
+/*-----module groups----*/
+.modules-left,
+.modules-right {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 10px 10px 10px 10px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+/* The centre group is bare in this style — the clock floats between the two
+ * panes — so it keeps its padding and deliberately gets no pane of its own. */
+.modules-center {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 10px 10px 10px 10px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+#taskbar button,
+#workspaces button {
+	color: @ink_dim;
+	text-shadow: none;
+    padding: 0px;
+    border-radius: 9px;
+    padding-left: 4px;
+    padding-right: 4px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#taskbar button.active,
+#workspaces button.active {
+	color: @on_accent;
+	border-radius: 30%;
+	background-color: @accent_pill;
+    padding-left: 6px;
+    padding-right: 8px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#workspaces button.active:hover {
+	color: @on_accent;
+	border-radius: 30%;
+	background-color: @accent_pill;
+    padding-left: 6px;
+    padding-right: 8px;
+}
+
+#workspaces button.focused {
+	color: @ink;
+}
+
+#workspaces button.urgent {
+	border-radius: 30%;
+	background-color: @accent_urgent;
+	color: @on_accent;
+}
+
+#taskbar button:hover,
+#workspaces button:hover {
+	color: @on_accent;
+	border: 3px solid @on_accent;
+	background-color: @accent_pill;
+    border-radius: 30%;
+ 	padding-left: 4px;
+    padding-right: 4px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+	color: @ink;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-right: 6px;
+	padding-left: 6px;
+
+}
+
+#temperature.critical {
+	color: @danger;
+}
+
+/*-----Indicators----*/
+#custom-hypridle.notactive,
+#idle_inhibitor.activated {
+	color: @accent;
+    border-bottom: 8px solid @edge;
+}
+
+/* Was a blinking animation; a filled pill alerts the same way without
+ * scheduling a repaint three times a second forever. */
+#battery.critical:not(.charging) {
+	color: @on_accent;
+	background-color: @danger;
+}
+
+#backlight-slider slider,
+#pulseaudio-slider slider {
+	min-width: 0px;
+	min-height: 0px;
+	opacity: 0;
+	background-image: none;
+	border: none;
+}
+
+#backlight-slider trough,
+#pulseaudio-slider trough {
+	min-width: 80px;
+	min-height: 5px;
+	border-radius: 5px;
+	background-color: @tile;
+}
+
+#backlight-slider highlight,
+#pulseaudio-slider highlight {
+	min-height: 10px;
+	border-radius: 5px;
+	background-color: @accent;
+}

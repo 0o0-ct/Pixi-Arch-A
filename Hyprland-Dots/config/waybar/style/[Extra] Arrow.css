@@ -1,0 +1,373 @@
+/* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
+/* .....[Extra] Arrow Best to combine with [TOP] Arrow.... */
+/* --- 👍 taken from https://github.com/mxkrsv  👍 --- */
+
+/* [Extra] Arrow — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Arrow's whole identity is the seamless chain of coloured segments joined by
+ * the #custom-arrow1..10 notches: each arrow paints the colour of the segment
+ * to its left as its "colour" and the one to its right as its fill, which is
+ * what cuts the diagonal. That wiring is untouched — only what the colour
+ * names resolve to changed, from the hardcoded gruvbox palette to wallust.
+ *
+ * Because the notches must match their neighbours exactly, the segment fills
+ * stay at their original alpha (0.55) and the arrow rules keep referring to
+ * the same @define-color names. The original ink pairing is preserved too:
+ * the segments that were bright in gruvbox (br*) map onto the light end of
+ * wallust's ramp and keep the dark @black ink, the darker ones map onto the
+ * dark end and keep the light @white ink — and since @black is @background and
+ * @white is @foreground, that pairing automatically flips with the palette
+ * instead of relying on gruvbox's fixed hues.
+ *
+ * Layout untouched: `*` still zeroes the border radius / margin / padding, the
+ * module padding stays 8pt, the 35pt #window margins stay, and the islands stay
+ * square and flush so the chain does not break.
+ *
+ * The import path must be exactly "wallust/colors-waybar.css": GTK resolves a
+ * relative import against ~/.config/waybar/, because the file waybar loads is
+ * the symlink ~/.config/waybar/style.css.
+ *
+ * Performance: no box-shadow (the `*` shadow reset is gone — nothing sets a
+ * shadow any more), transitions only on background-color / border-color /
+ * color, and no animations: the blink-critical loop was a 1s infinite repaint
+ * and is now a static filled state.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window is fully transparent and the pane lives on the islands;
+ * the gaps between them keep alpha 0 for Hyprland's ignore_alpha.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@color15, 0.11);  /* glass body          */
+@define-color sheen_top     alpha(@color15, 0.25);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@background, 0.08);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);  /* module tile fill    */
+@define-color tile_hi       alpha(@foreground, 0.13);  /* tile hover          */
+
+@define-color edge          alpha(@color14, 0.30);  /* hairline edge       */
+@define-color edge_top      alpha(@color15, 0.75);  /* lit top edge        */
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color on_accent     #12141a;                   /* dark ink on accent  */
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: stays red whatever the wallpaper is. */
+@define-color danger        #ffa8a8;
+
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+	min-height: 0;  
+    /* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+    font-size: 97%;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+    border: none;
+	border-radius: 0;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+}
+
+/* Segment palette — the gruvbox names are kept because every segment and
+ * arrow rule below is wired to them; only the values changed, to wallust. */
+@define-color black		@background;
+@define-color red		@danger;
+@define-color green		@color5;
+@define-color yellow	@color6;
+@define-color blue		@color8;
+@define-color purple	@color6;
+@define-color aqua		@color8;
+@define-color gray		@color8;
+@define-color brgray	@color9;
+@define-color brred		@danger;
+@define-color brgreen	@color13;
+@define-color bryellow	@color14;
+@define-color brblue	@color9;
+@define-color brpurple	@color7;
+@define-color braqua	@color15;
+@define-color white		@foreground;
+@define-color bg2		@color6;
+
+
+@define-color warning 	@bryellow;
+@define-color critical	@red;
+@define-color mode		@black;
+@define-color unfocused	@bg2;
+@define-color focused	@braqua;
+@define-color inactive	@purple;
+@define-color sound		@brpurple;
+@define-color network	@purple;
+@define-color memory	@braqua;
+@define-color cpu		@green;
+@define-color temp		@brgreen;
+@define-color layout	@bryellow;
+@define-color battery	@aqua;
+@define-color date		@black;
+@define-color time		@white;
+
+/* The whole bar — transparent; the glass is on the islands. */
+#waybar {
+	background: transparent;
+	color: @ink;
+}
+
+/* ----module groups----
+ * Square and flush, as the arrow chain requires (Arrow's `*` rule already
+ * zeroes radius / margin / padding).
+ * ------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default,
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+	padding-left: 8pt;
+	padding-right: 8pt;
+}
+
+/* Each critical module — was a 1s infinite blink; a static filled state
+ * says the same thing and never schedules a repaint. */
+#mode,
+#memory.critical,
+#cpu.critical,
+#temperature.critical,
+#battery.critical.discharging {
+	color: @on_accent;
+	background: alpha(@danger, 0.88);
+}
+
+/* Each warning */
+#network.disconnected,
+#memory.warning,
+#cpu.warning,
+#temperature.warning,
+#battery.warning.discharging {
+	color: @warning;
+}
+
+/* Current sway mode (resize etc) */
+#mode {
+	color: @ink;
+	background: @tile_hi;
+}
+
+/* Workspaces stuff */
+#workspaces button {
+	/*font-weight: bold;*/
+	padding-left: 2pt;
+	padding-right: 2pt;
+	color: @ink;
+	background: alpha(@unfocused, 0.55);
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
+}
+
+/* Inactive (on unfocused output) */
+#workspaces button.visible {
+	color: @ink;
+	background: alpha(@inactive, 0.55);
+}
+
+/* Active (on focused output) — the wallpaper's light accent with dark ink */
+#workspaces button.focused {
+	color: @on_accent;
+	background: @accent_pill;
+}
+
+/* Contains an urgent window */
+#workspaces button.urgent {
+	color: @on_accent;
+	background: alpha(@warning, 0.88);
+}
+
+/* Style when cursor is on the button */
+#workspaces button:hover {
+	background: @tile_hi;
+	color: @ink;
+}
+
+#window {
+	margin-right: 35pt;
+	margin-left: 35pt;
+}
+
+#pulseaudio {
+	background: alpha(@sound, 0.55);
+	color: @black;
+}
+
+#network {
+	background: alpha(@network, 0.55);
+	color: @white;
+}
+
+#memory {
+	background: alpha(@memory, 0.55);
+	color: @black;
+}
+
+#cpu {
+	background: alpha(@cpu, 0.55);
+	color: @white;
+}
+
+#temperature {
+	background: alpha(@temp, 0.55);
+	color: @black;
+}
+
+#language {
+	background: alpha(@layout, 0.55);
+	color: @black;
+}
+
+#battery {
+	background: alpha(@battery, 0.55);
+	color: @white;
+}
+
+#tray {
+	background: alpha(@date, 0.55);
+}
+
+#clock {
+	background: alpha(@time, 0.55);
+	color: @black;
+}
+
+#custom-arrow1 {
+	color: @time;
+	background: alpha(@date, 0.55);
+}
+
+#custom-arrow2 {
+	color: @date;
+	background: alpha(@layout, 0.55);
+}
+
+#custom-arrow3 {
+	color: @layout;
+	background: alpha(@battery, 0.55);
+}
+
+#custom-arrow4 {
+	color: @battery;
+	background: alpha(@temp, 0.55);
+}
+
+#custom-arrow5 {
+	color: @temp;
+	background: alpha(@cpu, 0.55);
+}
+
+#custom-arrow6 {
+	color: @cpu;
+	background: alpha(@memory, 0.55);
+}
+
+#custom-arrow7 {
+	color: @memory;
+	background: alpha(@network, 0.55);
+}
+
+#custom-arrow8 {
+	color: @network;
+	background: alpha(@sound, 0.55);
+}
+
+#custom-arrow9 {
+	color: @sound;
+	background: transparent;
+}
+
+#custom-arrow10 {
+	color: @unfocused;
+	background: transparent;
+}

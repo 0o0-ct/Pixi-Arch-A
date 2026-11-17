@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixi-Arch-A — Panel Flotante</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --glass-bg: rgba(20, 20, 28, 0.82);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-highlight: rgba(255, 255, 255, 0.04);
+    --icon-color: rgba(255, 255, 255, 0.65);
+    --icon-hover: rgba(255, 255, 255, 0.95);
+    --icon-bg-hover: rgba(255, 255, 255, 0.08);
+    --accent: #e05555;
+    --accent-glow: rgba(224, 85, 85, 0.35);
+    --blur: 20px;
+    --radius: 16px;
+    --radius-icon: 12px;
+    --transition: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #1a1a2e;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── Desktop background simulation ── */
+  .desktop-bg {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, #2d1b4e 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 30%, #1b2d4e 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, #4e1b2d 0%, transparent 50%),
+      linear-gradient(135deg, #0f0c29, #1a1a2e, #24243e);
+    z-index: 0;
+  }
+
+  /* ── Wallpaper accent blobs ── */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    z-index: 0;
+  }
+  .blob-1 { width: 400px; height: 400px; background: #c0392b; top: -100px; right: 100px; }
+  .blob-2 { width: 300px; height: 300px; background: #8e44ad; bottom: -50px; left: 200px; }
+  .blob-3 { width: 250px; height: 250px; background: #2c3e50; top: 50%; right: 300px; }
+
+  /* ── Waybar simulation ── */
+  .waybar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    background: rgba(15, 15, 22, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+  }
+  .waybar-left, .waybar-right { display: flex; align-items: center; gap: 8px; }
+  .waybar-item {
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    cursor: default;
+    transition: background var(--transition), color var(--transition);
+  }
+  .waybar-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+  .waybar-clock { font-variant-numeric: tabular-nums; }
+
+  /* ── Trigger zone (invisible, right edge) ── */
+  .trigger-zone {
+    position: fixed;
+    top: 32px;
+    right: 0;
+    width: 48px;
+    height: 100px;
+    z-index: 200;
+    cursor: pointer;
+  }
+
+  /* ── Floating Panel ── */
+  .floating-panel {
+    position: fixed;
+    top: 48px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    z-index: 250;
+
+    /* Glassmorphism */
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.45),
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 var(--glass-highlight);
+
+    padding: 8px 10px;
+
+    /* Animation: hidden by default */
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+    pointer-events: none;
+    transition:
+      opacity var(--transition),
+      transform var(--transition);
+  }
+
+  .floating-panel.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  /* ── Icon buttons ── */
+  .panel-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--icon-color);
+    border-radius: var(--radius-icon);
+    cursor: pointer;
+    transition:
+      background var(--transition),
+      color var(--transition),
+      transform 0.15s ease;
+    outline: none;
+  }
+
+  .panel-btn:hover {
+    background: var(--icon-bg-hover);
+    color: var(--icon-hover);
+    transform: scale(1.08);
+  }
+
+  .panel-btn:active {
+    transform: scale(0.94);
+  }
+
+  .panel-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.8;
+    fill: none;
+    stroke: currentColor;
+  }
+
+  /* ── Tooltip ── */
+  .panel-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: rgba(10, 10, 16, 0.92);
+    color: rgba(255,255,255,0.85);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+  }
+
+  .panel-btn:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── Separator ── */
+  .panel-sep {
+    width: 1px;
+    height: 24px;
+    background: rgba(255,255,255,0.08);
+    margin: 0 4px;
+    flex-shrink: 0;
+  }
+
+  /* ── Edit button (accent, separated) ── */
+  .edit-btn-wrap {
+    margin-left: 8px;
+  }
+
+  .edit-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow:
+      0 4px 16px var(--accent-glow),
+      0 2px 6px rgba(0,0,0,0.3);
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.25s ease;
+    outline: none;
+  }
+
+  .edit-btn:hover {
+    transform: scale(1.1);
+    box-shadow:
+      0 6px 24px var(--accent-glow),
+      0 3px 10px rgba(0,0,0,0.4);
+  }
+
+  .edit-btn:active {
+    transform: scale(0.93);
+  }
+
+  .edit-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  .edit-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: rgba(10, 10, 16, 0.92);
+    color: rgba(255,255,255,0.85);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .edit-btn:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── Hover zone visual hint ── */
+  .trigger-hint {
+    position: fixed;
+    top: 56px;
+    right: 0;
+    width: 6px;
+    height: 60px;
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.15), transparent);
+    border-radius: 3px 0 0 3px;
+    z-index: 210;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+
+  .trigger-zone:hover ~ .trigger-hint,
+  .floating-panel:hover ~ .trigger-hint {
+    opacity: 1;
+  }
+
+  /* ── Demo label ── */
+  .demo-label {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.3);
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    z-index: 10;
+    text-align: center;
+  }
+  .demo-label kbd {
+    display: inline-block;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: inherit;
+    font-size: 11px;
+  }
+
+  /* ── Widget dots (decorative) ── */
+  .widget-dots {
+    position: fixed;
+    top: 56px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+  }
+  .widget-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+</style>
+</head>
+<body>
+
+<div class="desktop-bg"></div>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<!-- Waybar -->
+<div class="waybar">
+  <div class="waybar-left">
+    <span class="waybar-item">Arch Linux</span>
+    <span class="waybar-item">Hyprland</span>
+  </div>
+  <div class="waybar-right">
+    <span class="waybar-item">Volume</span>
+    <span class="waybar-item">Battery</span>
+    <span class="waybar-item waybar-clock" id="clock"></span>
+  </div>
+</div>
+
+<!-- Widget dots -->
+<div class="widget-dots">
+  <div class="widget-dot"></div>
+  <div class="widget-dot"></div>
+  <div class="widget-dot"></div>
+</div>
+
+<!-- Trigger zone (invisible hover area on right edge) -->
+<div class="trigger-zone" id="triggerZone"></div>
+
+<!-- Floating Panel -->
+<div class="floating-panel" id="floatingPanel">
+
+  <!-- Lock -->
+  <button class="panel-btn" data-tooltip="Bloquear pantalla">
+    <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  </button>
+
+  <!-- Dark Mode -->
+  <button class="panel-btn" data-tooltip="Modo oscuro">
+    <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+
+  <!-- Logout -->
+  <button class="panel-btn" data-tooltip="Cerrar sesion">
+    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+  </button>
+
+  <!-- Refresh -->
+  <button class="panel-btn" data-tooltip="Recargar">
+    <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+  </button>
+
+  <!-- Power -->
+  <button class="panel-btn" data-tooltip="Apagar">
+    <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+  </button>
+
+  <div class="panel-sep"></div>
+
+  <!-- Edit (accent circle) -->
+  <div class="edit-btn-wrap">
+    <button class="edit-btn" data-tooltip="Editar panel">
+      <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- Visual hint -->
+<div class="trigger-hint" id="triggerHint"></div>
+
+<div class="demo-label">
+  Pasa el mouse por el borde derecho para mostrar el panel
+</div>
+
+<script>
+  // Clock
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  }
+  updateClock();
+  setInterval(updateClock, 10000);
+
+  // Panel hover logic
+  const trigger = document.getElementById('triggerZone');
+  const panel = document.getElementById('floatingPanel');
+  let hideTimeout;
+
+  function showPanel() {
+    clearTimeout(hideTimeout);
+    panel.classList.add('visible');
+  }
+
+  function hidePanel() {
+    hideTimeout = setTimeout(() => {
+      panel.classList.remove('visible');
+    }, 350);
+  }
+
+  trigger.addEventListener('mouseenter', showPanel);
+  trigger.addEventListener('mouseleave', hidePanel);
+  panel.addEventListener('mouseenter', showPanel);
+  panel.addEventListener('mouseleave', hidePanel);
+
+  // Button click feedback
+  document.querySelectorAll('.panel-btn, .edit-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      this.style.transform = 'scale(0.88)';
+      setTimeout(() => { this.style.transform = ''; }, 150);
+    });
+  });
+</script>
+
+</body>
+</html>

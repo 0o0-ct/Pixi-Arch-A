@@ -1,0 +1,435 @@
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/*  ml4w-modern-mixed — frosted glass driven by wallust.
+ *
+ * This is the two-tone variant, and the two-tone is the identity: the module
+ * pills are *light* surfaces, while the workspace strip, the clock, the menu and
+ * the power button are *dark* ones. That is preserved here — `@backgroundlight`
+ * (the pills) is now the wallpaper's light accent at 0.82, `@backgrounddark`
+ * (clock/menu/power) is the dark @background glass, and the ink on each is
+ * picked to match: dark ink on the light pill, @foreground on the dark one.
+ * Without that split the file would just be a duplicate of ML4W-modern.
+ *
+ * Every margin, padding, radius and selector is the original one. The `opacity`
+ * states (0.4 / 0.7 / 0.8 / 0.9) are gone — they are rgba tints and @ink_dim
+ * now, because opacity forces GTK to composite widget groups offscreen.
+ *
+ * The blur is Hyprland's (`layerrule = blur 1`, `ignore_alpha`), so window#waybar
+ * stays fully transparent and the gaps between surfaces keep alpha 0. The sheen
+ * gradient of @color15 is what lifts the dark @background tint into glass.
+ *
+ * The import is relative to ~/.config/waybar/ because waybar loads the symlink
+ * style.css: "../wallust/..." resolves to ~/.config/wallust/ and a failed import
+ * kills the bar on reload.
+ *
+ * Performance: no box-shadow, no container opacity, transitions animate only
+ * background-color/border-color/color, and the 3s infinite battery blink is now
+ * a static state.
+ */
+
+@import url("wallust/colors-waybar.css");
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@color15, 0.11);  /* dark glass surface  */
+@define-color pane_light    alpha(@color15, 0.82);     /* light module pill   */
+@define-color sheen_top     alpha(@color15, 0.47);     /* refraction, lit end */
+@define-color sheen_bot     alpha(@color15, 0.11);     /* refraction, low end */
+
+@define-color tile          alpha(@foreground, 0.05);
+@define-color tile_hi       alpha(@foreground, 0.13);
+
+@define-color edge          alpha(@color15, 0.47);
+@define-color edge_top      alpha(@color15, 0.47);
+
+@define-color ink           @foreground;
+@define-color ink_dim       alpha(@foreground, 0.80);
+
+@define-color accent        @color15;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color accent_soft   alpha(@color15, 0.72);     /* hover, one step down */
+@define-color on_accent     #12141a;
+@define-color accent_urgent alpha(@color13, 0.88);
+
+/* Semantic, not decorative: these must stay red/green whatever the wallpaper
+ * is. Same exception the reference style makes for its danger colour. */
+@define-color danger        #ffa8a8;
+@define-color good          #a8e6a8;
+
+/* The names this style already used, re-pointed at the glass roles. */
+@define-color backgroundlight @pane_light;
+@define-color backgrounddark  @pane;
+@define-color bordercolor @edge;
+@define-color textcolor1 @ink;         /* ink on the dark surfaces  */
+@define-color textcolor2 @on_accent;   /* ink on the light pills    */
+@define-color textcolor3 @ink;
+@define-color iconcolor @ink;
+
+* {
+	font-family: "JetBrainsMono Nerd Font";
+	font-weight: bold;
+	min-height: 0;
+	/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+	font-size: 97%;
+	/* note: different modules have different font sizes */
+	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+window#waybar {
+    /* was rgba(0,0,0,0.8); the bar window stays transparent so Hyprland's
+     * ignore_alpha leaves the gaps between surfaces unblurred */
+    background: transparent;
+    background-color: transparent;
+    color: @ink;
+    border-bottom: 0px solid @foreground;
+    transition-property: background-color;
+    transition-duration: 160ms;
+}
+
+#taskbar,
+#workspaces {
+    background: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    margin: 2px 18px 3px 1px;
+    margin-left: 6px;
+    padding: 0px 2px;
+    border-radius: 5px 5px 5px 5px;
+    border: 0px;
+    font-weight: bold;
+    font-style: normal;
+    color: @textcolor1;
+}
+
+#taskbar button,
+#workspaces button {
+    padding: 0px 6px;
+    margin: 3px 2px;
+    border-radius: 3px 3px 3px 3px;
+    color: @ink_dim;
+    background-color: @tile;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#taskbar button.active,
+#workspaces button.active {
+    color: @on_accent;
+    background: @accent_pill;
+    border-radius: 3px 3px 3px 3px;
+    min-width: 30px;
+}
+
+/* Was `opacity: 0.7`, which dimmed the whole widget group; a softer fill of the
+ * same accent keeps the hover/active distinction without the offscreen pass. */
+#taskbar button.hover,
+#workspaces button:hover {
+    color: @on_accent;
+    background: @accent_soft;
+    border-radius: 5px 5px 5px 5px;
+}
+
+tooltip {
+    background-color: alpha(@color15, 0.11);
+    border-radius: 16px;
+    color: @ink;
+    border: 1px solid @edge;
+    padding:20px;
+    margin:0px;
+}
+
+tooltip label {
+    color: @ink;
+}
+
+#window {
+    margin: 3px 15px 3px 0px;
+    padding: 2px 10px 0px 10px;
+    border-radius: 5px 5px 5px 5px;
+    color: @ink;
+    font-weight:normal;
+}
+
+window#waybar.empty #window {
+    background-color:transparent;
+}
+
+#taskbar.empty {
+    background:transparent;
+    border:0;
+    padding:0;
+    margin:0;
+}
+
+.modules-left > widget:first-child > #workspaces {
+    margin-left: 0;
+}
+
+.modules-right > widget:last-child > #workspaces {
+    margin-right: 0;
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar button,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+	padding: 2px;
+    margin-right: 8px;
+	margin-left: 6px;
+    font-size: 100%;
+    color: @iconcolor;
+}
+
+#custom-swaync {
+	margin-left: 12px;
+}
+
+#idle_inhibitor {
+    margin-right: 15px;
+    font-size: 102%;
+    font-weight: bold;
+    color: @iconcolor;
+    border-bottom: 0px solid @foreground;
+}
+
+#idle_inhibitor.activated {
+    margin-right: 15px;
+    font-size: 100%;
+    font-weight: bold;
+    color: @danger;
+    border-bottom: 0px solid @foreground;
+}
+
+#custom-menu {
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @textcolor1;
+    border-radius: 5px 5px 5px 5px;
+    padding: 0px 10px 0px 10px;
+    margin: 2px 17px 2px 0px;
+    border:3px solid @bordercolor;
+}
+
+#custom-power {
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @textcolor1;
+    border-radius: 5px 5px 5px 5px;
+    padding: 0px 0px 0px 6px;
+    border:3px solid @bordercolor;
+}
+
+#custom-keybinds {
+    margin: 0px 13px 0px 0px;
+    padding:0px;
+    color: @iconcolor;
+}
+
+#custom-updater {
+    background-color: @pane_light;
+    color: @textcolor2;
+    border-radius: 5px 5px 5px 5px;
+    padding: 2px 10px 0px 10px;
+    margin: 3px 15px 3px 0px;
+}
+
+#custom-updates.green {
+    background-color: @pane_light;
+    color: @on_accent;
+}
+
+/* @color11 is always the darker of the two update accents in wallust's ramp, so
+ * it takes the light ink; @color13, one step lighter, takes the dark ink. */
+#custom-updates.yellow {
+    background-color: alpha(@color11, 0.88);
+    color: @ink;
+}
+
+#custom-updates.red {
+    background-color: alpha(@color13, 0.88);
+    color: @on_accent;
+}
+
+#keyboard-state {
+    margin-right:10px;
+}
+
+#clock {
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    color: @textcolor1;
+    border-radius: 3px 5px 3px 5px;
+    padding: 1px 10px 0px 10px;
+    margin: 3px 0px 3px 0px;
+    border:3px solid @bordercolor;   
+}
+
+#backlight {
+    background-color: @pane_light;
+    margin-left: 6px;
+    color: @textcolor2;
+    border-radius: 5px 5px 5px 5px;
+    padding: 2px 10px 0px 10px;
+    margin: 3px 15px 3px 0px;
+}
+
+#pulseaudio {
+    background-color: @pane_light;
+    color: @textcolor2;
+    border-radius: 5px 5px 5px 5px;
+    padding: 2px 10px 0px 10px;
+    margin: 3px 15px 3px 0px;
+}
+
+#pulseaudio.muted {
+    background-color: @pane;
+    color: @textcolor1;
+}
+
+#network {
+    background-color: @pane_light;
+    color: @textcolor2;
+    border-radius: 5px 5px 5px 5px;
+    padding: 2px 10px 0px 10px;
+    margin: 3px 15px 3px 0px;
+}
+
+#network.ethernet {
+    background-color: @pane_light;
+    color: @textcolor2;
+}
+
+#network.wifi {
+    background-color: @pane_light;
+    color: @textcolor2;
+}
+
+#bluetooth, #bluetooth.on, #bluetooth.connected {
+    background-color: @pane_light;
+    color: @textcolor2;
+    border-radius: 5px 5px 5px 5px;
+    padding: 2px 10px 0px 10px;
+    margin: 3px 15px 3px 0px;
+}
+
+#bluetooth.off {
+    background-color: transparent;
+    padding: 0px;
+    margin: 0px;
+}
+
+#battery {
+    background-color: @pane_light;
+    color: @textcolor2;
+    border-radius: 5px 5px 5px 5px;
+    padding: 2px 15px 0px 10px;
+    margin: 3px 15px 3px 0px;
+}
+
+/* The pill here is a light surface, so @good (a light green) cannot be the text
+ * on it — it becomes the fill with dark ink, the same way the reference style
+ * treats its danger state. */
+#battery.charging, #battery.plugged {
+    color: @on_accent;
+    background-color: @good;
+}
+
+/* Was a 3s infinite blink; a static danger pill alerts just as well and does not
+ * keep the compositor repainting. */
+#battery.critical:not(.charging) {
+    background-color: @danger;
+    color: @on_accent;
+}
+
+#tray {
+    padding: 0px 15px 0px 0px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+#backlight-slider slider,
+#pulseaudio-slider slider {
+	min-width: 0px;
+	min-height: 0px;
+	opacity: 0;
+	background-image: none;
+	border: none;
+}
+
+#backlight-slider trough,
+#pulseaudio-slider trough {
+	background-color: @tile;
+	min-width: 80px;
+	min-height: 5px;
+	border-radius: 5px;
+}
+
+#backlight-slider highlight,
+#pulseaudio-slider highlight {
+	background-color: @accent;
+	min-height: 10px;
+	border-radius: 5px;
+}

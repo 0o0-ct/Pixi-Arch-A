@@ -1,0 +1,471 @@
+/* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
+/* --- Extra - Neon Circuit - waybar style ---*/
+
+/* ---------------------------------------------------------------------------
+ * Frosted glass, coloured by the wallpaper.
+ *
+ * This style has no .modules-left/.modules-center/.modules-right panes: every
+ * module is its own outlined segment (that IS the neon-circuit look), so those
+ * segments are the glass surfaces here — wallpaper tint plus the @color15
+ * sheen — and their neon outlines now take their hues from wallust's light
+ * ramp instead of hardcoded catppuccin colours.
+ *
+ * The import path is the one trap: GTK resolves a relative @import against the
+ * path of the file waybar actually loads, and that file is the SYMLINK
+ * ~/.config/waybar/style.css — so the base directory is ~/.config/waybar/ and
+ * the path below is right. "../wallust/colors-waybar.css" resolves to
+ * ~/.config/wallust/... , fails to import, and on waybar 0.15.0 a failed import
+ * kills the bar outright.
+ * ------------------------------------------------------------------------- */
+@import url("wallust/colors-waybar.css");
+
+/* ---------------------------------------------------------------------------
+ * Tokens — wallust roles:
+ *   @background  -> segment tint (the wallpaper's dominant dark = the hue)
+ *   @color15     -> accent: refraction sheen, active pill, lit outline
+ *   @foreground  -> primary text and the brightest outlines
+ *   @color13/6/7/8 -> the per-module hues, on the light half of the ramp so
+ *                     they stay readable as text on a dark pane
+ * ------------------------------------------------------------------------- */
+@define-color pane          alpha(@color15, 0.11);
+@define-color sheen_top     alpha(@color15, 0.25);
+@define-color sheen_bot     alpha(@background, 0.08);
+@define-color ink           @foreground;
+@define-color accent        @color15;
+@define-color on_accent     #12141a;
+@define-color danger        #ffa8a8;   /* semantic: must stay red on any wallpaper */
+
+/* The names this style already used, now wallust-driven. */
+@define-color main-fg       @ink;
+@define-color wb-act-bg     @color15;
+@define-color wb-act-fg     @on_accent;
+@define-color wb-hvr-bg     @color13;
+@define-color wb-hvr-fg     @on_accent;
+
+/* --- Clean Floating Glass Transparency Rule ---
+ * The bar window itself stays transparent so the space between the segments
+ * keeps alpha 0 and Hyprland's ignore_alpha leaves it unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+    background: transparent;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
+
+* {
+    border: none;
+    border-radius: 0px;
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+	min-height: 0;  
+    /* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+    font-size: 97%;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+window#waybar {
+    background-color: alpha(@color15, 0.11);
+    border: 1px solid alpha(@color15, 0.47);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.10);
+}
+
+tooltip {
+    background-color: alpha(@color15, 0.11);
+    color: @ink;
+    border-radius: 12px;
+    border-width: 0px;
+}
+
+#taskbar button,
+#workspaces button {
+	text-shadow: none;
+    padding: 2px;
+    border: 2px;
+    border-color: @accent;
+    border-width: 5px;
+    border-radius: 10px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 0px;
+    padding-left: 6px;
+    padding-right: 0px;
+    margin-right: 0px;
+    color: @wb-act-fg;
+    background-color: alpha(@wb-act-bg, 0.55);
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#taskbar button.active,
+#workspaces button.active {
+    background-image: linear-gradient(45deg, @color13 50%, @color15 50%);
+    color: @wb-act-fg;
+    border-radius: 12px;
+    margin-left: 4px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-right: 4px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#taskbar button:hover,
+#workspaces button:hover {
+    background-color: alpha(@wb-hvr-bg, 0.55);
+    color: @wb-hvr-fg;
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+
+#tray menu * {
+    min-height: 18px
+}
+
+#tray menu separator {
+    min-height: 16px
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar button,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+    color: @main-fg;
+    background-color: @pane;
+    background-image: linear-gradient(180deg, @sheen_top 0%, @sheen_bot 100%);
+    margin: 3px 0px 3px 0px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+#workspaces {
+    border-radius: 20px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: @accent;
+    padding-right: 8px;
+    padding-left: 8px;
+    margin-right: 5px;
+}
+
+#taskbar {
+    padding: 0px;
+    color: @accent;
+}
+
+#window {
+    color: @color8;
+    border-radius: 20px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: @color8;
+    margin-right: 5px;
+}
+
+#clock {
+    color: @color13;
+    border-radius: 12px;
+    border-top-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-width: 2px;
+    border-style: solid;
+    border-left-style: none;
+    border-right-style: none;
+    border-left-width: 0px;
+    border-width: 2px;
+    border-color: @color13;
+    margin-right: 5px;
+}
+
+#idle_inhibitor {
+    color: @color6;
+    border-radius: 12px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-style: solid;
+    border-right-style: none;
+    border-width: 2px;
+    border-color: @color13;
+    margin-right: 0px;
+}
+
+#idle_inhibitor.activated {
+	color: @accent;
+}
+
+#temperature {
+    color: @foreground;
+    border-radius: 20px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-style: solid;
+    border-right-style: none;
+    border-width: 2px;
+    border-color: @foreground;
+    margin-left: 5px;
+}
+
+#temperature.critical {
+    color: @danger;
+}
+
+#cpu,
+#disk,
+#memory {
+    color: @foreground;
+    border-radius: 0px;
+    border-style: solid;
+    border-left-style: none;
+    border-right-style: none;
+    border-width: 2px;
+    border-color: @foreground;
+    margin-right: 0px;
+}
+
+#custom-menu {
+    color: @danger;
+    border-radius: 6px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-style: solid;
+    border-left-style: none;
+    border-right-style: none;
+    border-width: 2px;
+    border-color: @foreground;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+#network {
+    border-radius: 12px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-style: solid;
+    border-left-style: none;
+    border-left-width: 0px;
+    border-width: 2px;
+    border-color: @foreground;
+    margin-right: 5px;
+}
+
+#backlight {
+    color: @color7;
+    border-radius: 12px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-style: solid;
+    border-right-style: none;
+    border-width: 2px;
+    border-color: @color7;
+    margin-left: 5px;
+}
+
+#pulseaudio {
+    color: @color7;
+    border-radius: 20px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-style: solid;
+    border-left-style: none;
+    border-width: 2px;
+    border-color: @color7;
+    margin-right: 0px;
+}
+
+#pulseaudio.muted {
+    color: @danger;
+}
+
+#keyboard-state {    
+    color: @color7;
+    border-radius: 20px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-style: solid;
+    border-left-style: none;
+    border-left-width: 0px;
+    border-width: 2px;
+    border-color: @color7;
+    margin-right: 5px;
+}
+
+#custom-updater {
+    color: @color7;
+    border-radius: 0px;
+    border-style: solid;
+    border-left-style: none;
+    border-right-style: none;
+    border-width: 2px;
+    border-color: @color7;
+    margin-right: 0px;
+}
+
+#custom-hint {
+    color: @color7;
+    border-radius: 12px;
+    border-top-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-style: solid;
+    border-left-style: none;
+    border-right-style: none;
+    border-left-width: 0px;
+    border-width: 2px;
+    border-color: @color7;
+    margin-right: 5px;
+}
+
+#tray {
+    color: @accent;
+    font-size: 16;
+    border-radius: 12px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-width: 2px;
+    border-style: solid;
+    border-left-style: none;
+    border-right-style: none;
+    border-width: 2px;
+    border-color: @accent;
+    margin-left: 5px;
+    padding-left: 8px;
+}
+
+#tray > .active,
+#tray > .passive,
+#tray menu {
+    color: @accent;
+}
+
+#custom-swaync {
+    border-radius: 12px;
+    border-top-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-style: solid;
+    border-left-style: none;
+    border-right-style: none;
+    border-width: 2px;
+    border-color: @accent;
+    margin-right: 0px;
+}
+
+#battery {
+    border-radius: 20px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-style: solid;
+    border-left-style: none;
+    border-left-width: 0px;
+    border-width: 2px;
+    border-color: @accent;
+    margin-right: 5px;
+    padding-right: 8px;
+}
+
+#custom-power {
+    border-radius: 12px;
+    border-top-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-style: solid;
+    border-left-style: none;
+    border-width: 2px;
+    border-color: @color13;
+    padding-left: 0px;
+    padding-right: 5px;
+    margin-right: 5px;
+}
+
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default, 
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+    border-radius: 12px;
+    border-top-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-width: 2px;
+    border-style: solid;
+    border-left-style: none;
+    border-right-style: none;
+    border-color: @color6;
+    color: @color6;
+    margin-right: 5px;
+}
+
+#window {
+    background-image: linear-gradient(45deg, @color13 50%, @color15 50%);
+    color: @on_accent;
+    border-radius: 20px;
+    border-width: 2px;
+    border-style: solid;
+    border-left-style: none;
+    border-right-style: none;
+    border-color: @color7;
+    margin-right: 5px;
+}

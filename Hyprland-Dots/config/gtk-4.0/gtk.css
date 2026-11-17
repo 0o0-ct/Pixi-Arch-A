@@ -1,0 +1,24 @@
+/* ---- 💫 Pixi-Arch-A Premium GTK4 Stylesheet 💫 ---- */
+
+/* Hide 'Recientes' entry in GTK4 File Chooser Dialogs */
+placessidebar row:has(label[label="Recientes"]),
+placessidebar row:has(label[label="Recent"]),
+placessidebar row#sidebar-recent,
+placessidebar row[name="sidebar-recent"] {
+    display: none;
+    visibility: hidden;
+}
+
+/* Style GTK4 File Chooser Dialog Headerbar & Sidebar */
+filechooser placessidebar,
+dialog.file-chooser placessidebar {
+    background-color: rgba(18, 18, 22, 0.75);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+filechooser placessidebar row:selected,
+dialog.file-chooser placessidebar row:selected {
+    background-color: rgba(139, 92, 246, 0.45);
+    color: #ffffff;
+    border-radius: 8px;
+}

@@ -1,0 +1,22 @@
+[Unit]
+Description=GPU Monitor - Dynamic GPU power management for hybrid laptops
+Documentation=https://github.com/0o0-ct/Pixi-Arch-A
+# Solo se arranca DESPUÉS de que el compositor levante la sesión gráfica.
+# No usar "Wants=graphical-session.target" aquí: si esta unidad se habilita en
+# default.target.wants arranca antes del compositor y activa por adelantado
+# graphical-session.target, uwsm aborta el inicio de sesión con
+# "A compositor or graphical-session* target is already active!" y Hyprland
+# nunca llega a cargar (el login cae de vuelta al greeter).
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.config/hypr/scripts/gpu-monitor.sh
+Restart=on-failure
+RestartSec=5
+
+# Solo ejecutar si hay GPU NVIDIA
+ExecCondition=/bin/bash -c 'command -v nvidia-smi >/dev/null 2>&1 && lspci -k | grep -A 2 -E "(VGA|3D)" | grep -iq nvidia'
+
+[Install]
+WantedBy=graphical-session.target

@@ -1,0 +1,16 @@
+{
+  "mode": "dark",
+  "scheme": "auto",
+  "glass": "auto",
+  "extraction": {
+    "backend": "fastresize",
+    "color_space": "lch",
+    "palette": "dark16",
+    "threshold": 11
+  },
+  "glass_threshold": 0.55,
+  "apply_gtk_scheme": true,
+  "reload": true,
+  "run_wallpaper_hooks": true,
+  "notify_on_error": true
+}

@@ -1,0 +1,21 @@
+singleton Theme 1.0 Theme.qml
+singleton CcPanelState 1.0 CcPanelState.qml
+ControlCenterPanel 1.0 ControlCenterPanel.qml
+CcHeader 1.0 CcHeader.qml
+CcIconButton 1.0 CcIconButton.qml
+CcSlider 1.0 CcSlider.qml
+CcSliderRow 1.0 CcSliderRow.qml
+CcTile 1.0 CcTile.qml
+CcTileGrid 1.0 CcTileGrid.qml
+CcNotificationsSection 1.0 CcNotificationsSection.qml
+CcNotificationItem 1.0 CcNotificationItem.qml
+CcPowerMenu 1.0 CcPowerMenu.qml
+CcMediaSection 1.0 CcMediaSection.qml
+CcBluetoothDrawer 1.0 CcBluetoothDrawer.qml
+CcWifiDrawer 1.0 CcWifiDrawer.qml
+CcWifiRow 1.0 CcWifiRow.qml
+CcWifiPasswordPrompt 1.0 CcWifiPasswordPrompt.qml
+CcAudioDrawer 1.0 CcAudioDrawer.qml
+CcAudioRow 1.0 CcAudioRow.qml
+CcCenterPanelState 1.0 CcCenterPanelState.qml
+CcCenterPanelWindow 1.0 CcCenterPanelWindow.qml

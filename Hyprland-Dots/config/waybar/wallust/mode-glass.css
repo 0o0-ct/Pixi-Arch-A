@@ -1,0 +1,18 @@
+/* Dynamic adaptive mode: LIGHT wallpaper band (porcelain frosted glass) */
+/* No drop shadow here: GTK compresses it into a dark crescent hugging the
+ * island edge, which reads as a semi-black layer under the bar. The pane tint
+ * plus the 14% ink hairline already define the islands on bright walls. */
+@define-color pane_glass    alpha(@color15, 0.62);
+@define-color edge_glass    rgba(46, 42, 47, 0.14);
+@define-color shadow_glass  rgba(28, 22, 32, 0);
+
+@define-color ink           #2E2A2F;
+@define-color ink_muted     rgba(46, 42, 47, 0.78);
+@define-color lift          rgba(46, 42, 47, 0.06);
+@define-color lift_hi       rgba(46, 42, 47, 0.11);
+@define-color edge          rgba(46, 42, 47, 0.10);
+@define-color edge_hi       rgba(46, 42, 47, 0.20);
+@define-color accent_ink    #552b50;
+@define-color on_accent     #2E2A2F;
+@define-color warn          #9a5b00;
+@define-color danger        #b3261e;

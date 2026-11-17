@@ -1,0 +1,150 @@
+import QtQuick
+import Quickshell
+import Quickshell.Wayland
+import "root:/modules/controlcenter"
+import "root:/services"
+
+/**
+ * Control center: a 420px panel anchored to the top of one screen and centred
+ * horizontally on it.
+ *
+ * Layout, top to bottom: header (avatar / user / uptime + actions), the
+ * brightness & volume sliders, the 2-column tile grid, the notification list,
+ * and the inline power menu when it is open.
+ */
+PanelWindow {
+    id: panel
+
+    /** The screen this instance is drawn on, injected by `Variants`. */
+    required property var modelData
+
+    screen: panel.modelData
+
+    anchors {
+        top: true
+        bottom: true
+        left: true
+        right: true
+    }
+
+    readonly property bool isTargetScreen: panel.screen !== null && panel.screen.name === CcPanelState.openScreenName
+
+    visible: CcPanelState.visible && isTargetScreen
+    color: "transparent"
+    exclusiveZone: 0
+    aboveWindows: true
+    WlrLayershell.namespace: "quickshell-controlcenter"
+    WlrLayershell.layer: WlrLayer.Overlay
+
+    WlrLayershell.keyboardFocus: (CcPanelState.visible && isTargetScreen) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+
+    // ── Click-away dismissal: clicking anywhere outside the card closes the panel ──
+    MouseArea {
+        anchors.fill: parent
+        z: -1
+        onClicked: CcPanelState.dismiss()
+    }
+
+    // ── Keyboard shortcut: Escape always closes the panel regardless of child focus ──
+    Shortcut {
+        sequence: "Escape"
+        enabled: panel.visible
+        onActivated: CcPanelState.dismiss()
+    }
+
+    // ── Floating Center Card (Apple / VisionOS .glass-card Specification) ──
+    Rectangle {
+        id: card
+        z: 1
+        width: Theme.panelWidth
+        height: content.implicitHeight + Theme.panelPadding * 2
+        anchors.top: parent.top
+        anchors.topMargin: Theme.panelMargin
+        anchors.horizontalCenter: parent.horizontalCenter
+        radius: 20
+        color: Theme.cardFill
+        border.width: 1
+        border.color: Theme.cardEdge
+        clip: true
+
+        // Specular Top Highlight line (::before)
+        Rectangle {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: 1.5
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.0; color: "transparent" }
+                GradientStop { position: 0.2; color: Theme.cardSpecular }
+                GradientStop { position: 0.8; color: Theme.cardSpecular }
+                GradientStop { position: 1.0; color: "transparent" }
+            }
+        }
+
+
+        // ── Content ───────────────────────────────────────────────────────────
+        Column {
+            id: content
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.topMargin: Theme.panelPadding
+            anchors.leftMargin: Theme.panelPadding
+            anchors.rightMargin: Theme.panelPadding
+            spacing: Theme.sectionSpacing
+
+            CcHeader {
+                width: parent.width
+                powerMenuOpen: CcPanelState.powerMenuOpen
+                onLockRequested: {
+                    CcPanelState.dismiss()
+                    CcSystem.runDetached(["bash", Quickshell.env("HOME") + "/.config/hypr/scripts/LockScreen.sh"])
+                }
+                onPowerRequested: CcPanelState.powerMenuOpen = !CcPanelState.powerMenuOpen
+                onSettingsRequested: {
+                    CcPanelState.dismiss()
+                    CcSystem.runDetached(["bash", Quickshell.env("HOME") + "/.config/hypr/scripts/Kool_Quick_Settings.sh"])
+                }
+                onCloseRequested: CcPanelState.dismiss()
+            }
+
+            CcSliderRow {
+                width: parent.width
+            }
+
+            CcTileGrid {
+                width: parent.width
+            }
+
+            CcWifiDrawer {
+                width: parent.width
+                visible: CcSystem.wifiDrawerOpen
+            }
+
+            CcBluetoothDrawer {
+                width: parent.width
+                visible: CcSystem.bluetoothDrawerOpen
+            }
+
+            CcAudioDrawer {
+                width: parent.width
+                visible: CcSystem.audioDrawerOpen
+            }
+
+            CcMediaSection {
+                width: parent.width
+            }
+
+            CcNotificationsSection {
+                width: parent.width
+            }
+
+            CcPowerMenu {
+                width: parent.width
+                visible: CcPanelState.powerMenuOpen
+                onActionInvoked: CcPanelState.powerMenuOpen = false
+            }
+        }
+    }
+}

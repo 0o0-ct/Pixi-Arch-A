@@ -1,0 +1,10 @@
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+/* Ja KooLit - Default */
+
+/* ---- Global Configuration Fonts ---- */
+@import "~/.config/rofi/0-shared-fonts.rasi"
+
+/* note: Main themes in ~/.config/rofi/themes */
+/* You can manually change here or you can use rofi theme selector SUPER CTRL R */
+
+@theme "~/.config/rofi/themes/[Glass] Monet Frosted.rasi"

@@ -1,0 +1,365 @@
+/* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+
+/* Aurora Blossom — frosted glass, coloured by the wallpaper
+ * ==========================================================================
+ * Every colour comes from the live palette: wallust/matugen supply the hues
+ * (wallust/colors-waybar.css) and wallust/mode-glass.css supplies the adaptive
+ * finish — smoked glass + light ink on a dark band, porcelain frosted glass +
+ * charcoal ink on a bright one. Both branches share the token names below, so
+ * this file never branches.
+ *
+ * THE IMPORT PATH (the one trap in this file)
+ * -------------------------------------------
+ * GTK resolves a relative @import against the path of the file waybar
+ * actually loads, and that file is the SYMLINK ~/.config/waybar/style.css.
+ * So the base directory is ~/.config/waybar/ and the import must be
+ * "wallust/colors-waybar.css". Writing "../wallust/colors-waybar.css"
+ * resolves to ~/.config/wallust/... and dies with
+ *   "Failed to import: Error al abrir el archivo
+ *    /home/c0o0c/.config/wallust/colors-waybar.css"
+ * Both forms were checked with a Gtk.CssProvider probe that uses the same
+ * load_from_path(symlink) call waybar makes. Note that on waybar 0.15.0 a
+ * failing import does not merely warn: the style load throws, and signalling
+ * waybar with SIGUSR2 to retry it kills the bar outright.
+ *
+ * WHAT COMES FROM WALLUST
+ * -----------------------
+ * wallust.toml declares palette = "dark16", which guarantees a dark
+ * @background and a light @foreground for any wallpaper, and wallust's 0..15
+ * ramp always runs dark -> light, so @color15 is the lightest accent of the
+ * image. Roles:
+ *
+ *   @background  -> the pane tint (the wallpaper's dominant dark colour = hue)
+ *   @color15     -> the accent: refraction sheen, active workspace pill,
+ *                   active-state indicator, slider highlight
+ *   @color13     -> urgent workspace pill (the mid-tone accent)
+ *   @foreground  -> primary text, dim text, tile lift, hairline edge
+ *
+ * THE ADAPTIVE FINISH (mode-glass.css)
+ * ------------------------------------
+ * WallustSwww.sh samples the top band of the wallpaper (the 7% strip the bar
+ * covers) and rewrites wallust/mode-glass.css with one of two hand-tuned
+ * finishes: smoked glass + light ink below 0.55, porcelain frosted glass +
+ * charcoal ink at or above it. The porcelain branch also zeroes the shadow,
+ * because GTK compresses a translucent box-shadow into a dark crescent hugging
+ * the island edge. This file consumes those tokens; it does not define them.
+ *
+ * THE GLASS ITSELF IS NOT DONE HERE
+ * ---------------------------------
+ * GTK3 has no backdrop-filter; the blur is Hyprland's, via
+ * `layerrule = match:namespace waybar, blur 1` plus `ignore_alpha 0.1`. That
+ * is why window#waybar stays fully transparent: the gaps between the islands
+ * have to keep alpha 0 so they are not blurred, which is what makes the
+ * islands read as separate panes of glass over the wallpaper.
+ *
+ * PERFORMANCE (the user is fighting heat; these are not stylistic choices)
+ * -----------------------------------------------------------------------
+ *   - a single box-shadow, on the islands only, read from @shadow_glass (the
+ *     porcelain branch zeroes it); no other shadow is added
+ *   - no opacity on containers: translucency is rgba()/alpha(), so GTK never
+ *     has to render a widget group offscreen
+ *   - transitions animate only background-color / border-color / color
+ *   - no infinite or looping animations (the battery-critical blink was a
+ *     looping animation; it is now a static filled pill, which also alerts
+ *     without repainting forever)
+ */
+
+@import url("wallust/colors-waybar.css");
+@import url("wallust/mode-glass.css");
+
+
+/* --- Clean Floating Glass Transparency Rule ---------------------------------
+ * The bar window itself must stay transparent so the space between the
+ * islands keeps alpha 0 and Hyprland's ignore_alpha leaves it unblurred.
+ * ------------------------------------------------------------------------- */
+window#waybar,
+window#waybar.empty,
+window#waybar #window,
+#waybar {
+	background: transparent;
+	background-color: transparent;
+	padding: 0px;
+	border: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tokens — adaptive roles
+ *
+ * mode-glass.css resolved the finish already; these aliases keep this file's
+ * vocabulary pointing at the adaptive tokens. edge/ink/on_accent/danger are
+ * inherited as-is: redefining them here would shadow the adaptive values,
+ * because GTK keeps the last @define-color with a given name.
+ * ------------------------------------------------------------------------- */
+@define-color pane          @pane_glass;
+@define-color tile          @lift;
+@define-color tile_hi       @lift_hi;
+@define-color edge_top      @edge_hi;
+
+@define-color ink_dim       @ink_muted;
+
+@define-color accent        @accent_ink;
+@define-color accent_pill   alpha(@color15, 0.94);
+@define-color accent_urgent alpha(@color13, 0.88);
+
+
+/* ---------------------------------------------------------------------------
+ * Base
+ * ------------------------------------------------------------------------- */
+* {
+	font-family: "JetBrainsMono Nerd Font";
+	font-weight: bold;
+	min-height: 0;
+	/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+	font-size: 97%;
+	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+window#waybar {
+	background: transparent;
+	color: @ink;
+}
+
+window#waybar.empty,
+window#waybar.empty #window {
+	background-color: transparent;
+	padding: 0px;
+	border: 0px;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * The three panes of glass
+ *
+ * The material is @pane_glass, the lit edge @edge_glass, and Hyprland blurs
+ * whatever sits behind them (the window itself stays transparent). The shadow
+ * comes from @shadow_glass, which the porcelain branch sets to zero.
+ * ------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: @pane_glass;
+    border: 1px solid @edge_glass;
+    box-shadow: 0 4px 30px @shadow_glass;
+    border-radius: 16px;
+    padding: 3px 6px;
+    margin: 3px 0;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Modules
+ * ------------------------------------------------------------------------- */
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default,
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+	padding: 4px 7px;
+	margin: 0;
+	color: @ink;
+	border-radius: 11px;
+	background-color: transparent;
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
+}
+
+#custom-power {
+	padding: 2px 4px;
+}
+
+#backlight:hover,
+#battery:hover,
+#bluetooth:hover,
+#clock:hover,
+#cpu:hover,
+#disk:hover,
+#idle_inhibitor:hover,
+#keyboard-state:hover,
+#memory:hover,
+#mpris:hover,
+#network:hover,
+#power-profiles-daemon:hover,
+#pulseaudio:hover,
+#temperature:hover,
+#tray:hover,
+#custom-light_dark:hover,
+#custom-lock:hover,
+#custom-menu:hover,
+#custom-power:hover,
+#custom-swaync:hover,
+#custom-dot_update:hover,
+#custom-weather:hover {
+	background-color: @tile_hi;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Workspaces / taskbar
+ * ------------------------------------------------------------------------- */
+#taskbar button,
+#workspaces button {
+	color: @ink_dim;
+	padding: 0 6px;
+	margin: 3px 1px;
+	border-radius: 10px;
+	background-color: @tile;
+	border: 1px solid transparent;
+	transition-property: background-color, border-color, color;
+	transition-duration: 160ms;
+	transition-timing-function: ease-out;
+}
+
+#taskbar button:hover,
+#workspaces button:hover {
+	color: @ink;
+	background-color: @tile_hi;
+	border-color: @edge;
+}
+
+/* The active workspace is the one solid note in the pane: the wallpaper's own
+ * light accent, with the near-black ink on it (measured 10.23:1). */
+#taskbar button.active,
+#workspaces button.active {
+	color: @on_accent;
+	background-color: @accent_pill;
+	border-color: @edge_top;
+	padding: 0 11px;
+}
+
+#workspaces button.occupied {
+	color: @ink;
+}
+
+#workspaces button.persistent {
+	border-radius: 10px;
+}
+
+#workspaces button.urgent {
+	color: @on_accent;
+	background-color: @accent_urgent;
+	border-color: @accent_urgent;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Functional states
+ * ------------------------------------------------------------------------- */
+#pulseaudio.muted,
+#temperature.critical,
+#cpu.critical,
+#memory.critical,
+#disk.critical {
+	color: @danger;
+}
+
+#custom-hypridle.notactive,
+#idle_inhibitor.activated {
+	color: @on_accent;
+	background-color: @accent_pill;
+}
+
+/* Was a blinking animation; a filled pill says the same thing and does not
+ * schedule a repaint three times a second forever. */
+#battery.critical:not(.charging) {
+	color: @on_accent;
+	background-color: @danger;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Tooltips — the same glass, denser so the text always reads
+ * ------------------------------------------------------------------------- */
+tooltip {
+	background-color: @pane_glass;
+	border: 1px solid @edge_glass;
+	border-radius: 12px;
+	color: @ink;
+}
+
+tooltip label {
+	color: @ink;
+	padding: 3px 5px;
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Sliders
+ * ------------------------------------------------------------------------- */
+#backlight-slider slider,
+#pulseaudio-slider slider {
+	min-width: 0px;
+	min-height: 0px;
+	opacity: 0;
+	background-image: none;
+	border: none;
+}
+
+#backlight-slider trough,
+#pulseaudio-slider trough {
+	background-color: @tile;
+	min-width: 80px;
+	min-height: 5px;
+	border-radius: 5px;
+}
+
+#pulseaudio-slider highlight,
+#backlight-slider highlight {
+	background-color: @accent;
+	min-width: 10px;
+	border-radius: 5px;
+}

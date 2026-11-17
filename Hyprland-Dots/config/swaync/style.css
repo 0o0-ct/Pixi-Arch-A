@@ -1,0 +1,334 @@
+/* ----------- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 -------- */
+/* swaync colors - wallust / matugen */
+
+@import url("wallust/colors-wallust.css");
+@import url("wallust/mode-glass.css");
+@import 'layout.css';
+
+@define-color noti-border-color alpha(@color15, 0.20);
+@define-color noti-bg alpha(@surface, 0.50);
+@define-color noti-bg-alt alpha(@surface_container, 0.40);
+@define-color noti-bg-hover alpha(@primary_container, 0.60);
+@define-color text-color @foreground;
+
+* {
+    font-family: "JetBrains Mono Nerd Font", sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.control-center .notification-row:focus,
+.control-center .notification-row:hover {
+    opacity: 1;
+    background: @noti-bg-hover;
+    border-radius: 12px;
+}
+
+.notification-row {
+    outline: none;
+}
+
+.notification {
+    background: @noti-bg;
+    padding: 6px 12px;
+    border-radius: 14px;
+    border: 1px solid @noti-border-color;
+}
+
+.notification-default-action {
+    margin: 0;
+    padding: 0;
+    border-radius: 12px;
+}
+
+.close-button {
+    background: alpha(@danger, 0.70);
+    color: @on_accent;
+    text-shadow: none;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-top: 5px;
+    margin-right: 5px;
+    border: none;
+}
+
+.close-button:hover {
+    background: @danger;
+    transition: all .15s ease-in-out;
+}
+
+.notification-action {
+    border: 1px solid @noti-border-color;
+    border-radius: 10px;
+}
+
+.notification-default-action:hover,
+.notification-action:hover {
+    color: @text-color;
+    background: @noti-bg-hover;
+}
+
+.notification-default-action {
+    border-radius: 10px;
+    margin: 5px;
+}
+
+.notification-default-action:not(:only-child) {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.notification-action:first-child {
+    border-bottom-left-radius: 10px;
+    background: @noti-bg;
+}
+
+.notification-action:last-child {
+    border-bottom-right-radius: 10px;
+    background: @noti-bg-alt;
+}
+
+.inline-reply {
+    margin-top: 8px;
+}
+
+.inline-reply-entry {
+    background: @noti-bg;
+    color: @text-color;
+    caret-color: @primary;
+    border: 1px solid @noti-border-color;
+    border-radius: 10px;
+}
+
+.inline-reply-button {
+    font-size: 0.5rem;
+    margin-left: 4px;
+    background: @noti-bg;
+    border: 1px solid @noti-border-color;
+    border-radius: 10px;
+    color: @text-color;
+}
+
+.inline-reply-button:disabled {
+    background: initial;
+    color: @text-color;
+    border: 1px solid transparent;
+}
+
+.inline-reply-button:hover {
+    background: @noti-bg-hover;
+}
+
+.body-image {
+    margin-top: 6px;
+    color: @text-color;
+    border-radius: 10px;
+}
+
+.summary {
+    font-size: 1rem;
+    font-weight: bold;
+    background: transparent;
+    color: @text-color;
+    text-shadow: none;
+}
+
+.time {
+    font-size: 0.9rem;
+    font-weight: normal;
+    background: transparent;
+    color: alpha(@text-color, 0.75);
+    text-shadow: none;
+    margin-right: 18px;
+}
+
+.body {
+    font-size: 0.95rem;
+    font-weight: normal;
+    background: transparent;
+    color: @text-color;
+    text-shadow: none;
+}
+
+.control-center {
+    background: alpha(@surface, 0.55);
+    border: 1px solid @noti-border-color;
+    color: @text-color;
+    border-radius: 16px;
+    padding: 8px;
+}
+
+.control-center-list {
+    background: transparent;
+}
+
+.control-center-list-placeholder {
+    opacity: 0.5;
+}
+
+.floating-notifications {
+    background: transparent;
+}
+
+.blank-window {
+    background: transparent;
+}
+
+.widget-title {
+    color: @text-color;
+    background: @noti-bg-alt;
+    padding: 6px 10px;
+    margin: 5px;
+    font-size: 1rem;
+    border-radius: 12px;
+}
+
+.widget-title>button {
+    font-size: 0.8rem;
+    color: @text-color;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid @noti-border-color;
+    padding: 2px 8px;
+}
+
+.widget-title>button:hover {
+    background: alpha(@danger, 0.75);
+    color: @on_accent;
+    border-color: @danger;
+}
+
+.widget-dnd {
+    background: @noti-bg-alt;
+    padding: 6px 10px;
+    margin: 5px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: @text-color;
+}
+
+.widget-dnd>switch {
+    border-radius: 12px;
+    border: 1px solid @noti-border-color;
+    background: @noti-bg;
+}
+
+.widget-dnd>switch:checked {
+    background: @primary;
+    border: 1px solid @primary;
+}
+
+.widget-dnd>switch slider {
+    background: @foreground;
+    border-radius: 12px;
+}
+
+.widget-dnd>switch:checked slider {
+    background: @on_primary;
+    border-radius: 12px;
+}
+
+.widget-label {
+    margin: 5px;
+}
+
+.widget-label>label {
+    font-size: 1rem;
+    color: @text-color;
+}
+
+.widget-mpris {
+    color: @text-color;
+    background: @noti-bg;
+    padding: 8px 12px;
+    margin: 5px;
+    border-radius: 14px;
+    border: 1px solid @noti-border-color;
+}
+
+.widget-mpris > box > button {
+    border-radius: 10px;
+}
+
+.widget-mpris-player {
+    padding: 3px 6px;
+    margin: 5px;
+}
+
+.widget-mpris-title {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.widget-mpris-subtitle {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.widget-buttons-grid {
+    font-size: 1rem;
+    color: @text-color;
+    padding: 4px;
+    margin: 5px;
+    border-radius: 12px;
+    background: @noti-bg-alt;
+}
+
+.widget-buttons-grid>flowbox>flowboxchild>button {
+    margin: 2px;
+    background: @noti-bg;
+    border-radius: 10px;
+    border: 1px solid @noti-border-color;
+    color: @text-color;
+    padding: 6px;
+}
+
+.widget-buttons-grid>flowbox>flowboxchild>button:hover {
+    background: @noti-bg-hover;
+    border-color: @primary;
+    color: @primary;
+}
+
+.widget-menubar>box>.menu-button-bar>button {
+    border: none;
+    background: transparent;
+}
+
+.topbar-buttons>button {
+    border: none;
+    background: transparent;
+}
+
+.widget-volume {
+    background: @noti-bg-alt;
+    padding: 6px 10px;
+    margin: 8px 5px 4px 5px;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: @text-color;
+    border: 1px solid @noti-border-color;
+}
+
+.widget-volume>box>button {
+    background: @noti-border-color;
+    border: none;
+    border-radius: 8px;
+}
+
+.per-app-volume {
+    background-color: @noti-bg;
+    padding: 4px 8px 8px;
+    margin: 0 8px 8px;
+    border-radius: 10px;
+    color: @text-color;
+}
+
+.widget-backlight {
+    background: @noti-bg-alt;
+    padding: 6px 10px;
+    margin: 4px 5px 8px 5px;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: @text-color;
+    border: 1px solid @noti-border-color;
+}
