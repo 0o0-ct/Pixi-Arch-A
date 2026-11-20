@@ -14,9 +14,9 @@
 backend = "resized"
 
 # What colour space to use to produce and select the most prominent colours:
-# lab - labmixed - lch - lchmixed - oklab - oklch
-# oklch: espacio perceptual moderno, mejor discriminación cromática
-color_space = "oklch"
+# lab - labmixed - lch - lchmixed - salience - lch-ansi (wallust v3)
+# lch: OkLCh perceptual (equivale al oklch de wallust v2)
+color_space = "lch"
 
 # Palette scheme.  dark16 keeps a stable dark ANSI palette for terminals even
 # when the Material 3 mode is light.

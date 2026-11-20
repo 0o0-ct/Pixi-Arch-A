@@ -69,3 +69,30 @@ enable_monitors() {
 
 # Para actualizaciones futuras: 
 # git ls-files -s Hyprland-Dots/scripts/lib_apps.sh | awk '{print $2}' | xargs -I{} sh -c 'git show {} > /dev/null'
+
+# ASUS Linux (asusctl): configurar solo si está instalado; no fatal en otras laptops.
+enable_asusctl() {
+    local log="$1"
+    if command -v asusctl >/dev/null 2>&1; then
+        asusctl profile -P Balanced >/dev/null 2>&1 || true
+        echo "${OK:-[OK]} ASUS Linux (asusctl) detectado y configurado." | tee -a "$log" 2>/dev/null || true
+    else
+        echo "${NOTE:-[NOTE]} asusctl no instalado; omitiendo configuración ASUS." 2>/dev/null || true
+    fi
+    return 0
+}
+
+# Editor por defecto: respeta $EDITOR; en installs no interactivos deja el
+# fallback nano que ya define 01-UserDefaults.conf ($edit=${EDITOR:-nano}).
+choose_default_editor() {
+    local log="$1"
+    local CONF="$HOME/.config/hypr/UserConfigs/01-UserDefaults.conf"
+    [ -f "$CONF" ] || return 0
+    if [ -n "${EDITOR:-}" ]; then
+        sed -i "s|^#env = EDITOR,.*|env = EDITOR,${EDITOR}|" "$CONF"
+        echo "${OK:-[OK]} Editor por defecto configurado: ${EDITOR}" | tee -a "$log" 2>/dev/null || true
+    else
+        echo "${NOTE:-[NOTE]} Sin EDITOR definido; usando nano como editor fallback." 2>/dev/null || true
+    fi
+    return 0
+}

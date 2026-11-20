@@ -11,7 +11,11 @@ detect_nvidia_adjust() {
 
   if lspci -k | grep -A 2 -E "(VGA|3D)" | grep -iq nvidia; then
     echo "${INFO:-[INFO]} GPU Nvidia detectada. Ajustando parámetros de cursor..." 2>&1 | tee -a "$log" || true
-    sed -i 's/^\([[:space:]]*no_hardware_cursors[[:space:]]*=[[:space:]]*\)2/\1 1/' "$HOME/.config/hypr/configs/SystemSettings.conf"
+    # Layout v2 lua: SystemSettings.conf ya no existe; detect-gpu.sh gestiona
+    # no_hardware_cursors en su propio snippet. Se conserva el ajuste para
+    # instalaciones heredadas que aún tengan el archivo.
+    [ -f "$HOME/.config/hypr/configs/SystemSettings.conf" ] && \
+      sed -i 's/^\([[:space:]]*no_hardware_cursors[[:space:]]*=[[:space:]]*\)2/\1 1/' "$HOME/.config/hypr/configs/SystemSettings.conf"
   fi
 }
 
@@ -20,9 +24,14 @@ detect_vm_adjust() {
   local log="$1"
   if hostnamectl | grep -q 'Chassis: vm'; then
     echo "${INFO:-[INFO]} El sistema se está ejecutando en una máquina virtual. Configurando variables y ajustes adecuados." 2>&1 | tee -a "$log" || true
-    sed -i 's/^\([[:space:]]*no_hardware_cursors[[:space:]]*=[[:space:]]*\)2/\1 1/' "$HOME/.config/hypr/configs/SystemSettings.conf"
-    sed -i '/env = WLR_RENDERER_ALLOW_SOFTWARE,1/s/^#//' "$HOME/.config/hypr/configs/ENVariables.conf"
-    sed -i '/monitor = Virtual-1, 1920x1080@60,auto,1/s/^#//' "$HOME/.config/hypr/monitors.conf"
+    # Layout v2 lua: estos archivos heredados solo se ajustan si existen
+    if [ -f "$HOME/.config/hypr/configs/SystemSettings.conf" ]; then
+      sed -i 's/^\([[:space:]]*no_hardware_cursors[[:space:]]*=[[:space:]]*\)2/\1 1/' "$HOME/.config/hypr/configs/SystemSettings.conf"
+    fi
+    [ -f "$HOME/.config/hypr/configs/ENVariables.conf" ] && \
+      sed -i '/env = WLR_RENDERER_ALLOW_SOFTWARE,1/s/^#//' "$HOME/.config/hypr/configs/ENVariables.conf"
+    [ -f "$HOME/.config/hypr/monitors.conf" ] && \
+      sed -i '/monitor = Virtual-1, 1920x1080@60,auto,1/s/^#//' "$HOME/.config/hypr/monitors.conf"
   fi
 }
 

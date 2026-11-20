@@ -75,7 +75,7 @@ DEFAULT_SETTINGS = {
     "glass": "auto",
     "extraction": {
         "backend": "resized",
-        "color_space": "oklch",
+        "color_space": "lch",
         "palette": "dark16",
         "threshold": 8,
         "saturation_target": 0.15,
@@ -584,7 +584,7 @@ class Extractor:
         config = directory / "wallust.toml"
         text = (
             f'backend = "{self.settings.get("backend", "resized")}"\n'
-            f'color_space = "{self.settings.get("color_space", "oklch")}"\n'
+            f'color_space = "{self.settings.get("color_space", "lch")}"\n'
             f'palette = "{self.settings.get("palette", "dark16")}"\n'
             f'threshold = {int(self.settings.get("threshold", 8))}\n'
             f'saturation_target = {float(self.settings.get("saturation_target", 0.15))}\n'
