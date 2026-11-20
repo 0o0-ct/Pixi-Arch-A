@@ -80,8 +80,8 @@
 	"tooltip-format-connected": "{device_enumerate}",
 	"tooltip-format-enumerate-connected": "󰂱 {device_alias} 󰂄 {device_battery_percentage}%",
 	"tooltip": true,
-	"on-click": "pidof glass-bt && killall glass-bt || glass-bt",
-	"on-click-right": "pidof glass-bt && killall glass-bt || glass-bt",
+	"on-click": "pidof glass-bt >/dev/null 2>&1 || { setsid glass-bt --hidden >/dev/null 2>&1 & sleep 0.3; }; kill -USR1 $(pidof glass-bt) 2>/dev/null || true",
+	"on-click-right": "pidof glass-bt >/dev/null 2>&1 || { setsid glass-bt --hidden >/dev/null 2>&1 & sleep 0.3; }; kill -USR1 $(pidof glass-bt) 2>/dev/null || true",
 	"on-click-middle": "rfkill toggle bluetooth"
 },
 
@@ -245,7 +245,7 @@
 },
 
 "network": {
-	"on-click": "$HOME/.config/hypr/scripts/QsCenterToggle.sh netcenter",
+	"on-click": "pidof glass-net >/dev/null 2>&1 || { setsid glass-net --hidden >/dev/null 2>&1 & sleep 0.3; }; kill -USR1 $(pidof glass-net) 2>/dev/null || true",
 	"format": "{ifname}",
 	"format-wifi": "{icon}",
 	"format-ethernet": "󰈀",
@@ -258,14 +258,12 @@
 	"max-length": 30,
 	"format-icons": [
 		"󰤯", "󰤟", "󰤢", "󰤥", "󰤨"
-	],
-	"on-click-right": "$HOME/.config/hypr/scripts/NetworkMenu.sh"
+	]
 },
 
 "network#speed": {
 	"interval": 5,
-	"on-click": "$HOME/.config/hypr/scripts/QsCenterToggle.sh netcenter",
-	"on-click-right": "$HOME/.config/hypr/scripts/NetworkMenu.sh",
+	"on-click": "pidof glass-net >/dev/null 2>&1 || { setsid glass-net --hidden >/dev/null 2>&1 & sleep 0.3; }; kill -USR1 $(pidof glass-net) 2>/dev/null || true",
 	"format": "{ifname}",
 	"format-wifi": "{icon} 󰕒 {bandwidthUpBytes} 󰇚 {bandwidthDownBytes}",
 	"format-ethernet": "󰈀 󰕒 {bandwidthUpBytes} 󰇚 {bandwidthDownBytes}",
@@ -279,8 +277,7 @@
 	"max-length": 24,
 	"format-icons": [
 		"󰤯", "󰤟", "󰤢", "󰤥", "󰤨"
-	],
-	"on-click-right": "$HOME/.config/hypr/scripts/NetworkMenu.sh"
+	]
 },
 
 "power-profiles-daemon": {

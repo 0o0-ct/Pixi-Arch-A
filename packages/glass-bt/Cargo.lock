@@ -489,7 +489,7 @@ dependencies = [
 
 [[package]]
 name = "glass-bt"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "async-channel",
  "bluer",
@@ -497,7 +497,7 @@ dependencies = [
  "gtk4",
  "gtk4-layer-shell",
  "serde",
- "serde_json",
+ "signal-hook",
  "tokio",
 ]
 
@@ -1047,6 +1047,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c187e0a369471c550af028cba56d4f4fa2a489ad28151ae95a4d340a2a8b782"
 dependencies = [
  "serde_core",
+]
+
+[[package]]
+name = "signal-hook"
+version = "0.3.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d881a16cf4426aa584979d30bd82cb33429027e42122b169753d6ef1085ed6e2"
+dependencies = [
+ "libc",
+ "signal-hook-registry",
 ]
 
 [[package]]

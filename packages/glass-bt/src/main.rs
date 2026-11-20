@@ -10,6 +10,8 @@ use ui::UiApp;
 
 fn main() {
     let use_layer = env::args().any(|a| a == "--layer");
+    // --hidden: precarga como daemon sin mostrar la ventana (autostart)
+    let start_hidden = env::args().any(|a| a == "--hidden");
 
     // Canales bidireccionales Tokio <-> GTK4
     let (cmd_tx, cmd_rx) = async_channel::unbounded::<BtCommand>();
@@ -32,7 +34,7 @@ fn main() {
         .expect("Fallo al crear hilo del worker Bluetooth");
 
     // Interfaz gráfica GTK4 en el hilo principal (flotante por defecto)
-    let ui_app = UiApp::new(cmd_tx, event_rx, use_layer);
+    let ui_app = UiApp::new(cmd_tx, event_rx, use_layer, start_hidden);
     ui_app.run();
 
     // Al cerrar la ventana, terminar limpiamente

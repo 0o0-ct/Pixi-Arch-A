@@ -52,12 +52,14 @@ impl BtWindow {
             window.set_margin(Edge::Right, 16);
         }
 
-        // ── Atajo de teclado: Escape cierra la aplicación ─────────────────
+        // ── Atajo de teclado: Escape oculta la ventana (el daemon sigue vivo) ──
         let key_controller = EventControllerKey::new();
-        let app_esc = app.clone();
+        let win_esc = window.clone();
+        let tx_esc = cmd_tx.clone();
         key_controller.connect_key_pressed(move |_, keyval, _, _| {
             if keyval == gtk4::gdk::Key::Escape {
-                app_esc.quit();
+                win_esc.hide();
+                let _ = tx_esc.send_blocking(BtCommand::SetVisible(false));
                 glib::Propagation::Stop
             } else {
                 glib::Propagation::Proceed
@@ -72,10 +74,12 @@ impl BtWindow {
         // Barra superior de cabecera
         let header = Header::new(cmd_tx.clone());
 
-        // Conectar botón de cerrar integrado en la cabecera
-        let app_close = app.clone();
+        // Botón de cerrar: oculta la ventana (el daemon sigue precargado)
+        let win_close = window.clone();
+        let tx_close = cmd_tx.clone();
         header.close_button.connect_clicked(move |_| {
-            app_close.quit();
+            win_close.hide();
+            let _ = tx_close.send_blocking(BtCommand::SetVisible(false));
         });
 
         main_panel.append(&header.container);

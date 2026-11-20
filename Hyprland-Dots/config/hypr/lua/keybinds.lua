@@ -87,7 +87,8 @@ bind("SUPER + R", exec(scriptsDir .. "/Refresh.sh"), { description = "recargar b
 bind("SUPER + CTRL + ALT + B", exec("pkill -SIGUSR1 waybar"), { description = "alternar waybar" })
 bind("SUPER + CTRL + B", exec(scriptsDir .. "/WaybarStyles.sh"), { description = "menu de estilos waybar" })
 bind("SUPER + ALT + B", exec(scriptsDir .. "/WaybarLayout.sh"), { description = "menu de diseno waybar" })
-bind("SUPER + SHIFT + B", exec("pidof glass-bt && killall glass-bt || glass-bt"), { description = "gestor bluetooth glass" })
+bind("SUPER + SHIFT + B", exec("pidof glass-bt >/dev/null 2>&1 || { setsid glass-bt --hidden >/dev/null 2>&1 & sleep 0.3; }; kill -USR1 $(pidof glass-bt) 2>/dev/null || true"), { description = "gestor bluetooth glass" })
+bind("SUPER + SHIFT + N", exec("pidof glass-net >/dev/null 2>&1 || { setsid glass-net --hidden >/dev/null 2>&1 & sleep 0.3; }; kill -USR1 $(pidof glass-net) 2>/dev/null || true"), { description = "gestor de red glass" })
 
 -- =========================================================================
 -- 3. GESTIÓN DE VENTANAS Y ESTADOS (NATIVE DISPATCHERS)

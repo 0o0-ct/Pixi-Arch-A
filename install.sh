@@ -572,6 +572,10 @@ for option in "${options[@]}"; do
             echo "${INFO} Configurando ${SKY_BLUE}Bluetooth...${RESET}" | tee -a "$LOG"
             execute_script "bluetooth.sh"
             ;;
+        network)
+            echo "${INFO} Configurando ${SKY_BLUE}Red (glass-net)...${RESET}" | tee -a "$LOG"
+            execute_script "network.sh"
+            ;;
         thunar)
             echo "${INFO} Instalando ${SKY_BLUE}el gestor de archivos Thunar & Plugins...${RESET}" | tee -a "$LOG"
             execute_script "thunar.sh"

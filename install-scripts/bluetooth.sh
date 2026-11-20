@@ -108,3 +108,30 @@ DESK
 update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
 printf "\n%.0s" {1..2}
+
+# ── Autostart de daemons glass (abren al instante con SIGUSR1) ──
+mkdir -p "$HOME/.config/autostart"
+cat << 'DESK' > "$HOME/.config/autostart/glass-bt.desktop"
+[Desktop Entry]
+Type=Application
+Name=Glass Bluetooth Daemon
+Comment=Precarga glass-bt oculto para apertura instantánea
+Exec=glass-bt --hidden
+Terminal=false
+Type=Application
+X-GNOME-Autostart-enabled=true
+Categories=Settings;HardwareSettings;
+Keywords=bluetooth;glass;daemon;
+DESK
+cat << 'DESK' > "$HOME/.config/autostart/glass-net.desktop"
+[Desktop Entry]
+Type=Application
+Name=Glass Network Daemon
+Comment=Precarga glass-net oculto para apertura instantánea
+Exec=glass-net --hidden
+Terminal=false
+Type=Application
+X-GNOME-Autostart-enabled=true
+Categories=Settings;Network;
+Keywords=network;wifi;glass;daemon;
+DESK

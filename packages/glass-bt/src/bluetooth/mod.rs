@@ -330,6 +330,15 @@ impl BluetoothService {
                                     let _ = dev.set_trusted(val).await;
                                 }
                         }
+                        BtCommand::SetVisible(v) => {
+                            if !v {
+                                // Oculto (modo daemon): detener el escaneo para no gastar radio
+                                if let Some(tx) = discovery_cancel.take() {
+                                    let _ = tx.send(());
+                                    let _ = self.ui_tx.send(BtEvent::ScanStateChanged(false)).await;
+                                }
+                            }
+                        }
                         BtCommand::PairingResponse { req_id, accept, pin_code } => {
                             self.agent_controller.handle_response(req_id, accept, pin_code).await;
                         }

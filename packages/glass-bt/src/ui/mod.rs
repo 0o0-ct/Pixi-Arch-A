@@ -113,6 +113,7 @@ pub struct UiApp {
     cmd_tx: async_channel::Sender<BtCommand>,
     event_rx: async_channel::Receiver<BtEvent>,
     use_layer_shell: bool,
+    start_hidden: bool,
 }
 
 impl UiApp {
@@ -120,8 +121,9 @@ impl UiApp {
         cmd_tx: async_channel::Sender<BtCommand>,
         event_rx: async_channel::Receiver<BtEvent>,
         use_layer_shell: bool,
+        start_hidden: bool,
     ) -> Self {
-        Self { cmd_tx, event_rx, use_layer_shell }
+        Self { cmd_tx, event_rx, use_layer_shell, start_hidden }
     }
 
     pub fn run(self) {
@@ -132,6 +134,32 @@ impl UiApp {
         let cmd_tx = self.cmd_tx;
         let event_rx = self.event_rx;
         let use_layer = self.use_layer_shell;
+        let start_hidden = self.start_hidden;
+
+        // ── Vigilante SIGUSR1: toggle instantáneo desde waybar/keybinds ────
+        // Un hilo captura la señal y la reenvía por async_channel a una bomba
+        // del loop GTK. Con el daemon precargado (autostart --hidden),
+        // `pkill -USR1 glass-bt` muestra/oculta la ventana al instante.
+        let (sig_tx, sig_rx) = async_channel::unbounded::<()>();
+        std::thread::Builder::new()
+            .name("sigusr1-watch".into())
+            .spawn(move || {
+                let Ok(mut signals) =
+                    signal_hook::iterator::Signals::new([signal_hook::consts::SIGUSR1])
+                else {
+                    return;
+                };
+                for _ in signals.forever() {
+                    if sig_tx.send_blocking(()).is_err() {
+                        break;
+                    }
+                }
+            })
+            .expect("Fallo al crear hilo vigilante de SIGUSR1");
+
+        // Slot único de ventana (evita ventanas duplicadas si alguien relanza
+        // el binario: la GApplication reenvía la activación a esta instancia)
+        let window_slot: Rc<RefCell<Option<Rc<RefCell<BtWindow>>>>> = Rc::new(RefCell::new(None));
 
         app.connect_startup(|_| {
             let provider = CssProvider::new();
@@ -190,7 +218,17 @@ impl UiApp {
         });
 
         app.connect_activate(move |app| {
+            let slot_for_activate = window_slot.clone();
+
+            // Si la ventana ya existe (relanzamiento del binario), solo mostrarla
+            if let Some(win) = slot_for_activate.borrow().clone() {
+                win.borrow().window.present();
+                let _ = cmd_tx.send_blocking(BtCommand::SetVisible(true));
+                return;
+            }
+
             let bt_window = Rc::new(RefCell::new(BtWindow::new(app, cmd_tx.clone(), use_layer)));
+            *slot_for_activate.borrow_mut() = Some(bt_window.clone());
 
             // Conectar el buscador
             {
@@ -211,7 +249,28 @@ impl UiApp {
                 }
             });
 
-            bt_window.borrow().window.present();
+            // Bomba SIGUSR1: alternar visibilidad al instante (modo daemon)
+            let sig_rx = sig_rx.clone();
+            let win_for_signals = bt_window.clone();
+            let tx_for_signals = cmd_tx.clone();
+            glib::spawn_future_local(async move {
+                while sig_rx.recv().await.is_ok() {
+                    let visible = win_for_signals.borrow().window.is_visible();
+                    if visible {
+                        win_for_signals.borrow().window.hide();
+                        let _ = tx_for_signals.send_blocking(BtCommand::SetVisible(false));
+                    } else {
+                        win_for_signals.borrow().window.present();
+                        let _ = tx_for_signals.send_blocking(BtCommand::SetVisible(true));
+                    }
+                }
+            });
+
+            // --hidden (autostart del daemon): no presentar la ventana
+            if !start_hidden {
+                bt_window.borrow().window.present();
+                let _ = cmd_tx.send_blocking(BtCommand::SetVisible(true));
+            }
         });
 
         app.run_with_args::<String>(&[]);

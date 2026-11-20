@@ -1,6 +1,6 @@
 # Maintainer: 0o0-ct <https://github.com/0o0-ct/Pixi-Arch-A>
 pkgname=glass-bt
-pkgver=0.1.0
+pkgver=0.2.0
 pkgrel=1
 pkgdesc="Native glassmorphism Bluetooth manager for Hyprland/Wayland written in Rust"
 arch=('x86_64')

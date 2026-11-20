@@ -1,0 +1,26 @@
+# Maintainer: 0o0-ct <https://github.com/0o0-ct/Pixi-Arch-A>
+pkgname=glass-net
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Gestor de red Wi-Fi/Ethernet/VPN glassmorphism nativo GTK4 para Hyprland"
+arch=('x86_64')
+url="https://github.com/0o0-ct/Pixi-Arch-A"
+license=('MIT')
+depends=('gtk4' 'gtk4-layer-shell' 'networkmanager')
+makedepends=('rust' 'cargo')
+provides=('glass-net')
+conflicts=('glass-net-bin')
+source=("$pkgname-$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  cd "$pkgname"
+  export RUSTUP_TOOLCHAIN=stable
+  cargo build --release --locked
+}
+
+package() {
+  cd "$pkgname"
+  install -Dm755 target/release/glass-net "$pkgdir/usr/bin/glass-net"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+}

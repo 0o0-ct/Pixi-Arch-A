@@ -23,3 +23,6 @@ extraccion de colores/
 yo-github/
 GTK-themes-icons/
 rendimiento.txt
+
+# Artifacts de sesión del agente ZCode (no subir)
+.zcode/

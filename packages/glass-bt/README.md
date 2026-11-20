@@ -28,7 +28,18 @@ sudo pacman -S --needed gtk4 gtk4-layer-shell bluez bluez-utils rust cargo
 
 ## 🚀 Compilación e Instalación
 
-### Compilación local
+### Modo daemon (apertura instantánea)
+
+Desde la v0.2.0 glass-bt corre como daemon precargado:
+
+- El autostart (`~/.config/autostart/glass-bt.desktop`) lo lanza con `--hidden`
+  al iniciar sesión: la sesión BlueZ ya está viva y la ventana oculta.
+- Cualquier click / keybind / botón rápido envía `SIGUSR1`:
+  `kill -USR1 $(pidof glass-bt)` → muestra u oculta la ventana en ~30 ms.
+- Esc o el botón ✕ **ocultan** la ventana (el daemon sigue vivo).
+- Para terminar el daemon de verdad: `killall glass-bt`.
+
+## Compilación local
 ```bash
 cd ~/Proyectos/glass-bt
 cargo build --release
@@ -71,7 +82,8 @@ hl.bind("SUPER + ALT, B", "exec", "glass-bt")
 
 O para toggle inteligente (abrir si está cerrado, cerrar si está abierto):
 ```lua
-hl.bind("SUPER + ALT, B", "exec", "pidof glass-bt && killall glass-bt || glass-bt")
+# Toggle instantáneo (daemon precargado con autostart --hidden)
+hl.bind("SUPER + SHIFT + B", "exec", "pidof glass-bt >/dev/null 2>&1 || { setsid glass-bt --hidden & sleep 0.3; }; kill -USR1 $(pidof glass-bt)")
 ```
 
 ### 3. Integración con Waybar
@@ -82,7 +94,8 @@ En `~/.config/waybar/Modules`:
     "format": " {status}",
     "format-disabled": "󰂲",
     "format-connected": "󰂱 {device_alias}",
-    "on-click": "pidof glass-bt && killall glass-bt || glass-bt",
+    # Daemon precargado: el click alterna la ventana al instante (SIGUSR1)
+    "on-click": "pidof glass-bt >/dev/null 2>&1 || { setsid glass-bt --hidden & sleep 0.3; }; kill -USR1 $(pidof glass-bt) 2>/dev/null || true",
     "tooltip-format": "{controller_alias}\t{controller_address}"
 }
 ```

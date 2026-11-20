@@ -15,13 +15,15 @@ if [ -z "$config" ]; then
     exit 2
 fi
 
+# Delegar Red/WiFi a glass-net (nativo Rust, mismo patrón que glass-bt)
+if [ "$config" = "netcenter" ]; then
+    pidof glass-net >/dev/null 2>&1 || { setsid glass-net --hidden >/dev/null 2>&1 & sleep 0.3; }; kill -USR1 $(pidof glass-net) 2>/dev/null || true
+    exit 0
+fi
+
 # Delegar Bluetooth a glass-bt (nativo Rust centrado en monitor y arrastrable)
 if [ "$config" = "btcenter" ]; then
-    if pidof glass-bt >/dev/null 2>&1; then
-        killall glass-bt
-    else
-        glass-bt &
-    fi
+    pidof glass-bt >/dev/null 2>&1 || { setsid glass-bt --hidden >/dev/null 2>&1 & sleep 0.3; }; kill -USR1 $(pidof glass-bt) 2>/dev/null || true
     exit 0
 fi
 

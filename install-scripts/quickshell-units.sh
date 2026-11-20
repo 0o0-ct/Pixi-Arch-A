@@ -20,7 +20,7 @@
 # notificaciones se comportarían de forma errática.
 
 # Paneles activos de QuickShell (btcenter reemplazado por el gestor nativo glass-bt)
-qs_panels=(audiocenter controlcenter netcenter)
+qs_panels=(audiocenter controlcenter)  # netcenter delegado a glass-net (nativo)
 
 # Limpiar servicio residual de btcenter si existía
 systemctl --user stop btcenter.service 2>/dev/null || true

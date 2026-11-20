@@ -153,6 +153,8 @@ pub struct PairingRequest {
 
 #[derive(Debug, Clone)]
 pub enum BtCommand {
+    /// Ventana visible u oculta: oculto → detener escaneo (modo daemon)
+    SetVisible(bool),
     TogglePower,
     SetPower(bool),
     StartScan,

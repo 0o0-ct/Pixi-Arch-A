@@ -86,7 +86,11 @@
               },
               {
                   "label": "󰂯",
-                  "command": "glass-bt"
+                  "command": "pidof glass-bt >/dev/null 2>&1 || { setsid glass-bt --hidden >/dev/null 2>&1 & sleep 0.3; }; kill -USR1 $(pidof glass-bt) 2>/dev/null || true"
+              },
+              {
+                  "label": "󰤨",
+                  "command": "pidof glass-net >/dev/null 2>&1 || { setsid glass-net --hidden >/dev/null 2>&1 & sleep 0.3; }; kill -USR1 $(pidof glass-net) 2>/dev/null || true"
               }
           ]
       }
