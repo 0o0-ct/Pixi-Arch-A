@@ -4,6 +4,7 @@ pub mod device_row;
 pub mod pairing_dialog;
 pub mod window;
 
+use std::path::PathBuf;
 use std::rc::Rc;
 use std::cell::RefCell;
 use gtk4::gio;
@@ -16,9 +17,71 @@ use self::window::BtWindow;
 
 const STYLE_CSS: &str = include_str!("style.css");
 
-fn get_wallust_css_path() -> String {
+/// Resuelve la ruta del ejecutable actual (portable: funciona compilado en dev
+/// o instalado a /usr/local/bin, /usr/bin, etc.).
+fn current_exe_dir() -> Option<PathBuf> {
+    std::env::current_exe().ok().and_then(|p| p.parent().map(PathBuf::from))
+}
+
+/// Resuelve la ruta local de style.css de forma portable.
+///
+/// Estrategia de búsqueda (orden de prioridad):
+/// 1. `$XDG_CONFIG_HOME/glass-bt/style.css`  (~/.config/glass-bt/style.css)
+///    → instalación limpia: el CSS vive junto a la config del usuario
+/// 2. `DATADIR/glass-bt/style.css` donde DATADIR se deriva del ejecutable:
+///    - Si el bin está en `/usr/local/bin` → busca `/usr/local/share/glass-bt/style.css`
+///    - Si el bin está en `/usr/bin`       → busca `/usr/share/glass-bt/style.css`
+///    - Si el bin está en `.../target/release` → busca `.../src/ui/style.css` (dev)
+/// 3. `$HOME/.local/share/glass-bt/style.css` (local install)
+/// 4. Fallback a `STYLE_CSS` embebido (include_str!)
+fn resolve_local_css_path() -> Option<PathBuf> {
+    // 1. XDG config
+    let config_home = std::env::var("XDG_CONFIG_HOME")
+        .ok()
+        .or_else(|| std::env::var("HOME").ok().map(|h| format!("{h}/.config")));
+
+    if let Some(ch) = config_home {
+        let p = PathBuf::from(format!("{ch}/glass-bt/style.css"));
+        if p.exists() { return Some(p); }
+    }
+
+    // 2. Derivar desde el ejecutable
+    if let Some(exe_dir) = current_exe_dir() {
+        // Caso desarrollo: .../target/release/glass-bt → subir 2 niveles → src/ui/
+        if exe_dir.ends_with("target/release") || exe_dir.ends_with("target/debug") {
+            let dev_css = exe_dir
+                .parent()?.parent()?
+                .join("src/ui/style.css");
+            if dev_css.exists() { return Some(dev_css); }
+        }
+
+        // Caso instalado: /usr/local/bin → /usr/local/share/glass-bt/
+        //                  /usr/bin       → /usr/share/glass-bt/
+        if let Some(grandparent) = exe_dir.parent().and_then(|p| p.parent()) {
+            // /usr/local/bin → parent=/usr/local → grandparent=/usr
+            // queremos: /usr/local/share/glass-bt/ ó /usr/share/glass-bt/
+            let parent = exe_dir.parent()?;
+            let share_css = parent.join("share/glass-bt/style.css");
+            if share_css.exists() { return Some(share_css); }
+
+            // También intentar grandparent/share/
+            let share_css2 = grandparent.join("share/glass-bt/style.css");
+            if share_css2.exists() { return Some(share_css2); }
+        }
+    }
+
+    // 3. $HOME/.local/share
+    if let Ok(home) = std::env::var("HOME") {
+        let p = PathBuf::from(format!("{home}/.local/share/glass-bt/style.css"));
+        if p.exists() { return Some(p); }
+    }
+
+    None
+}
+
+fn get_wallust_css_path() -> PathBuf {
     let home = std::env::var("HOME").unwrap_or_else(|_| "/home/c0o0c".to_string());
-    format!("{home}/.config/waybar/wallust/colors-waybar.css")
+    PathBuf::from(format!("{home}/.config/waybar/wallust/colors-waybar.css"))
 }
 
 fn build_theme_css() -> String {
@@ -38,8 +101,10 @@ fn build_theme_css() -> String {
          @define-color color15 #d9e2ff;\n".to_string()
     });
 
-    let dev_css_path = "/home/c0o0c/Proyectos/glass-bt/src/ui/style.css";
-    let base_style = std::fs::read_to_string(dev_css_path).unwrap_or_else(|_| STYLE_CSS.to_string());
+    // CSS local: intentar resolver dinámicamente, fallback a embebido
+    let base_style = resolve_local_css_path()
+        .and_then(|p| std::fs::read_to_string(p).ok())
+        .unwrap_or_else(|| STYLE_CSS.to_string());
 
     format!("{wallust_palette}\n\n{base_style}")
 }
@@ -100,17 +165,19 @@ impl UiApp {
                 });
             }
 
-            // ── 2. Recarga en caliente al editar src/ui/style.css ──────────────
-            let dev_css_path = "/home/c0o0c/Proyectos/glass-bt/src/ui/style.css";
-            let file = gio::File::for_path(dev_css_path);
-            if let Ok(monitor) = file.monitor_file(gio::FileMonitorFlags::NONE, gio::Cancellable::NONE) {
-                let p = provider.clone();
-                monitor.connect_changed(move |_, _, _, event| {
-                    if event == gio::FileMonitorEvent::ChangesDoneHint || event == gio::FileMonitorEvent::Changed {
-                        let new_css = build_theme_css();
-                        p.load_from_data(&new_css);
-                    }
-                });
+            // ── 2. Recarga en caliente al editar style.css ──────────────
+            // La ruta se resuelve dinámicamente (mismo orden que build_theme_css)
+            if let Some(css_path) = resolve_local_css_path() {
+                let file = gio::File::for_path(css_path);
+                if let Ok(monitor) = file.monitor_file(gio::FileMonitorFlags::NONE, gio::Cancellable::NONE) {
+                    let p = provider.clone();
+                    monitor.connect_changed(move |_, _, _, event| {
+                        if event == gio::FileMonitorEvent::ChangesDoneHint || event == gio::FileMonitorEvent::Changed {
+                            let new_css = build_theme_css();
+                            p.load_from_data(&new_css);
+                        }
+                    });
+                }
             }
 
             if let Some(display) = gtk4::gdk::Display::default() {
