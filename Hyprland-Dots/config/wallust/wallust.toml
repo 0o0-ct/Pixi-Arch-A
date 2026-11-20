@@ -10,11 +10,13 @@
 
 # How the image is parsed, in order to get the colours:
 # full - resized - wal - thumb - fastresize - kmeans
-backend = "fastresize"
+# resized: mejor calidad que fastresize, balance velocidad/calidad
+backend = "resized"
 
 # What colour space to use to produce and select the most prominent colours:
-# lab - labmixed - lch - lchmixed
-color_space = "lch"
+# lab - labmixed - lch - lchmixed - oklab - oklch
+# oklch: espacio perceptual moderno, mejor discriminación cromática
+color_space = "oklch"
 
 # Palette scheme.  dark16 keeps a stable dark ANSI palette for terminals even
 # when the Material 3 mode is light.
@@ -26,4 +28,14 @@ palette = "dark16"
 #  2 - 10     Perceptible at a glance.
 #  11 - 49    Colours are more similar than opposite
 #  100        Colours are exact opposite
-threshold = 11
+# 8: mejor separación de colores similares, evita duplicados en paleta
+threshold = 8
+
+# Configuración de calidad de extracción
+# saturation_target: objetivo de saturación mínima para colores prominentes (0-1)
+# 0.15: filtra colores muy desaturados (grises) que no aportan identidad visual
+saturation_target = 0.15
+
+# max_iterations: iteraciones máximas de clustering k-means
+# 20: convergencia robusta sin penalizar rendimiento
+max_iterations = 20

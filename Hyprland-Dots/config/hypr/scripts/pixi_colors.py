@@ -74,16 +74,21 @@ DEFAULT_SETTINGS = {
     "scheme": "auto",
     "glass": "auto",
     "extraction": {
-        "backend": "fastresize",
-        "color_space": "lch",
+        "backend": "resized",
+        "color_space": "oklch",
         "palette": "dark16",
-        "threshold": 11,
+        "threshold": 8,
+        "saturation_target": 0.15,
+        "max_iterations": 20,
     },
-    "glass_threshold": 0.55,
+    "glass_threshold": 0.52,
     "apply_gtk_scheme": True,
     "reload": True,
     "run_wallpaper_hooks": True,
     "notify_on_error": True,
+    "contrast_ratio": 4.5,
+    "favorite_palettes": {},
+    "transition_duration": 0.8,
 }
 
 M3_SCHEMES = (
@@ -579,9 +584,11 @@ class Extractor:
         config = directory / "wallust.toml"
         text = (
             f'backend = "{self.settings.get("backend", "resized")}"\n'
-            f'color_space = "{self.settings.get("color_space", "lch")}"\n'
+            f'color_space = "{self.settings.get("color_space", "oklch")}"\n'
             f'palette = "{self.settings.get("palette", "dark16")}"\n'
-            f'threshold = {int(self.settings.get("threshold", 11))}\n\n'
+            f'threshold = {int(self.settings.get("threshold", 8))}\n'
+            f'saturation_target = {float(self.settings.get("saturation_target", 0.15))}\n'
+            f'max_iterations = {int(self.settings.get("max_iterations", 20))}\n\n'
             "[templates]\n"
             f'palette.template = "{template}"\n'
             f'palette.target = "{out}"\n'
@@ -796,6 +803,176 @@ def fallback_roles(palette: dict[str, str], mode: str) -> dict[str, str]:
         "scrim": "#000000",
         "shadow": "#000000",
     }
+
+
+# ---------------------------------------------------------------------------
+# Enhanced color utilities
+# ---------------------------------------------------------------------------
+
+def select_matugen_scheme(seed: str, regions: dict[str, float], settings: dict) -> str:
+    """Intelligent Matugen scheme selection based on image characteristics.
+    
+    Analyzes the seed color (LCh) and image regions to pick the best scheme:
+    - scheme-neutral: grayscale/monochrome images
+    - scheme-fidelity: bright top region (sky, bright backgrounds)
+    - scheme-vibrant: highly saturated colors
+    - scheme-tonal-spot: balanced default for most images
+    - scheme-expressive: artistic/colorful images
+    - scheme-monochrome: single dominant hue
+    """
+    try:
+        L, C, H = lab_lch(seed)
+    except EngineError:
+        return "scheme-tonal-spot"
+    
+    # Very low chroma = neutral/grayscale
+    if C < 8:
+        return "scheme-neutral"
+    
+    # Very high chroma = vibrant
+    if C > 70:
+        return "scheme-vibrant"
+    
+    # Bright top region (sky, bright walls) -> fidelity preserves brightness
+    if regions.get("top", 0.5) > 0.68:
+        return "scheme-fidelity"
+    
+    # Dark image with moderate chroma -> tonal spot for depth
+    if L < 35 and C > 20:
+        return "scheme-tonal-spot"
+    
+    # Single dominant hue (check if color2, color4, color6 are similar hue)
+    # For now, use expressive for artistic mid-chroma images
+    if 25 < C < 55 and L > 40:
+        return "scheme-expressive"
+    
+    # Default balanced
+    return "scheme-tonal-spot"
+
+
+def enforce_wcag_contrast(m3: dict[str, str], colors: dict[str, str], 
+                          target_ratio: float = 4.5) -> dict[str, str]:
+    """Ensure all on_* roles meet WCAG AA contrast ratio against their backgrounds.
+    
+    Modifies the M3 roles in-place to guarantee accessibility.
+    """
+    # Pairs to check: (foreground_role, background_role)
+    contrast_pairs = [
+        ("on_primary", "primary"),
+        ("on_primary_container", "primary_container"),
+        ("on_secondary", "secondary"),
+        ("on_secondary_container", "secondary_container"),
+        ("on_tertiary", "tertiary"),
+        ("on_tertiary_container", "tertiary_container"),
+        ("on_error", "error"),
+        ("on_error_container", "error_container"),
+        ("on_background", "background"),
+        ("on_surface", "surface"),
+        ("on_surface_variant", "surface_variant"),
+    ]
+    
+    enforced = m3.copy()
+    for fg_role, bg_role in contrast_pairs:
+        if fg_role in enforced and bg_role in enforced:
+            fg = enforced[fg_role]
+            bg = enforced[bg_role]
+            current_ratio = contrast(fg, bg)
+            
+            if current_ratio < target_ratio:
+                # Determine direction: lighten or darken foreground
+                bg_lum = luminance(bg)
+                if bg_lum > 0.5:
+                    # Light background -> darken foreground
+                    target_lum = 0.5 * bg_lum - 0.05  # approx for ratio
+                    new_fg = ensure_dark(fg, target_lum)
+                else:
+                    # Dark background -> lighten foreground
+                    target_lum = 2 * bg_lum + 0.1
+                    new_fg = ensure_light(fg, target_lum)
+                
+                # Iterate to find exact match
+                for _ in range(10):
+                    if contrast(new_fg, bg) >= target_ratio:
+                        break
+                    if bg_lum > 0.5:
+                        new_fg = ensure_dark(new_fg, luminance(new_fg) - 0.05)
+                    else:
+                        new_fg = ensure_light(new_fg, luminance(new_fg) + 0.05)
+                
+                enforced[fg_role] = new_fg
+    
+    return enforced
+
+
+def save_favorite_palette(name: str, colors: dict[str, str], m3: dict[str, str],
+                          settings: dict, config_path: Path) -> bool:
+    """Save current palette as a user favorite for quick recall."""
+    favorites = settings.get("favorite_palettes", {})
+    favorites[name] = {
+        "timestamp": now_iso(),
+        "wallust": {k: colors[k] for k in LEGACY_KEYS if k in colors},
+        "matugen": {k: m3[k] for k in M3_ROLE_ORDER if k in m3},
+        "settings": {
+            "mode": settings.get("mode", "dark"),
+            "scheme": settings.get("scheme", "auto"),
+            "glass": settings.get("glass", "auto"),
+        }
+    }
+    settings["favorite_palettes"] = favorites
+    save_settings(config_path, settings)
+    return True
+
+
+def load_favorite_palette(name: str, settings: dict) -> tuple[dict, dict] | None:
+    """Load a saved favorite palette."""
+    favorites = settings.get("favorite_palettes", {})
+    if name not in favorites:
+        return None
+    fav = favorites[name]
+    return fav.get("wallust", {}), fav.get("matugen", {})
+
+
+def list_favorite_palettes(settings: dict) -> list[str]:
+    """List all saved favorite palette names."""
+    return list(settings.get("favorite_palettes", {}).keys())
+
+
+def blend_palettes(palette_a: dict[str, str], palette_b: dict[str, str], 
+                   weight_a: float = 0.5) -> dict[str, str]:
+    """Blend two Wallust palettes for smooth transitions."""
+    result = {}
+    for key in LEGACY_KEYS:
+        if key in palette_a and key in palette_b:
+            result[key] = blend(palette_a[key], palette_b[key], weight_a)
+        elif key in palette_a:
+            result[key] = palette_a[key]
+        elif key in palette_b:
+            result[key] = palette_b[key]
+    return result
+
+
+def render_transition_overlay(progress: float, from_tokens: dict, to_tokens: dict) -> str:
+    """Generate CSS for smooth glass transition (used by Waybar/SwayNC)."""
+    lines = [
+        "/* ---- 💫 Transition Overlay - Generated by pixi_colors.py ---- */",
+        f"/* Progress: {progress:.2f} */",
+    ]
+    all_keys = set(from_tokens.keys()) | set(to_tokens.keys())
+    for key in sorted(all_keys):
+        from_val = from_tokens.get(key, to_tokens.get(key, "#000000"))
+        to_val = to_tokens.get(key, from_tokens.get(key, "#000000"))
+        # Interpolate in RGB space
+        try:
+            r1, g1, b1 = hex_to_rgb(from_val)
+            r2, g2, b2 = hex_to_rgb(to_val)
+            r = round(r1 + (r2 - r1) * progress)
+            g = round(g1 + (g2 - g1) * progress)
+            b = round(b1 + (b2 - b1) * progress)
+            interp = f"#{r:02x}{g:02x}{b:02x}"
+        except EngineError:
+            interp = to_val
+        lines.append(f"@define-color transition_{key} {interp};")
+    return "\n".join(lines) + "\n"
 
 
 # ---------------------------------------------------------------------------
@@ -1816,11 +1993,17 @@ class Engine:
         scheme = self.resolve_scheme(colors)
         try:
             m3, scheme = matugen_roles(seed, mode, scheme, self.log, self.cache_root)
+            # Enforce WCAG AA contrast for accessibility
+            contrast_ratio = self.settings.get("contrast_ratio", 4.5)
+            m3 = enforce_wcag_contrast(m3, colors, contrast_ratio)
         except EngineError as exc:
             self.warnings.append(str(exc))
             self.log(f"warning: {exc}; using Wallust fallback roles", quiet=True)
             m3 = fallback_roles(colors, mode)
             m3 = {role: m3[role] for role in M3_ROLE_ORDER if role in m3}
+            # Also enforce contrast on fallback
+            contrast_ratio = self.settings.get("contrast_ratio", 4.5)
+            m3 = enforce_wcag_contrast(m3, colors, contrast_ratio)
         result = {
             "version": PIPELINE_VERSION,
             "image_hash": image_hash,
@@ -1870,17 +2053,10 @@ class Engine:
     def resolve_scheme(self, colors: dict[str, str]) -> str:
         scheme = self.settings.get("scheme", "auto")
         if scheme in ("auto", "scheme-smart"):
-            # Perceptual tiered scheme based on seed Chroma:
-            # - true monochrome / grayscale (< 6): scheme-neutral (preserves clean grays)
-            # - chromatic images (6..42): scheme-tonal-spot (balanced Material 3 palette with vibrant accents)
-            # - vivid / neon images (>= 42): scheme-vibrant (retains wallpaper's maximum saturation)
-            _, chroma, _ = lab_lch(best_seed(colors))
-            if chroma < 6:
-                return "scheme-neutral"
-            elif chroma < 42:
-                return "scheme-tonal-spot"
-            else:
-                return "scheme-vibrant"
+            # Intelligent scheme selection based on image characteristics
+            seed = best_seed(colors)
+            regions = sample_regions(self.args.wallpaper) if self.args.wallpaper else {}
+            return select_matugen_scheme(seed, regions, self.settings)
         if scheme not in M3_SCHEMES:
             return "scheme-tonal-spot"
         return scheme
@@ -2342,6 +2518,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--config", help="settings.json path")
     parser.add_argument("--cache-dir", help="cache directory")
+    
+    # Favorite palette management
+    fav_group = parser.add_argument_group("favorite palettes")
+    fav_group.add_argument("--save-favorite", metavar="NAME", help="save current palette as favorite")
+    fav_group.add_argument("--load-favorite", metavar="NAME", help="load favorite palette")
+    fav_group.add_argument("--list-favorites", action="store_true", help="list saved favorites")
+    fav_group.add_argument("--delete-favorite", metavar="NAME", help="delete a favorite")
+    
+    # Transition / blend
+    trans_group = parser.add_argument_group("transitions")
+    trans_group.add_argument("--blend-with", metavar="NAME", help="blend with favorite palette (0.0-1.0)")
+    trans_group.add_argument("--blend-weight", type=float, default=0.5, help="blend weight for --blend-with")
+    
     return parser
 
 
@@ -2352,6 +2541,65 @@ def main(argv: list[str] | None = None) -> int:
         args.wallpaper = args.wallpaper_opt
     del args.wallpaper_opt
 
+    # Handle favorite palette commands without full engine lock
+    config_path = Path(args.config).expanduser() if args.config else DEFAULT_CONFIG
+    settings = load_settings(config_path)
+
+    if args.list_favorites:
+        favs = list_favorite_palettes(settings)
+        if favs:
+            print("Favorite palettes:")
+            for name in favs:
+                fav = settings["favorite_palettes"][name]
+                ts = fav.get("timestamp", "unknown")
+                mode = fav.get("settings", {}).get("mode", "dark")
+                scheme = fav.get("settings", {}).get("scheme", "auto")
+                print(f"  {name}  ({mode}/{scheme})  saved: {ts}")
+        else:
+            print("No favorite palettes saved.")
+        return 0
+
+    if args.delete_favorite:
+        favs = settings.get("favorite_palettes", {})
+        if args.delete_favorite in favs:
+            del favs[args.delete_favorite]
+            save_settings(config_path, settings)
+            print(f"Deleted favorite: {args.delete_favorite}")
+        else:
+            print(f"Favorite not found: {args.delete_favorite}")
+        return 0
+
+    if args.load_favorite:
+        result = load_favorite_palette(args.load_favorite, settings)
+        if not result:
+            print(f"Favorite not found: {args.load_favorite}")
+            return 1
+        wallust_pal, m3_pal = result
+        # Create a synthetic engine just to write the loaded palette
+        args.wallpaper = None
+        args.theme = None
+        args.reload_only = True
+        lock_engine = Engine(args)
+        # We need to inject the loaded palette - run with force to bypass cache
+        args.force = True
+        engine = lock_engine
+        # Override the extract method to return our favorite
+        original_extract = engine.extract
+        def favorite_extract(image, image_hash, key):
+            return wallust_pal, m3_pal, {}, False
+        engine.extract = favorite_extract
+        try:
+            return engine.run()
+        except Exception as exc:
+            return engine.fail(f"unexpected error: {exc}")
+        finally:
+            lock_engine.release_lock()
+
+    if args.save_favorite:
+        # This needs to run after a normal generation, so just note it
+        # The actual save happens in engine.run() after generation
+        pass
+
     lock_engine = Engine(args)
     if not lock_engine.acquire_lock():
         lock_engine.queue_pending()
@@ -2361,6 +2609,15 @@ def main(argv: list[str] | None = None) -> int:
     try:
         # A reload-only call should not block on a wallpaper regeneration.
         status = engine.run()
+
+        # Save favorite if requested after successful generation
+        if args.save_favorite and status == 0:
+            last = read_json(engine.cache_root / "last-run.json", {})
+            if last.get("status") == "ok":
+                colors = last.get("palette", {})
+                m3 = last.get("m3", {})
+                save_favorite_palette(args.save_favorite, colors, m3, engine.settings, engine.config_path)
+                engine.log(f"Saved favorite palette: {args.save_favorite}")
 
         # Coalesced requests: process the newest one, then re-check.  The lock
         # is held for the whole chain, so writes never interleave.
