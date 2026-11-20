@@ -1,0 +1,16 @@
+[package]
+name = "glass-audio"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+glass-theme = { path = "../theme" }
+audio-core = { path = "../audio-core" }
+gtk4.workspace = true
+gtk4-layer-shell.workspace = true
+glib.workspace = true
+gio.workspace = true
+tokio.workspace = true
+async-channel.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true

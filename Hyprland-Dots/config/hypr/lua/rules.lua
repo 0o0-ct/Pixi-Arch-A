@@ -39,6 +39,7 @@ hl.window_rule({ match = { class = "nm-connection-editor" }, float = true, cente
 hl.window_rule({ match = { class = "com.pixi.glassbt" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
 hl.window_rule({ match = { class = "glass-bt" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
 hl.window_rule({ match = { class = "com.pixi.glassnet" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
+hl.window_rule({ match = { class = "com.pixi.glass-audio" }, float = true, size = { 520, 700 }, center = true, border_size = 0, no_shadow = true })
 hl.window_rule({ match = { class = "glass-net" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
 
 -- Diálogos y visores

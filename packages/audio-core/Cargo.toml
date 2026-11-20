@@ -1,0 +1,13 @@
+[package]
+name = "audio-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+libpulse-binding.workspace = true
+libpulse-glib-binding.workspace = true
+tokio.workspace = true
+async-channel.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
