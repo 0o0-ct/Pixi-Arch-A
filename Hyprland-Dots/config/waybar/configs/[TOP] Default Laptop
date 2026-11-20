@@ -1,6 +1,6 @@
 /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
 
-// ### DEFAULT Laptop  - Top ### //
+/* ### DEFAULT Laptop  - Top ### */
 {
 "include": [
   "$HOME/.config/waybar/Modules",
@@ -10,7 +10,7 @@
   "$HOME/.config/waybar/UserModules",
   ],
 "layer": "top",
-//"mode": "dock",
+"mode": "dock",
 "exclusive": true,
 "passthrough": false,
 "position": "top",
@@ -23,12 +23,18 @@
 
 "modules-left": [
 	"custom/separator#blank",
-	"custom/cava_mviz",
-	"custom/separator#blank",
 	"custom/playerctl",
 	"custom/separator#blank",
 	"hyprland/window",
-	],
+	"group/app_drawer",
+	"custom/swaync",
+	"custom/dot_update",
+	"hyprland/workspaces#rw",
+	"clock",
+	"custom/weather",
+	"custom/hypridle",	
+	"custom/hint",	
+],
 
 "modules-center": [
 	"custom/separator#blank",
@@ -40,7 +46,7 @@
 	"custom/weather",
 	"custom/hypridle",	
 	"custom/hint",	
-	],
+],
 
 "modules-right": [
 	"tray",

@@ -10,14 +10,14 @@ hl.config({
 
         -- Opacidades de ventana
         active_opacity = 1.0,
-        inactive_opacity = 0.95,
+        inactive_opacity = 1.0,
         fullscreen_opacity = 1.0,
 
         -- Sombras suaves
         shadow = {
             enabled = true,
-            range = 12,
-            render_power = 2,
+            range = 6,
+            render_power = 1,
             color = "rgba(00000030)",
             color_inactive = "rgba(00000015)",
         },
@@ -25,15 +25,15 @@ hl.config({
         -- Desenfoque (Blur) optimizado
         blur = {
             enabled = true,
-            size = 8,
+            size = 5,
             passes = 1,
             noise = 0.012,
             contrast = 0.90,
             brightness = 0.95,
             vibrancy = 0.0,
             xray = false,
-            special = true,
-            popups = true,
+            special = false,
+            popups = false,
         },
     },
 })

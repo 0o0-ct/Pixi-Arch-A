@@ -69,7 +69,7 @@ hl.config({
     },
 
     debug = {
-        vfr = true,
+        vfr = false,
     },
 
     xwayland = {
