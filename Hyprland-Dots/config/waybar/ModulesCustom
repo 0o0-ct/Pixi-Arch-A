@@ -75,7 +75,7 @@
 	"tooltip-format": "Clic Izquierdo: Actualizar Personalización Pixi-Arch-A\nClic Derecho: Actualizar Sistema Arch Linux (yay -Syu)"
 },
 
-// Hypridle inhibitor / Screen Idle Toggle (15m vs ∞)
+// Hypridle inhibitor / Screen Idle Toggle (10m vs ∞)
 "custom/hypridle": {
 	"format": "{}",
 	"return-type": "json",

@@ -246,8 +246,8 @@ El dock **nwg-dock-hyprland** es un dock flotante estilo macOS ubicado en la par
 | Atajo | Acción |
 |---|---|
 | `SUPER + Q` | Cerrar ventana activa |
-| `SUPER + Space` | Alternar pantalla completa (fullscreen toggle) |
-| `SUPER + SHIFT + Space` | Forzar ventana actual a modo flotante |
+| `SUPER + Space` | Maximizar/restaurar ventana (pantalla completa sin cubrir el monitor ni las barras) |
+| `SUPER + ALT + Space` | Forzar flotante todas las ventanas del espacio actual |
 | `SUPER + SHIFT + F` | Pantalla completa (despachador nativo) |
 | `SUPER + CTRL + F` | Maximizar ventana |
 | `SUPER + P` | Alternar pseudo dwindle |
@@ -257,7 +257,7 @@ El dock **nwg-dock-hyprland** es un dock flotante estilo macOS ubicado en la par
 
 ## Bloqueo e inactividad
 
-Toda la gestión de inactividad de la pantalla se centraliza en `hypridle` (configurado vía Lua).
+Toda la gestión de inactividad de la pantalla se centraliza en `hypridle` (configurado en `hypridle.conf`; hypridle no soporta Lua).
 
 - **Aviso de inactividad** — a los **9 minutos** (`timeout = 540`) recibirás una notificación en el sistema.
 - **Bloqueo de seguridad** — a los **10 minutos** (`timeout = 600`) la sesión se bloquea automáticamente mediante `loginctl lock-session`, que activa el protector de pantalla seguro `hyprlock`.

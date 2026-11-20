@@ -17,7 +17,9 @@ prompt_detect_layout() {
   echo "(unset)"
 }
 
-# Confirm or set keyboard layout; escribe en SystemSettings.conf.
+# Confirm or set keyboard layout; escribe kb_layout en la config Lua INSTALADA
+# (no en el árbol del repo). El valor debe conservar comillas y coma finales
+# para que lua/settings.lua siga siendo Lua válido.
 prompt_keyboard_layout() {
   local layout="$1"
   local log="$2"
@@ -25,14 +27,22 @@ prompt_keyboard_layout() {
   if [ "$layout" = "(unset)" ] || [ -z "$layout" ]; then
     layout="es,us"
   fi
+  # sanear para Lua: solo letras, dígitos, coma, guion, más y guion bajo
+  layout=$(printf '%s' "$layout" | tr -cd 'a-zA-Z0-9,_+-')
+  [ -z "$layout" ] && layout="es,us"
 
   printf "${NOTE} Detectando la distribución de teclado para preparar la configuración adecuada de Hyprland\n"
-  local sys_settings="config/hypr/configs/SystemSettings.conf"
-  if [ -f "$sys_settings" ]; then
-    awk -v layout="$layout" '/kb_layout/ {$0 = "  kb_layout = " layout} 1' "$sys_settings" >temp.conf && mv temp.conf "$sys_settings"
-    echo "${OK} kb_layout ${MAGENTA}$layout${RESET} configurada automáticamente en los ajustes." 2>&1 | tee -a "$log"
+  local live_settings="$HOME/.config/hypr/lua/settings.lua"
+  if [ -f "$live_settings" ]; then
+    awk -v layout="$layout" '/kb_layout = "/ {$0 = "        kb_layout = \"" layout "\","} 1' "$live_settings" >"$live_settings.tmp"
+    if mv "$live_settings.tmp" "$live_settings"; then
+      echo "${OK} kb_layout ${MAGENTA}$layout${RESET} configurada en la configuración Lua instalada." 2>&1 | tee -a "$log"
+    else
+      rm -f "$live_settings.tmp"
+      echo "${WARN} No se pudo escribir kb_layout en $live_settings." 2>&1 | tee -a "$log"
+    fi
   else
-    echo "${WARN} $sys_settings no encontrado, omitiendo configuración de teclado." 2>&1 | tee -a "$log"
+    echo "${WARN} $live_settings no encontrado, omitiendo configuración de teclado." 2>&1 | tee -a "$log"
   fi
 }
 
@@ -62,30 +72,36 @@ prompt_clock_12h() {
   local log="$1"
   echo "${INFO} Configurando automáticamente el formato de reloj de 12H (AM/PM)..." 2>&1 | tee -a "$log"
 
-  # waybar clocks
-  [ -f config/waybar/Modules ] || { echo "${WARN} config/waybar/Modules no encontrado, omitiendo reloj." 2>&1 | tee -a "$log"; return; }
-  sed -i 's#^\(\s*\)//\("format": " {:%I:%M %p}",\) #\1\2 #g' config/waybar/Modules 2>&1 | tee -a "$log" || true
-  sed -i 's#^\(\s*\)\("format": " {:%H:%M:%S}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
-  sed -i 's#^\(\s*\)\("format": "  {:%H:%M}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
-  sed -i 's#^\(\s*\)//\("format": "{:%I:%M %p - %d/%b}",\) #\1\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
-  sed -i 's#^\(\s*\)\("format": "{:%H:%M - %d/%b}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
-  sed -i 's#^\(\s*\)//\("format": "{:%B | %a %d, %Y | %I:%M %p}",\) #\1\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
-  sed -i 's#^\(\s*\)\("format": "{:%B | %a %d, %Y | %H:%M}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
-  sed -i 's#^\(\s*\)//\("format": "{:%A, %I:%M %P}",\) #\1\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
-  sed -i 's#^\(\s*\)\("format": "{:%a %d | %H:%M}",\) #\1//\2#g' config/waybar/Modules 2>&1 | tee -a "$log" || true
+  # waybar clocks — sobre la COPIA INSTALADA, no el repo
+  local WAYBAR_MODULES_LIVE="$HOME/.config/waybar/Modules"
+  [ -f "$WAYBAR_MODULES_LIVE" ] || { echo "${WARN} $WAYBAR_MODULES_LIVE no encontrado, omitiendo reloj." 2>&1 | tee -a "$log"; return; }
+  sed -i 's#^\(\s*\)//\("format": " {:%I:%M %p}",\) #\1\2#g' "$WAYBAR_MODULES_LIVE" 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)\("format": " {:%H:%M:%S}",\) #\1//\2#g' "$WAYBAR_MODULES_LIVE" 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)\("format": "  {:%H:%M}",\) #\1//\2#g' "$WAYBAR_MODULES_LIVE" 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)//\("format": "{:%I:%M %p - %d/%b}",\) #\1\2#g' "$WAYBAR_MODULES_LIVE" 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)\("format": "{:%H:%M - %d/%b}",\) #\1//\2#g' "$WAYBAR_MODULES_LIVE" 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)//\("format": "{:%B | %a %d, %Y | %I:%M %p}",\) #\1\2#g' "$WAYBAR_MODULES_LIVE" 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)\("format": "{:%B | %a %d, %Y | %H:%M}",\) #\1//\2#g' "$WAYBAR_MODULES_LIVE" 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)//\("format": "{:%A, %I:%M %P}",\) #\1\2#g' "$WAYBAR_MODULES_LIVE" 2>&1 | tee -a "$log" || true
+  sed -i 's#^\(\s*\)\("format": "{:%a %d | %H:%M}",\) #\1//\2#g' "$WAYBAR_MODULES_LIVE" 2>&1 | tee -a "$log" || true
 
-  # hyprlock
-  local HYPRLOCK_FILE="config/hypr/hyprlock.conf"
-  if [ ! -f "$HYPRLOCK_FILE" ] && [ -f "config/hypr/hyprlock-1080p.conf" ]; then
-    HYPRLOCK_FILE="config/hypr/hyprlock-1080p.conf"
-  fi
-  if [ -f "$HYPRLOCK_FILE" ]; then
-    sed -i 's/^\s*text = cmd\[update:1000\] echo \"\$(date +\"%H\")\"/# &/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
-    sed -i 's/^\(\s*\)# *text = cmd\[update:1000\] echo \"\$(date +\"%I\")\" #AM\/PM/\1    text = cmd\[update:1000\] echo \"\$(date +\"%I\")\" #AM\/PM/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
-    sed -i 's/^\s*text = cmd\[update:1000\] echo \"\$(date +\"%S\")\"/# &/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
-    sed -i 's/^\(\s*\)# *text = cmd\[update:1000\] echo \"\$(date +\"%S %p\")\" #AM\/PM/\1    text = cmd\[update:1000\] echo \"\$(date +\"%S %p\")\" #AM\/PM/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
-  else
-    echo "${WARN} Plantilla de hyprlock no encontrada; omitiendo las ediciones del formato de reloj de 12H" 2>&1 | tee -a "$log"
+  # hyprlock: aplicar a TODAS las variantes de resolución SOBRE la copia
+  # instalada (el árbol del repo permanece intacto)
+  local HYPRLOCK_ANY=0
+  local HYPRLOCK_FILE
+  for HYPRLOCK_FILE in "$HOME"/.config/hypr/hyprlock.conf "$HOME"/.config/hypr/hyprlock-*.conf; do
+    [ -f "$HYPRLOCK_FILE" ] || continue
+    # sed -i sustituiría un symlink por un archivo real; el variant al que apunta
+    # ya lleva el sed aplicado, así que nos saltamos el enlace.
+    [ -L "$HYPRLOCK_FILE" ] && continue
+    HYPRLOCK_ANY=1
+    sed -i 's/^\s*text = cmd\[update:1000\] echo "\$(date +"%H")"/# &/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
+    sed -i 's/^\(\s*\)# *text = cmd\[update:1000\] echo "\$(date +"%I")" #AM\/PM/\1    text = cmd\[update:1000\] echo "\$(date +"%I")" #AM\/PM/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
+    sed -i 's/^\s*text = cmd\[update:1000\] echo "\$(date +"%S")"/# &/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
+    sed -i 's/^\(\s*\)# *text = cmd\[update:1000\] echo "\$(date +"%S %p")" #AM\/PM/\1    text = cmd\[update:1000\] echo "\$(date +"%S %p")" #AM\/PM/' "$HYPRLOCK_FILE" 2>&1 | tee -a "$log"
+  done
+  if [ "$HYPRLOCK_ANY" -eq 0 ]; then
+    echo "${WARN} Plantillas de hyprlock no encontradas; omitiendo las ediciones del formato de reloj de 12H" 2>&1 | tee -a "$log"
   fi
 
   if [ "${EXPRESS_MODE:-0}" -eq 0 ]; then

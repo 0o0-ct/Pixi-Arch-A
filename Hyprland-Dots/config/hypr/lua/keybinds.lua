@@ -150,8 +150,9 @@ bind("SUPER + U", hl.dsp.workspace.toggle_special(), { description = "alternar e
 bind("SUPER + SHIFT + U", moveWindow("special", true), { description = "mover a espacio especial" })
 
 -- Scroll / teclas de navegación de espacios
-hl.bind("SUPER + mouse:4", hl.dsp.focus({ workspace = "e+1" }), { description = "siguiente espacio" })
-hl.bind("SUPER + mouse:5", hl.dsp.focus({ workspace = "e-1" }), { description = "espacio anterior" })
+-- (Hyprland Lua expone la rueda como mouse_up/mouse_down, no como mouse:4/mouse:5)
+hl.bind("SUPER + mouse_down", hl.dsp.focus({ workspace = "e+1" }), { description = "siguiente espacio" })
+hl.bind("SUPER + mouse_up", hl.dsp.focus({ workspace = "e-1" }), { description = "espacio anterior" })
 bind("SUPER + period", hl.dsp.focus({ workspace = "e+1" }), { description = "siguiente espacio" })
 bind("SUPER + comma", hl.dsp.focus({ workspace = "e-1" }), { description = "espacio anterior" })
 
@@ -184,11 +185,7 @@ bind("SUPER + M", hl.dsp.layout("splitratio 0.3"), { description = "establecer p
 -- 7. RATÓN
 -- =========================================================================
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true, description = "mover ventana con el raton" })
-hl.bind("SUPER + mouse:1", hl.dsp.window.drag(), { drag = true, description = "mover ventana con el raton" })
-hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { drag = true, description = "redimensionar ventana con el raton" })
-hl.bind("SUPER + mouse:3", hl.dsp.window.resize(), { drag = true, description = "redimensionar ventana con el raton" })
-hl.bind("SUPER + ALT + mouse:4", hl.dsp.exec_cmd(scriptsDir .. "/Zoom.sh in"), { description = "acercar zoom" })
-hl.bind("SUPER + ALT + mouse:5", hl.dsp.exec_cmd(scriptsDir .. "/Zoom.sh out"), { description = "alejar zoom" })
+hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true, description = "redimensionar ventana con el raton" })
 hl.bind("SUPER + ALT + mouse_up", hl.dsp.exec_cmd(scriptsDir .. "/Zoom.sh in"), { description = "acercar zoom" })
 hl.bind("SUPER + ALT + mouse_down", hl.dsp.exec_cmd(scriptsDir .. "/Zoom.sh out"), { description = "alejar zoom" })
 

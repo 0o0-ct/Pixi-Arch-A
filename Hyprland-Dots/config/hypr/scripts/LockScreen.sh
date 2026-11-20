@@ -12,9 +12,6 @@ nohup bash "$HOME/.config/hypr/UserScripts/WeatherWrap.sh" >/dev/null 2>&1 &
 # Detectar y aplicar la resolución adecuada para hyprlock (con timeout de seguridad)
 timeout 1.5 bash "$HOME/.config/hypr/scripts/DetectResolutionHyprlock.sh" >/dev/null 2>&1 || true
 
-# Notificar a loginctl/systemd para compatibilidad con eventos de suspensión del sistema
-loginctl lock-session >/dev/null 2>&1 || true
-
 # Ejecutar hyprlock con renderizado inmediato para que responda al instante
 # y NUNCA ignore al usuario, incluso si hypridle está apagado (Modo Cafeína)
 exec hyprlock --immediate-render

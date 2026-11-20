@@ -83,4 +83,12 @@ if command -v nwg-dock-hyprland >/dev/null 2>&1 && ! pgrep -f 'dock_multi_monito
     nohup "$scripts_dir/dock_multi_monitor.sh" >/dev/null 2>&1 &
 fi
 
+# --- SwayNC: sincronizar config/layout con Waybar activo -------------------
+# Refresh.sh ajusta config.json de swaync y regenera layout.css según la
+# posición del Waybar en uso, y relanza waybar para aplicar el layout.
+# Va al final para que el arranque sea determinista: una sola instancia final.
+if [[ -x "$scripts_dir/Refresh.sh" ]]; then
+    "$scripts_dir/Refresh.sh" >/dev/null 2>&1 || true
+fi
+
 exit 0

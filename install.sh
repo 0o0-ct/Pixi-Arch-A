@@ -450,10 +450,9 @@ if [ -d "Hyprland-Dots/wallpapers" ]; then
         RANDOM_WALLPAPER=$(find "$SYSTEM_WALLPAPERS_DIR" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" -o -name "*.webp" \) | shuf -n 1)
         echo "$INFO - Seleccionado wallpaper aleatorio inicial: $(basename "$RANDOM_WALLPAPER")" | tee -a "$LOG"
 
-        # Guardar el path del wallpaper actual en .wallpaper_current
+        # Guardar el path del wallpaper actual en .wallpaper_current (solo en la copia instalada; el repo permanece intacto)
         WALLPAPER_PATH="$RANDOM_WALLPAPER"
-        mkdir -p "Hyprland-Dots/config/hypr/wallpaper_effects" "$HOME/.config/hypr/wallpaper_effects"
-        echo "$WALLPAPER_PATH" > "Hyprland-Dots/config/hypr/wallpaper_effects/.wallpaper_current"
+        mkdir -p "$HOME/.config/hypr/wallpaper_effects"
         echo "$WALLPAPER_PATH" > "$HOME/.config/hypr/wallpaper_effects/.wallpaper_current"
 
         echo "$OK - Wallpaper inicial configurado en $WALLPAPER_PATH ($TOTAL_WALLPAPERS wallpapers instalados)" | tee -a "$LOG"

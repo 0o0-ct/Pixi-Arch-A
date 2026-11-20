@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  #
+# A bash script designed to run only once dotfiles installed
+
+# THIS SCRIPT CAN BE DELETED ONCE SUCCESSFULLY BOOTED!! And also, edit ~/.config/hypr/configs/Settings.conf
+# NOT necessary to do since this script is only designed to run only once as long as the marker exists
+# marker file is located at ~/.config/hypr/.initial_startup_done
+# However, I do highly suggest not to touch it since again, as long as the marker exist, script wont run
+
+# Variables
+scriptsDir=$HOME/.config/hypr/scripts
+wallpaper=$HOME/.config/hypr/wallpaper_effects/.wallpaper_current
+waybar_style="$HOME/.config/waybar/style/[Extra] Neon Circuit.css"
+kvantum_theme="catppuccin-mocha-blue"
+color_scheme="prefer-dark"
+gtk_theme="Flat-Remix-GTK-Blue-Dark"
+icon_theme="Flat-Remix-Blue-Dark"
+cursor_theme="Bibata-Modern-Ice"
+PICTURES_DIR="$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")"
+
+swww="swww img"
+effect="--transition-bezier .43,1.19,1,.4 --transition-fps 30 --transition-type grow --transition-pos 0.925,0.977 --transition-duration 2"
+
+# Check if a marker file exists.
+if [ ! -f "$HOME/.config/hypr/.initial_startup_done" ]; then
+    sleep 1
+    # Ensure a wallpaper exists; pick one if not
+    if [ ! -f "$wallpaper" ]; then
+        mkdir -p "$(dirname "$wallpaper")"
+        if [ -d "$PICTURES_DIR/wallpapers" ]; then
+            random_wall=$(find "$PICTURES_DIR/wallpapers" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) 2>/dev/null | shuf -n 1)
+            if [ -n "$random_wall" ] && [ -f "$random_wall" ]; then
+                cp -f "$random_wall" "$wallpaper"
+            fi
+        fi
+    fi
+    # Initialize the colour pipeline and wallpaper.  The engine resolves the
+    # current image, renders every palette and reloads the live consumers.
+	if [ -f "$wallpaper" ]; then
+		# Garantizar que el daemon está activo antes de aplicar el wallpaper
+		if ! swww query > /dev/null 2>&1; then
+			nohup swww-daemon > /dev/null 2>&1 &
+			for _ in $(seq 1 20); do
+				swww query > /dev/null 2>&1 && break
+				sleep 0.2
+			done
+		fi
+		$swww $wallpaper $effect || true
+	    "$scriptsDir/WallustSwww.sh" > /dev/null 2>&1 &
+	fi
+     
+    # initiate GTK dark mode and apply icon and cursor theme
+    command -v gsettings && gsettings set org.gnome.desktop.interface color-scheme $color_scheme > /dev/null 2>&1 &
+    command -v gsettings && gsettings set org.gnome.desktop.interface gtk-theme $gtk_theme > /dev/null 2>&1 &
+    command -v gsettings && gsettings set org.gnome.desktop.interface icon-theme $icon_theme > /dev/null 2>&1 &
+    command -v gsettings && gsettings set org.gnome.desktop.interface cursor-theme $cursor_theme > /dev/null 2>&1 &
+    command -v gsettings && gsettings set org.gnome.desktop.interface cursor-size 24 > /dev/null 2>&1 &
+
+     # NIXOS initiate GTK dark mode and apply icon and cursor theme
+	if [ -n "$(grep -i nixos < /etc/os-release)" ]; then
+      command -v gsettings && gsettings set org.gnome.desktop.interface color-scheme "'$color_scheme'" > /dev/null 2>&1 &
+      command -v dconf && dconf write /org/gnome/desktop/interface/gtk-theme "'$gtk_theme'" > /dev/null 2>&1 &
+      command -v dconf && dconf write /org/gnome/desktop/interface/icon-theme "'$icon_theme'" > /dev/null 2>&1 &
+      command -v dconf && dconf write /org/gnome/desktop/interface/cursor-theme "'$cursor_theme'" > /dev/null 2>&1 &
+      command -v dconf && dconf write /org/gnome/desktop/interface/cursor-size "24" > /dev/null 2>&1 &
+	fi
+        
+    # initiate kvantum theme
+    command -v kvantummanager && kvantummanager --set "$kvantum_theme" > /dev/null 2>&1 &
+
+	# waybar style
+	#if [ -L "$HOME/.config/waybar/config" ]; then
+    ##    	ln -sf "$waybar_style" "$HOME/.config/waybar/style.css"
+    #   	"$scriptsDir/Refresh.sh" > /dev/null 2>&1 & 
+	#fi
+
+
+    # Create a marker file to indicate that the script has been executed.
+    touch "$HOME/.config/hypr/.initial_startup_done"
+
+    exit
+fi

@@ -1,0 +1,2 @@
+symlink: /home/c0o0c/.config/hypr/hyprlock-1080p.conf
+lrwxrwxrwx 1 c0o0c c0o0c 44 nov 17 03:20 /home/c0o0c/.config/hypr/hyprlock.conf -> /home/c0o0c/.config/hypr/hyprlock-1080p.conf

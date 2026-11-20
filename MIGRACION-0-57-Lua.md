@@ -1,6 +1,6 @@
 # Migración a Hyprland 0.57+ (Lua)
 
-> **Fecha:** 02-nov-2026 | **Estado:** ✅ COMPLETADA | **Rama:** `feat/hyprland-lua-migration-2`
+> **Fecha:** 02-nov-2026 | **Estado:** ✅ COMPLETADA (migración Lua) · ⚠️ reparación posterior P0/P1 aplicada el 17-nov-2026 — ver `RESUMEN-CAMBIOS.md` | **Rama:** `feat/hyprland-lua-migration-2`
 
 ---
 
@@ -183,8 +183,8 @@ hl.window_rule({ match = { class = "kitty" }, layer = "top", float = false })
 | Archivo | Nuevo destino |
 |---|---|
 | `config/hypr/hyprland.conf` | `Hyprland-Dots-Old/config/hypr/hyprland.conf` |
-| `config/hypr/hypridle.conf` | `Hyprland-Dots-Old/config/hypr/hypridle.conf` |
-| `config/hypr/hyprlock-*.conf` | `Hyprland-Dots-Old/config/hypr/hyprlock-*.conf` |
+| `config/hypr/hypridle.conf` | Devuelto al árbol activo el 17-nov-2026 (versión adaptada a `hyprctl eval 'hl.dsp.dpms(...)'`); sigue una copia histórica en `Hyprland-Dots-Old/config/hypr/hypridle.conf` |
+| `config/hypr/hyprlock-*.conf` | Devueltos al árbol activo el 17-nov-2026 (copia de Old, sin `general:grace`, inválida en hyprlock 0.9.7); siguen en `Hyprland-Dots-Old/config/hypr/hyprlock-*.conf` |
 | `config/hypr/monitors.conf` | `Hyprland-Dots-Old/config/hypr/monitors.conf` |
 | `config/hypr/workspaces.conf` | `Hyprland-Dots-Old/config/hypr/workspaces.conf` |
 | `config/hypr/configs/*.conf` | `Hyprland-Dots-Old/config/hypr/configs/*.conf` |
@@ -193,6 +193,8 @@ hl.window_rule({ match = { class = "kitty" }, layer = "top", float = false })
 | `config/hypr/wallust/*.conf` | `Hyprland-Dots-Old/config/hypr/wallust/*.conf` |
 | `config/hypr/wallpaper_effects/*` | `Hyprland-Dots-Old/config/hypr/wallpaper_effects/*` |
 | `config/hypr/hyprland.hl`, `*.hl` | `Hyprland-Dots-Old/config/hypr/*.hl` |
+
+> **Nota (17-nov-2026):** Los 11 archivos `.hl` del árbol activo fueron **eliminados** en la limpieza autorizada por el usuario (nada los cargaba); los `.hl` de `Hyprland-Dots-Old/` se conservan como referencia. Igualmente se eliminaron los `UserConfigs/*.conf` sin lectores funcionales (ver `RESUMEN-CAMBIOS.md` §8); quedan `01-UserDefaults.conf`, `Startup_Apps.conf` y `PerformanceProfile.conf` porque scripts activos sí los leen.
 
 ---
 

@@ -12,7 +12,6 @@ source "$tmp_config_file"
 # ##################################### #
 
 # variables
-configs="$HOME/.config/hypr/configs"
 UserConfigs="$HOME/.config/hypr/UserConfigs"
 rofi_theme="$HOME/.config/rofi/config-edit.rasi"
 msg='⁉️  Elige que hacer  ⁉️'
@@ -178,13 +177,9 @@ menu() {
 --- PERSONALIZACIONES DE USUARIO ---
 Editar Valores por Defecto (Usuario)
 Editar Atajos de Teclado (Usuario)
-Editar Variables ENV (Usuario)
 Editar Apps de Inicio (Capa Usuario)
-Editar Reglas de Ventana (Capa Usuario)
-Editar Ajustes de Sistema (Usuario)
 Editar Decoraciones (Usuario)
 Editar Animaciones (Usuario)
-Editar Ajustes de Portátil (Usuario)
 --- VALORES DEL SISTEMA ---
 Editar Atajos del Sistema
 Editar Apps de Inicio del Sistema
@@ -215,18 +210,14 @@ main() {
     # Map choices to corresponding files
     case "$choice" in
     	"Editar Valores por Defecto (Usuario)") file="$UserConfigs/01-UserDefaults.conf" ;;
-        "Editar Variables ENV (Usuario)") file="$UserConfigs/ENVariables.conf" ;;
-        "Editar Atajos de Teclado (Usuario)") file="$UserConfigs/UserKeybinds.conf" ;;
+        "Editar Atajos de Teclado (Usuario)") file="$UserConfigs/UserKeybinds.lua" ;;
         "Editar Apps de Inicio (Capa Usuario)") file="$UserConfigs/Startup_Apps.conf" ;;
-        "Editar Reglas de Ventana (Capa Usuario)") file="$UserConfigs/WindowRules.conf" ;;
-        "Editar Ajustes de Sistema (Usuario)") file="$configs/SystemSettings.conf"; show_info "Editando ajustes por defecto. Copia a UserConfigs/UserSettings.conf para sobrescribir." ;;
-        "Editar Decoraciones (Usuario)") file="$UserConfigs/UserDecorations.conf" ;;
-        "Editar Animaciones (Usuario)") file="$UserConfigs/UserAnimations.conf" ;;
-        "Editar Ajustes de Portátil (Usuario)") file="$UserConfigs/Laptops.conf" ;;
-        "Editar Atajos del Sistema") file="$configs/Keybinds.conf" ;;
-        "Editar Apps de Inicio del Sistema") file="$configs/Startup_Apps.conf" ;;
-        "Editar Reglas de Ventana del Sistema") file="$configs/WindowRules.conf" ;;
-        "Editar Ajustes del Sistema") file="$configs/SystemSettings.conf" ;;
+        "Editar Decoraciones (Usuario)") file="$HOME/.config/hypr/lua/decorations.lua" ;;
+        "Editar Animaciones (Usuario)") file="$UserConfigs/UserAnimations.lua" ;;
+        "Editar Atajos del Sistema") file="$HOME/.config/hypr/lua/keybinds.lua" ;;
+        "Editar Apps de Inicio del Sistema") file="$scriptsDir/StartupApps.sh" ;;
+        "Editar Reglas de Ventana del Sistema") file="$HOME/.config/hypr/lua/rules.lua" ;;
+        "Editar Ajustes del Sistema") file="$HOME/.config/hypr/lua/settings.lua" ;;
         "Configurar Fondo de SDDM") $scriptsDir/sddm_wallpaper.sh --normal ;;
         "Elegir Tema de Terminal Kitty") $scriptsDir/Kitty_themes.sh ;;
         "Configurar Monitores (nwg-displays)") 

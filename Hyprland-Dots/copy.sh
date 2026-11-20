@@ -270,6 +270,8 @@ fi
 # Las detecciones de hardware se ejecutarán después de copiar los archivos de configuración
 
 # activating hyprcursor on env by checking if the directory ~/.icons/Bibata-Modern-Ice/hyprcursors exists
+# (vestigial tras la migración Lua: editaba configs/ENVariables.conf, que ya no existe;
+#  hoy este bloque es un no-op. Equivalente pendiente en lua/env.lua si se desea)
 if [ -d "$HOME/.icons/Bibata-Modern-Ice/hyprcursors" ]; then
   HYPRCURSOR_ENV_FILE="config/hypr/configs/ENVariables.conf"
   if [ -f "$HYPRCURSOR_ENV_FILE" ]; then
@@ -282,7 +284,6 @@ fi
 printf "\n%.0s" {1..1}
 
 layout=$(prompt_detect_layout)
-prompt_keyboard_layout "$layout" "$LOG"
 
 enable_asusctl "$LOG"
 enable_ags "$LOG"
@@ -312,31 +313,9 @@ else
   resolution="< 1440p"
 fi
 echo "${OK} Se detectó automáticamente la resolución: $resolution." 2>&1 | tee -a "$LOG"
-if [ "$resolution" == "< 1440p" ]; then
-  # kitty font size
-  if [ -f config/kitty/kitty.conf ]; then
-    sed -i 's/font_size 16.0/font_size 14.0/' config/kitty/kitty.conf 2>&1 | tee -a "$LOG"
-  fi
+# Los ajustes para < 1440p (kitty, rofi, hyprlock) se aplican SOBRE LA COPIA
+# INSTALADA en $HOME/.config tras copy_phase2 — ver "Ajustes post-copia" más abajo.
 
-  # hyprlock matters
-  if [ -f config/hypr/hyprlock.conf ]; then
-    cp config/hypr/hyprlock.conf config/hypr/hyprlock-2k.conf 2>&1 | tee -a "$LOG"
-  fi
-  if [ -f config/hypr/hyprlock-1080p.conf ]; then
-    cp config/hypr/hyprlock-1080p.conf config/hypr/hyprlock.conf 2>&1 | tee -a "$LOG"
-  fi
-
-  # rofi fonts reduction
-  rofi_config_file="config/rofi/0-shared-fonts.rasi"
-  if [ -f "$rofi_config_file" ]; then
-    sed -i '/element-text {/,/}/s/[[:space:]]*font: "JetBrainsMono Nerd Font SemiBold 13"/font: "JetBrainsMono Nerd Font SemiBold 11"/' "$rofi_config_file" 2>&1 | tee -a "$LOG" || true
-    sed -i '/configuration {/,/}/s/[[:space:]]*font: "JetBrainsMono Nerd Font SemiBold 15"/font: "JetBrainsMono Nerd Font SemiBold 13"/' "$rofi_config_file" 2>&1 | tee -a "$LOG" || true
-  fi
-fi
-
-printf "\n%.0s" {1..1}
-prompt_clock_12h "$LOG"
-printf "\n%.0s" {1..1}
 printf "\n%.0s" {1..1}
 prompt_express_upgrade "$EXPRESS_SUPPORTED" "$LOG"
 
@@ -399,6 +378,42 @@ printf "\n%.0s" {1..1}
 printf "${INFO} - Copiando la ${SKY_BLUE}segunda${RESET} parte de los dotfiles\n"
 copy_phase2 "$LOG"
 printf "\\n%.0s" {1..1}
+
+# Garantizar que existan los directorios de paletas generadas por wallust.
+# pixi_colors.py escribe en hypr/wallust y swaync/wallust en cada cambio de
+# wallpaper; sin los directorios, hyprlock y swaync quedan sin sus colores.
+mkdir -p "$HOME/.config/hypr/wallust" "$HOME/.config/swaync/wallust" 2>&1 | tee -a "$LOG"
+
+# Ajuste hyprlock para resoluciones < 1440p, aplicado sobre la copia instalada
+# (el árbol del repo permanece intacto).
+if [ "$resolution" == "< 1440p" ]; then
+  if [ -f "$HOME/.config/hypr/hyprlock.conf" ]; then
+    cp "$HOME/.config/hypr/hyprlock.conf" "$HOME/.config/hypr/hyprlock-2k.conf" 2>&1 | tee -a "$LOG"
+  fi
+  if [ -f "$HOME/.config/hypr/hyprlock-1080p.conf" ]; then
+    cp "$HOME/.config/hypr/hyprlock-1080p.conf" "$HOME/.config/hypr/hyprlock.conf" 2>&1 | tee -a "$LOG"
+  fi
+fi
+
+# --- Ajustes post-copia sobre la instalación (el repo nunca se muta) ------
+# kitty font size para < 1440p, sobre la copia instalada
+if [ "$resolution" == "< 1440p" ]; then
+  if [ -f "$HOME/.config/kitty/kitty.conf" ]; then
+    sed -i 's/font_size 16.0/font_size 14.0/' "$HOME/.config/kitty/kitty.conf" 2>&1 | tee -a "$LOG"
+  fi
+
+  # rofi fonts reduction, sobre la copia instalada
+  rofi_config_file="$HOME/.config/rofi/0-shared-fonts.rasi"
+  if [ -f "$rofi_config_file" ]; then
+    sed -i '/element-text {/,/}/s/[[:space:]]*font: "JetBrainsMono Nerd Font SemiBold 13"/font: "JetBrainsMono Nerd Font SemiBold 11"/' "$rofi_config_file" 2>&1 | tee -a "$LOG" || true
+    sed -i '/configuration {/,/}/s/[[:space:]]*font: "JetBrainsMono Nerd Font SemiBold 15"/font: "JetBrainsMono Nerd Font SemiBold 13"/' "$rofi_config_file" 2>&1 | tee -a "$LOG" || true
+  fi
+fi
+
+# Teclado (kb_layout en la config Lua instalada) y reloj 12H (waybar/hyprlock
+# instalados + SDDM). Non-interactive: seguros de ejecutar aquí.
+prompt_keyboard_layout "$layout" "$LOG"
+prompt_clock_12h "$LOG"
 
 # Ejecutar las detecciones y ajustes de hardware sobre los archivos finales copiados
 detect_nvidia_adjust "$LOG"
@@ -526,8 +541,6 @@ fi
 # Set some files as executable
 chmod +x "$HOME/.config/hypr/scripts/"* 2>&1 | tee -a "$LOG"
 chmod +x "$HOME/.config/hypr/UserScripts/"* 2>&1 | tee -a "$LOG"
-# Set executable for initial-boot.sh
-chmod +x "$HOME/.config/hypr/initial-boot.sh" 2>&1 | tee -a "$LOG"
 
 chassis_type=$(detect_waybar_config)
 if [ "$chassis_type" = "desktop" ]; then

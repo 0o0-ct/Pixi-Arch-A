@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  ##
-# This is for changing kb_layouts. Set kb_layouts in "$HOME/.config/hypr/UserConfigs/UserSettings.conf"
+# Este script cambia entre distribuciones con hyprctl. El layout por defecto se define en lua/settings.lua (kb_layout).
 
 notif_icon="$HOME/.config/swaync/images/ja.png"
 SCRIPTSDIR="$HOME/.config/hypr/scripts"

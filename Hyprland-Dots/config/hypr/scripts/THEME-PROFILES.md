@@ -161,17 +161,21 @@ desaparecen, la restauración usa la copia del fondo que sí está en el perfil.
 
 ## Atajos de teclado (opcional)
 
-Añádelos tú a `~/.config/hypr/UserConfigs/UserKeybinds.conf` si quieres:
+Añádelos tú a `~/.config/hypr/UserConfigs/UserKeybinds.lua` si quieres (Lua,
+no hyprlang; `$scriptsDir` no está disponible en el archivo de usuario —
+construye la ruta tú mismo):
 
-```conf
-# Guardar el tema actual como perfil con nombre
-bindd = SUPER SHIFT, S, Guardar perfil de tema, exec, $scriptsDir/ThemeProfileSave.sh
+```lua
+local scriptsDir = os.getenv("HOME") .. "/.config/hypr/scripts"
 
-# Volver al perfil "last-known-good" (la foto previa al último cambio de tema)
-bindd = SUPER SHIFT, R, Restaurar último tema bueno, exec, $scriptsDir/ThemeProfileRestore.sh last-known-good
+-- Guardar el tema actual como perfil con nombre
+hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd(scriptsDir .. "/ThemeProfileSave.sh"), { description = "Guardar perfil de tema" })
 
-# Elegir un perfil guardado con rofi
-bindd = SUPER SHIFT, P, Elegir perfil de tema, exec, $scriptsDir/ThemeProfileRestore.sh --pick
+-- Volver al perfil "last-known-good" (la foto previa al último cambio de tema)
+hl.bind("SUPER + SHIFT + R", hl.dsp.exec_cmd(scriptsDir .. "/ThemeProfileRestore.sh last-known-good"), { description = "Restaurar último tema bueno" })
+
+-- Elegir un perfil guardado con rofi
+hl.bind("SUPER + SHIFT + P", hl.dsp.exec_cmd(scriptsDir .. "/ThemeProfileRestore.sh --pick"), { description = "Elegir perfil de tema" })
 ```
 
 `$scriptsDir` ya está definido en la configuración de JaKooLit. **Elige

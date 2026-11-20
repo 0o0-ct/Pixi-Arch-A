@@ -1,0 +1,33 @@
+-- /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
+-- Atajos personalizados del usuario.
+--
+-- Este archivo se carga automáticamente al FINAL de `lua/keybinds.lua`
+-- (que busca `~/.config/hypr/UserConfigs/UserKeybinds.lua`). Tiene acceso a la
+-- API global `hl`, exactamente igual que los módulos por defecto.
+--
+-- Referencia de sintaxis: los ejemplos reales viven en
+--   ~/.config/hypr/lua/keybinds.lua
+-- Documentación de la API Lua de Hyprland:
+--   https://wiki.hyprland.org/Configuring/Binds/
+--
+-- Cómo AÑADIR un atajo propio (descomenta y edita):
+--
+--   hl.bind("SUPER + Z", hl.dsp.exec_cmd("zeditor"), { description = "abrir mi editor" })
+--
+-- Cómo REDEFINIR un atajo por defecto: desactívalo primero con hl.unbind y
+-- vuelve a definirlo después (en ese orden):
+--
+--   hl.unbind("SUPER + E")
+--   hl.bind("SUPER + E", hl.dsp.exec_cmd("nemo"), { description = "gestor de archivos" })
+--
+-- Notas:
+-- - Es Lua, no hyprlang: nada de `bind =`, `$variables` ni `unbind =`.
+-- - El cargador evalúa este archivo con pcall(dofile): si contiene un error de
+--   Lua, el archivo completo se ignora en silencio (Hyprland arranca igual,
+--   pero tus atajos no se aplican). Comprueba qué atajos quedaron activos con:
+--     hyprctl binds
+-- - Si vienes de `UserKeybinds.conf`: ese archivo ya NO se lee. Migra tus
+--   entradas a la sintaxis anterior. Ejemplo equivalente:
+--     bindd = SUPER SHIFT, B, Mi app, exec, mi-comando
+--   se escribe como
+--     hl.bind("SUPER + SHIFT + B", hl.dsp.exec_cmd("mi-comando"), { description = "Mi app" })

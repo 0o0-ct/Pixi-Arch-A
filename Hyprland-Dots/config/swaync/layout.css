@@ -1,0 +1,14 @@
+/* Vertical Layout - Single Column (por defecto)
+ * Refresh.sh lo regenera según la posición del config activo de Waybar
+ * ([TOP]/[BOT]/[LEFT]/[RIGHT]) en cada arranque/recarga. */
+.control-center, .control-center > box {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    height: auto;
+}
+.widget-dnd, .widget-buttons-grid, .widget-mpris, .widget-volume, .widget-backlight, .widget-title, .control-center-list {
+    width: auto;
+    min-width: 0;
+    max-width: none;
+}

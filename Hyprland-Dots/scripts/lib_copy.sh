@@ -251,7 +251,12 @@ copy_phase2() {
     echo "${OK:-[OK]} - ¡Copia de kdeglobals para modo oscuro completada!" 2>&1 | tee -a "$log"
   fi
 
-  install_terminal_configs "$log"
+  # NOTA: install_terminal_configs no está definida en ningún sitio del repo;
+  # guardamos la llamada para no romper instalaciones limpias con un
+  # "command not found" no fatal (el comportamiento real es no hacer nada).
+  if declare -F install_terminal_configs >/dev/null 2>&1; then
+    install_terminal_configs "$log"
+  fi
 }
 
 # Restore Animations and Monitor Profiles plus key hypr files desde backup
@@ -630,6 +635,10 @@ restore_hypr_files() {
         cp -f "$BACKUP_FILE" "$DIRPATH/$FILE_RESTORE" || true
       fi
     done
+    # hyprlock 0.9.7 no reconoce general:grace; eliminar la línea si un respaldo antiguo la trae
+    if [ -f "$DIRPATH/hyprlock.conf" ]; then
+      sed -i -E '/^[[:space:]]*grace[[:space:]]*=/d' "$DIRPATH/hyprlock.conf" 2>&1 | tee -a "$log" || true
+    fi
     return
   fi
 
@@ -655,5 +664,9 @@ restore_hypr_files() {
         echo "${ERROR:-[ERROR]} - El archivo de respaldo $BACKUP_FILE no existe." 2>&1 | tee -a "$log"
       fi
     done
+    # hyprlock 0.9.7 no reconoce general:grace; eliminar la línea si un respaldo antiguo la trae
+    if [ -f "$DIRPATH/hyprlock.conf" ]; then
+      sed -i -E '/^[[:space:]]*grace[[:space:]]*=/d' "$DIRPATH/hyprlock.conf" 2>&1 | tee -a "$log" || true
+    fi
   fi
 }

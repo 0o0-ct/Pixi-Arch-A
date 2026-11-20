@@ -1062,6 +1062,13 @@ def hypr_color(hex_str: str) -> str:
     return f"rgb({r:02x}{g:02x}{b:02x})"
 
 
+def hypr_hex_alpha(hex_str: str, alpha: float) -> str:
+    """Valor escapado para hyprlang (## = # literal); tras el unescape que hace
+    hyprlang, Pango recibe #RRGGBBAA (válido desde Pango 1.38)."""
+    r, g, b = hex_to_rgb(hex_str)
+    return f"##{r:02x}{g:02x}{b:02x}{round(alpha * 255):02x}"
+
+
 def render_hyprlock(colors: dict[str, str], m3: dict[str, str], branch: str) -> str:
     if branch == "light":
         ink = ensure_dark(blend(m3.get("primary", colors["color13"]), "#1b171c", 0.16), 0.10)
@@ -1079,7 +1086,7 @@ $lock_field_border = {hypr_color(layout)}
 $lock_field_bg = {rgba(base, 0.62)}
 $lock_field_text = {hypr_color(field_text)}
 $lock_capslock = {hypr_color(ink)}
-$lock_placeholder = {rgba(ink, 0.60)}
+$lock_placeholder = {hypr_hex_alpha(ink, 0.60)}
 $lock_card_bg = {rgba(base, 0.62)}
 $lock_card_border = {rgba(ink, 0.14)}
 $lock_card_text = {rgba(ink, 0.80)}
@@ -1094,7 +1101,7 @@ $lock_field_border = $color8
 $lock_field_bg = rgba(255, 255, 255, 0.1)
 $lock_field_text = $color13
 $lock_capslock = rgb(255, 255, 255)
-$lock_placeholder = rgba(255, 255, 255, 0.60)
+$lock_placeholder = ##ffffff99
 $lock_card_bg = rgba(15, 20, 30, 0.45)
 $lock_card_border = rgba(255, 255, 255, 0.15)
 $lock_card_text = rgba(255, 255, 255, 0.8)
