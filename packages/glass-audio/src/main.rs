@@ -19,7 +19,7 @@ use glass_theme::init_theme;
 
 fn main() {
     let app = Application::builder()
-        .application_id("com.pixi.glass-audio")
+        .application_id("com.pixi.glassaudio")
         .build();
 
     let (cmd_tx, cmd_rx) = unbounded::<AudioCommand>();
