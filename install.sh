@@ -229,7 +229,12 @@ fi
 
 # Inicializar el arreglo de opciones para whiptail
 options_command=(
-    whiptail --title "Seleccionar Opciones" --checklist "Elige qué instalar o configurar\nNOTA: 'ESPACIO' para seleccionar y 'TAB' para cambiar selección" 28 85 20
+    whiptail --title "Seleccionar Opciones" --checklist "Elige qué instalar o configurar\nNOTA: 'ESPACIO' para seleccionar y 'TAB' para cambiar selección" 30 85 22
+)
+
+# Añadir opción 'performance_mode' PRIMERO (afecta las demás opciones)
+options_command+=(
+    "performance_mode" "🚀 MODO RENDIMIENTO: Instalación mínima, optimizada para hardware modesto/laptops (RECOMENDADO)" "ON"
 )
 
 # Añadir opción 'input_group' si el usuario no está
@@ -510,8 +515,33 @@ selected_options=$(echo "$selected_options" | tr -d '"' | tr -s ' ')
 IFS=' ' read -r -a options <<< "$selected_options"
 
 # Iterar por las opciones seleccionadas
+performance_mode_selected="OFF"
+for option in "${options[@]}"; do
+    if [[ "$option" == "performance_mode" ]]; then
+        performance_mode_selected="ON"
+    fi
+done
+
+# Si modo rendimiento está activado, desactivar opciones que consumen recursos
+if [ "$performance_mode_selected" == "ON" ]; then
+    echo "${INFO} 🚀 MODO RENDIMIENTO ACTIVADO: Desactivando opciones pesadas..." | tee -a "$LOG"
+    # Quitar quickshell, nwg_dock, macos_theme, gtk_themes, bluetooth, thunar, zsh, sddm_theme
+    for i in "${!options[@]}"; do
+        case "${options[i]}" in
+            quickshell|nwg_dock|macos_theme|gtk_themes|bluetooth|thunar|zsh|sddm_theme|rog)
+                unset 'options[i]'
+                ;;
+        esac
+    done
+    # Re-indexar array
+    options=("${options[@]}")
+fi
+
 for option in "${options[@]}"; do
     case "$option" in
+        performance_mode)
+            # Ya procesado arriba
+            ;;
         sddm)
             if check_services_running; then
                 active_list=$(printf "%s\n" "${active_services[@]}")

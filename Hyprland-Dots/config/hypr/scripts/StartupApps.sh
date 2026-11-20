@@ -21,6 +21,11 @@ if command -v systemctl >/dev/null 2>&1; then
     systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP >/dev/null 2>&1 || true
 fi
 
+# --- Optimización ligera al inicio (caches, swappiness, GPU monitor) ------
+if [[ -x "$scripts_dir/optimize-startup.sh" ]]; then
+    nohup "$scripts_dir/optimize-startup.sh" >/dev/null 2>&1 &
+fi
+
 # --- Agente Polkit --------------------------------------------------------
 if ! pgrep -f '^/usr/lib.*(hyprpolkitagent|polkit.*authentication-agent-1)' >/dev/null 2>&1; then
     if [[ -x "$scripts_dir/Polkit.sh" ]]; then

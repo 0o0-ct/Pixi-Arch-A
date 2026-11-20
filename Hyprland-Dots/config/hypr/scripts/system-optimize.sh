@@ -277,8 +277,50 @@ if command -v powerprofilesctl &>/dev/null; then
     
     if [ "$CURRENT_PROFILE" != "balanced" ]; then
         print_warn "Perfil no es 'balanced'. Considera cambiarlo para equilibrar rendimiento/temperatura."
+        echo -e "  ¿Cambiar a 'balanced'? (s/N): "
+        read -r response
+        if [[ "$response" =~ ^[sS]$ ]]; then
+            powerprofilesctl set balanced 2>/dev/null && print_ok "Perfil cambiado a balanced" || print_warn "No se pudo cambiar"
+        fi
     else
         print_ok "Perfil balanceado activo"
+    fi
+fi
+
+# ═══════════════════════════════════════════
+# 9. PERFIL DE RENDIMIENTO HYPRLAND (optimize.sh)
+# ═══════════════════════════════════════════
+print_section "Perfil de rendimiento Hyprland"
+
+PERF_PROFILE_FILE="$HOME/.config/hypr/UserConfigs/PerformanceProfile.conf"
+if [ -f "$PERF_PROFILE_FILE" ]; then
+    CURRENT_PERF=$(grep '^\$PERF_PROFILE' "$PERF_PROFILE_FILE" 2>/dev/null | cut -d'=' -f2 | xargs || echo "unknown")
+    print_info "Perfil Hyprland actual: $CURRENT_PERF"
+    
+    if [ "$CURRENT_PERF" != "balanced" ] && [ "$CURRENT_PERF" != "performance" ]; then
+        print_warn "Perfil no optimizado ($CURRENT_PERF). Recomendado: 'balanced' o 'performance'"
+        echo -e "  ¿Aplicar perfil 'balanced' (recomendado) o 'performance' (máximo rendimiento)? [b/p/N]: "
+        read -r response
+        if [[ "$response" =~ ^[bB]$ ]]; then
+            if [ -x "$HOME/.config/hypr/scripts/optimize.sh" ]; then
+                "$HOME/.config/hypr/scripts/optimize.sh" --apply --profile=balanced && print_ok "Perfil balanced aplicado" || print_warn "Error aplicando perfil"
+            fi
+        elif [[ "$response" =~ ^[pP]$ ]]; then
+            if [ -x "$HOME/.config/hypr/scripts/optimize.sh" ]; then
+                "$HOME/.config/hypr/scripts/optimize.sh" --apply --profile=performance && print_ok "Perfil performance aplicado" || print_warn "Error aplicando perfil"
+            fi
+        fi
+    else
+        print_ok "Perfil Hyprland optimizado ($CURRENT_PERF)"
+    fi
+else
+    print_warn "PerformanceProfile.conf no existe. Se creará al ejecutar optimize.sh"
+    echo -e "  ¿Crear y aplicar perfil 'balanced'? (s/N): "
+    read -r response
+    if [[ "$response" =~ ^[sS]$ ]]; then
+        if [ -x "$HOME/.config/hypr/scripts/optimize.sh" ]; then
+            "$HOME/.config/hypr/scripts/optimize.sh" --apply --profile=balanced && print_ok "Perfil balanced aplicado" || print_warn "Error aplicando perfil"
+        fi
     fi
 fi
 

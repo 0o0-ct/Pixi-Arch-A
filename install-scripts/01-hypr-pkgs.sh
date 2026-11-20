@@ -69,24 +69,32 @@ hypr_package=(
   yad
 )
 
-# the following packages can be deleted. however, dotfiles may not work properly
-hypr_package_2=(
+# Paquetes esenciales (necesarios para funcionalidad básica)
+hypr_package_essential=(
   brightnessctl 
+  power-profiles-daemon
+  thermald
+  pacman-contrib
+)
+
+# Paquetes de monitoreo/sistema (opcionales - consumen recursos si se ejecutan en background)
+hypr_package_monitoring=(
   btop
   cava
-  loupe
-  fastfetch
+  nvtop
   gnome-system-monitor
   resources
+)
+
+# Paquetes multimedia/utilidades (opcionales)
+hypr_package_media_utils=(
+  loupe
+  fastfetch
   mousepad 
   mpv
   mpv-mpris 
-  power-profiles-daemon
-  thermald
-  nvtop
   nwg-look
   nwg-displays
-  pacman-contrib
   qalculate-gtk
   yt-dlp
 )
@@ -137,12 +145,39 @@ fi
 
 printf "\n%.0s" {1..1}
 
-# Instalación de main components
-printf "\n%s - Instalando ${SKY_BLUE}KooL's Hyprland necessary packages${RESET} .... \n" "${NOTE}"
+# Instalación de paquetes principales (siempre requeridos)
+printf "\n%s - Instalando ${SKY_BLUE}paquetes principales de Hyprland${RESET} .... \n" "${NOTE}"
 
-for PKG1 in "${hypr_package[@]}" "${hypr_package_2[@]}" "${Extra[@]}"; do
+for PKG1 in "${hypr_package[@]}" "${hypr_package_essential[@]}" "${Extra[@]}"; do
   install_package "$PKG1" "$LOG"
 done
+
+# Preguntar por paquetes de monitoreo (opcionales)
+if whiptail --title "Paquetes de Monitoreo (Opcional)" --yesno \
+"¿Instalar herramientas de monitoreo del sistema?\n\n\
+btop, cava, nvtop, gnome-system-monitor, resources\n\n\
+NOTA: Estos consumen recursos si se ejecutan en segundo plano.\n\
+Se recomienda NO instalarlos en hardware modesto o laptops." 15 80; then
+    printf "\n%s - Instalando ${SKY_BLUE}herramientas de monitoreo${RESET} .... \n" "${NOTE}"
+    for PKG1 in "${hypr_package_monitoring[@]}"; do
+        install_package "$PKG1" "$LOG"
+    done
+else
+    echo "${INFO} Omitiendo herramientas de monitoreo (ahorro de recursos)" | tee -a "$LOG"
+fi
+
+# Preguntar por paquetes multimedia/utilidades (opcionales)
+if whiptail --title "Paquetes Multimedia/Utilidades (Opcional)" --yesno \
+"¿Instalar utilidades multimedia y extras?\n\n\
+loupe, fastfetch, mousepad, mpv, mpv-mpris, nwg-look, nwg-displays, qalculate-gtk, yt-dlp\n\n\
+Útiles pero no esenciales para el funcionamiento básico." 15 80; then
+    printf "\n%s - Instalando ${SKY_BLUE}utilidades multimedia${RESET} .... \n" "${NOTE}"
+    for PKG1 in "${hypr_package_media_utils[@]}"; do
+        install_package "$PKG1" "$LOG"
+    done
+else
+    echo "${INFO} Omitiendo utilidades multimedia extras" | tee -a "$LOG"
+fi
 
 # Enable thermal and power profiles services
 printf "\n%s - Habilitando servicios ${SKY_BLUE}thermald y power-profiles-daemon${RESET}...\n" "${NOTE}"
