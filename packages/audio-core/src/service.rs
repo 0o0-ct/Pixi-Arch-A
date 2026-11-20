@@ -78,6 +78,49 @@ impl AudioService {
 
         info!("Contexto PulseAudio listo");
 
+        // Obtener sinks
+        let sinks = Arc::new(Mutex::new(Vec::new()));
+        let sinks_clone = sinks.clone();
+        let _op = context.introspect().get_sink_info_list(move |result| {
+            match result {
+                ListResult::Item(sink) => {
+                    let sink_info = SinkInfo {
+                        index: sink.index,
+                        name: sink.name.clone().unwrap_or_default().to_string(),
+                        description: sink.description.clone().unwrap_or_default().to_string(),
+                        volume: sink.volume.avg().0 as f32 / 65536.0,
+                        muted: sink.mute,
+                        is_default: false,
+                        ports: sink.ports.iter().map(|p| PortInfo {
+                            name: p.name.clone().unwrap_or_default().to_string(),
+                            description: p.description.clone().unwrap_or_default().to_string(),
+                            available: p.available == pulse::def::PortAvailable::Yes,
+                        }).collect(),
+                        active_port: sink.active_port.as_ref().map(|p| p.name.clone().unwrap_or_default().to_string()),
+                        channels: sink.volume.get().iter().enumerate().map(|(i, v)| ChannelInfo {
+                            name: format!("Ch {}", i),
+                            volume: v.0 as f32 / 65536.0,
+                        }).collect(),
+                    };
+                    sinks_clone.lock().unwrap().push(sink_info);
+                }
+                ListResult::End => {}
+                ListResult::Error => {
+                    warn!("Error al obtener sinks");
+                }
+            }
+        });
+
+        // Esperar un momento para que se complete
+        std::thread::sleep(std::time::Duration::from_millis(100));
+
+        let sinks = sinks.lock().unwrap().clone();
+        let state = AudioState {
+            sinks,
+            ..Default::default()
+        };
+        let _ = self.event_tx.send(state).await;
+
         // Procesar comandos
         while let Ok(cmd) = self.cmd_rx.recv().await {
             mainloop.lock();

@@ -1,0 +1,9 @@
+[package]
+name = "volume-control"
+version = "0.1.0"
+edition = "2021"
+description = "Control de volumen PipeWire con estilo Pixi-Arch-A"
+
+[dependencies]
+iced = { version = "0.13", features = ["tokio"] }
+tokio = { version = "1", features = ["full"] }

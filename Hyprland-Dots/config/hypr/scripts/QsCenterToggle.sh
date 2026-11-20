@@ -27,6 +27,12 @@ if [ "$config" = "btcenter" ]; then
     exit 0
 fi
 
+# Delegar Audio a glass-audio (nativo Rust centrado en monitor y arrastrable)
+if [ "$config" = "audiocenter" ]; then
+    pidof glass-audio >/dev/null 2>&1 || { setsid glass-audio >/dev/null 2>&1 & sleep 0.3; }
+    exit 0
+fi
+
 target_mon=$(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.focused) | .name' 2>/dev/null || true)
 
 if ! pgrep -f "qs -c $config" >/dev/null 2>&1; then
