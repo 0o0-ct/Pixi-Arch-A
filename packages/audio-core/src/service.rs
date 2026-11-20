@@ -4,13 +4,12 @@
 //! El servicio corre en un hilo dedicado y envía eventos a la UI vía canales.
 
 use crate::commands::{AudioCommand, VolumeTarget};
-use crate::state::{AudioState, DeviceType, SinkInfo, SourceInfo, PortInfo, ChannelInfo, CardInfo, ProfileInfo, PlaybackStream, RecordStream};
+use crate::state::{AudioState, DeviceType, SinkInfo, SourceInfo, PortInfo, ChannelInfo};
 use async_channel::{Receiver, Sender};
 use libpulse_binding as pulse;
 use libpulse_binding::callbacks::ListResult;
 use libpulse_binding::context::{Context, State as ContextState};
 use libpulse_binding::mainloop::threaded::Mainloop;
-use libpulse_binding::volume::Volume;
 use std::sync::{Arc, Mutex};
 use tracing::{error, info, warn};
 
@@ -46,75 +45,52 @@ impl AudioService {
             }
         };
 
-        // Conectar
+        // Establecer callback de estado (sin señal, solo para que PulseAudio no aborte)
+        context.set_state_callback(Some(Box::new(|| {})));
+
+        // Conectar ANTES de iniciar el mainloop
         if let Err(e) = context.connect(None, pulse::context::FlagSet::NOFLAGS, None) {
+            eprintln!("DEBUG: connect FAILED: {:?}", e);
             error!("Error al conectar al servidor PulseAudio: {:?}", e);
             return;
         }
 
-        // Iniciar el mainloop
-        if let Err(e) = mainloop.start() {
-            error!("Error al iniciar el mainloop: {:?}", e);
-            return;
+        // Iniciar el mainloop después de conectar
+        match mainloop.start() {
+            Ok(()) => info!("Mainloop iniciado correctamente"),
+            Err(e) => {
+                error!("Error al iniciar mainloop: {:?}", e);
+                return;
+            }
         }
 
         // Esperar a que el contexto esté listo
-        loop {
+        for _ in 0..50 {
             let state = context.get_state();
-            match state {
-                ContextState::Ready => break,
-                ContextState::Failed | ContextState::Terminated => {
-                    error!("Contexto PulseAudio falló o terminó");
-                    mainloop.stop();
-                    return;
-                }
-                _ => {
-                    mainloop.lock();
-                    mainloop.wait();
-                    mainloop.unlock();
-                }
+            if state == ContextState::Ready {
+                break;
             }
+            if state == ContextState::Failed || state == ContextState::Terminated {
+                error!("Contexto PulseAudio falló o terminó (state={:?})", state);
+                mainloop.stop();
+                return;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(100));
         }
 
-        info!("Contexto PulseAudio listo");
+        info!("Contexto PulseAudio listo (Ready)");
 
-        // Obtener sinks
-        let sinks = Arc::new(Mutex::new(Vec::new()));
-        let sinks_clone = sinks.clone();
-        let _op = context.introspect().get_sink_info_list(move |result| {
-            match result {
-                ListResult::Item(sink) => {
-                    let sink_info = SinkInfo {
-                        index: sink.index,
-                        name: sink.name.clone().unwrap_or_default().to_string(),
-                        description: sink.description.clone().unwrap_or_default().to_string(),
-                        volume: sink.volume.avg().0 as f32 / 65536.0,
-                        muted: sink.mute,
-                        is_default: false,
-                        ports: sink.ports.iter().map(|p| PortInfo {
-                            name: p.name.clone().unwrap_or_default().to_string(),
-                            description: p.description.clone().unwrap_or_default().to_string(),
-                            available: p.available == pulse::def::PortAvailable::Yes,
-                        }).collect(),
-                        active_port: sink.active_port.as_ref().map(|p| p.name.clone().unwrap_or_default().to_string()),
-                        channels: sink.volume.get().iter().enumerate().map(|(i, v)| ChannelInfo {
-                            name: format!("Ch {}", i),
-                            volume: v.0 as f32 / 65536.0,
-                        }).collect(),
-                    };
-                    sinks_clone.lock().unwrap().push(sink_info);
-                }
-                ListResult::End => {}
-                ListResult::Error => {
-                    warn!("Error al obtener sinks");
-                }
-            }
-        });
+        // Obtener sinks iniciales
+        let sinks = self.fetch_sinks(&mut context, &mut mainloop);
+        info!("Sinks obtenidos: {}", sinks.len());
+        for s in &sinks {
+            info!("  Sink: {} - {}", s.index, s.description);
+        }
+        info!("Sinks obtenidos: {}", sinks.len());
+        for s in &sinks {
+            info!("  Sink: {} - {}", s.index, s.description);
+        }
 
-        // Esperar un momento para que se complete
-        std::thread::sleep(std::time::Duration::from_millis(100));
-
-        let sinks = sinks.lock().unwrap().clone();
         let state = AudioState {
             sinks,
             ..Default::default()
@@ -131,7 +107,7 @@ impl AudioService {
                 }
                 AudioCommand::SetVolume { target, volume } => {
                     let mut cv = pulse::volume::ChannelVolumes::default();
-                    cv.set(0, pulse::volume::Volume((volume * 65536.0) as u32));
+                    cv.set(1, pulse::volume::Volume((volume * 65536.0) as u32));
                     match target {
                         VolumeTarget::Sink(idx) => {
                             intro.set_sink_volume_by_index(idx, &cv, None);
@@ -175,5 +151,55 @@ impl AudioService {
 
         mainloop.stop();
         info!("Servicio de audio detenido");
+    }
+
+    fn fetch_sinks(&self, context: &mut Context, mainloop: &mut Mainloop) -> Vec<SinkInfo> {
+        let sinks = Arc::new(Mutex::new(Vec::new()));
+        let sinks_clone = sinks.clone();
+        let (done_tx, done_rx) = std::sync::mpsc::channel();
+
+        mainloop.lock();
+        let op = context.introspect().get_sink_info_list(move |result| {
+            match result {
+                ListResult::Item(sink) => {
+                    let sink_info = SinkInfo {
+                        index: sink.index,
+                        name: sink.name.clone().unwrap_or_default().to_string(),
+                        description: sink.description.clone().unwrap_or_default().to_string(),
+                        volume: sink.volume.avg().0 as f32 / 65536.0,
+                        muted: sink.mute,
+                        is_default: false,
+                        ports: sink.ports.iter().map(|p| PortInfo {
+                            name: p.name.clone().unwrap_or_default().to_string(),
+                            description: p.description.clone().unwrap_or_default().to_string(),
+                            available: p.available == pulse::def::PortAvailable::Yes,
+                        }).collect(),
+                        active_port: sink.active_port.as_ref().map(|p| p.name.clone().unwrap_or_default().to_string()),
+                        channels: sink.volume.get().iter().enumerate().map(|(i, v)| ChannelInfo {
+                            name: format!("Ch {}", i),
+                            volume: v.0 as f32 / 65536.0,
+                        }).collect(),
+                    };
+                    sinks_clone.lock().unwrap().push(sink_info);
+                }
+                ListResult::End => {
+                    let _ = done_tx.send(());
+                }
+                ListResult::Error => {
+                    warn!("Error al obtener sinks");
+                    let _ = done_tx.send(());
+                }
+            }
+        });
+        mainloop.unlock();
+
+        // Mantener la operación viva hasta que se complete
+        let _ = op;
+
+        // Esperar a que se complete
+        let _ = done_rx.recv_timeout(std::time::Duration::from_secs(5));
+
+        let result = sinks.lock().unwrap().clone();
+        result
     }
 }
