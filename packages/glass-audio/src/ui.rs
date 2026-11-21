@@ -269,10 +269,18 @@ impl AudioWindow {
 
         let core_peak = core.clone();
         glib::spawn_future_local(async move {
+            // Evitar repintados cuando el nivel no cambia (silencio): con varios
+            // monitores visibles esto mantenía la CPU ocupada sin necesidad.
+            let mut last: std::collections::HashMap<u32, f64> = std::collections::HashMap::new();
             while let Ok((idx, peak)) = peak_rx.recv().await {
+                let value = if peak < 0.01 { 0.0 } else { peak as f64 };
+                if last.get(&idx).is_some_and(|v| (*v - value).abs() < 0.005) {
+                    continue;
+                }
+                last.insert(idx, value);
                 if let Some(bars) = core_peak.vu_bars.borrow().get(&idx) {
                     for bar in bars {
-                        bar.set_value(peak as f64);
+                        bar.set_value(value);
                     }
                 }
             }
