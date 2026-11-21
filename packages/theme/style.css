@@ -1,5 +1,5 @@
 /* ==========================================================================
- * Glass Bluetooth (glass-bt) — Dynamic Wallpaper Color Palette & Glassmorphism
+ * Glass Bluetooth (glass-bt) - Dynamic Wallpaper Color Palette & Glassmorphism
  * Wallust / Matugen Integration + One UI / iOS / macOS Tahoe Frosted Glass
  * ========================================================================== */
 
@@ -535,7 +535,7 @@ entry.glass-search:focus {
 }
 
 /* ==========================================================================
- * glass-audio — Superficie única, tarjetas glass y look One UI 8+
+ * glass-audio - Superficie única, tarjetas glass y look One UI 8+
  * ========================================================================== */
 
 /* Iconos Material Symbols Rounded (fuente variable instalada en el sistema) */
@@ -557,7 +557,7 @@ entry.glass-search:focus {
 .ms-20 { font-size: 20px; }
 .ms-22 { font-size: 22px; }
 
-/* ── Superficie única: llena el 100% de la ventana ──────────────────────── */
+/* -- Superficie única: llena el 100% de la ventana ------------------------ */
 /* Una sola superficie translúcido con radio 28; sin panel interior ni borde. */
 .audio-root {
     background-color: rgba(24, 24, 30, 0.45);
@@ -578,7 +578,7 @@ window.background {
     border: none;
 }
 
-/* ── Cabecera: título grande a la izquierda + servidor atenuado ─────────── */
+/* -- Cabecera: título grande a la izquierda + servidor atenuado ----------- */
 .audio-header {
     padding: 20px 20px 8px 20px;
 }
@@ -586,59 +586,60 @@ window.background {
 .audio-title {
     font-size: 32px;
     font-weight: 300;
-    letter-spacing: -0.6px;
+    letter-spacing: -0.5px;
     color: @text_primary;
+    margin: 2px 0;
 }
 
 .audio-subtitle {
     font-size: 12px;
     font-weight: 400;
-    color: @text_dim;
-    margin-top: 2px;
+    color: rgba(255, 255, 255, 0.52);
 }
 
-/* ── Pestañas: píldora segmentada ────────────────────────────────────────── */
+/* -- Pestañas: píldora segmentada ------------------------------------------ */
+/* -- Pestañas: píldora segmentada (contenedor único) -- */
 .tab-bar {
-    margin: 4px 16px 12px 16px;
+    margin: 8px 16px 16px 16px;
 }
 
 .segmented {
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.06);
+    border: none;
     border-radius: 9999px;
-    padding: 3px;
-    min-height: 34px;
+    padding: 4px;
+    min-height: 48px;
 }
 
 .seg-btn {
     background: transparent;
     border: none;
     border-radius: 9999px;
-    color: @text_secondary;
-    font-size: 12px;
+    color: rgba(255, 255, 255, 0.52);
+    font-size: 14px;
     font-weight: 600;
-    padding: 6px 12px;
-    min-height: 28px;
-    transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 8px 16px;
+    min-height: 40px;
+    transition: all 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .seg-btn:hover {
     color: @text_primary;
-    background-color: rgba(255, 255, 255, 0.06);
 }
 
 .seg-btn.active {
-    background-color: @accent_tint;
-    color: @color15;
-    box-shadow: 0 0 10px @accent_glow, inset 0 1px 1px alpha(@color15, 0.20);
+    background-color: rgba(255, 255, 255, 0.16);
+    color: @text_primary;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+    transition: box-shadow 80ms ease;
 }
 
 .seg-btn .seg-ic {
-    font-size: 15px;
-    margin-right: 5px;
+    font-size: 18px;
+    margin-right: 6px;
 }
 
-/* ── Lista con scroll (fondo transparente, scrollbar fina superpuesta) ──── */
+/* -- Lista con scroll (fondo transparente, scrollbar fina superpuesta) ---- */
 .audio-scroll {
     background: transparent;
     background-color: transparent;
@@ -649,6 +650,11 @@ window.background {
 .audio-list {
     background: transparent;
     padding: 0 16px 20px 16px;
+}
+
+/* Máscara de desvanecido en los bordes de la lista (corte suave al scroll). */
+.audio-scroll {
+    mask-image: linear-gradient(transparent, black 20px, black calc(100% - 20px), transparent);
 }
 
 .audio-scroll scrollbar {
@@ -674,24 +680,25 @@ window.background {
     background: transparent;
 }
 
-/* ── Rótulo de sección discreto sobre la primera tarjeta ────────────────── */
+/* -- Rótulo de sección discreto sobre la primera tarjeta ------------------ */
 .audio-section {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.1px;
-    text-transform: uppercase;
-    color: @text_dim;
-    margin: 4px 2px 8px 2px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: normal;
+    text-transform: none;
+    color: rgba(255, 255, 255, 0.58);
+    margin: 8px 2px 8px 2px;
+    padding: 0 2px;
 }
 
-/* ── Tarjeta de dispositivo glass (propia, radio 28) ────────────────────── */
+/* -- Tarjeta de dispositivo glass (propia, radio 28) ---------------------- */
 .audio-card {
     background-color: rgba(255, 255, 255, 0.07);
-    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.0) 42%);
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.0) 50%);
     border: 1px solid rgba(255, 255, 255, 0.10);
     border-radius: 28px;
-    padding: 16px;
-    transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 20px;
+    transition: all 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .audio-card:hover {
@@ -705,11 +712,11 @@ window.background {
 
 /* Círculo tonal 40px para el icono Material Symbols (una sola etiqueta) */
 .icon-circle {
-    min-width: 40px;
-    min-height: 40px;
-    border-radius: 20px;
-    background-image: linear-gradient(135deg, alpha(@primary, 0.28) 0%, alpha(@primary_container, 0.14) 100%);
-    border: 1px solid alpha(@primary, 0.30);
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 22px;
+    background-image: linear-gradient(135deg, alpha(@primary, 0.30) 0%, alpha(@primary_container, 0.18) 100%);
+    border: none;
     color: @color15;
     font-size: 20px;
     padding: 0;
@@ -717,33 +724,32 @@ window.background {
 }
 
 .icon-circle.dim {
-    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 100%);
-    border-color: rgba(255, 255, 255, 0.12);
-    color: @text_secondary;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);
+    color: rgba(255, 255, 255, 0.72);
 }
 
 .card-name {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     color: @text_primary;
 }
 
 .card-meta {
-    font-size: 11px;
-    color: @text_secondary;
-    margin-top: 1px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.72);
+    margin-top: 2px;
 }
 
-/* ── Botón tonal redondo (✓ predeterminado, candado, etc.) ──────────────── */
+/* -- Botón tonal redondo (✓ predeterminado, candado, etc.) ---------------- */
 .btn-tonal {
-    min-width: 32px;
-    min-height: 32px;
-    border-radius: 16px;
+    min-width: 28px;
+    min-height: 28px;
+    border-radius: 999px;
     background-color: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    color: @text_secondary;
+    border: none;
+    color: rgba(255, 255, 255, 0.72);
     padding: 0;
-    transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 160ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .btn-tonal .ms {
@@ -758,18 +764,24 @@ window.background {
 
 .btn-tonal.on {
     background-color: @primary;
-    border-color: @primary;
     color: @on_primary;
-    box-shadow: 0 0 12px @accent_glow;
+    box-shadow: 0 0 10px @accent_glow;
+    animation: glassaudio-glow 500ms ease-out;
 }
 
 .btn-tonal.on .ms {
     color: @on_primary;
 }
 
-/* ── Fila de puerto (selector) ──────────────────────────────────────────── */
+/* -- Fila de puerto (selector) -------------------------------------------- */
 .port-row {
     margin-top: 2px;
+    gap: 6px;
+}
+
+/* La etiqueta ya no se pinta; el texto se mantiene como tooltip ("Puerto"). */
+.port-label {
+    display: none;
 }
 
 .port-label {
@@ -778,57 +790,64 @@ window.background {
 }
 
 .port-select {
-    background-color: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 9999px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: none;
+    border-radius: 999px;
     color: @text_primary;
     font-size: 12px;
-    padding: 4px 8px;
-    min-height: 26px;
-    transition: all 180ms ease;
+    padding: 0 8px;
+    min-height: 28px;
+    transition: all 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .port-select:hover {
-    background-color: rgba(255, 255, 255, 0.10);
-    border-color: @accent_border;
+    background-color: rgba(255, 255, 255, 0.14);
 }
 
-/* ── Slider grueso en píldora (44–48 px) con icono dentro ──────────────── */
+/* -- Slider grueso en píldora (44-48 px) con icono dentro ---------------- */
+/* Píldora de volumen: 52 px, sin borde; el relleno es el control */
 .vol-pill {
-    background-color: rgba(0, 0, 0, 0.22);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 9999px;
-    padding: 4px 8px;
-    min-height: 46px;
-    transition: all 200ms ease;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: none;
+    border-radius: 999px;
+    min-height: 52px;
+    transition: all 160ms ease;
 }
 
 .vol-pill.muted {
-    background-color: rgba(0, 0, 0, 0.30);
+    background-color: rgba(255, 255, 255, 0.13);
 }
 
 .vol-pill.over {
-    border-color: rgba(255, 180, 50, 0.40);
+    box-shadow: 0 0 12px rgba(255, 180, 50, 0.50);
 }
 
-/* Botón de icono dentro de la píldora (silenciar) */
+/* Botón de silencio dentro de la píldora: círculo 52 px */
 .vol-mute {
-    min-width: 34px;
-    min-height: 34px;
-    border-radius: 17px;
+    min-width: 52px;
+    min-height: 52px;
+    border-radius: 26px;
     background: transparent;
     border: none;
     padding: 0;
-    transition: all 180ms ease;
+    transition: all 160ms ease;
 }
 
 .vol-mute .ms {
-    font-size: 20px;
-    color: @text_secondary;
+    font-size: 22px;
+    color: rgba(255, 255, 255, 0.72);
 }
 
 .vol-mute:hover .ms {
     color: @text_primary;
+}
+
+/* Línea VU bajo la píldora (3 px). */
+.vu-thin {
+    min-height: 3px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.10);
+    transition: opacity 80ms ease;
 }
 
 .vol-pill.muted .vol-mute .ms {
@@ -837,14 +856,14 @@ window.background {
 
 /* El slider: sin thumb clásico, el relleno es el control */
 .vol-scale {
-    min-height: 30px;
+    min-height: 52px;
     padding: 0;
     margin: 0;
     background: transparent;
 }
 
 .vol-scale trough {
-    min-height: 12px;
+    min-height: 4px;
     border-radius: 9999px;
     background-color: rgba(255, 255, 255, 0.10);
     border: none;
@@ -854,7 +873,7 @@ window.background {
 }
 
 .vol-scale highlight {
-    min-height: 12px;
+    min-height: 4px;
     border-radius: 9999px;
     background-color: @primary;
     border: none;
@@ -867,56 +886,46 @@ window.background {
 }
 
 /* Ocultar el thumb clásico (el borde del relleno es el control) */
-.vol-scale slider {
-    min-width: 0;
-    min-height: 0;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    margin: 0;
-    padding: 0;
-    opacity: 0;
-}
 
-.vol-scale:hover slider,
-.vol-scale:active slider {
-    opacity: 0;
-}
+
 
 /* Etiqueta de valor dentro de la píldora, a la derecha */
 .vol-value {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     color: @text_primary;
-    min-width: 96px;
+    margin: 0 2px;
     font-feature-settings: "tnum";
 }
 
-/* ── Fila inferior: silencio + valor + candado ──────────────────────────── */
+/* -- Fila inferior: silencio + valor + candado ---------------------------- */
 .card-foot {
     margin-top: 10px;
 }
 
 .foot-label {
-    font-size: 12px;
-    color: @text_secondary;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.72);
 }
 
-/* ── Opciones avanzadas (expansor con chevron) ──────────────────────────── */
+/* -- Opciones avanzadas (expansor con chevron) ---------------------------- */
+/* Fila de "Opciones avanzadas": texto píldora sin caja, chevron rota 90° */
 .adv-btn {
     background: transparent;
     border: none;
-    color: @text_dim;
-    font-size: 12px;
-    padding: 6px 2px;
-    margin-top: 6px;
-    transition: all 180ms ease;
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: normal;
+    padding: 8px 4px;
+    margin-top: 2px;
+    transition: all 200ms ease;
 }
 
 .adv-btn:hover {
     color: @text_primary;
 }
-
 .adv-btn .chev {
     font-size: 18px;
     margin-right: 4px;
@@ -936,8 +945,8 @@ window.background {
 }
 
 .adv-key {
-    font-size: 11px;
-    color: @text_dim;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.72);
     min-width: 120px;
 }
 
@@ -963,7 +972,7 @@ window.background {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-/* ── Medidor de nivel (VU) ──────────────────────────────────────────────── */
+/* -- Medidor de nivel (VU) ------------------------------------------------ */
 .vu-bar {
     min-height: 6px;
 }
@@ -984,14 +993,14 @@ window.background {
     box-shadow: none;
 }
 
-/* ── Estado vacío amable ────────────────────────────────────────────────── */
+/* -- Estado vacío amable -------------------------------------------------- */
 .empty-state {
     font-size: 13px;
     color: @text_dim;
     padding: 40px 10px;
 }
 
-/* ── Pie con filtro "Mostrar" ───────────────────────────────────────────── */
+/* -- Pie con filtro "Mostrar" --------------------------------------------- */
 .filter-row {
     margin-top: 4px;
     padding: 0 2px;
@@ -1003,28 +1012,27 @@ window.background {
 }
 
 .filter-chip {
-    background-color: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 9999px;
-    color: @text_secondary;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 12px;
-    transition: all 180ms ease;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: none;
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    transition: all 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .filter-chip:hover {
-    background-color: rgba(255, 255, 255, 0.10);
+    background-color: rgba(255, 255, 255, 0.14);
     color: @text_primary;
 }
 
 .filter-chip.active {
-    background-color: @accent_tint;
-    border-color: @accent_border;
-    color: @color15;
+    background-color: @primary;
+    color: @on_primary;
+    box-shadow: 0 0 8px @accent_glow;
 }
-
-/* ── Cuerpo de "Opciones avanzadas": fundido sincronizado con SlideDown ── */
+/* -- Cuerpo de "Opciones avanzadas": fundido sincronizado con SlideDown -- */
 .adv-body {
     opacity: 0;
     transition: opacity 250ms ease;

@@ -96,7 +96,7 @@ impl AudioWindow {
             .application(app)
             .title("Sonido")
             .default_width(720)
-            .default_height(600)
+            .default_height(640)
             .decorated(false)
             .build();
 
@@ -705,11 +705,8 @@ fn build_device_card(
     name_box.append(&name_lbl);
 
     if !ports.is_empty() {
-        let port_row = GtkBox::new(Orientation::Horizontal, 8);
+        let port_row = GtkBox::new(Orientation::Horizontal, 6);
         port_row.add_css_class("port-row");
-        let plabel = Label::new(Some("Puerto"));
-        plabel.add_css_class("port-label");
-        port_row.append(&plabel);
 
         let items: Vec<String> = ports
             .iter()
@@ -726,6 +723,7 @@ fn build_device_card(
             .unwrap_or(0) as u32;
         let names: Vec<String> = ports.iter().map(|p| p.name.clone()).collect();
         let dd = build_dropdown(&items, sel);
+        dd.set_tooltip_text(Some("Puerto"));
         dd.set_widget_name(&format!("dd:{key}"));
         dd.set_hexpand(true);
         let core_c = core.clone();
@@ -1193,15 +1191,10 @@ fn channel_values(core: &Core, src: MuteSource, changed: usize, value: f32) -> V
 }
 
 fn attach_vu(core: &Rc<Core>, source_index: u32, card: &GtkBox) {
-    let row = GtkBox::new(Orientation::Horizontal, 8);
-    let lbl = Label::new(Some("Nivel"));
-    lbl.add_css_class("card-meta");
-    row.append(&lbl);
-
+    let row = GtkBox::new(Orientation::Horizontal, 0);
     let bar = LevelBar::for_interval(0.0, 1.0);
-    bar.add_css_class("vu-bar");
+    bar.add_css_class("vu-thin");
     bar.set_hexpand(true);
-    bar.set_valign(Align::Center);
     row.append(&bar);
     card.append(&row);
 
