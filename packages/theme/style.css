@@ -545,7 +545,6 @@ entry.glass-search:focus {
     font-style: normal;
     line-height: 1;
     text-transform: none;
-    font-feature-settings: "liga";
     color: @text_primary;
 }
 
@@ -634,17 +633,12 @@ window.background {
     background-color: rgba(255, 255, 255, 0.16);
     color: @text_primary;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
-    animation: seg-highlight 300ms cubic-bezier(0.22, 1, 0.36, 1);
     transition: box-shadow 80ms ease;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 .seg-btn:active {
-    animation: seg-highlight 300ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@keyframes seg-highlight {
-    0%   { transform: translateY(2px); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25); }
-    100% { transform: translateY(0);  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25); }
+    transition: box-shadow 80ms ease;
 }
 
 .seg-btn .seg-ic {
@@ -665,10 +659,6 @@ window.background {
     padding: 0 16px 20px 16px;
 }
 
-/* Máscara de desvanecido en los bordes de la lista (corte suave al scroll). */
-.audio-scroll {
-    mask-image: linear-gradient(transparent, black 20px, black calc(100% - 20px), transparent);
-}
 
 .audio-scroll scrollbar {
     opacity: 1;
@@ -697,7 +687,6 @@ window.background {
 .audio-section {
     font-size: 13px;
     font-weight: 500;
-    letter-spacing: normal;
     text-transform: none;
     color: rgba(255, 255, 255, 0.58);
     margin: 8px 2px 8px 2px;
@@ -789,12 +778,6 @@ window.background {
 /* -- Fila de puerto (selector) -------------------------------------------- */
 .port-row {
     margin-top: 2px;
-    gap: 6px;
-}
-
-/* La etiqueta ya no se pinta; el texto se mantiene como tooltip ("Puerto"). */
-.port-label {
-    display: none;
 }
 
 .port-label {
@@ -832,7 +815,7 @@ window.background {
 }
 
 .vol-pill.over {
-    box-shadow: 0 0 12px rgba(255, 180, 50, 0.50);
+    box-shadow: 0 0 12px #ffb432;
 }
 
 /* Botón de silencio dentro de la píldora: círculo 52 px */
@@ -895,7 +878,7 @@ window.background {
 
 .vol-scale.over highlight {
     background-color: #ffb432;
-    box-shadow: 0 0 8px rgba(255, 180, 50, 0.50);
+    box-shadow: 0 0 8px #ffb432;
 }
 
 /* Ocultar el thumb clásico (el borde del relleno es el control) */
@@ -908,7 +891,6 @@ window.background {
     font-weight: 600;
     color: @text_primary;
     margin: 0 2px;
-    font-feature-settings: "tnum";
 }
 
 /* -- Fila inferior: silencio + valor + candado ---------------------------- */
@@ -930,7 +912,6 @@ window.background {
     color: rgba(255, 255, 255, 0.58);
     font-size: 13px;
     font-weight: 500;
-    letter-spacing: normal;
     padding: 8px 4px;
     margin-top: 2px;
     transition: all 200ms ease;
