@@ -6,7 +6,11 @@
 pub mod state;
 pub mod commands;
 pub mod service;
+pub mod volume;
+pub mod meter;
 
 pub use state::*;
 pub use commands::*;
 pub use service::*;
+pub use volume::*;
+pub use meter::*;
