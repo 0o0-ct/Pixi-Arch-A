@@ -7,10 +7,8 @@ edition = "2024"
 glass-theme = { path = "../theme" }
 audio-core = { path = "../audio-core" }
 gtk4.workspace = true
-gtk4-layer-shell.workspace = true
 glib.workspace = true
-gio.workspace = true
-tokio.workspace = true
 async-channel.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
+serde_json.workspace = true

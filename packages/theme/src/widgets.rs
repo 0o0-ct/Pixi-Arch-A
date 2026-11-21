@@ -4,11 +4,10 @@
 //! correctas del tema. Se reutilizan en glass-bt y glass-audio.
 
 use gtk4::prelude::*;
-use gtk4::{Box, Button, Image, Label, Orientation, Picture};
+use gtk4::{Box, Button, Label, Orientation};
 
 use crate::tokens::css_class;
 use crate::tokens::icon_size;
-use crate::tokens::spacing;
 
 /// Crea un panel glass (contenedor principal con efecto frosted glass).
 pub fn glass_panel(orientation: Orientation, spacing: i32) -> Box {
@@ -56,6 +55,7 @@ pub fn action_button(label: &str, variant: &str) -> Button {
 /// Crea un botón de icono tonal (silenciar, candado, etc.).
 pub fn icon_button(icon: &str, tooltip: &str) -> Button {
     let btn = Button::new();
+    btn.set_child(Some(&Label::new(Some(icon))));
     btn.set_tooltip_text(Some(tooltip));
     btn.set_size_request(32, 32);
     btn

@@ -1,28 +1,49 @@
 //! CSS dinámico con hot-reload.
 //!
 //! Carga el CSS desde un archivo en disco (para permitir hot-reload)
-//! o desde el CSS embebido como fallback.
+//! o desde el CSS embebido como fallback, siempre precedido por la paleta
+//! dinámica de wallust/matugen (`colors-waybar.css`), igual que glass-bt.
 
 use gtk4::CssProvider;
 use std::path::PathBuf;
 
-/// Carga el CSS del tema. Primero intenta desde disco (para hot-reload),
-/// luego desde el CSS embebido.
-pub fn load_css(provider: &CssProvider) {
-    // Intentar cargar desde disco para hot-reload
-    if let Some(path) = resolve_css_path() {
-        provider.load_from_path(&path);
-        tracing::info!("CSS cargado desde: {}", path.display());
-        return;
-    }
+/// Paleta de respaldo si no existe `colors-waybar.css`.
+const FALLBACK_PALETTE: &str = "\
+@define-color primary #b0c6ff;
+@define-color on_primary #142f60;
+@define-color primary_container #2e4578;
+@define-color on_primary_container #d9e2ff;
+@define-color secondary #bfc6dc;
+@define-color tertiary #dfbbde;
+@define-color surface #121318;
+@define-color surface_container #1e1f25;
+@define-color on_surface #e2e2e9;
+@define-color foreground #e2e2e9;
+@define-color color14 #b0c6ff;
+@define-color color15 #d9e2ff;
+";
 
-    // Fallback: CSS embebido
-    let css = include_str!("../style.css");
-    provider.load_from_data(css);
-    tracing::info!("CSS cargado desde recurso embebido");
+/// Carga el CSS del tema (paleta + estilo), desde disco o embebido.
+pub fn load_css(provider: &CssProvider) {
+    let palette = std::fs::read_to_string(wallust_css_path())
+        .unwrap_or_else(|_| FALLBACK_PALETTE.to_string());
+
+    let base = resolve_css_path()
+        .and_then(|p| std::fs::read_to_string(&p).ok())
+        .unwrap_or_else(|| include_str!("../style.css").to_string());
+
+    let css = format!("{palette}\n\n{base}");
+    provider.load_from_data(&css);
+    tracing::info!("CSS del tema cargado ({} bytes)", css.len());
 }
 
-/// Resuelve la ruta del archivo CSS en disco.
+/// Ruta de la paleta dinámica generada por wallust/matugen.
+fn wallust_css_path() -> PathBuf {
+    let home = std::env::var("HOME").unwrap_or_else(|_| "/tmp".into());
+    PathBuf::from(format!("{home}/.config/waybar/wallust/colors-waybar.css"))
+}
+
+/// Resuelve la ruta del archivo CSS en disco (hot-reload).
 fn resolve_css_path() -> Option<PathBuf> {
     // 1. XDG config
     let config_home = std::env::var("XDG_CONFIG_HOME")
@@ -34,11 +55,9 @@ fn resolve_css_path() -> Option<PathBuf> {
         if p.exists() { return Some(p); }
     }
 
-    // 2. Junto al ejecutable
+    // 2. Junto al ejecutable (dev: target/<profile>/../src/… ya no aplica; share/)
     if let Ok(exe) = std::env::current_exe() {
         if let Some(dir) = exe.parent() {
-            let dev_css = dir.join("../src/style.css");
-            if dev_css.exists() { return Some(dev_css); }
             let share_css = dir.join("../share/glass-theme/style.css");
             if share_css.exists() { return Some(share_css); }
         }

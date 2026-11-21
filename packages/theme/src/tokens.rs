@@ -3,8 +3,6 @@
 //! Valores extraídos del style.css de glass-bt. Todos los componentes
 //! deben usar estos tokens para mantener consistencia visual.
 
-use gtk4::gdk::RGBA;
-
 /// Radios de borde (en px).
 pub mod radius {
     pub const PANEL: i32 = 28;
