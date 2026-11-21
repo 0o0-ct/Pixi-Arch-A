@@ -22,7 +22,7 @@ use gtk4::pango;
 use gtk4::prelude::*;
 use gtk4::{
     Adjustment, Align, Application, ApplicationWindow, Box as GtkBox, Button, DropDown,
-    EventControllerKey, EventControllerLegacy, Label, LevelBar, Orientation, Revealer,
+    EventControllerKey, EventControllerLegacy, Label, LevelBar, Orientation, Overlay, Revealer,
     RevealerTransitionType, Scale, ScrolledWindow, Stack, StackTransitionType, Widget,
 };
 
@@ -67,6 +67,8 @@ struct Core {
     contents: Vec<GtkBox>,
     stack: Stack,
     tab_buttons: Vec<Button>,
+    tab_bar: Overlay,
+    seg_ind: GtkBox,
     ctx: RefCell<Ctx>,
     /// `true` mientras el usuario arrastra un slider con el ratón.
     interacting: Rc<Cell<bool>>,
@@ -134,13 +136,27 @@ impl AudioWindow {
         root.append(&header);
 
         // ── Pestañas segmentadas (píldora) ──────────────────────────────────
-        let tab_bar = GtkBox::new(Orientation::Horizontal, 0);
+        let tab_bar = Overlay::new();
         tab_bar.add_css_class("tab-bar");
         tab_bar.set_hexpand(true);
+        tab_bar.set_vexpand(false);
+        tab_bar.set_valign(Align::Start);
+        tab_bar.set_can_focus(true);
+        tab_bar.set_width_request(760);
         let segmented = GtkBox::new(Orientation::Horizontal, 0);
         segmented.add_css_class("segmented");
         segmented.set_hexpand(true);
-        tab_bar.append(&segmented);
+        segmented.set_vexpand(false);
+        segmented.set_can_focus(true);
+        tab_bar.set_child(Some(&segmented));
+        // Indicador único de pestaña activa: píldora 40 px detrás de los botones.
+        let seg_ind = GtkBox::new(Orientation::Horizontal, 0);
+        seg_ind.add_css_class("seg-ind");
+        seg_ind.set_width_request(152);
+        seg_ind.set_margin_start(0);
+        seg_ind.set_halign(Align::Start);
+        seg_ind.set_valign(Align::Center);
+        tab_bar.add_overlay(&seg_ind);
         root.append(&tab_bar);
 
         // ── Stack de contenido con cross-fade ───────────────────────────────
@@ -207,6 +223,8 @@ impl AudioWindow {
             contents,
             stack,
             tab_buttons,
+            tab_bar,
+            seg_ind,
             ctx: RefCell::new(ctx),
             interacting: Rc::new(Cell::new(false)),
             cmd_tx,
@@ -219,6 +237,33 @@ impl AudioWindow {
         for (i, btn) in core.tab_buttons.iter().enumerate() {
             let core_c = core.clone();
             btn.connect_clicked(move |_| Core::select_tab_index(&core_c, i));
+        }
+
+        // Navegación con teclado dentro de la barra: Ctrl+Tab / Ctrl+Shift+Tab / flechas.
+        {
+            let kc = EventControllerKey::new();
+            let core_kc = core.clone();
+            kc.connect_key_pressed(move |_, keyval, _, modifiers| {
+                let cur = core_kc.ctx.borrow().tab;
+                let next = match keyval {
+                    k if k == gtk4::gdk::Key::Right => (cur + 1) % TABS.len(),
+                    k if k == gtk4::gdk::Key::Left => (cur + TABS.len() - 1) % TABS.len(),
+                    k if k == gtk4::gdk::Key::Tab
+                        && !modifiers.contains(gtk4::gdk::ModifierType::SHIFT_MASK) =>
+                    {
+                        (cur + 1) % TABS.len()
+                    }
+                    k if k == gtk4::gdk::Key::Tab
+                        && modifiers.contains(gtk4::gdk::ModifierType::SHIFT_MASK) =>
+                    {
+                        (cur + TABS.len() - 1) % TABS.len()
+                    }
+                    _ => return glib::Propagation::Stop,
+                };
+                Core::select_tab_index(&core_kc, next);
+                glib::Propagation::Stop
+            });
+            core.tab_bar.add_controller(kc);
         }
 
         {
@@ -316,9 +361,23 @@ impl Core {
                 b.add_css_class("active");
             }
         }
+        Core::move_indicator(core, idx);
         core.stack.set_visible_child_name(&format!("tab{idx}"));
         tracing::debug!("select_tab_index({idx})");
         Core::render(core);
+    }
+
+    /// Desliza el indicador único de la pestaña activa hasta la nueva posición.
+    fn move_indicator(core: &Rc<Core>, idx: usize) {
+        let (x, _y) = core
+            .tab_buttons
+            .get(idx)
+            .and_then(|b| b.translate_coordinates(&core.tab_bar, 0.0, 0.0))
+            .unwrap_or((0.0, 0.0));
+        let total = core.tab_bar.width_request();
+        let tab_w = if total > 0 { (total as f64 / TABS.len() as f64) as i32 } else { 152 };
+        core.seg_ind.set_margin_start(x.round() as i32 + 2);
+        core.seg_ind.set_width_request(tab_w.max(40));
     }
 
     fn render(core: &Rc<Core>) {

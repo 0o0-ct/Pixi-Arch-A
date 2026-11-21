@@ -608,7 +608,16 @@ window.background {
     border-radius: 9999px;
     padding: 4px;
     min-height: 48px;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Indicador único de la pestaña activa: píldora de 40 px detrás del track. */
+.seg-ind {
+    margin-top: 9px;
+    min-height: 30px;
+    border-radius: 9999px;
+    background-color: @primary;
+    box-shadow: 0 0 8px @accent_glow;
+    transition: margin-start 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .seg-btn {
@@ -630,11 +639,10 @@ window.background {
 /* Resaltado compartido: una sola caja resaltada en el track que viaja
    con la opción activa; el resto es texto sobre un contenedor sólido. */
 .seg-btn.active {
-    background-color: rgba(255, 255, 255, 0.16);
+    background: transparent;
+    box-shadow: none;
     color: @text_primary;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
-    transition: box-shadow 80ms ease;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+    font-weight: 600;
 }
 
 .seg-btn:active {
