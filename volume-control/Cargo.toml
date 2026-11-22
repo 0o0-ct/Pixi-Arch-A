@@ -1,9 +1,12 @@
 [package]
 name = "volume-control"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
-description = "Control de volumen PipeWire con estilo Pixi-Arch-A"
+description = "Control de volumen PipeWire con estilo ONE UI 8.5 + Glassmorphism + colores dinámicos Matugen"
 
 [dependencies]
 iced = { version = "0.13", features = ["tokio"] }
 tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+dirs-next = "2.0"

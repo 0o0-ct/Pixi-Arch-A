@@ -1,2005 +1,531 @@
-//! UI del control de volumen (glass-audio).
+//! # glass-audio v2 - UI Builders
 //!
-//! Superficie única glass + pestañas segmentadas + tarjetas One UI 8+.
-//!
-//! Event-driven: el estado llega por canal y se renderiza en el hilo principal
-//! (sin timers de sondeo). Al re-renderizar se conserva el foco del teclado
-//! mediante nombres de widget, de modo que la navegación por teclado no se
-//! interrumpe con cada actualización.
+//! Construcción de todos los componentes visuales del Quick Settings.
 
-use std::cell::{Cell, RefCell};
-use std::collections::{HashMap, HashSet};
-use std::rc::Rc;
-use std::time::{SystemTime, UNIX_EPOCH};
-
-use async_channel::{Receiver, Sender};
-use audio_core::{
-    format_volume_label, AudioCommand, AudioState, CardInfo, ChannelInfo, DeviceType, PeakMeter,
-    PlaybackStream, PortInfo, RecordStream, VolumeTarget,
-};
-use gtk4::gdk::EventType;
-use gtk4::pango;
 use gtk4::prelude::*;
 use gtk4::{
-    Adjustment, Align, Application, ApplicationWindow, Box as GtkBox, Button,
-    DropDown, EventControllerKey, EventControllerLegacy, Label, LevelBar, Orientation, Overlay,
-    Revealer, RevealerTransitionType, Scale, ScrolledWindow, Stack, StackTransitionType, Widget,
+    Adjustment, Box as GtkBox, Button, Grid, Image, Label, Orientation, Scale,
 };
 
-const TABS: [&str; 5] = [
-    "Salida",
-    "Entrada",
-    "Reproducción",
-    "Grabación",
-    "Configuración",
-];
-const TAB_ICONS: [&str; 5] = [
-    "volume_up",
-    "mic",
-    "play_arrow",
-    "fiber_manual_record",
-    "settings",
-];
+use std::rc::Rc;
 
-/// Estado compartido de la UI (se lee al renderizar, se muta en interacciones).
-#[derive(Default)]
-struct Ctx {
-    state: AudioState,
-    tab: usize,
-    out_filter: usize, // 0 todos · 1 hardware · 2 virtuales
-    in_filter: usize,  // 0 todos · 1 hardware · 2 monitores
-    pb_filter: usize,  // 0 todos · 1 apps · 2 vídeo
-    /// Pestañas con "Opciones avanzadas" abierto.
-    expanded: HashSet<(u8, u32)>,
-    /// Pestañas con canales desenlazados (candado abierto).
-    unlocked: HashSet<(u8, u32)>,
-    /// Abre "Opciones avanzadas" en todas las tarjetas (flag `--expand`).
-    force_expand: bool,
+use crate::QuickSettingsState;
+
+/// Smart Device info
+#[derive(Clone, Debug)]
+pub struct SmartDevice {
+    pub id: String,
+    pub name: String,
+    pub location: String,
+    pub icon: String,
 }
 
-impl Ctx {
-    fn is_expanded_flag(&self, tab: u8, index: u32) -> bool {
-        self.force_expand || self.expanded.contains(&(tab, index))
-    }
+// Icon helpers - GTK4 IconSize only has Inherit, Normal, Large
+pub const ICON_SMALL: gtk4::IconSize = gtk4::IconSize::Normal;
+pub const ICON_LARGE: gtk4::IconSize = gtk4::IconSize::Large;
+
+fn icon(name: &str, pixel_size: i32) -> Image {
+    let img = Image::from_icon_name(name);
+    img.set_pixel_size(pixel_size);
+    img
 }
 
-struct IndicatorAnim {
-    start_time: std::time::Instant,
-    from_x: f64,
-    from_w: f64,
-    to_x: f64,
-    to_w: f64,
-    curr_x: f64,
-    curr_w: f64,
-    active: bool,
-}
+// ── Status Bar ────────────────────────────────────────────────────────────
 
-impl Default for IndicatorAnim {
-    fn default() -> Self {
-        Self {
-            start_time: std::time::Instant::now(),
-            from_x: 0.0,
-            from_w: 0.0,
-            to_x: 0.0,
-            to_w: 0.0,
-            curr_x: 0.0,
-            curr_w: 0.0,
-            active: false,
-        }
-    }
-}
+pub fn build_status_bar(state: Rc<QuickSettingsState>) -> GtkBox {
+    let root = GtkBox::new(Orientation::Horizontal, 12);
+    root.add_css_class("qs-status-bar");
 
-fn one_ui_ease(t: f64) -> f64 {
-    // cubic-bezier(0.22, 1.0, 0.36, 1.0)
-    if t <= 0.0 {
-        return 0.0;
-    }
-    if t >= 1.0 {
-        return 1.0;
-    }
-    let x1 = 0.22;
-    let y1 = 1.0;
-    let x2 = 0.36;
-    let y2 = 1.0;
-
-    let mut s = t;
-    for _ in 0..8 {
-        let one_minus_s = 1.0 - s;
-        let current_x = 3.0 * one_minus_s * one_minus_s * s * x1
-            + 3.0 * one_minus_s * s * s * x2
-            + s * s * s;
-        let diff = current_x - t;
-        if diff.abs() < 1e-5 {
-            break;
-        }
-        let dxd_s = 3.0 * one_minus_s * one_minus_s * x1
-            + 6.0 * one_minus_s * s * (x2 - x1)
-            + 3.0 * s * s * (1.0 - x2);
-        if dxd_s.abs() < 1e-5 {
-            break;
-        }
-        s = (s - diff / dxd_s).clamp(0.0, 1.0);
-    }
-
-    let one_minus_s = 1.0 - s;
-    3.0 * one_minus_s * one_minus_s * s * y1
-        + 3.0 * one_minus_s * s * s * y2
-        + s * s * s
-}
-
-struct Core {
-    contents: Vec<GtkBox>,
-    stack: Stack,
-    tab_buttons: Vec<Button>,
-    tab_labels: Vec<Label>,
-    tab_bar: Overlay,
-    segmented: GtkBox,
-    ind_layer: GtkBox,
-    seg_ind: GtkBox,
-    anim_state: Rc<RefCell<IndicatorAnim>>,
-    ctx: RefCell<Ctx>,
-    /// `true` mientras el usuario arrastra un slider con el ratón.
-    interacting: Rc<Cell<bool>>,
-    cmd_tx: Sender<AudioCommand>,
-    peak_tx: Sender<(u32, f32)>,
-    meters: RefCell<HashMap<u32, PeakMeter>>,
-    vu_bars: RefCell<HashMap<u32, Vec<LevelBar>>>,
-    window: ApplicationWindow,
-}
-
-pub struct AudioWindow {
-    pub window: ApplicationWindow,
-    core: Rc<Core>,
-}
-
-impl AudioWindow {
-    pub fn new(
-        app: &Application,
-        cmd_tx: Sender<AudioCommand>,
-        event_rx: Receiver<AudioState>,
-        initial_tab: Option<&str>,
-        expand: bool,
-        width: i32,
-    ) -> Self {
-        let (peak_tx, peak_rx) = async_channel::unbounded::<(u32, f32)>();
-
-        let window = ApplicationWindow::builder()
-            .application(app)
-            .title("Sonido")
-            .default_width(width)
-            .default_height(640)
-            .decorated(false)
-            .build();
-
-        // ── Superficie única (100% de la ventana) ────────────────────────────
-        let root = GtkBox::new(Orientation::Vertical, 0);
-        root.add_css_class("audio-root");
-        root.set_hexpand(true);
-        root.set_vexpand(true);
-
-        // Cabecera: título grande a la izquierda + subtítulo atenuado.
-        let header = GtkBox::new(Orientation::Horizontal, 10);
-        header.add_css_class("audio-header");
-        header.set_hexpand(true);
-
-        let title_box = GtkBox::new(Orientation::Vertical, 0);
-        title_box.set_hexpand(true);
-        let title = Label::new(Some("Sonido"));
-        title.add_css_class("audio-title");
-        title.set_halign(Align::Start);
-        title_box.append(&title);
-        let subtitle = Label::new(Some("PipeWire"));
-        subtitle.add_css_class("audio-subtitle");
-        subtitle.set_halign(Align::Start);
-        title_box.append(&subtitle);
-        header.append(&title_box);
-
-        let close_btn = Button::new();
-        close_btn.add_css_class("btn-close-window");
-        close_btn.set_tooltip_text(Some("Cerrar (Esc)"));
-        close_btn.set_valign(Align::Center);
-        close_btn.set_child(Some(&ms_icon("close", "ms-16")));
-        let win_close = window.clone();
-        close_btn.connect_clicked(move |_| win_close.close());
-        header.append(&close_btn);
-        root.append(&header);
-
-        // ── Pestañas segmentadas estilo One UI 8 (píldora única) ─────────────
-        let tab_bar = Overlay::new();
-        tab_bar.add_css_class("tab-bar");
-        tab_bar.set_hexpand(true);
-        tab_bar.set_vexpand(false);
-        tab_bar.set_valign(Align::Start);
-        tab_bar.set_can_focus(false);
-
-        // Capa del indicador (detrás de los botones: child del Overlay)
-        let ind_layer = GtkBox::new(Orientation::Horizontal, 0);
-        ind_layer.add_css_class("seg-ind-layer");
-        ind_layer.set_hexpand(true);
-        ind_layer.set_vexpand(false);
-        ind_layer.set_valign(Align::Center);
-        ind_layer.set_can_target(false);
-
-        // Indicador único de pestaña activa: píldora 40 px detrás de la pestaña activa
-        let seg_ind = GtkBox::new(Orientation::Horizontal, 0);
-        seg_ind.add_css_class("seg-ind");
-        seg_ind.set_halign(Align::Start);
-        seg_ind.set_valign(Align::Center);
-        seg_ind.set_height_request(40);
-        seg_ind.set_can_target(false);
-        ind_layer.append(&seg_ind);
-
-        tab_bar.set_child(Some(&ind_layer));
-
-        // Capa de botones (encima del indicador: overlay)
-        let segmented = GtkBox::new(Orientation::Horizontal, 0);
-        segmented.add_css_class("segmented");
-        segmented.set_hexpand(true);
-        segmented.set_vexpand(false);
-        segmented.set_homogeneous(true);
-        segmented.set_valign(Align::Center);
-
-        tab_bar.add_overlay(&segmented);
-        tab_bar.set_measure_overlay(&segmented, true);
-
-        root.append(&tab_bar);
-
-        // ── Stack de contenido con cross-fade ───────────────────────────────
-        let stack = Stack::new();
-        stack.set_transition_type(StackTransitionType::Crossfade);
-        stack.set_transition_duration(300);
-        stack.set_hexpand(true);
-        stack.set_vexpand(true);
-
-        let mut contents: Vec<GtkBox> = Vec::new();
-        for (i, name) in TABS.iter().enumerate() {
-            let scrolled = ScrolledWindow::builder()
-                .hscrollbar_policy(gtk4::PolicyType::Never)
-                .vscrollbar_policy(gtk4::PolicyType::Automatic)
-                .has_frame(false)
-                .propagate_natural_height(true)
-                .build();
-            scrolled.add_css_class("audio-scroll");
-            scrolled.set_vexpand(true);
-
-            let content = GtkBox::new(Orientation::Vertical, 12);
-            content.add_css_class("audio-list");
-            content.set_hexpand(true);
-            scrolled.set_child(Some(&content));
-            stack.add_titled(&scrolled, Some(&format!("tab{i}")), name);
-            contents.push(content);
-        }
-        root.append(&stack);
-
-        window.set_child(Some(&root));
-
-        // Botones de pestaña (transparentes, sin caja, solo icono + texto).
-        let mut tab_buttons = Vec::new();
-        let mut tab_labels = Vec::new();
-        for (i, name) in TABS.iter().enumerate() {
-            let btn = Button::builder()
-                .has_frame(false)
-                .can_focus(true)
-                .hexpand(true)
-                .vexpand(false)
-                .valign(Align::Center)
-                .build();
-            btn.add_css_class("seg-btn");
-            btn.set_widget_name(&format!("tabbtn{i}"));
-
-            let hbox = GtkBox::new(Orientation::Horizontal, 0);
-            hbox.set_halign(Align::Center);
-            hbox.set_valign(Align::Center);
-
-            let ic = ms_icon(TAB_ICONS[i], "ms-18 seg-ic");
-            hbox.append(&ic);
-
-            let tab_lbl = Label::new(Some(name));
-            tab_lbl.add_css_class("seg-label");
-            tab_lbl.set_ellipsize(pango::EllipsizeMode::End);
-            hbox.append(&tab_lbl);
-
-            btn.set_child(Some(&hbox));
-            segmented.append(&btn);
-            tab_buttons.push(btn);
-            tab_labels.push(tab_lbl);
-        }
-
-        let mut ctx = Ctx::default();
-        ctx.tab = usize::MAX; // fuerza el primer render
-        let core = Rc::new(Core {
-            contents,
-            stack,
-            tab_buttons,
-            tab_labels,
-            tab_bar,
-            ind_layer,
-            seg_ind,
-            anim_state: Rc::new(RefCell::new(IndicatorAnim::default())),
-            ctx: RefCell::new(ctx),
-            interacting: Rc::new(Cell::new(false)),
-            cmd_tx,
-            peak_tx,
-            meters: RefCell::new(HashMap::new()),
-            vu_bars: RefCell::new(HashMap::new()),
-            window: window.clone(),
-        });
-
-        for (i, btn) in core.tab_buttons.iter().enumerate() {
-            let core_c = core.clone();
-            btn.connect_clicked(move |_| Core::select_tab_index(&core_c, i));
-        }
-
-        // Navegación con flechas izquierda/derecha dentro de la barra
-        {
-            let kc = EventControllerKey::new();
-            let core_kc = core.clone();
-            kc.connect_key_pressed(move |_, keyval, _, _| {
-                let cur = core_kc.ctx.borrow().tab;
-                let next = match keyval {
-                    k if k == gtk4::gdk::Key::Right => (cur + 1) % TABS.len(),
-                    k if k == gtk4::gdk::Key::Left => (cur + TABS.len() - 1) % TABS.len(),
-                    _ => return glib::Propagation::Proceed,
-                };
-                Core::select_tab_index(&core_kc, next);
-                if let Some(b) = core_kc.tab_buttons.get(next) {
-                    b.grab_focus();
-                }
-                glib::Propagation::Stop
-            });
-            segmented.add_controller(kc);
-        }
-
-        // Atajos globales de la ventana: Escape para cerrar, Ctrl+Tab y Ctrl+Shift+Tab para pestañas
-        {
-            let key = EventControllerKey::new();
-            let core_key = core.clone();
-            key.connect_key_pressed(move |_, kv, _, modifiers| {
-                if kv == gtk4::gdk::Key::Escape {
-                    core_key.window.close();
-                    return glib::Propagation::Stop;
-                }
-
-                if modifiers.contains(gtk4::gdk::ModifierType::CONTROL_MASK) {
-                    if kv == gtk4::gdk::Key::Tab || kv == gtk4::gdk::Key::ISO_Left_Tab {
-                        let cur = core_key.ctx.borrow().tab;
-                        let next = if modifiers.contains(gtk4::gdk::ModifierType::SHIFT_MASK) {
-                            (cur + TABS.len() - 1) % TABS.len()
-                        } else {
-                            (cur + 1) % TABS.len()
-                        };
-                        Core::select_tab_index(&core_key, next);
-                        if let Some(b) = core_key.tab_buttons.get(next) {
-                            b.grab_focus();
-                        }
-                        return glib::Propagation::Stop;
-                    }
-                }
-
-                glib::Propagation::Proceed
-            });
-            window.add_controller(key);
-        }
-
-        // Detector de resize: responde vía GDK Surface layout a 720px, 560px y cambios dinámicos
-        {
-            let core_realize = Rc::downgrade(&core);
-            window.connect_realize(move |win| {
-                if let Some(surf) = win.surface() {
-                    let core_layout = core_realize.clone();
-                    surf.connect_layout(move |_surf, width, _height| {
-                        if let Some(core) = core_layout.upgrade() {
-                            Core::handle_resize(&core, width);
-                        }
-                    });
-                }
-            });
-        }
-
-        {
-            let mut c = core.ctx.borrow_mut();
-            c.force_expand = expand;
-        }
-
-        // --tab acepta el nombre en español o el token en inglés.
-        let start = match initial_tab.map(|t| t.to_ascii_lowercase()) {
-            Some(t) => match t.as_str() {
-                "output" | "salida" => 0,
-                "input" | "entrada" => 1,
-                "playback" | "reproduccion" | "reproducción" => 2,
-                "record" | "grabacion" | "grabación" => 3,
-                "config" | "configuracion" | "configuración" => 4,
-                _ => 0,
-            },
-            None => 0,
-        };
-        Core::select_tab_index(&core, start.min(TABS.len() - 1));
-
-        // ── Actualizaciones event-driven (coalescidas, sin sondeo) ──────────
-        let core_state = core.clone();
-        glib::spawn_future_local(async move {
-            loop {
-                let state = match event_rx.recv().await {
-                    Ok(s) => s,
-                    Err(_) => break,
-                };
-                tracing::debug!(
-                    "estado recibido: {} playback (tab {})",
-                    state.playback_streams.len(),
-                    core_state.ctx.borrow().tab
-                );
-                {
-                    let mut c = core_state.ctx.borrow_mut();
-                    c.state = state;
-                    // Drenar la cola para renderizar una sola vez por ráfaga.
-                    while let Ok(more) = event_rx.try_recv() {
-                        c.state = more;
-                    }
-                }
-                if !core_state.interacting.get() {
-                    Core::render(&core_state);
-                }
-            }
-        });
-
-        let core_peak = core.clone();
-        glib::spawn_future_local(async move {
-            // Evitar repintados cuando el nivel no cambia (silencio): con varios
-            // monitores visibles esto mantenía la CPU ocupada sin necesidad.
-            let mut last: std::collections::HashMap<u32, f64> = std::collections::HashMap::new();
-            while let Ok((idx, peak)) = peak_rx.recv().await {
-                let value = if peak < 0.01 { 0.0 } else { peak as f64 };
-                if last.get(&idx).is_some_and(|v| (*v - value).abs() < 0.005) {
-                    continue;
-                }
-                last.insert(idx, value);
-                if let Some(bars) = core_peak.vu_bars.borrow().get(&idx) {
-                    for bar in bars {
-                        bar.set_value(value);
-                    }
-                }
-            }
-        });
-
-        Self { window, core }
-    }
-
-    pub fn select_tab(&self, tab: Option<&str>) {
-        if let Some(t) = tab {
-            if let Some(i) = TABS.iter().position(|x| x.eq_ignore_ascii_case(t)) {
-                Core::select_tab_index(&self.core, i);
-            }
-        }
-    }
-}
-
-impl Core {
-    fn select_tab_index(core: &Rc<Core>, idx: usize) {
-        if idx >= TABS.len() {
-            return;
-        }
-        {
-            let mut ctx = core.ctx.borrow_mut();
-            if ctx.tab == idx {
-                return;
-            }
-            ctx.tab = idx;
-        }
-        for (i, b) in core.tab_buttons.iter().enumerate() {
-            b.remove_css_class("active");
-            if i == idx {
-                b.add_css_class("active");
-            }
-        }
-        Core::update_tab_labels(core);
-        Core::move_indicator(core, idx, true);
-        core.stack.set_visible_child_name(&format!("tab{idx}"));
-        tracing::debug!("select_tab_index({idx})");
-        Core::render(core);
-    }
-
-    fn update_tab_labels(core: &Rc<Core>) {
-        let win_w = if core.window.width() > 0 {
-            core.window.width()
-        } else {
-            core.window.default_width()
-        };
-        Core::update_tab_labels_for_width(core, win_w);
-    }
-
-    fn update_tab_labels_for_width(core: &Rc<Core>, width: i32) {
-        let is_compact = width < 600 && width > 0;
-        let cur_tab = core.ctx.borrow().tab;
-
-        for (i, lbl) in core.tab_labels.iter().enumerate() {
-            if is_compact {
-                let is_active = i == cur_tab;
-                lbl.set_visible(is_active);
-                if is_active {
-                    core.tab_buttons[i].remove_css_class("icon-only");
-                } else {
-                    core.tab_buttons[i].add_css_class("icon-only");
-                }
-            } else {
-                lbl.set_visible(true);
-                core.tab_buttons[i].remove_css_class("icon-only");
-            }
-        }
-    }
-
-    fn handle_resize(core: &Rc<Core>, width: i32) {
-        if width <= 0 {
-            return;
-        }
-        Core::update_tab_labels_for_width(core, width);
-
-        let cur_tab = core.ctx.borrow().tab;
-        if cur_tab < TABS.len() {
-            let anim_active = core.anim_state.borrow().active;
-            let (target_x, target_w) = Core::get_tab_target(core, cur_tab);
-            if !anim_active {
-                Core::set_indicator_immediate(core, target_x, target_w);
-            } else {
-                let mut anim = core.anim_state.borrow_mut();
-                anim.to_x = target_x;
-                anim.to_w = target_w;
-            }
-        }
-    }
-
-    fn get_tab_target(core: &Core, idx: usize) -> (f64, f64) {
-        if let Some(btn) = core.tab_buttons.get(idx) {
-            if let Some((x, _)) = btn.translate_coordinates(&core.ind_layer, 0.0, 0.0) {
-                let w = btn.width() as f64;
-                if w > 0.0 {
-                    return (x, w);
-                }
-            }
-        }
-        let bar_w = core.tab_bar.width() as f64;
-        let total = if bar_w > 0.0 { bar_w } else { 720.0 - 32.0 - 8.0 };
-        let w = (total / TABS.len() as f64).max(40.0);
-        (idx as f64 * w, w)
-    }
-
-    fn set_indicator_immediate(core: &Rc<Core>, target_x: f64, target_w: f64) {
-        if target_w <= 0.0 {
-            return;
-        }
-        {
-            let mut anim = core.anim_state.borrow_mut();
-            anim.active = false;
-            anim.from_x = target_x;
-            anim.to_x = target_x;
-            anim.curr_x = target_x;
-            anim.from_w = target_w;
-            anim.to_w = target_w;
-            anim.curr_w = target_w;
-        }
-        core.seg_ind.set_margin_start(target_x.round() as i32);
-        core.seg_ind.set_width_request(target_w.round() as i32);
-    }
-
-    /// Desliza el indicador único de la pestaña activa hasta la nueva posición en 300 ms con cubic-bezier(0.22, 1, 0.36, 1).
-    fn move_indicator(core: &Rc<Core>, idx: usize, animate: bool) {
-        let (target_x, target_w) = Core::get_tab_target(core, idx);
-        if animate {
-            Core::animate_indicator(core, target_x, target_w);
-        } else {
-            Core::set_indicator_immediate(core, target_x, target_w);
-        }
-    }
-
-    fn animate_indicator(core: &Rc<Core>, target_x: f64, target_w: f64) {
-        if target_w <= 0.0 {
-            return;
-        }
-        {
-            let mut anim = core.anim_state.borrow_mut();
-            if (anim.curr_x - target_x).abs() < 0.5 && (anim.curr_w - target_w).abs() < 0.5 {
-                return;
-            }
-            anim.from_x = anim.curr_x;
-            anim.from_w = anim.curr_w;
-            anim.to_x = target_x;
-            anim.to_w = target_w;
-            anim.start_time = std::time::Instant::now();
-            if anim.active {
-                return;
-            }
-            anim.active = true;
-        }
-
-        let core_anim = Rc::downgrade(core);
-        core.seg_ind.add_tick_callback(move |_, _frame_clock| {
-            let Some(core) = core_anim.upgrade() else {
-                return glib::ControlFlow::Break;
-            };
-            let mut anim = core.anim_state.borrow_mut();
-            if !anim.active {
-                return glib::ControlFlow::Break;
-            }
-
-            let elapsed = anim.start_time.elapsed().as_secs_f64();
-            let t = (elapsed / 0.300).clamp(0.0, 1.0);
-            let progress = one_ui_ease(t);
-
-            let cur_x = anim.from_x + (anim.to_x - anim.from_x) * progress;
-            let cur_w = anim.from_w + (anim.to_w - anim.from_w) * progress;
-            anim.curr_x = cur_x;
-            anim.curr_w = cur_w;
-
-            core.seg_ind.set_margin_start(cur_x.round() as i32);
-            core.seg_ind.set_width_request(cur_w.round() as i32);
-
-            if t >= 1.0 {
-                anim.active = false;
-                anim.curr_x = anim.to_x;
-                anim.curr_w = anim.to_w;
-                core.seg_ind.set_margin_start(anim.to_x.round() as i32);
-                core.seg_ind.set_width_request(anim.to_w.round() as i32);
-                glib::ControlFlow::Break
-            } else {
-                glib::ControlFlow::Continue
-            }
-        });
-    }
-
-    fn render(core: &Rc<Core>) {
-        // 1. Guardar el foco (para no perder la navegación por teclado).
-        let focus_key = gtk4::prelude::RootExt::focus(&core.window).and_then(|w| {
-            let n = w.widget_name().to_string();
-            if n.is_empty() { None } else { Some(n) }
-        });
-
-        // 2. Guardar la posición de scroll.
-        let scroll_before = core
-            .stack
-            .visible_child()
-            .and_then(|w| w.downcast_ref::<ScrolledWindow>().map(|s| s.vadjustment().value()));
-
-        let tab = core.ctx.borrow().tab;
-        tracing::debug!(
-            "render: ctx.tab={tab} playback={} sinks={}",
-            core.ctx.borrow().state.playback_streams.len(),
-            core.ctx.borrow().state.sinks.len()
-        );
-        if tab >= TABS.len() {
-            return;
-        }
-
-        // 3. Vaciar la página actual.
-        let content = &core.contents[tab];
-        while let Some(child) = content.first_child() {
-            content.remove(&child);
-        }
-        core.vu_bars.borrow_mut().clear();
-
-        // 4. Reconstruir.
-        {
-            let ctx = core.ctx.borrow();
-            match tab {
-                0 => render_devices(core, &ctx, DeviceKind::Sink),
-                1 => render_devices(core, &ctx, DeviceKind::Source),
-                2 => render_playback(core, &ctx),
-                3 => render_record(core, &ctx),
-                4 => render_config(core, &ctx),
-                _ => {}
-            }
-        }
-
-        // 5. Medidores VU: solo para las fuentes visibles (pestaña Entrada).
-        sync_meters(core);
-
-        // 6. Restaurar scroll y foco.
-        if let (Some(v), Some(w)) = (scroll_before, core.stack.visible_child()) {
-            if let Some(s) = w.downcast_ref::<ScrolledWindow>() {
-                s.vadjustment().set_value(v);
-            }
-        }
-        if let Some(name) = focus_key {
-            if let Some(w) = find_named(core.window.upcast_ref::<Widget>(), &name) {
-                w.grab_focus();
-            }
-        }
-    }
-
-}
-
-// ── Utilidades ───────────────────────────────────────────────────────────────
-
-fn ms_icon(name: &str, classes: &str) -> Label {
-    let l = Label::new(Some(name));
-    l.add_css_class("ms");
-    for c in classes.split_whitespace() {
-        l.add_css_class(c);
-    }
-    l.set_valign(Align::Center);
-    l
-}
-
-/// Círculo tonal con icono Material Symbols (una etiqueta, sin emoji).
-fn icon_circle(icon: &str) -> Label {
-    let l = Label::new(Some(icon));
-    l.add_css_class("ms");
-    l.add_css_class("icon-circle");
-    l.set_xalign(0.5);
-    l.set_yalign(0.5);
-    l.set_valign(Align::Start);
-    l.set_halign(Align::Start);
-    l
-}
-
-fn now_ms() -> u128 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|d| d.as_millis())
-        .unwrap_or(0)
-}
-
-/// Throttle de envío (debounce ~40 ms). Devuelve `true` si toca enviar.
-fn throttle(last: &Cell<u128>, ms: u128) -> bool {
-    let t = now_ms();
-    if t.saturating_sub(last.get()) >= ms {
-        last.set(t);
-        true
-    } else {
-        false
-    }
-}
-
-/// Busca un widget por su nombre en el árbol (para restaurar el foco).
-fn find_named(root: &Widget, name: &str) -> Option<Widget> {
-    let n = root.widget_name().to_string();
-    if n == name {
-        return Some(root.clone());
-    }
-    let mut child = root.first_child();
-    while let Some(c) = child {
-        if let Some(f) = find_named(&c, name) {
-            return Some(f);
-        }
-        child = c.next_sibling();
-    }
-    None
-}
-
-fn toggle_set(set: &mut HashSet<(u8, u32)>, key: (u8, u32)) -> bool {
-    if set.contains(&key) {
-        set.remove(&key);
-        false
-    } else {
-        set.insert(key);
-        true
-    }
-}
-
-fn is_hardware(desc: &str) -> bool {
-    let d = desc.to_lowercase();
-    !(d.contains("monitor") || d.contains("virtual") || d.contains("simul"))
-}
-
-#[derive(Clone, Copy, PartialEq)]
-enum DeviceKind {
-    Sink,
-    Source,
-}
-
-/// Qué volumen/silencio controla un botón de la píldora.
-#[derive(Clone, Copy)]
-enum MuteSource {
-    Sink(u32),
-    Source(u32),
-    Playback(u32),
-    Record(u32),
-}
-
-impl MuteSource {
-    fn target(self) -> VolumeTarget {
-        match self {
-            MuteSource::Sink(i) => VolumeTarget::Sink(i),
-            MuteSource::Source(i) => VolumeTarget::Source(i),
-            MuteSource::Playback(i) => VolumeTarget::PlaybackStream(i),
-            MuteSource::Record(i) => VolumeTarget::RecordStream(i),
-        }
-    }
-
-    fn current_muted(self, ctx: &Ctx) -> bool {
-        match self {
-            MuteSource::Sink(i) => ctx
-                .state
-                .sinks
-                .iter()
-                .find(|s| s.index == i)
-                .map(|s| s.muted)
-                .unwrap_or(false),
-            MuteSource::Source(i) => ctx
-                .state
-                .sources
-                .iter()
-                .find(|s| s.index == i)
-                .map(|s| s.muted)
-                .unwrap_or(false),
-            MuteSource::Playback(i) => ctx
-                .state
-                .playback_streams
-                .iter()
-                .find(|s| s.index == i)
-                .map(|s| s.muted)
-                .unwrap_or(false),
-            MuteSource::Record(i) => ctx
-                .state
-                .record_streams
-                .iter()
-                .find(|s| s.index == i)
-                .map(|s| s.muted)
-                .unwrap_or(false),
-        }
-    }
-
-    fn current_volume(self, ctx: &Ctx) -> f32 {
-        match self {
-            MuteSource::Sink(i) => ctx
-                .state
-                .sinks
-                .iter()
-                .find(|s| s.index == i)
-                .map(|s| s.volume)
-                .unwrap_or(0.0),
-            MuteSource::Source(i) => ctx
-                .state
-                .sources
-                .iter()
-                .find(|s| s.index == i)
-                .map(|s| s.volume)
-                .unwrap_or(0.0),
-            MuteSource::Playback(i) => ctx
-                .state
-                .playback_streams
-                .iter()
-                .find(|s| s.index == i)
-                .map(|s| s.volume)
-                .unwrap_or(0.0),
-            MuteSource::Record(i) => ctx
-                .state
-                .record_streams
-                .iter()
-                .find(|s| s.index == i)
-                .map(|s| s.volume)
-                .unwrap_or(0.0),
-        }
-    }
-}
-
-// ── Pestañas de dispositivos (Salida / Entrada) ──────────────────────────────
-
-fn render_devices(core: &Rc<Core>, ctx: &Ctx, kind: DeviceKind) {
-    let content = &core.contents[ctx.tab];
-    let tab_id = ctx.tab as u8;
-
-    let (title, filter_state) = match kind {
-        DeviceKind::Sink => ("DISPOSITIVOS DE SALIDA", ctx.out_filter),
-        DeviceKind::Source => ("DISPOSITIVOS DE ENTRADA", ctx.in_filter),
-    };
-    let section = Label::new(Some(title));
-    section.add_css_class("audio-section");
-    section.set_halign(Align::Start);
-    content.append(&section);
-
-    match kind {
-        DeviceKind::Sink => {
-            for s in &ctx.state.sinks {
-                let hw = is_hardware(&s.description);
-                match filter_state {
-                    1 if !hw => continue,
-                    2 if hw => continue,
-                    _ => {}
-                }
-                let card = build_device_card(
-                    core,
-                    ctx,
-                    tab_id,
-                    DeviceKind::Sink,
-                    s.index,
-                    &s.description,
-                    s.volume,
-                    s.muted,
-                    s.is_default,
-                    &s.ports,
-                    s.active_port.as_deref(),
-                    &s.channels,
-                );
-                if let Some(monitor) = s.monitor_source {
-                    attach_vu(core, monitor, &card);
-                }
-                content.append(&card);
-            }
-        }
-        DeviceKind::Source => {
-            for s in &ctx.state.sources {
-                let hw = is_hardware(&s.description) && !s.is_monitor;
-                match filter_state {
-                    1 if !hw => continue,
-                    2 if !s.is_monitor => continue,
-                    _ => {}
-                }
-                let card = build_device_card(
-                    core,
-                    ctx,
-                    tab_id,
-                    DeviceKind::Source,
-                    s.index,
-                    &s.description,
-                    s.volume,
-                    s.muted,
-                    s.is_default,
-                    &s.ports,
-                    s.active_port.as_deref(),
-                    &s.channels,
-                );
-                attach_vu(core, s.index, &card);
-                content.append(&card);
-            }
-        }
-    }
-
-    let labels: &[&str] = match kind {
-        DeviceKind::Sink => &["Todos", "Hardware", "Virtuales"],
-        DeviceKind::Source => &["Todos", "Hardware", "Monitores"],
-    };
-    content.append(&build_filter_row(core, ctx.tab, filter_state, labels));
-}
-
-fn build_filter_row(core: &Rc<Core>, tab: usize, active: usize, labels: &[&str]) -> GtkBox {
-    let row = GtkBox::new(Orientation::Horizontal, 8);
-    row.add_css_class("filter-row");
-    let lbl = Label::new(Some("Mostrar"));
-    lbl.add_css_class("filter-label");
-    row.append(&lbl);
-    for (i, name) in labels.iter().enumerate() {
-        let chip = Button::with_label(name);
-        chip.add_css_class("filter-chip");
-        chip.set_widget_name(&format!("chip:{tab}:{i}"));
-        if i == active {
-            chip.add_css_class("active");
-        }
-        let core_c = core.clone();
-        let idx = i;
-        chip.connect_clicked(move |_| {
-            {
-                let mut ctx = core_c.ctx.borrow_mut();
-                match tab {
-                    0 => ctx.out_filter = idx,
-                    1 => ctx.in_filter = idx,
-                    2 => ctx.pb_filter = idx,
-                    _ => {}
-                }
-            }
-            Core::render(&core_c);
-        });
-        row.append(&chip);
-    }
-    row
-}
-
-/// Tarjeta de dispositivo (Sección B).
-#[allow(clippy::too_many_arguments)]
-fn build_device_card(
-    core: &Rc<Core>,
-    ctx: &Ctx,
-    tab_id: u8,
-    kind: DeviceKind,
-    index: u32,
-    name: &str,
-    volume: f32,
-    muted: bool,
-    is_default: bool,
-    ports: &[PortInfo],
-    active_port: Option<&str>,
-    chans: &[ChannelInfo],
-) -> GtkBox {
-    let key = format!("{tab_id}:{index}");
-    let src = match kind {
-        DeviceKind::Sink => MuteSource::Sink(index),
-        DeviceKind::Source => MuteSource::Source(index),
-    };
-    let dev_type = match kind {
-        DeviceKind::Sink => DeviceType::Sink,
-        DeviceKind::Source => DeviceType::Source,
-    };
-
-    let card = GtkBox::new(Orientation::Vertical, 10);
-    card.add_css_class("audio-card");
-    card.set_hexpand(true);
-
-    // ── Fila superior: icono tonal + nombre + puerto + check ────────────────
-    let head = GtkBox::new(Orientation::Horizontal, 12);
-    head.add_css_class("card-head");
-    head.set_hexpand(true);
-
-    head.append(&icon_circle(device_icon(kind, name)));
-
-    let name_box = GtkBox::new(Orientation::Vertical, 2);
+    let name_box = GtkBox::new(Orientation::Vertical, 4);
+    name_box.add_css_class("qs-device-name-box");
     name_box.set_hexpand(true);
-    let name_lbl = Label::new(Some(name));
-    name_lbl.add_css_class("card-name");
-    name_lbl.set_xalign(0.0);
-    name_lbl.set_hexpand(true);
-    name_lbl.set_ellipsize(pango::EllipsizeMode::End);
-    name_box.append(&name_lbl);
+    name_box.set_halign(gtk4::Align::Start);
+    name_box.set_valign(gtk4::Align::Center);
 
-    if !ports.is_empty() {
-        let port_row = GtkBox::new(Orientation::Horizontal, 6);
-        port_row.add_css_class("port-row");
+    let name_label = Label::new(Some("Laptop C0O0C"));
+    name_label.add_css_class("qs-device-name");
+    name_label.set_xalign(0.0);
+    name_label.set_yalign(0.5);
+    name_box.append(&name_label);
 
-        let items: Vec<String> = ports
-            .iter()
-            .map(|p| {
-                if p.available {
-                    p.description.clone()
-                } else {
-                    format!("{} (desconectado)", p.description)
-                }
-            })
-            .collect();
-        let sel = active_port
-            .and_then(|ap| ports.iter().position(|p| p.name == ap))
-            .unwrap_or(0) as u32;
-        let names: Vec<String> = ports.iter().map(|p| p.name.clone()).collect();
-        let dd = build_dropdown(&items, sel);
-        dd.set_tooltip_text(Some("Puerto"));
-        dd.set_widget_name(&format!("dd:{key}"));
-        dd.set_hexpand(true);
-        let core_c = core.clone();
-        connect_dropdown(&dd, names, move |port_name| {
-            let _ = core_c.cmd_tx.send_blocking(AudioCommand::SetPort {
-                device_type: dev_type,
-                device_index: index,
-                port_name,
-            });
-        });
-        port_row.append(&dd);
-        name_box.append(&port_row);
+    // Update name from audio state
+    let state_c = state.clone();
+    let name_label_c = name_label;
+    glib::timeout_add_seconds_local(2, move || {
+        if let Some(s) = state_c.audio_state.borrow().default_sink.clone() {
+            if let Some(d) = state_c.audio_state.borrow().sinks.iter().find(|d| d.name == s) {
+                name_label_c.set_text(&d.description);
+            }
+        }
+        glib::ControlFlow::Continue
+    });
+
+    // Wi-Fi
+    let wifi_box = GtkBox::new(Orientation::Horizontal, 8);
+    wifi_box.add_css_class("qs-wifi-box");
+    wifi_box.set_valign(gtk4::Align::Center);
+    wifi_box.append(&icon("\u{f542}", 16)); // signal strong
+    wifi_box.append(&Label::new(Some("Laptop")));
+    root.append(&name_box);
+    root.append(&wifi_box);
+
+    // Battery
+    let batt_box = GtkBox::new(Orientation::Horizontal, 6);
+    batt_box.add_css_class("qs-battery-box");
+    batt_box.set_valign(gtk4::Align::Center);
+    batt_box.append(&icon("\u{f297}", 16)); // battery icon
+    let batt_lbl = Label::new(Some("42%"));
+    batt_lbl.add_css_class("qs-battery");
+    batt_box.append(&batt_lbl);
+    root.append(&batt_box);
+
+    root
+}
+
+// ── Header Actions ────────────────────────────────────────────────────────
+
+pub fn build_header_actions(state: Rc<QuickSettingsState>) -> GtkBox {
+    let root = GtkBox::new(Orientation::Horizontal, 8);
+    root.add_css_class("qs-header-actions");
+    root.set_margin_top(4);
+    root.set_margin_bottom(6);
+    root.set_halign(gtk4::Align::Start);
+
+    let make_btn = |text: &str, icon_name: &str| -> Button {
+        let btn = Button::new();
+        btn.add_css_class("qs-action-btn");
+        let inner = GtkBox::new(Orientation::Horizontal, 6);
+        inner.append(&icon(icon_name, 14));
+        let lbl = Label::new(Some(text));
+        inner.append(&lbl);
+        btn.set_child(Some(&inner));
+        btn
+    };
+
+    let edit_btn = make_btn("Editar", "\u{e038}");
+    edit_btn.set_label("Editar");
+    edit_btn.set_use_underline(true);
+    let state_e = state.clone();
+    let edit_lbl = edit_btn.clone();
+    edit_btn.connect_clicked(move |_| {
+        let new = !state_e.edit_mode.get();
+        state_e.edit_mode.set(new);
+        edit_lbl.set_label(if new { "Finalizar" } else { "Editar" });
+    });
+    root.append(&edit_btn);
+
+    root.append(&make_btn("Apagar", "\u{e31c}"));
+    root.append(&make_btn("Configuración", "\u{e8b4}"));
+
+    root
+}
+
+// ── Quick Toggles ─────────────────────────────────────────────────────────
+
+fn build_quick_toggle(
+    icon_name: &str,
+    title: &str,
+    is_on: bool,
+    on_click: impl Fn() + 'static,
+) -> Button {
+    let btn = Button::new();
+    btn.add_css_class("qs-toggle-circular");
+    btn.add_css_class("qs-toggle");
+    if is_on {
+        btn.add_css_class("active");
     }
-    head.append(&name_box);
 
-    // Check de dispositivo predeterminado.
-    let check = Button::new();
-    check.add_css_class("btn-tonal");
-    check.set_widget_name(&format!("check:{key}"));
-    if is_default {
-        check.add_css_class("on");
-        check.set_tooltip_text(Some("Dispositivo predeterminado"));
-    } else {
-        check.set_tooltip_text(Some("Establecer como predeterminado"));
+    let inner = GtkBox::new(Orientation::Vertical, 6);
+    inner.set_spacing(8);
+    inner.set_valign(gtk4::Align::Center);
+    inner.set_halign(gtk4::Align::Center);
+
+    let img = icon(icon_name, 26);
+    let lbl = Label::new(Some(title));
+    lbl.set_halign(gtk4::Align::Center);
+    lbl.set_valign(gtk4::Align::Center);
+
+    inner.append(&img);
+    inner.append(&lbl);
+    btn.set_child(Some(&inner));
+    btn.connect_clicked(move |_| on_click());
+
+    btn
+}
+
+fn build_wide_toggle(
+    icon_name: &str,
+    title: &str,
+    subtitle: &str,
+    is_on: bool,
+    on_click: impl Fn() + 'static,
+) -> Button {
+    let btn = Button::new();
+    btn.add_css_class("qs-toggle-wide");
+    btn.add_css_class("qs-toggle");
+    if is_on {
+        btn.add_css_class("active");
     }
-    let check_ic = ms_icon(
-        if is_default {
-            "check_circle"
-        } else {
-            "radio_button_unchecked"
-        },
-        "ms-17",
+
+    let img = icon(icon_name, 18);
+    let title_lbl = Label::new(Some(title));
+    title_lbl.add_css_class("qs-title");
+    let sub_lbl = Label::new(Some(subtitle));
+    sub_lbl.add_css_class("qs-subtitle");
+
+    let text_box = GtkBox::new(Orientation::Vertical, 2);
+    text_box.append(&title_lbl);
+    text_box.append(&sub_lbl);
+
+    let inner = GtkBox::new(Orientation::Horizontal, 10);
+    inner.set_valign(gtk4::Align::Center);
+    inner.append(&img);
+    inner.append(&text_box);
+    btn.set_child(Some(&inner));
+    btn.connect_clicked(move |_| on_click());
+    btn
+}
+
+fn build_small_toggle(
+    icon_name: &str,
+    label: &str,
+    is_on: bool,
+    on_click: impl Fn() + 'static,
+) -> Button {
+    let btn = Button::new();
+    btn.add_css_class("qs-toggle-small");
+    btn.add_css_class("qs-toggle");
+    if is_on {
+        btn.add_css_class("active");
+    }
+    let inner = GtkBox::new(Orientation::Vertical, 4);
+    inner.set_spacing(4);
+    inner.set_valign(gtk4::Align::Center);
+    inner.append(&icon(icon_name, 14));
+    inner.append(&Label::new(Some(label)));
+    btn.set_child(Some(&inner));
+    btn.connect_clicked(move |_| on_click());
+    btn
+}
+
+// ── Control Grid ──────────────────────────────────────────────────────────
+
+pub fn build_control_grid(state: Rc<QuickSettingsState>) -> GtkBox {
+    let root = GtkBox::new(Orientation::Vertical, 8);
+    root.add_css_class("qs-control-grid");
+
+    let title = Label::new(Some("Controles Rápidos"));
+    title.add_css_class("qs-section-title");
+    title.set_halign(gtk4::Align::Start);
+    title.set_xalign(0.0);
+    root.append(&title);
+
+    let grid = Grid::new();
+    grid.add_css_class("qs-grid");
+    grid.set_column_spacing(10);
+    grid.set_row_spacing(10);
+    root.append(&grid);
+
+    // Row 0 (col 0-3): Circular toggles: WiFi, Cellular, Bluetooth, Dark Mode
+    let wifi = build_quick_toggle("\u{e1b6}", "Wi-Fi", true, move || {});
+    grid.attach(&wifi, 0, 0, 1, 1);
+
+    let cellular = build_quick_toggle("\u{f4fc}", "Datos", true, || {});
+    grid.attach(&cellular, 1, 0, 1, 1);
+
+    let bt = build_quick_toggle("\u{e1f6}", "Bluetooth", true, || {});
+    grid.attach(&bt, 2, 0, 1, 1);
+
+    let dark = build_quick_toggle("\u{e3a9}", "Modo Oscuro", true, || {});
+    grid.attach(&dark, 3, 0, 1, 1);
+
+    // Row 1 (col 0-1): Small toggles: Notifications, Display
+    let notif = build_small_toggle("\u{e7f7}", "Notif", true, || {});
+    grid.attach(&notif, 0, 1, 1, 1);
+    let display = build_small_toggle("\u{e8f6}", "Display", false, || {});
+    grid.attach(&display, 1, 1, 1, 1);
+
+    // Row 1 (col 2-3): Small toggles: Camera, VPN
+    let camera = build_small_toggle("\u{e3b2}", "Cámara", true, || {});
+    grid.attach(&camera, 2, 1, 1, 1);
+    let vpn = build_small_toggle("\u{e62b}", "VPN", false, || {});
+    grid.attach(&vpn, 3, 1, 1, 1);
+
+    // Row 2-4: Widget tiles (weather, time, etc.)
+    let weather = make_widget_tile("\u{f296}", "Clima", "Soleado");
+    grid.attach(&weather, 0, 2, 2, 2);
+
+    let time = make_widget_tile("\u{e7eb}", "Hora", "14:30");
+    grid.attach(&time, 2, 2, 2, 2);
+
+    // Row 2 col 0-1 (already used by weather), maybe add another widget tile
+    let temp = make_widget_tile("\u{e3c7}", "Temp", "23°");
+    grid.attach(&temp, 0, 2, 2, 1);
+
+    // Row 2 (col 4): Add slot
+    let add_slot = make_add_slot();
+    grid.attach(&add_slot, 4, 0, 1, 3);
+
+    root
+}
+
+fn make_widget_tile(icon_name: &str, title: &str, value: &str) -> Button {
+    let btn = Button::new();
+    btn.add_css_class("qs-card");
+    let inner = GtkBox::new(Orientation::Vertical, 6);
+    inner.set_margin_start(8);
+    inner.set_margin_end(8);
+    inner.set_margin_top(6);
+    inner.set_margin_bottom(6);
+    inner.append(&icon(icon_name, 24));
+    inner.append(&Label::new(Some(title)));
+    inner.append(&Label::new(Some(value)));
+    btn.set_child(Some(&inner));
+    btn
+}
+
+fn make_add_slot() -> Button {
+    let btn = Button::new();
+    btn.add_css_class("add-slot");
+    let inner = GtkBox::new(Orientation::Vertical, 8);
+    inner.set_valign(gtk4::Align::Center);
+    inner.append(&Label::new(Some("\u{e702}"))); // add icon
+    inner.append(&Label::new(Some("Agregar")));
+    btn.set_child(Some(&inner));
+    btn
+}
+
+// ── Vertical Sliders ─────────────────────────────────────────────────────
+
+fn make_vertical_slider(
+    root: &GtkBox,
+    label: &str,
+    value_lbl: &Label,
+    initial: f64,
+    max: f64,
+    on_change: impl Fn(f64) + 'static,
+) {
+    let scale = Scale::new(
+        Orientation::Vertical,
+        Some(&Adjustment::new(initial, 0.0, max, 1.0, 5.0, 0.0)),
     );
-    check.set_child(Some(&check_ic));
-    let core_c = core.clone();
-    check.connect_clicked(move |_| {
-        let full_name = {
-            let ctx = core_c.ctx.borrow();
-            match kind {
-                DeviceKind::Sink => ctx
-                    .state
-                    .sinks
-                    .iter()
-                    .find(|s| s.index == index)
-                    .map(|s| s.name.clone()),
-                DeviceKind::Source => ctx
-                    .state
-                    .sources
-                    .iter()
-                    .find(|s| s.index == index)
-                    .map(|s| s.name.clone()),
-            }
-        };
-        if let Some(n) = full_name {
-            let _ = core_c.cmd_tx.send_blocking(AudioCommand::SetDefault {
-                device_type: dev_type,
-                name: n,
-            });
-        }
-    });
-    head.append(&check);
-    card.append(&head);
-
-    // ── Píldora de volumen + candado de canales ─────────────────────────────
-    let pill_row = GtkBox::new(Orientation::Horizontal, 8);
-    pill_row.set_hexpand(true);
-    pill_row.append(&build_volume_pill(core, &key, src, volume, muted, chans.len()));
-
-    // Candado de canales (🔗): enlaza/desenlaza los canales.
-    let unlocked_now = ctx.unlocked.contains(&(tab_id, index));
-    let lock_btn = Button::new();
-    lock_btn.add_css_class("btn-tonal");
-    lock_btn.set_widget_name(&format!("lock:{key}"));
-    lock_btn.set_tooltip_text(Some(if unlocked_now {
-        "Canales desenlazados"
-    } else {
-        "Canales enlazados"
-    }));
-    let lock_ic = ms_icon(if unlocked_now { "lock_open" } else { "lock" }, "ms-17");
-    lock_btn.set_child(Some(&lock_ic));
-    if unlocked_now {
-        lock_btn.add_css_class("on");
-    }
-    let core_l = core.clone();
-    let lock_btn_c = lock_btn.clone();
-    let lock_ic_c = lock_ic.clone();
-    let lock_key = (tab_id, index);
-    lock_btn.connect_clicked(move |_| {
-        let now = {
-            let mut c = core_l.ctx.borrow_mut();
-            toggle_set(&mut c.unlocked, lock_key)
-        };
-        lock_btn_c.set_tooltip_text(Some(if now {
-            "Canales desenlazados"
-        } else {
-            "Canales enlazados"
-        }));
-        lock_ic_c.set_text(if now { "lock_open" } else { "lock" });
-        if now {
-            lock_btn_c.add_css_class("on");
-        } else {
-            lock_btn_c.remove_css_class("on");
-        }
-    });
-    pill_row.append(&lock_btn);
-    card.append(&pill_row);
-
-    // ── Opciones avanzadas (expansor animado, sin re-render) ────────────────
-    card.append(&build_advanced(
-        core,
-        tab_id,
-        index,
-        src,
-        chans,
-        ctx.is_expanded_flag(tab_id, index),
-        unlocked_now,
-    ));
-
-    card
-}
-
-/// Píldora de volumen: botón de silencio + slider grueso + etiqueta de valor.
-fn build_volume_pill(
-    core: &Rc<Core>,
-    key: &str,
-    src: MuteSource,
-    volume: f32,
-    muted: bool,
-    channels: usize,
-) -> GtkBox {
-    let target = src.target();
-
-    let pill = GtkBox::new(Orientation::Horizontal, 6);
-    pill.add_css_class("vol-pill");
-    pill.set_hexpand(true);
-    if muted {
-        pill.add_css_class("muted");
-    }
-    if volume > 1.0 {
-        pill.add_css_class("over");
-    }
-
-    // Botón de silencio dentro de la píldora.
-    let mute_btn = Button::new();
-    mute_btn.add_css_class("vol-mute");
-    mute_btn.set_tooltip_text(Some("Silenciar"));
-    mute_btn.set_widget_name(&format!("mute:{key}"));
-    mute_btn.set_child(Some(&ms_icon(mute_icon(muted, volume), "ms-20")));
-    let core_m = core.clone();
-    mute_btn.connect_clicked(move |_| {
-        let cur = {
-            let ctx = core_m.ctx.borrow();
-            src.current_muted(&ctx)
-        };
-        let _ = core_m.cmd_tx.send_blocking(AudioCommand::SetMute {
-            target,
-            muted: !cur,
-        });
-    });
-    pill.append(&mute_btn);
-
-    // Slider grueso.
-    let pct = (volume * 100.0).clamp(0.0, 150.0);
-    let upper = if volume * 100.0 > 150.0 {
-        volume * 100.0
-    } else {
-        150.0
-    };
-    let adj = Adjustment::new(pct as f64, 0.0, upper as f64, 1.0, 5.0, 0.0);
-    let scale = Scale::new(Orientation::Horizontal, Some(&adj));
-    scale.add_css_class("vol-scale");
-    scale.set_hexpand(true);
+    scale.add_css_class("qs-slider");
     scale.set_draw_value(false);
-    scale.set_widget_name(&format!("scale:{key}"));
-    if volume > 1.0 {
-        scale.add_css_class("over");
-    }
-
-    // Etiqueta de valor dentro de la píldora.
-    let value_lbl = Label::new(Some(&format_volume_label(volume)));
-    value_lbl.add_css_class("vol-value");
-    value_lbl.set_valign(Align::Center);
-    value_lbl.set_xalign(1.0);
-
-    // Arrastre con ratón: no re-renderizar mientras se arrastra.
-    let inter = core.interacting.clone();
-    let press = EventControllerLegacy::new();
-    press.connect_event(move |_, ev| {
-        if ev.event_type() == EventType::ButtonPress {
-            if let Some(b) = ev.downcast_ref::<gtk4::gdk::ButtonEvent>() {
-                if b.button() == 1 {
-                    inter.set(true);
-                }
-            }
-        }
-        glib::Propagation::Proceed
-    });
-    scale.add_controller(press);
-
-    let release = EventControllerLegacy::new();
-    let inter_r = core.interacting.clone();
-    let core_r = core.clone();
-    let scale_r = scale.clone();
-    release.connect_event(move |_, ev| {
-        if ev.event_type() == EventType::ButtonRelease {
-            if let Some(b) = ev.downcast_ref::<gtk4::gdk::ButtonEvent>() {
-                if b.button() == 1 {
-                    inter_r.set(false);
-                    // Enviar el valor final (el throttle pudo retenerlo).
-                    let p = (scale_r.value() as f32) / 100.0;
-                    let cur = {
-                        let ctx = core_r.ctx.borrow();
-                        src.current_volume(&ctx)
-                    };
-                    if (p - cur).abs() > 0.001 {
-                        let _ = core_r.cmd_tx.send_blocking(AudioCommand::SetVolume {
-                            target,
-                            volume: p,
-                            channels,
-                        });
-                    }
-                    // Refrescar cuando el eco del estado llegue (o por si acaso).
-                    let core_f = core_r.clone();
-                    glib::timeout_add_local_once(
-                        std::time::Duration::from_millis(160),
-                        move || Core::render(&core_f),
-                    );
-                }
-            }
-        }
-        glib::Propagation::Proceed
-    });
-    scale.add_controller(release);
-
-    // Envío con throttle ~40 ms.
-    let last_sent = Rc::new(Cell::new(0u128));
-    let pill_c = pill.clone();
-    let lbl_c = value_lbl.clone();
-    let scale_c = scale.clone();
-    let core_v = core.clone();
+    scale.set_halign(gtk4::Align::Center);
+    scale.set_hexpand(false);
+    scale.set_hexpand(true);
+    scale.set_vexpand(true);
+    scale.set_size_request(28, 200);
+    scale.set_value(initial);
+    let value_lbl_c = value_lbl.clone();
     scale.connect_value_changed(move |s| {
-        let p = (s.value() as f32) / 100.0;
-        lbl_c.set_text(&format_volume_label(p));
-        update_pill_classes(&pill_c, &scale_c, p);
-        if throttle(&last_sent, 40) {
-            let _ = core_v.cmd_tx.send_blocking(AudioCommand::SetVolume {
-                target,
-                volume: p,
-                channels,
-            });
-        }
+        let v = s.value();
+        value_lbl_c.set_text(&format!("{:.0}%", v));
+        on_change(v);
+    });
+    root.append(&scale);
+}
+
+pub fn build_brightness_slider(state: Rc<QuickSettingsState>) -> GtkBox {
+    let root = GtkBox::new(Orientation::Vertical, 8);
+    root.add_css_class("qs-slider-box");
+
+    let label_row = GtkBox::new(Orientation::Horizontal, 0);
+    label_row.add_css_class("qs-slider-label-row");
+    let lbl = Label::new(Some("Brillo"));
+    lbl.add_css_class("qs-slider-label");
+    label_row.append(&lbl);
+    let value_lbl = Label::new(Some("75%"));
+    value_lbl.add_css_class("qs-slider-value");
+    value_lbl.set_halign(gtk4::Align::End);
+    label_row.append(&value_lbl);
+    root.append(&label_row);
+
+    // Icon
+    let icon_box = GtkBox::new(Orientation::Vertical, 8);
+    icon_box.set_halign(gtk4::Align::End);
+    icon_box.set_valign(gtk4::Align::Center);
+    icon_box.append(&icon("\u{f5dc}", 16));
+
+    // Inner container
+    let inner = GtkBox::new(Orientation::Horizontal, 12);
+    inner.set_valign(gtk4::Align::Center);
+    inner.set_halign(gtk4::Align::Center);
+    inner.set_hexpand(true);
+    inner.set_vexpand(true);
+
+    // Add slider after inner is built
+    let state_c = state.clone();
+    let vlbl = value_lbl.clone();
+    make_vertical_slider(&inner, "Brillo", &vlbl, 50.0, 100.0, move |v| {
+        state_c.brightness.set(v as f32);
     });
 
-    pill.append(&scale);
-    pill.append(&value_lbl);
-    pill
+    inner.append(&icon_box);
+    root.append(&inner);
+    root
 }
 
-/// Sección "Opciones avanzadas" (balance + canales individuales + formato).
-fn build_advanced(
-    core: &Rc<Core>,
-    tab_id: u8,
-    index: u32,
-    src: MuteSource,
-    chans: &[ChannelInfo],
-    expanded: bool,
-    unlocked: bool,
-) -> GtkBox {
-    let key = format!("{tab_id}:{index}");
-    let target = src.target();
+pub fn build_volume_slider(state: Rc<QuickSettingsState>) -> GtkBox {
+    let root = GtkBox::new(Orientation::Vertical, 8);
+    root.add_css_class("qs-slider-box");
+    root.set_margin_top(4);
 
-    let wrap = GtkBox::new(Orientation::Vertical, 0);
+    let label_row = GtkBox::new(Orientation::Horizontal, 0);
+    label_row.add_css_class("qs-slider-label-row");
+    let lbl = Label::new(Some("Volumen"));
+    lbl.add_css_class("qs-slider-label");
+    label_row.append(&lbl);
+    let value_lbl = Label::new(Some("50%"));
+    value_lbl.add_css_class("qs-slider-value");
+    value_lbl.set_halign(gtk4::Align::End);
+    label_row.append(&value_lbl);
+    root.append(&label_row);
 
-    let adv_btn = Button::new();
-    adv_btn.add_css_class("adv-btn");
-    adv_btn.set_widget_name(&format!("adv:{key}"));
-    adv_btn.set_halign(Align::Start);
-    if expanded {
-        adv_btn.add_css_class("open");
-    }
-    let btn_row = GtkBox::new(Orientation::Horizontal, 0);
-    let chev = ms_icon("expand_more", "ms-18 chev");
-    btn_row.append(&chev);
-    btn_row.append(&Label::new(Some("Opciones avanzadas")));
-    adv_btn.set_child(Some(&btn_row));
+    let icon_box = GtkBox::new(Orientation::Vertical, 8);
+    icon_box.set_halign(gtk4::Align::End);
+    icon_box.set_valign(gtk4::Align::Center);
+    icon_box.append(&icon("\u{e1b4}", 16));
 
-    // Contenido (siempre construido; se muestra con cross-fade).
-    let adv_box = GtkBox::new(Orientation::Vertical, 10);
-    adv_box.add_css_class("adv-box");
+    let inner = GtkBox::new(Orientation::Horizontal, 12);
+    inner.set_valign(gtk4::Align::Center);
+    inner.set_halign(gtk4::Align::Center);
+    inner.set_hexpand(true);
+    inner.set_vexpand(true);
 
-    // Balance (solo estéreo).
-    if chans.len() == 2 {
-        let row = GtkBox::new(Orientation::Horizontal, 10);
-        row.add_css_class("adv-row");
-        let k = Label::new(Some("Balance"));
-        k.add_css_class("adv-key");
-        row.append(&k);
-        let badj = Adjustment::new(stereo_balance(chans) as f64, -1.0, 1.0, 0.05, 0.2, 0.0);
-        let bscale = Scale::new(Orientation::Horizontal, Some(&badj));
-        bscale.add_css_class("mini-scale");
-        bscale.set_hexpand(true);
-        bscale.set_draw_value(false);
-        bscale.set_widget_name(&format!("bal:{key}"));
-        let last_b = Rc::new(Cell::new(0u128));
-        let core_b = core.clone();
-        bscale.connect_value_changed(move |s| {
-            if throttle(&last_b, 40) {
-                let _ = core_b.cmd_tx.send_blocking(AudioCommand::SetBalance {
-                    target,
-                    balance: s.value() as f32,
-                });
-            }
-        });
-        row.append(&bscale);
-        adv_box.append(&row);
-    }
-
-    // Sliders individuales (solo con candado abierto).
-    let ch_box = GtkBox::new(Orientation::Vertical, 6);
-    ch_box.set_visible(unlocked);
-    for (i, ch) in chans.iter().enumerate() {
-        let row = GtkBox::new(Orientation::Horizontal, 10);
-        row.add_css_class("adv-row");
-        let k = Label::new(Some(&channel_label(&ch.name, i)));
-        k.add_css_class("adv-key");
-        row.append(&k);
-        let cval = (ch.volume * 100.0).clamp(0.0, 150.0) as f64;
-        let cadj = Adjustment::new(cval, 0.0, 150.0, 1.0, 5.0, 0.0);
-        let cscale = Scale::new(Orientation::Horizontal, Some(&cadj));
-        cscale.add_css_class("mini-scale");
-        cscale.set_hexpand(true);
-        cscale.set_draw_value(false);
-        cscale.set_widget_name(&format!("ch:{key}:{i}"));
-        let last_c = Rc::new(Cell::new(0u128));
-        let core_c = core.clone();
-        let ch_i = i;
-        cscale.connect_value_changed(move |s| {
-            if throttle(&last_c, 40) {
-                let vals = channel_values(core_c.as_ref(), src, ch_i, s.value() as f32 / 100.0);
-                let _ = core_c.cmd_tx.send_blocking(AudioCommand::SetChannelVolumes {
-                    target,
-                    channels: vals,
-                });
-            }
-        });
-        row.append(&cscale);
-        ch_box.append(&row);
-    }
-    adv_box.append(&ch_box);
-
-    let info = Label::new(Some(&format!(
-        "{} canales · control en tiempo real",
-        chans.len()
-    )));
-    info.add_css_class("card-meta");
-    info.set_halign(Align::Start);
-    adv_box.append(&info);
-
-    // Revelador animado: SlideDown (250 ms) anima la altura de verdad y no
-    // reserva espacio cuando está cerrado; el fundido lo aporta la clase CSS.
-    adv_box.add_css_class("adv-body");
-    if expanded {
-        adv_box.add_css_class("shown");
-    }
-    let revealer = Revealer::new();
-    revealer.set_transition_type(RevealerTransitionType::SlideDown);
-    revealer.set_transition_duration(250);
-    revealer.set_child(Some(&adv_box));
-    revealer.set_reveal_child(expanded);
-
-    // Alternar sin re-render (mantiene animación y foco).
-    let core_a = core.clone();
-    let adv_btn_c = adv_btn.clone();
-    let adv_box_c = adv_box.clone();
-    let revealer_c = revealer.clone();
-    let adv_key = (tab_id, index);
-    adv_btn.connect_clicked(move |_| {
-        let now = {
-            let mut c = core_a.ctx.borrow_mut();
-            toggle_set(&mut c.expanded, adv_key)
-        };
-        revealer_c.set_reveal_child(now);
-        if now {
-            adv_box_c.add_css_class("shown");
-            adv_btn_c.add_css_class("open");
-        } else {
-            adv_box_c.remove_css_class("shown");
-            adv_btn_c.remove_css_class("open");
-        }
+    let state_c = state.clone();
+    let vlbl = value_lbl.clone();
+    make_vertical_slider(&inner, "Volumen", &vlbl, 50.0, 150.0, move |v| {
+        state_c.volume.set(v as f32);
+        state_c.set_volume(v as f32);
     });
 
-    wrap.append(&adv_btn);
-    wrap.append(&revealer);
-    wrap
+    inner.append(&icon_box);
+    root.append(&inner);
+    root
 }
 
-/// Balance estéreo aproximado (−1 izquierda … +1 derecha).
-fn stereo_balance(chans: &[ChannelInfo]) -> f32 {
-    if chans.len() != 2 {
-        return 0.0;
-    }
-    let sum = chans[0].volume + chans[1].volume;
-    if sum <= 0.0001 {
-        0.0
-    } else {
-        ((chans[1].volume - chans[0].volume) / sum).clamp(-1.0, 1.0)
-    }
-}
+// ── Smart Device Card ────────────────────────────────────────────────────
 
-fn channel_label(name: &str, i: usize) -> String {
-    let n = name.to_lowercase();
-    if n.contains("left") || n.contains("izquier") {
-        "Izquierdo".into()
-    } else if n.contains("right") || n.contains("derech") {
-        "Derecho".into()
-    } else if n.contains("front") {
-        format!("Frontal {}", i + 1)
-    } else {
-        format!("Canal {}", i + 1)
-    }
-}
+pub fn build_device_status_card(state: Rc<QuickSettingsState>) -> GtkBox {
+    let root = GtkBox::new(Orientation::Vertical, 8);
+    root.add_css_class("qs-device-card-container");
 
-/// Valores de canal actuales con el canal `changed` actualizado.
-fn channel_values(core: &Core, src: MuteSource, changed: usize, value: f32) -> Vec<f32> {
-    let ctx = core.ctx.borrow();
-    let chans: Vec<ChannelInfo> = match src {
-        MuteSource::Sink(i) => ctx
-            .state
-            .sinks
-            .iter()
-            .find(|s| s.index == i)
-            .map(|s| s.channels.clone())
-            .unwrap_or_default(),
-        MuteSource::Source(i) => ctx
-            .state
-            .sources
-            .iter()
-            .find(|s| s.index == i)
-            .map(|s| s.channels.clone())
-            .unwrap_or_default(),
-        MuteSource::Playback(i) => ctx
-            .state
-            .playback_streams
-            .iter()
-            .find(|s| s.index == i)
-            .map(|s| s.channels.clone())
-            .unwrap_or_default(),
-        MuteSource::Record(i) => ctx
-            .state
-            .record_streams
-            .iter()
-            .find(|s| s.index == i)
-            .map(|s| s.channels.clone())
-            .unwrap_or_default(),
-    };
-    let mut vals: Vec<f32> = if chans.is_empty() {
-        vec![value]
-    } else {
-        chans.iter().map(|c| c.volume).collect()
-    };
-    if changed < vals.len() {
-        vals[changed] = value;
-    }
-    vals
-}
-
-fn attach_vu(core: &Rc<Core>, source_index: u32, card: &GtkBox) {
-    let row = GtkBox::new(Orientation::Horizontal, 0);
-    let bar = LevelBar::for_interval(0.0, 1.0);
-    bar.add_css_class("vu-thin");
-    bar.set_hexpand(true);
-    row.append(&bar);
-    card.append(&row);
-
-    core.vu_bars
-        .borrow_mut()
-        .entry(source_index)
-        .or_default()
-        .push(bar);
-
-    // Asegurar un medidor para este source (uno por fuente visible).
-    let needs = !core.meters.borrow().contains_key(&source_index);
-    if needs {
-        let name = {
-            let ctx = core.ctx.borrow();
-            ctx.state
-                .sources
-                .iter()
-                .find(|s| s.index == source_index)
-                .map(|s| s.name.clone())
-        };
-        if let Some(name) = name {
-            let meter = PeakMeter::spawn(source_index, name, core.peak_tx.clone());
-            core.meters.borrow_mut().insert(source_index, meter);
-        }
-    }
-}
-
-/// Detiene los medidores de fuentes que ya no están visibles.
-fn sync_meters(core: &Rc<Core>) {
-    let ctx = core.ctx.borrow();
-    let visible: HashSet<u32> = match ctx.tab {
-        // Salida: monitor de cada sink visible.
-        0 => ctx
-            .state
-            .sinks
-            .iter()
-            .filter_map(|s| s.monitor_source)
-            .collect(),
-        // Entrada: cada fuente.
-        1 => ctx.state.sources.iter().map(|s| s.index).collect(),
-        // Reproducción: monitor del sink de cada stream.
-        2 => ctx
-            .state
-            .playback_streams
-            .iter()
-            .filter_map(|p| {
-                ctx.state
-                    .sinks
-                    .iter()
-                    .find(|k| k.index == p.sink_index)
-                    .and_then(|k| k.monitor_source)
-            })
-            .collect(),
-        // Grabación: la fuente que graba cada stream.
-        3 => ctx.state.record_streams.iter().map(|r| r.source_index).collect(),
-        _ => HashSet::new(),
-    };
-    drop(ctx);
-    let mut meters = core.meters.borrow_mut();
-    let stale: Vec<u32> = meters
-        .keys()
-        .copied()
-        .filter(|i| !visible.contains(i))
-        .collect();
-    for i in stale {
-        meters.remove(&i); // Drop → envía la orden de parada
-    }
-}
-
-// ── Pestaña Reproducción ─────────────────────────────────────────────────────
-
-fn render_playback(core: &Rc<Core>, ctx: &Ctx) {
-    let content = &core.contents[ctx.tab];
-    let section = Label::new(Some("APLICACIONES QUE REPRODUCEN AUDIO"));
-    section.add_css_class("audio-section");
-    section.set_halign(Align::Start);
-    content.append(&section);
-
-    let filter = ctx.pb_filter;
-    let devices: Vec<(u32, String)> = ctx
-        .state
-        .sinks
-        .iter()
-        .map(|k| (k.index, k.description.clone()))
-        .collect();
-
-    let streams: Vec<&PlaybackStream> = ctx
-        .state
-        .playback_streams
-        .iter()
-        .filter(|s| match filter {
-            1 => !is_video(&s.media_role, &s.app_name),
-            2 => is_video(&s.media_role, &s.app_name),
-            _ => true,
-        })
-        .collect();
-
-    if streams.is_empty() {
-        let empty = Label::new(Some("No hay aplicaciones reproduciendo audio"));
-        empty.add_css_class("empty-state");
-        empty.set_xalign(0.5);
-        content.append(&empty);
-    }
-
-    for s in streams {
-        let card = build_stream_card(
-            core,
-            2,
-            s.index,
-            &s.app_name,
-            &s.media_name,
-            s.volume,
-            s.muted,
-            s.sink_index,
-            &s.channels,
-            MuteSource::Playback(s.index),
-            DeviceKind::Sink,
-            &devices,
-        );
-        if let Some(monitor) = ctx
-            .state
-            .sinks
-            .iter()
-            .find(|k| k.index == s.sink_index)
-            .and_then(|k| k.monitor_source)
-        {
-            attach_vu(core, monitor, &card);
-        }
-        content.append(&card);
-    }
-
-    content.append(&build_filter_row(
-        core,
-        ctx.tab,
-        filter,
-        &["Todos", "Aplicaciones", "Vídeo"],
-    ));
-}
-
-// ── Pestaña Grabación ────────────────────────────────────────────────────────
-
-fn render_record(core: &Rc<Core>, ctx: &Ctx) {
-    let content = &core.contents[ctx.tab];
-    let section = Label::new(Some("APLICACIONES QUE GRABAN AUDIO"));
-    section.add_css_class("audio-section");
-    section.set_halign(Align::Start);
-    content.append(&section);
-
-    let devices: Vec<(u32, String)> = ctx
-        .state
-        .sources
-        .iter()
-        .filter(|k| !k.is_monitor)
-        .map(|k| (k.index, k.description.clone()))
-        .collect();
-
-    let streams: Vec<&RecordStream> = ctx.state.record_streams.iter().collect();
-    if streams.is_empty() {
-        let empty = Label::new(Some("No hay aplicaciones grabando audio"));
-        empty.add_css_class("empty-state");
-        empty.set_xalign(0.5);
-        content.append(&empty);
-    }
-
-    for s in streams {
-        let card = build_stream_card(
-            core,
-            3,
-            s.index,
-            &s.app_name,
-            &s.media_name,
-            s.volume,
-            s.muted,
-            s.source_index,
-            &s.channels,
-            MuteSource::Record(s.index),
-            DeviceKind::Source,
-            &devices,
-        );
-        attach_vu(core, s.source_index, &card);
-        content.append(&card);
-    }
-}
-
-/// Tarjeta de stream (Reproducción / Grabación) con selector de dispositivo.
-#[allow(clippy::too_many_arguments)]
-fn build_stream_card(
-    core: &Rc<Core>,
-    tab_id: u8,
-    index: u32,
-    app_name: &str,
-    media_name: &str,
-    volume: f32,
-    muted: bool,
-    current_device: u32,
-    chans: &[ChannelInfo],
-    src: MuteSource,
-    kind: DeviceKind,
-    devices: &[(u32, String)],
-) -> GtkBox {
-    let key = format!("{tab_id}:{index}");
+    let title = Label::new(Some("Dispositivos Inteligentes"));
+    title.add_css_class("qs-section-title");
+    title.set_halign(gtk4::Align::Start);
+    title.set_xalign(0.0);
+    root.append(&title);
 
     let card = GtkBox::new(Orientation::Vertical, 10);
-    card.add_css_class("audio-card");
-    card.set_hexpand(true);
+    card.add_css_class("qs-device");
 
-    // Cabecera.
-    let head = GtkBox::new(Orientation::Horizontal, 12);
-    head.add_css_class("card-head");
-    head.set_hexpand(true);
-
-    let icon = match kind {
-        DeviceKind::Sink => {
-            if is_video("", app_name) {
-                "movie"
-            } else {
-                "play_arrow"
-            }
-        }
-        DeviceKind::Source => "fiber_manual_record",
-    };
-    head.append(&icon_circle(icon));
-
-    let name_box = GtkBox::new(Orientation::Vertical, 2);
-    name_box.set_hexpand(true);
-    let name_lbl = Label::new(Some(app_name));
-    name_lbl.add_css_class("card-name");
-    name_lbl.set_xalign(0.0);
-    name_lbl.set_hexpand(true);
-    name_lbl.set_ellipsize(pango::EllipsizeMode::End);
-    name_box.append(&name_lbl);
-    if !media_name.is_empty() {
-        let meta = Label::new(Some(media_name));
-        meta.add_css_class("card-meta");
-        meta.set_xalign(0.0);
-        meta.set_hexpand(true);
-        meta.set_ellipsize(pango::EllipsizeMode::End);
-        name_box.append(&meta);
-    }
-    head.append(&name_box);
-    card.append(&head);
-
-    // Selector de dispositivo (mover stream).
-    if !devices.is_empty() {
-        let drow = GtkBox::new(Orientation::Horizontal, 8);
-        drow.add_css_class("port-row");
-        let dlabel = Label::new(Some(match kind {
-            DeviceKind::Sink => "Dispositivo",
-            DeviceKind::Source => "Entrada",
-        }));
-        dlabel.add_css_class("port-label");
-        drow.append(&dlabel);
-
-        let items: Vec<String> = devices.iter().map(|(_, d)| d.clone()).collect();
-        let names: Vec<String> = devices.iter().map(|(i, _)| i.to_string()).collect();
-        let sel = devices
-            .iter()
-            .position(|(i, _)| *i == current_device)
-            .unwrap_or(0) as u32;
-        let dd = build_dropdown(&items, sel);
-        dd.set_widget_name(&format!("dd:{key}"));
-        dd.set_hexpand(true);
-        let core_c = core.clone();
-        let dev_type = match kind {
-            DeviceKind::Sink => DeviceType::Sink,
-            DeviceKind::Source => DeviceType::Source,
-        };
-        connect_dropdown(&dd, names, move |dev_idx| {
-            if let Ok(di) = dev_idx.parse::<u32>() {
-                let _ = core_c.cmd_tx.send_blocking(AudioCommand::MoveStream {
-                    stream_index: index,
-                    device_index: di,
-                    device_type: dev_type,
-                });
-            }
-        });
-        drow.append(&dd);
-        card.append(&drow);
+    for device in state.smart_devices.borrow().iter() {
+        let item = make_device_item(device, state.clone());
+        card.append(&item);
     }
 
-    // Píldora de volumen.
-    card.append(&build_volume_pill(
-        core,
-        &key,
-        src,
-        volume,
-        muted,
-        chans.len(),
-    ));
-
-    card
+    root.append(&card);
+    root
 }
 
-// ── Pestaña Configuración ────────────────────────────────────────────────────
-
-fn render_config(core: &Rc<Core>, ctx: &Ctx) {
-    let content = &core.contents[ctx.tab];
-    let section = Label::new(Some("TARJETAS DE AUDIO"));
-    section.add_css_class("audio-section");
-    section.set_halign(Align::Start);
-    content.append(&section);
-
-    if ctx.state.cards.is_empty() {
-        let empty = Label::new(Some("No se encontraron tarjetas de audio"));
-        empty.add_css_class("empty-state");
-        empty.set_xalign(0.5);
-        content.append(&empty);
-    }
-
-    for info in &ctx.state.cards {
-        content.append(&build_config_card(core, info));
-    }
-}
-
-fn build_config_card(core: &Rc<Core>, info: &CardInfo) -> GtkBox {
-    let card = GtkBox::new(Orientation::Vertical, 10);
-    card.add_css_class("audio-card");
-    card.set_hexpand(true);
+fn make_device_item(device: &SmartDevice, state: Rc<QuickSettingsState>) -> GtkBox {
+    let root = GtkBox::new(Orientation::Vertical, 8);
+    root.add_css_class("qs-device-item");
+    root.set_margin_start(10);
+    root.set_margin_end(10);
+    root.set_margin_top(10);
 
     let head = GtkBox::new(Orientation::Horizontal, 12);
-    head.add_css_class("card-head");
-    head.set_hexpand(true);
-    head.append(&icon_circle("settings_input_component"));
 
+    // Icon
+    let icon_box = GtkBox::new(Orientation::Vertical, 4);
+    icon_box.set_margin_start(6);
+    icon_box.append(&icon(&device.icon, 32));
+
+    // Text info
     let name_box = GtkBox::new(Orientation::Vertical, 2);
     name_box.set_hexpand(true);
-    let name_lbl = Label::new(Some(&info.description));
-    name_lbl.add_css_class("card-name");
-    name_lbl.set_xalign(0.0);
-    name_lbl.set_hexpand(true);
-    name_lbl.set_ellipsize(pango::EllipsizeMode::End);
-    name_box.append(&name_lbl);
-    let meta = Label::new(Some(&format!("{} perfiles · {}", info.name, info.profiles.len())));
-    meta.add_css_class("card-meta");
-    meta.set_xalign(0.0);
-    name_box.append(&meta);
-    head.append(&name_box);
-    card.append(&head);
+    let name = Label::new(Some(&device.name));
+    name.add_css_class("qs-device-name");
+    let loc = Label::new(Some(&device.location));
+    loc.add_css_class("qs-device-desc");
+    name_box.append(&name);
+    name_box.append(&loc);
 
-    if !info.profiles.is_empty() {
-        let prow = GtkBox::new(Orientation::Horizontal, 8);
-        prow.add_css_class("port-row");
-        let plabel = Label::new(Some("Perfil"));
-        plabel.add_css_class("port-label");
-        prow.append(&plabel);
+    // Actions
+    let actions = GtkBox::new(Orientation::Horizontal, 4);
+    actions.add_css_class("qs-device-actions");
 
-        let items: Vec<String> = info
-            .profiles
-            .iter()
-            .map(|p| {
-                if p.available {
-                    p.description.clone()
-                } else {
-                    format!("{} (no disponible)", p.description)
-                }
-            })
-            .collect();
-        let names: Vec<String> = info.profiles.iter().map(|p| p.name.clone()).collect();
-        let sel = info
-            .active_profile
-            .as_ref()
-            .and_then(|ap| info.profiles.iter().position(|p| &p.name == ap))
-            .unwrap_or(0) as u32;
-        let dd = build_dropdown(&items, sel);
-        dd.set_widget_name(&format!("dd:4:{}", info.index));
-        dd.set_hexpand(true);
-        let core_c = core.clone();
-        let card_index = info.index;
-        connect_dropdown(&dd, names, move |profile| {
-            let _ = core_c.cmd_tx.send_blocking(AudioCommand::SetCardProfile {
-                card_index,
-                profile_name: profile,
-            });
-        });
-        prow.append(&dd);
-        card.append(&prow);
-    }
-
-    card
-}
-
-// ── Helpers compartidos ──────────────────────────────────────────────────────
-
-fn build_dropdown(items: &[String], selected: u32) -> DropDown {
-    let strs: Vec<&str> = items.iter().map(|s| s.as_str()).collect();
-    let dd = DropDown::from_strings(&strs);
-    dd.set_selected((selected as usize).min(items.len().saturating_sub(1)) as u32);
-    dd.add_css_class("port-select");
-    dd
-}
-
-fn connect_dropdown<F: Fn(String) + 'static>(dd: &DropDown, names: Vec<String>, on_select: F) {
-    dd.connect_selected_notify(move |d| {
-        let idx = d.selected() as usize;
-        if let Some(n) = names.get(idx) {
-            on_select(n.clone());
-        }
+    let ctrl = Button::new();
+    ctrl.add_css_class("qs-device-btn");
+    ctrl.set_tooltip_text(Some("Control"));
+    ctrl.set_child(Some(&icon("\u{e2a7}", 16)));
+    ctrl.connect_clicked(move |_| {
+        tracing::info!("Control");
     });
+    actions.append(&ctrl);
+
+    let upd = Button::new();
+    upd.add_css_class("qs-device-btn");
+    upd.set_tooltip_text(Some("Actualizar"));
+    upd.set_child(Some(&icon("\u{e5d5}", 16)));
+    upd.connect_clicked(move |_| {
+        tracing::info!("Actualizar");
+    });
+    actions.append(&upd);
+
+    let off = Button::new();
+    off.add_css_class("qs-device-btn");
+    off.set_tooltip_text(Some("Apagar"));
+    off.set_child(Some(&icon("\u{e1b1}", 16)));
+    off.connect_clicked(move |_| {
+        tracing::info!("Apagar");
+    });
+    actions.append(&off);
+
+    head.append(&icon_box);
+    head.append(&name_box);
+    head.append(&actions);
+    root.append(&head);
+
+    root
 }
 
-fn update_pill_classes(pill: &GtkBox, scale: &Scale, pct: f32) {
-    if pct > 1.0 {
-        pill.add_css_class("over");
-        scale.add_css_class("over");
-    } else {
-        pill.remove_css_class("over");
-        scale.remove_css_class("over");
-    }
-    if pct <= 0.0 {
-        pill.add_css_class("muted");
-    } else {
-        pill.remove_css_class("muted");
-    }
-}
+// ── Edit Mode Bar ────────────────────────────────────────────────────────
 
-fn mute_icon(muted: bool, volume: f32) -> &'static str {
-    if muted || volume <= 0.0 {
-        "volume_off"
-    } else if volume < 0.5 {
-        "volume_down"
-    } else {
-        "volume_up"
-    }
-}
+pub fn build_edit_mode_bar(state: Rc<QuickSettingsState>) -> GtkBox {
+    let root = GtkBox::new(Orientation::Vertical, 8);
+    root.add_css_class("qs-edit-bar");
+    root.set_margin_top(8);
 
-fn device_icon(kind: DeviceKind, name: &str) -> &'static str {
-    let n = name.to_lowercase();
-    match kind {
-        DeviceKind::Sink => {
-            if n.contains("hdmi") || n.contains("displayport") {
-                "settings_input_component"
-            } else if n.contains("speaker") || n.contains("altavoz") {
-                "speaker"
-            } else if n.contains("headphone") || n.contains("auricular") {
-                "headphones"
-            } else {
-                "volume_up"
-            }
-        }
-        DeviceKind::Source => {
-            if n.contains("monitor") {
-                "speaker"
-            } else {
-                "mic"
-            }
-        }
-    }
-}
+    // Description text
+    let desc = Label::new(Some("Modo de edición - arrastra controles, usa Eliminar para retirarlos."));
+    desc.add_css_class("qs-edit-desc");
+    desc.set_halign(gtk4::Align::Start);
+    desc.set_xalign(0.0);
+    root.append(&desc);
 
-fn is_video(media_role: &str, app_name: &str) -> bool {
-    let r = media_role.to_lowercase();
-    let a = app_name.to_lowercase();
-    r == "video"
-        || a.contains("mpv")
-        || a.contains("vlc")
-        || a.contains("firefox")
-        || a.contains("chrome")
-        || a.contains("video")
-}
+    // Add control
+    let add_btn = Button::new();
+    add_btn.add_css_class("qs-edit-action");
+    let inner_add = GtkBox::new(Orientation::Horizontal, 6);
+    inner_add.append(&icon("\u{e702}", 16));
+    inner_add.append(&Label::new(Some("Agregar Control")));
+    add_btn.set_child(Some(&inner_add));
+    add_btn.connect_clicked(move |_| {
+        tracing::info!("Agregar control");
+    });
+    root.append(&add_btn);
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+    // Discard changes
+    let discard_btn = Button::new();
+    discard_btn.add_css_class("qs-edit-action");
+    discard_btn.set_label("Descartar Cambios");
+    discard_btn.connect_clicked(move |_| {
+        tracing::info!("Descartar");
+    });
+    root.append(&discard_btn);
 
-    #[test]
-    fn test_one_ui_ease_bounds() {
-        assert_eq!(one_ui_ease(0.0), 0.0);
-        assert_eq!(one_ui_ease(1.0), 1.0);
-        assert_eq!(one_ui_ease(-0.5), 0.0);
-        assert_eq!(one_ui_ease(1.5), 1.0);
-    }
-
-    #[test]
-    fn test_one_ui_ease_monotonic() {
-        let mut prev = 0.0;
-        for i in 1..=100 {
-            let t = i as f64 / 100.0;
-            let val = one_ui_ease(t);
-            assert!(val >= prev, "Curva no monótona en t={t}: {val} < {prev}");
-            assert!(val >= 0.0 && val <= 1.0, "Valor fuera de rango: {val}");
-            prev = val;
-        }
-    }
+    root
 }
