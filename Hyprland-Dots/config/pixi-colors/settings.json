@@ -3,14 +3,17 @@
   "scheme": "auto",
   "glass": "auto",
   "extraction": {
-    "backend": "fastresize",
+    "backend": "resized",
     "color_space": "lch",
     "palette": "dark16",
-    "threshold": 11
+    "threshold": 8,
+    "saturation_target": 0.15,
+    "max_iterations": 20
   },
-  "glass_threshold": 0.55,
+  "glass_threshold": 0.52,
   "apply_gtk_scheme": true,
   "reload": true,
   "run_wallpaper_hooks": true,
-  "notify_on_error": true
+  "notify_on_error": true,
+  "contrast_ratio": 4.5
 }

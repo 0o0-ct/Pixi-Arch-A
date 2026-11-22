@@ -2014,7 +2014,7 @@ class Engine:
 
         seed = best_seed(colors)
         mode = self.resolve_mode(regions)
-        scheme = self.resolve_scheme(colors)
+        scheme = self.resolve_scheme(colors, regions)
         try:
             m3, scheme = matugen_roles(seed, mode, scheme, self.log, self.cache_root)
             # Enforce WCAG AA contrast for accessibility
@@ -2074,12 +2074,19 @@ class Engine:
             ) else "dark"
         return "light" if mode == "light" else "dark"
 
-    def resolve_scheme(self, colors: dict[str, str]) -> str:
+    def resolve_scheme(
+        self, colors: dict[str, str], regions: dict[str, float] | None = None
+    ) -> str:
         scheme = self.settings.get("scheme", "auto")
         if scheme in ("auto", "scheme-smart"):
             # Intelligent scheme selection based on image characteristics
             seed = best_seed(colors)
-            regions = sample_regions(self.args.wallpaper) if self.args.wallpaper else {}
+            if regions is None:
+                regions = (
+                    sample_regions(self.args.wallpaper)
+                    if getattr(self.args, "wallpaper", None)
+                    else {}
+                )
             return select_matugen_scheme(seed, regions, self.settings)
         if scheme not in M3_SCHEMES:
             return "scheme-tonal-spot"
@@ -2441,7 +2448,7 @@ class Engine:
         key = self.cache_key(image_hash)
         colors, m3, regions, cache_hit = self.extract(image, image_hash, key)
         mode = self.resolve_mode(regions)
-        scheme = self.resolve_scheme(colors)
+        scheme = self.resolve_scheme(colors, regions)
         self.settings["_resolved_mode"] = mode
 
         files, branches = self.targets(colors, m3, regions, mode, scheme, image)
