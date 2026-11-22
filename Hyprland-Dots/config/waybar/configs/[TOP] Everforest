@@ -38,6 +38,7 @@
 	"custom/hypridle",
 	],
 "modules-right": [
+      "power-profiles-daemon",
 	"cpu#forest",
 	"memory#forest",
 	"temperature#forest",

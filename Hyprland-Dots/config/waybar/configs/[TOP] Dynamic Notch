@@ -41,6 +41,7 @@
 ],
 		
 "modules-right": [
+      "power-profiles-daemon",
 	"tray",
 	"bluetooth",
 	

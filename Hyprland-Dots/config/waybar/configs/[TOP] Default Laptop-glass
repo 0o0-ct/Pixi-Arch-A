@@ -45,7 +45,8 @@
 	"bluetooth",
 	
 	"group/laptop",
-	"group/mobo_drawer",
+	"power-profiles-daemon",
+      "group/mobo_drawer",
 	"group/audio",
 	"custom/nightlight",
 	"group/status",

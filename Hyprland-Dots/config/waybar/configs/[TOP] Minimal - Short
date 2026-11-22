@@ -25,6 +25,7 @@
 	],
 
 "modules-right": [
+      "power-profiles-daemon",
 	"custom/menu", 
 	"tray",
 	"custom/swaync", "custom/dot_update",

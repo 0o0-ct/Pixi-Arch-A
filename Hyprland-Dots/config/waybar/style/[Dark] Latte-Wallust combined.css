@@ -351,3 +351,17 @@ tooltip {
 }
 #swaync{
     color: @accent;}
+
+/* POWER PROFILE HIGHLIGHT — selector always visible and accented */
+#power-profiles-daemon {
+  background-color: alpha(@color15, 0.22);
+  color: @foreground;
+  border: 1px solid alpha(@color15, 0.75);
+  border-radius: 12px;
+  padding: 2px 10px;
+  margin: 2px 2px;
+  font-weight: bold;
+}
+#power-profiles-daemon.power-saver  { color: @color11; border-color: @color11; }
+#power-profiles-daemon.balanced     { color: @foreground; }
+#power-profiles-daemon.performance  { color: @color13; border-color: @color13; }

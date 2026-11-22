@@ -33,6 +33,7 @@
 ],
 
 "modules-right": [
+      "power-profiles-daemon",
 	"mpris",
 	"tray",
 	"bluetooth",

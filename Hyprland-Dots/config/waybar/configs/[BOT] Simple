@@ -21,7 +21,8 @@
 
 "modules-left": [	
 	"custom/hypridle",
-	"group/mobo_drawer",
+	"power-profiles-daemon",
+      "group/mobo_drawer",
 	"hyprland/workspaces#rw",
 	"tray",
 	"bluetooth",

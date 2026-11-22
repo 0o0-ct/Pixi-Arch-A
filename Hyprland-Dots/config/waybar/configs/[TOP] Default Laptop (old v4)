@@ -24,7 +24,8 @@
 "modules-left": [
 	"group/app_drawer",
 	"custom/separator#dot-line",
-	"group/mobo_drawer",
+	"power-profiles-daemon",
+      "group/mobo_drawer",
 	"custom/separator#blank",
 	"group/laptop",
 	"custom/separator#line",

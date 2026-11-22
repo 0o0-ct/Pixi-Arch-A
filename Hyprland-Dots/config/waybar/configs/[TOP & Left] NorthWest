@@ -35,6 +35,7 @@
 	],
     
 "modules-right": [
+      "power-profiles-daemon",
   	"network",
   	"bluetooth",
 	"custom/weather",

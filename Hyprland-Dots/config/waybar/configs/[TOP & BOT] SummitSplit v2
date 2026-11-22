@@ -33,6 +33,7 @@
       "battery",
       "backlight",
       "pulseaudio",
+      "power-profiles-daemon",
       "group/mobo_drawer", 
       "custom/hypridle",
       "custom/nightlight",

@@ -38,7 +38,8 @@
 	"custom/hypridle",
 	],
 "modules-right": [
-	"group/mobo_drawer",
+	"power-profiles-daemon",
+      "group/mobo_drawer",
 	"custom/separator#blank_2",
 	"group/laptop",
 	"custom/separator#blank_2",

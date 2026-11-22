@@ -43,6 +43,7 @@
 	], 
 
 "modules-right": [
+      "power-profiles-daemon",
 	"network#speed",
 	"custom/separator#line",
 	"tray",

@@ -51,6 +51,7 @@
 	], 
 
 "modules-right": [
+      "power-profiles-daemon",
 	"network#speed",
 	"custom/separator#dot-line",
 	"custom/swaync", "custom/dot_update",

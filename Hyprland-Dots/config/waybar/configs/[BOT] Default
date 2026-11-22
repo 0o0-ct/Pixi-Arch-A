@@ -50,7 +50,8 @@
 	"network#speed",
 	
 		"custom/separator#dot-line",
-		"group/mobo_drawer",
+		"power-profiles-daemon",
+      "group/mobo_drawer",
 		"custom/separator#line",  
 		"group/audio",
 		"custom/separator#dot-line", 

@@ -35,6 +35,7 @@
 "modules-center": ["clock#4"], 
 	
 "modules-right": [
+      "power-profiles-daemon",
 	"battery", "custom/hypridle",
 	"custom/separator#blank",
 	"backlight",
