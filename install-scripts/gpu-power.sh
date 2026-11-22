@@ -69,4 +69,29 @@ else
   printf "%s powerprofilesctl no disponible: se omite el perfil.\n" "${NOTE}"
 fi
 
+# ---------------------------------------------------------------------------
+# 3) Turbo Boost desactivado: reduce los picos térmicos de la CPU.
+#    Se aplica ya y se persiste con una unidad oneshot (sin daemon ni polling).
+# ---------------------------------------------------------------------------
+if [ -f /sys/devices/system/cpu/intel_pstate/no_turbo ]; then
+  if sudo -n true 2>/dev/null; then
+    UNIT_SRC="$SCRIPT_DIR/no-turbo.service"
+    if [ -f "$UNIT_SRC" ]; then
+      sudo cp -f "$UNIT_SRC" /etc/systemd/system/no-turbo.service >>"$LOG" 2>&1 || true
+      sudo systemctl daemon-reload >>"$LOG" 2>&1 || true
+      sudo systemctl enable --now no-turbo.service >>"$LOG" 2>&1 || true
+    fi
+
+    if sudo -n bash -c 'echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo' >>"$LOG" 2>&1; then
+      printf "%s Turbo Boost desactivado (persistente).\n" "${OK}"
+    else
+      printf "%s No se pudo desactivar Turbo Boost (revisa %s).\n" "${WARN}" "$LOG"
+    fi
+  else
+    printf "%s Sin sudo activo: se omite la desactivación de Turbo Boost.\n" "${NOTE}"
+  fi
+else
+  printf "%s CPU sin intel_pstate: se omite Turbo Boost.\n" "${NOTE}"
+fi
+
 printf "%s Ahorro de energía configurado.\n" "${OK}"
