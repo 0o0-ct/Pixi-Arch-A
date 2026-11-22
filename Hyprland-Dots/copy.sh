@@ -417,6 +417,14 @@ prompt_clock_12h "$LOG"
 
 # Ejecutar las detecciones y ajustes de hardware sobre los archivos finales copiados
 detect_nvidia_adjust "$LOG"
+
+# Ahorro de energía declarativo también para instalaciones ya existentes:
+# escribe el modprobe corregido de NVIDIA y activa power-saver (si hay sudo).
+GPU_POWER_SCRIPT="$(dirname "$SCRIPT_DIR")/install-scripts/gpu-power.sh"
+if [ -f "$GPU_POWER_SCRIPT" ]; then
+  bash "$GPU_POWER_SCRIPT" 2>&1 | tee -a "$LOG" || true
+fi
+
 detect_vm_adjust "$LOG"
 detect_nixos_adjust "$LOG"
 

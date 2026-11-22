@@ -508,6 +508,11 @@ echo "${INFO} Detectando GPUs e instalando ${SKY_BLUE}drivers${RESET} automátic
 sleep 1
 execute_script "gpu-drivers.sh"
 
+# Aplicar ahorro de energía declarativo (NVIDIA DPM + perfil power-saver).
+echo "${INFO} Aplicando configuración de ${SKY_BLUE}ahorro de energía${RESET}..."
+sleep 1
+execute_script "gpu-power.sh"
+
 # Limpiar opciones seleccionadas
 selected_options=$(echo "$selected_options" | tr -d '"' | tr -s ' ')
 
