@@ -36,7 +36,7 @@ if lspci -nn 2>/dev/null | grep -qi "nvidia"; then
     if sudo tee "$MODPROBE" >/dev/null 2>>"$LOG" <<'EOF'
 # NVIDIA: ahorro dinámico y suspensión en reposo (sin scripts).
 # Generado por el instalador de Pixi-Arch-A. NO fuerza rendimiento máximo.
-options nvidia NVreg_DynamicPowerManagement=1
+options nvidia NVreg_DynamicPowerManagement=2
 options nvidia NVreg_DynamicPowerManagementVideoMemoryThreshold=100
 EOF
     then
