@@ -31,8 +31,21 @@ prompt_keyboard_layout() {
   layout=$(printf '%s' "$layout" | tr -cd 'a-zA-Z0-9,_+-')
   [ -z "$layout" ] && layout="es,us"
 
-  printf "${NOTE} Detectando la distribución de teclado para preparar la configuración adecuada de Hyprland\n"
   local live_settings="$HOME/.config/hypr/lua/settings.lua"
+
+  # No sobrescribir una configuración multi-distribución del usuario.
+  # El modo exprés detecta una sola ("us") y antes la pisaba, dejando el
+  # atajo Ctrl+Super+Space sin nada que alternar.
+  local current_layout=""
+  if [ -f "$live_settings" ]; then
+    current_layout=$(sed -n 's/.*kb_layout = "\([^"]*\)".*/\1/p' "$live_settings" | head -1)
+  fi
+  if [[ "$current_layout" == *,* ]]; then
+    printf "${NOTE} Conservando distribuciones existentes: ${MAGENTA}%s${RESET}\n" "$current_layout" 2>&1 | tee -a "$log"
+    return 0
+  fi
+
+  printf "${NOTE} Detectando la distribución de teclado para preparar la configuración adecuada de Hyprland\n"
   if [ -f "$live_settings" ]; then
     awk -v layout="$layout" '/kb_layout = "/ {$0 = "        kb_layout = \"" layout "\","} 1' "$live_settings" >"$live_settings.tmp"
     if mv "$live_settings.tmp" "$live_settings"; then
