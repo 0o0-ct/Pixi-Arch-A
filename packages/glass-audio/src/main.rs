@@ -31,13 +31,31 @@ fn main() {
         return;
     }
 
-    // Análisis de pestaña: --tab=output|input|playback|record|config
+    // Análisis de pestaña: --tab=output|input|playback|record|config o --tab output
     let tab = args
         .iter()
         .position(|a| a == "--tab")
         .and_then(|i| args.get(i + 1))
-        .cloned();
+        .cloned()
+        .or_else(|| {
+            args.iter()
+                .find(|a| a.starts_with("--tab="))
+                .and_then(|a| a.split_once('='))
+                .map(|(_, val)| val.to_string())
+        });
     let expand = args.iter().any(|a| a == "--expand");
+    let width = args
+        .iter()
+        .position(|a| a == "--width")
+        .and_then(|i| args.get(i + 1))
+        .and_then(|w| w.parse::<i32>().ok())
+        .or_else(|| {
+            args.iter()
+                .find(|a| a.starts_with("--width="))
+                .and_then(|a| a.split_once('='))
+                .and_then(|(_, val)| val.parse::<i32>().ok())
+        })
+        .unwrap_or(720);
 
     let app = Application::builder()
         .application_id("com.pixi.glassaudio")
@@ -62,6 +80,7 @@ fn main() {
         Rc::new(RefCell::new(None));
     let initial_tab = Rc::new(RefCell::new(tab));
     let initial_expand = Rc::new(Cell::new(expand));
+    let initial_width = Rc::new(Cell::new(width));
 
     app.connect_startup(move |_| {
         let _ = init_theme();
@@ -72,6 +91,7 @@ fn main() {
     let window_slot_activate = window_slot;
     let initial_tab_activate = initial_tab;
     let initial_expand_activate = initial_expand;
+    let initial_width_activate = initial_width;
 
     app.connect_activate(move |app| {
         let slot = window_slot_activate.clone();
@@ -87,12 +107,14 @@ fn main() {
 
         let tab = initial_tab_activate.borrow_mut().take();
         let expand = initial_expand_activate.get();
+        let win_width = initial_width_activate.get();
         let audio_window = Rc::new(RefCell::new(ui::AudioWindow::new(
             app,
             cmd_tx_activate.clone(),
             event_rx_activate.clone(),
             tab.as_deref(),
             expand,
+            win_width,
         )));
         *slot.borrow_mut() = Some(audio_window.clone());
         audio_window.borrow().window.present();

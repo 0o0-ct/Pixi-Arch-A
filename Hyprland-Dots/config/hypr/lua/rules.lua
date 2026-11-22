@@ -39,7 +39,7 @@ hl.window_rule({ match = { class = "nm-connection-editor" }, float = true, cente
 hl.window_rule({ match = { class = "com.pixi.glassbt" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
 hl.window_rule({ match = { class = "glass-bt" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
 hl.window_rule({ match = { class = "com.pixi.glassnet" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
-hl.window_rule({ match = { class = "com.pixi.glassaudio" }, float = true, size = { 760, 660 }, center = true, border_size = 0, no_shadow = true, rounding = 28 })
+hl.window_rule({ match = { class = "com.pixi.glassaudio" }, float = true, size = { 720, 640 }, center = true, border_size = 0, no_shadow = true, rounding = 28 })
 hl.window_rule({ match = { class = "glass-net" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
 
 -- Diálogos y visores
@@ -65,3 +65,25 @@ hl.window_rule({ match = { class = "kitty" }, float = false })
 hl.window_rule({ match = { class = "alacritty" }, float = false })
 hl.window_rule({ match = { class = "wezterm" }, float = false })
 hl.window_rule({ match = { class = "xwayland" }, float = false })
+
+-- Ahorro GPU: sin blur en ventanas (criterio de end-4 + wiki oficial).
+-- Los layer surfaces (barra, dock, paneles) conservan su blur.
+hl.window_rule({ match = { class = ".*" }, no_blur = true })
+
+-- Ventanas fijadas (pin=1): borde con el rol "primary" de Material 3,
+-- extraído del fondo de pantalla por pixi_colors.py (estilo end-4).
+local pinned_border = nil
+local pinned_home = os.getenv("HOME") or ""
+local pinned_file = io.open(pinned_home .. "/.config/quickshell/qml_color.json", "r")
+if pinned_file then
+    local pinned_content = pinned_file:read("*a")
+    pinned_file:close()
+    local primary = pinned_content:match('"primary"%s*:%s*"(#%x+)"')
+    if primary then
+        local hex = primary:gsub("^#", "")
+        pinned_border = "rgba(" .. hex .. "aa) rgba(" .. hex .. "77)"
+    end
+end
+if pinned_border then
+    hl.window_rule({ match = { pin = 1 }, border_color = pinned_border })
+end

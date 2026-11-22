@@ -7,8 +7,8 @@
  * the adaptive finish: smoked glass + light ink on a dark band, porcelain +
  * charcoal ink on a bright one. Roles:
  *
- *   @pane_glass -> the slab          @color15 -> accent: pill, slider
- *   @ink -> text + hairlines         @color13 -> urgent pill
+ *   @pane_glass -> the slab          @accent_ink -> accent: pill, slider
+ *   @ink -> text + hairlines         @danger -> urgent pill
  *
  * THE IMPORT PATH (the one trap in this file)
  * -------------------------------------------
@@ -40,7 +40,7 @@
  * COLOUR CODING KEPT
  * ------------------
  * accent1..6 are kept as names so the module colour coding survives, but they
- * are now rotations of the wallpaper's own accents (@color15, @color13,
+ * are now rotations of the wallpaper's own accents (@accent_ink, @danger,
  * @color7), each mixed toward @foreground so the hue comes from the image while
  * the legibility comes from the palette, instead of six fixed literals.
  * Red/amber alert states keep the semantic @danger so they stay legible whatever
@@ -59,6 +59,7 @@
  */
 
 @import url("wallust/colors-waybar.css");
+/* Roles Material 3 generados por pixi_colors.py desde el fondo de pantalla. */
 @import url("wallust/mode-glass.css");
 
 
@@ -92,8 +93,8 @@ window#waybar #window,
 @define-color ink_dim       @ink_muted;
 
 @define-color accent        @accent_ink;
-@define-color accent_pill   alpha(@color15, 0.94);
-@define-color accent_urgent alpha(@color13, 0.88);
+@define-color accent_pill   alpha(@accent_ink, 0.94);
+@define-color accent_urgent alpha(@danger, 0.88);
 
 /* The six module colours: each is a wallust accent mixed toward @ink. An
  * accent's ramp position is not guaranteed to be light (color13 is a mid-tone
@@ -102,11 +103,11 @@ window#waybar #window,
  * porcelain @ink is charcoal, so the same rule darkens the text instead of
  * washing it out. accent1/2/3 measure 10.8:1, 9.1:1 and 11.0:1 on the live
  * wallpaper; a worst-case near-black accent still lands at 5.8:1. */
-@define-color accent1       mix(@color15, @ink, 0.25);
-@define-color accent2       mix(@color13, @ink, 0.45);
+@define-color accent1       mix(@accent_ink, @ink, 0.25);
+@define-color accent2       mix(@danger, @ink, 0.45);
 @define-color accent3       mix(@color7, @ink, 0.35);
-@define-color accent4       mix(@color15, @ink, 0.25);
-@define-color accent5       mix(@color13, @ink, 0.45);
+@define-color accent4       mix(@accent_ink, @ink, 0.25);
+@define-color accent5       mix(@danger, @ink, 0.45);
 @define-color accent6       mix(@color7, @ink, 0.35);
 
 /* @danger arrives from mode-glass.css (dark: #ffa8a8, porcelain: #b3261e). */
@@ -309,7 +310,7 @@ tooltip {
 }
 
 label:focus {
-	background-color: alpha(@color15, 0.20);
+	background-color: alpha(@accent_ink, 0.20);
 }
 
 #custom-menu{

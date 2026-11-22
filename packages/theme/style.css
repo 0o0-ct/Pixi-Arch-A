@@ -597,61 +597,147 @@ window.background {
 }
 
 /* -- Pestañas: píldora segmentada ------------------------------------------ */
-/* -- Pestañas: píldora segmentada (contenedor único) -- */
+/* -- Pestañas: barra segmentada estilo One UI 8 (contenedor único) -- */
 .tab-bar {
     margin: 8px 16px 16px 16px;
-}
-
-.segmented {
     background-color: rgba(255, 255, 255, 0.06);
+    background-image: none;
     border: none;
+    box-shadow: none;
     border-radius: 9999px;
     padding: 4px;
     min-height: 48px;
 }
 
-/* Indicador único de la pestaña activa: píldora de 40 px detrás del track. */
-.seg-ind {
-    margin-top: 9px;
-    min-height: 30px;
-    border-radius: 9999px;
-    background-color: @primary;
-    box-shadow: 0 0 8px @accent_glow;
-    transition: margin-start 300ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.seg-btn {
+/* Fila de botones sobre el indicador */
+.segmented {
     background: transparent;
+    background-color: transparent;
+    background-image: none;
     border: none;
-    border-radius: 9999px;
-    color: rgba(255, 255, 255, 0.52);
-    font-size: 14px;
-    font-weight: 600;
-    padding: 8px 16px;
-    min-height: 40px;
-    transition: all 300ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.seg-btn:hover {
-    color: @text_primary;
-}
-
-/* Resaltado compartido: una sola caja resaltada en el track que viaja
-   con la opción activa; el resto es texto sobre un contenedor sólido. */
-.seg-btn.active {
-    background: transparent;
     box-shadow: none;
-    color: @text_primary;
+    padding: 0;
+    margin: 0;
+    min-height: 40px;
+}
+
+/* Capa del indicador detrás de los botones */
+.seg-ind-layer {
+    background: transparent;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    min-height: 40px;
+}
+
+/* Indicador único de pestaña activa: píldora 40 px detrás de la pestaña activa */
+.seg-ind {
+    background-color: rgba(255, 255, 255, 0.16);
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    border-radius: 9999px;
+    min-height: 40px;
+    margin: 0;
+    padding: 0;
+}
+
+/* Botones de pestaña: sin caja, transparentes */
+button.seg-btn,
+button.seg-btn:backdrop,
+button.seg-btn:checked,
+.seg-btn {
+    background: none;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-width: 0;
+    border-style: none;
+    border-color: transparent;
+    border-radius: 9999px;
+    box-shadow: none;
+    text-shadow: none;
+    outline: none;
+    outline-width: 0;
+    margin: 0;
+    padding: 0 4px;
+    min-height: 40px;
+    color: rgba(255, 255, 255, 0.60);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 150ms ease, transform 120ms ease;
+}
+
+/* Hover: el texto sube al 85%, sin fondo ni caja */
+button.seg-btn:hover,
+.seg-btn:hover {
+    background: none;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-width: 0;
+    box-shadow: none;
+    outline: none;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Activa: texto al 100% y peso 600, sobre el indicador */
+button.seg-btn.active,
+button.seg-btn.active:hover,
+button.seg-btn.active:backdrop,
+.seg-btn.active {
+    background: none;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-width: 0;
+    box-shadow: none;
+    outline: none;
+    color: rgba(255, 255, 255, 1.0);
     font-weight: 600;
 }
 
+/* Pulsación: escala 0.98 durante 120 ms */
+button.seg-btn:active,
 .seg-btn:active {
-    transition: box-shadow 80ms ease;
+    background: none;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-width: 0;
+    box-shadow: none;
+    transform: scale(0.98);
+    transition: transform 120ms ease;
 }
 
+/* Foco por teclado: anillo fino de 2 px en forma de píldora alrededor de la pestaña, solo con focus-visible */
+button.seg-btn:focus,
+.seg-btn:focus {
+    outline: none;
+}
+
+button.seg-btn:focus-visible,
+.seg-btn:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.40);
+    outline-offset: -2px;
+    border-radius: 9999px;
+}
+
+/* Iconos de las pestañas: 18 px */
 .seg-btn .seg-ic {
     font-size: 18px;
     margin-right: 6px;
+}
+
+.seg-btn.icon-only .seg-ic {
+    margin-right: 0;
+}
+
+.seg-btn .seg-label {
+    font-size: 14px;
 }
 
 /* -- Lista con scroll (fondo transparente, scrollbar fina superpuesta) ---- */

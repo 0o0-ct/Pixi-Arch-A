@@ -21,9 +21,9 @@ use gtk4::gdk::EventType;
 use gtk4::pango;
 use gtk4::prelude::*;
 use gtk4::{
-    Adjustment, Align, Application, ApplicationWindow, Box as GtkBox, Button, DropDown,
-    EventControllerKey, EventControllerLegacy, Label, LevelBar, Orientation, Overlay, Revealer,
-    RevealerTransitionType, Scale, ScrolledWindow, Stack, StackTransitionType, Widget,
+    Adjustment, Align, Application, ApplicationWindow, Box as GtkBox, Button,
+    DropDown, EventControllerKey, EventControllerLegacy, Label, LevelBar, Orientation, Overlay,
+    Revealer, RevealerTransitionType, Scale, ScrolledWindow, Stack, StackTransitionType, Widget,
 };
 
 const TABS: [&str; 5] = [
@@ -63,12 +63,80 @@ impl Ctx {
     }
 }
 
+struct IndicatorAnim {
+    start_time: std::time::Instant,
+    from_x: f64,
+    from_w: f64,
+    to_x: f64,
+    to_w: f64,
+    curr_x: f64,
+    curr_w: f64,
+    active: bool,
+}
+
+impl Default for IndicatorAnim {
+    fn default() -> Self {
+        Self {
+            start_time: std::time::Instant::now(),
+            from_x: 0.0,
+            from_w: 0.0,
+            to_x: 0.0,
+            to_w: 0.0,
+            curr_x: 0.0,
+            curr_w: 0.0,
+            active: false,
+        }
+    }
+}
+
+fn one_ui_ease(t: f64) -> f64 {
+    // cubic-bezier(0.22, 1.0, 0.36, 1.0)
+    if t <= 0.0 {
+        return 0.0;
+    }
+    if t >= 1.0 {
+        return 1.0;
+    }
+    let x1 = 0.22;
+    let y1 = 1.0;
+    let x2 = 0.36;
+    let y2 = 1.0;
+
+    let mut s = t;
+    for _ in 0..8 {
+        let one_minus_s = 1.0 - s;
+        let current_x = 3.0 * one_minus_s * one_minus_s * s * x1
+            + 3.0 * one_minus_s * s * s * x2
+            + s * s * s;
+        let diff = current_x - t;
+        if diff.abs() < 1e-5 {
+            break;
+        }
+        let dxd_s = 3.0 * one_minus_s * one_minus_s * x1
+            + 6.0 * one_minus_s * s * (x2 - x1)
+            + 3.0 * s * s * (1.0 - x2);
+        if dxd_s.abs() < 1e-5 {
+            break;
+        }
+        s = (s - diff / dxd_s).clamp(0.0, 1.0);
+    }
+
+    let one_minus_s = 1.0 - s;
+    3.0 * one_minus_s * one_minus_s * s * y1
+        + 3.0 * one_minus_s * s * s * y2
+        + s * s * s
+}
+
 struct Core {
     contents: Vec<GtkBox>,
     stack: Stack,
     tab_buttons: Vec<Button>,
+    tab_labels: Vec<Label>,
     tab_bar: Overlay,
+    segmented: GtkBox,
+    ind_layer: GtkBox,
     seg_ind: GtkBox,
+    anim_state: Rc<RefCell<IndicatorAnim>>,
     ctx: RefCell<Ctx>,
     /// `true` mientras el usuario arrastra un slider con el ratón.
     interacting: Rc<Cell<bool>>,
@@ -91,13 +159,14 @@ impl AudioWindow {
         event_rx: Receiver<AudioState>,
         initial_tab: Option<&str>,
         expand: bool,
+        width: i32,
     ) -> Self {
         let (peak_tx, peak_rx) = async_channel::unbounded::<(u32, f32)>();
 
         let window = ApplicationWindow::builder()
             .application(app)
             .title("Sonido")
-            .default_width(720)
+            .default_width(width)
             .default_height(640)
             .decorated(false)
             .build();
@@ -135,34 +204,50 @@ impl AudioWindow {
         header.append(&close_btn);
         root.append(&header);
 
-        // ── Pestañas segmentadas (píldora) ──────────────────────────────────
+        // ── Pestañas segmentadas estilo One UI 8 (píldora única) ─────────────
         let tab_bar = Overlay::new();
         tab_bar.add_css_class("tab-bar");
         tab_bar.set_hexpand(true);
         tab_bar.set_vexpand(false);
         tab_bar.set_valign(Align::Start);
-        tab_bar.set_can_focus(true);
-        tab_bar.set_width_request(760);
+        tab_bar.set_can_focus(false);
+
+        // Capa del indicador (detrás de los botones: child del Overlay)
+        let ind_layer = GtkBox::new(Orientation::Horizontal, 0);
+        ind_layer.add_css_class("seg-ind-layer");
+        ind_layer.set_hexpand(true);
+        ind_layer.set_vexpand(false);
+        ind_layer.set_valign(Align::Center);
+        ind_layer.set_can_target(false);
+
+        // Indicador único de pestaña activa: píldora 40 px detrás de la pestaña activa
+        let seg_ind = GtkBox::new(Orientation::Horizontal, 0);
+        seg_ind.add_css_class("seg-ind");
+        seg_ind.set_halign(Align::Start);
+        seg_ind.set_valign(Align::Center);
+        seg_ind.set_height_request(40);
+        seg_ind.set_can_target(false);
+        ind_layer.append(&seg_ind);
+
+        tab_bar.set_child(Some(&ind_layer));
+
+        // Capa de botones (encima del indicador: overlay)
         let segmented = GtkBox::new(Orientation::Horizontal, 0);
         segmented.add_css_class("segmented");
         segmented.set_hexpand(true);
         segmented.set_vexpand(false);
-        segmented.set_can_focus(true);
-        tab_bar.set_child(Some(&segmented));
-        // Indicador único de pestaña activa: píldora 40 px detrás de los botones.
-        let seg_ind = GtkBox::new(Orientation::Horizontal, 0);
-        seg_ind.add_css_class("seg-ind");
-        seg_ind.set_width_request(152);
-        seg_ind.set_margin_start(0);
-        seg_ind.set_halign(Align::Start);
-        seg_ind.set_valign(Align::Center);
-        tab_bar.add_overlay(&seg_ind);
+        segmented.set_homogeneous(true);
+        segmented.set_valign(Align::Center);
+
+        tab_bar.add_overlay(&segmented);
+        tab_bar.set_measure_overlay(&segmented, true);
+
         root.append(&tab_bar);
 
         // ── Stack de contenido con cross-fade ───────────────────────────────
         let stack = Stack::new();
         stack.set_transition_type(StackTransitionType::Crossfade);
-        stack.set_transition_duration(280);
+        stack.set_transition_duration(300);
         stack.set_hexpand(true);
         stack.set_vexpand(true);
 
@@ -188,33 +273,36 @@ impl AudioWindow {
 
         window.set_child(Some(&root));
 
-        // Escape cierra la ventana.
-        let key = EventControllerKey::new();
-        let win_esc = window.clone();
-        key.connect_key_pressed(move |_, kv, _, _| {
-            if kv == gtk4::gdk::Key::Escape {
-                win_esc.close();
-                glib::Propagation::Stop
-            } else {
-                glib::Propagation::Proceed
-            }
-        });
-        window.add_controller(key);
-
-        // Botones de pestaña.
+        // Botones de pestaña (transparentes, sin caja, solo icono + texto).
         let mut tab_buttons = Vec::new();
+        let mut tab_labels = Vec::new();
         for (i, name) in TABS.iter().enumerate() {
-            let btn = Button::new();
+            let btn = Button::builder()
+                .has_frame(false)
+                .can_focus(true)
+                .hexpand(true)
+                .vexpand(false)
+                .valign(Align::Center)
+                .build();
             btn.add_css_class("seg-btn");
-            btn.set_hexpand(true);
             btn.set_widget_name(&format!("tabbtn{i}"));
-            let lbl = GtkBox::new(Orientation::Horizontal, 0);
-            lbl.set_halign(Align::Center);
-            lbl.append(&ms_icon(TAB_ICONS[i], "ms-15 seg-ic"));
-            lbl.append(&Label::new(Some(name)));
-            btn.set_child(Some(&lbl));
+
+            let hbox = GtkBox::new(Orientation::Horizontal, 0);
+            hbox.set_halign(Align::Center);
+            hbox.set_valign(Align::Center);
+
+            let ic = ms_icon(TAB_ICONS[i], "ms-18 seg-ic");
+            hbox.append(&ic);
+
+            let tab_lbl = Label::new(Some(name));
+            tab_lbl.add_css_class("seg-label");
+            tab_lbl.set_ellipsize(pango::EllipsizeMode::End);
+            hbox.append(&tab_lbl);
+
+            btn.set_child(Some(&hbox));
             segmented.append(&btn);
             tab_buttons.push(btn);
+            tab_labels.push(tab_lbl);
         }
 
         let mut ctx = Ctx::default();
@@ -223,8 +311,11 @@ impl AudioWindow {
             contents,
             stack,
             tab_buttons,
+            tab_labels,
             tab_bar,
+            ind_layer,
             seg_ind,
+            anim_state: Rc::new(RefCell::new(IndicatorAnim::default())),
             ctx: RefCell::new(ctx),
             interacting: Rc::new(Cell::new(false)),
             cmd_tx,
@@ -239,31 +330,70 @@ impl AudioWindow {
             btn.connect_clicked(move |_| Core::select_tab_index(&core_c, i));
         }
 
-        // Navegación con teclado dentro de la barra: Ctrl+Tab / Ctrl+Shift+Tab / flechas.
+        // Navegación con flechas izquierda/derecha dentro de la barra
         {
             let kc = EventControllerKey::new();
             let core_kc = core.clone();
-            kc.connect_key_pressed(move |_, keyval, _, modifiers| {
+            kc.connect_key_pressed(move |_, keyval, _, _| {
                 let cur = core_kc.ctx.borrow().tab;
                 let next = match keyval {
                     k if k == gtk4::gdk::Key::Right => (cur + 1) % TABS.len(),
                     k if k == gtk4::gdk::Key::Left => (cur + TABS.len() - 1) % TABS.len(),
-                    k if k == gtk4::gdk::Key::Tab
-                        && !modifiers.contains(gtk4::gdk::ModifierType::SHIFT_MASK) =>
-                    {
-                        (cur + 1) % TABS.len()
-                    }
-                    k if k == gtk4::gdk::Key::Tab
-                        && modifiers.contains(gtk4::gdk::ModifierType::SHIFT_MASK) =>
-                    {
-                        (cur + TABS.len() - 1) % TABS.len()
-                    }
-                    _ => return glib::Propagation::Stop,
+                    _ => return glib::Propagation::Proceed,
                 };
                 Core::select_tab_index(&core_kc, next);
+                if let Some(b) = core_kc.tab_buttons.get(next) {
+                    b.grab_focus();
+                }
                 glib::Propagation::Stop
             });
-            core.tab_bar.add_controller(kc);
+            segmented.add_controller(kc);
+        }
+
+        // Atajos globales de la ventana: Escape para cerrar, Ctrl+Tab y Ctrl+Shift+Tab para pestañas
+        {
+            let key = EventControllerKey::new();
+            let core_key = core.clone();
+            key.connect_key_pressed(move |_, kv, _, modifiers| {
+                if kv == gtk4::gdk::Key::Escape {
+                    core_key.window.close();
+                    return glib::Propagation::Stop;
+                }
+
+                if modifiers.contains(gtk4::gdk::ModifierType::CONTROL_MASK) {
+                    if kv == gtk4::gdk::Key::Tab || kv == gtk4::gdk::Key::ISO_Left_Tab {
+                        let cur = core_key.ctx.borrow().tab;
+                        let next = if modifiers.contains(gtk4::gdk::ModifierType::SHIFT_MASK) {
+                            (cur + TABS.len() - 1) % TABS.len()
+                        } else {
+                            (cur + 1) % TABS.len()
+                        };
+                        Core::select_tab_index(&core_key, next);
+                        if let Some(b) = core_key.tab_buttons.get(next) {
+                            b.grab_focus();
+                        }
+                        return glib::Propagation::Stop;
+                    }
+                }
+
+                glib::Propagation::Proceed
+            });
+            window.add_controller(key);
+        }
+
+        // Detector de resize: responde vía GDK Surface layout a 720px, 560px y cambios dinámicos
+        {
+            let core_realize = Rc::downgrade(&core);
+            window.connect_realize(move |win| {
+                if let Some(surf) = win.surface() {
+                    let core_layout = core_realize.clone();
+                    surf.connect_layout(move |_surf, width, _height| {
+                        if let Some(core) = core_layout.upgrade() {
+                            Core::handle_resize(&core, width);
+                        }
+                    });
+                }
+            });
         }
 
         {
@@ -361,23 +491,158 @@ impl Core {
                 b.add_css_class("active");
             }
         }
-        Core::move_indicator(core, idx);
+        Core::update_tab_labels(core);
+        Core::move_indicator(core, idx, true);
         core.stack.set_visible_child_name(&format!("tab{idx}"));
         tracing::debug!("select_tab_index({idx})");
         Core::render(core);
     }
 
-    /// Desliza el indicador único de la pestaña activa hasta la nueva posición.
-    fn move_indicator(core: &Rc<Core>, idx: usize) {
-        let (x, _y) = core
-            .tab_buttons
-            .get(idx)
-            .and_then(|b| b.translate_coordinates(&core.tab_bar, 0.0, 0.0))
-            .unwrap_or((0.0, 0.0));
-        let total = core.tab_bar.width_request();
-        let tab_w = if total > 0 { (total as f64 / TABS.len() as f64) as i32 } else { 152 };
-        core.seg_ind.set_margin_start(x.round() as i32 + 2);
-        core.seg_ind.set_width_request(tab_w.max(40));
+    fn update_tab_labels(core: &Rc<Core>) {
+        let win_w = if core.window.width() > 0 {
+            core.window.width()
+        } else {
+            core.window.default_width()
+        };
+        Core::update_tab_labels_for_width(core, win_w);
+    }
+
+    fn update_tab_labels_for_width(core: &Rc<Core>, width: i32) {
+        let is_compact = width < 600 && width > 0;
+        let cur_tab = core.ctx.borrow().tab;
+
+        for (i, lbl) in core.tab_labels.iter().enumerate() {
+            if is_compact {
+                let is_active = i == cur_tab;
+                lbl.set_visible(is_active);
+                if is_active {
+                    core.tab_buttons[i].remove_css_class("icon-only");
+                } else {
+                    core.tab_buttons[i].add_css_class("icon-only");
+                }
+            } else {
+                lbl.set_visible(true);
+                core.tab_buttons[i].remove_css_class("icon-only");
+            }
+        }
+    }
+
+    fn handle_resize(core: &Rc<Core>, width: i32) {
+        if width <= 0 {
+            return;
+        }
+        Core::update_tab_labels_for_width(core, width);
+
+        let cur_tab = core.ctx.borrow().tab;
+        if cur_tab < TABS.len() {
+            let anim_active = core.anim_state.borrow().active;
+            let (target_x, target_w) = Core::get_tab_target(core, cur_tab);
+            if !anim_active {
+                Core::set_indicator_immediate(core, target_x, target_w);
+            } else {
+                let mut anim = core.anim_state.borrow_mut();
+                anim.to_x = target_x;
+                anim.to_w = target_w;
+            }
+        }
+    }
+
+    fn get_tab_target(core: &Core, idx: usize) -> (f64, f64) {
+        if let Some(btn) = core.tab_buttons.get(idx) {
+            if let Some((x, _)) = btn.translate_coordinates(&core.ind_layer, 0.0, 0.0) {
+                let w = btn.width() as f64;
+                if w > 0.0 {
+                    return (x, w);
+                }
+            }
+        }
+        let bar_w = core.tab_bar.width() as f64;
+        let total = if bar_w > 0.0 { bar_w } else { 720.0 - 32.0 - 8.0 };
+        let w = (total / TABS.len() as f64).max(40.0);
+        (idx as f64 * w, w)
+    }
+
+    fn set_indicator_immediate(core: &Rc<Core>, target_x: f64, target_w: f64) {
+        if target_w <= 0.0 {
+            return;
+        }
+        {
+            let mut anim = core.anim_state.borrow_mut();
+            anim.active = false;
+            anim.from_x = target_x;
+            anim.to_x = target_x;
+            anim.curr_x = target_x;
+            anim.from_w = target_w;
+            anim.to_w = target_w;
+            anim.curr_w = target_w;
+        }
+        core.seg_ind.set_margin_start(target_x.round() as i32);
+        core.seg_ind.set_width_request(target_w.round() as i32);
+    }
+
+    /// Desliza el indicador único de la pestaña activa hasta la nueva posición en 300 ms con cubic-bezier(0.22, 1, 0.36, 1).
+    fn move_indicator(core: &Rc<Core>, idx: usize, animate: bool) {
+        let (target_x, target_w) = Core::get_tab_target(core, idx);
+        if animate {
+            Core::animate_indicator(core, target_x, target_w);
+        } else {
+            Core::set_indicator_immediate(core, target_x, target_w);
+        }
+    }
+
+    fn animate_indicator(core: &Rc<Core>, target_x: f64, target_w: f64) {
+        if target_w <= 0.0 {
+            return;
+        }
+        {
+            let mut anim = core.anim_state.borrow_mut();
+            if (anim.curr_x - target_x).abs() < 0.5 && (anim.curr_w - target_w).abs() < 0.5 {
+                return;
+            }
+            anim.from_x = anim.curr_x;
+            anim.from_w = anim.curr_w;
+            anim.to_x = target_x;
+            anim.to_w = target_w;
+            anim.start_time = std::time::Instant::now();
+            if anim.active {
+                return;
+            }
+            anim.active = true;
+        }
+
+        let core_anim = Rc::downgrade(core);
+        core.seg_ind.add_tick_callback(move |_, _frame_clock| {
+            let Some(core) = core_anim.upgrade() else {
+                return glib::ControlFlow::Break;
+            };
+            let mut anim = core.anim_state.borrow_mut();
+            if !anim.active {
+                return glib::ControlFlow::Break;
+            }
+
+            let elapsed = anim.start_time.elapsed().as_secs_f64();
+            let t = (elapsed / 0.300).clamp(0.0, 1.0);
+            let progress = one_ui_ease(t);
+
+            let cur_x = anim.from_x + (anim.to_x - anim.from_x) * progress;
+            let cur_w = anim.from_w + (anim.to_w - anim.from_w) * progress;
+            anim.curr_x = cur_x;
+            anim.curr_w = cur_w;
+
+            core.seg_ind.set_margin_start(cur_x.round() as i32);
+            core.seg_ind.set_width_request(cur_w.round() as i32);
+
+            if t >= 1.0 {
+                anim.active = false;
+                anim.curr_x = anim.to_x;
+                anim.curr_w = anim.to_w;
+                core.seg_ind.set_margin_start(anim.to_x.round() as i32);
+                core.seg_ind.set_width_request(anim.to_w.round() as i32);
+                glib::ControlFlow::Break
+            } else {
+                glib::ControlFlow::Continue
+            }
+        });
     }
 
     fn render(core: &Rc<Core>) {
@@ -1712,4 +1977,29 @@ fn is_video(media_role: &str, app_name: &str) -> bool {
         || a.contains("firefox")
         || a.contains("chrome")
         || a.contains("video")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_one_ui_ease_bounds() {
+        assert_eq!(one_ui_ease(0.0), 0.0);
+        assert_eq!(one_ui_ease(1.0), 1.0);
+        assert_eq!(one_ui_ease(-0.5), 0.0);
+        assert_eq!(one_ui_ease(1.5), 1.0);
+    }
+
+    #[test]
+    fn test_one_ui_ease_monotonic() {
+        let mut prev = 0.0;
+        for i in 1..=100 {
+            let t = i as f64 / 100.0;
+            let val = one_ui_ease(t);
+            assert!(val >= prev, "Curva no monótona en t={t}: {val} < {prev}");
+            assert!(val >= 0.0 && val <= 1.0, "Valor fuera de rango: {val}");
+            prev = val;
+        }
+    }
 }

@@ -1,0 +1,832 @@
+#!/usr/bin/env bash
+# /* ---- 💫 Auto Thermal Manager - Sistema autónomo de gestión térmica 💫 ---- */
+# Detecta hardware, aplica optimizaciones térmicas agresivas y gestiona GPU/CPU de forma inteligente.
+# Se ejecuta como servicio systemd user al iniciar sesión Hyprland.
+# Usa pkexec para GUI de autenticación root cuando es necesario.
+
+set -euo pipefail
+
+# ============================================================
+# CONFIGURACIÓN
+# ============================================================
+CONFIG_DIR="$HOME/.config/hypr/thermal-manager"
+STATE_DIR="$HOME/.local/state/hypr/thermal-manager"
+LOG_DIR="$HOME/.cache/hypr/thermal-manager"
+mkdir -p "$CONFIG_DIR" "$STATE_DIR" "$LOG_DIR"
+
+LOG_FILE="$LOG_DIR/thermal-manager.log"
+HARDWARE_FILE="$STATE_DIR/hardware.conf"
+APPLIED_FILE="$STATE_DIR/applied.flags"
+GPU_TYPE_FILE="$CONFIG_DIR/.gpu_type"
+
+# ============================================================
+# FUNCIONES DE LOG
+# ============================================================
+log() {
+    local level="$1"
+    shift
+    local msg="$*"
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "[$timestamp] [$level] $msg" | tee -a "$LOG_FILE"
+}
+
+info() { log "INFO" "$@"; }
+warn() { log "WARN" "$@"; }
+success() { log "SUCCESS" "$@"; }
+error() { log "ERROR" "$@"; }
+
+# ============================================================
+# FUNCIÓN: Ejecutar comando root con GUI (pkexec)
+# ============================================================
+run_root() {
+    local description="$1"
+    shift
+    local cmd_str="$*"
+    
+    info "Ejecutando con root (GUI): $description"
+    
+    # Usar pkexec con sh -c para ejecutar el comando
+    # pkexec preserva automáticamente DISPLAY, WAYLAND_DISPLAY, XDG_RUNTIME_DIR
+    if pkexec --disable-internal-agent bash -c "$cmd_str" 2>&1 | tee -a "$LOG_FILE"; then
+        success "Completado: $description"
+        return 0
+    else
+        error "Falló: $description"
+        return 1
+    fi
+}
+
+# ============================================================
+# DETECCIÓN DE HARDWARE
+# ============================================================
+detect_hardware() {
+    info "=== DETECTANDO HARDWARE ==="
+    
+    local hw_config=""
+    local gpu_type="unknown"
+    local is_laptop=false
+    local has_battery=false
+    
+    # Detectar laptop/batería
+    if [[ -d /sys/class/power_supply/BAT0 ]] || [[ -d /sys/class/power_supply/BAT1 ]] || [[ -d /sys/class/power_supply/BAT2 ]]; then
+        has_battery=true
+        is_laptop=true
+    fi
+    
+    # Chassis type
+    local chassis_type=""
+    if [[ -f /sys/class/dmi/id/chassis_type ]]; then
+        chassis_type=$(cat /sys/class/dmi/id/chassis_type 2>/dev/null || echo "")
+        case "$chassis_type" in
+            8|9|10|11|12|14|31|32) is_laptop=true ;;
+        esac
+    fi
+    
+    # Detectar GPUs
+    local intel_gpu=false
+    local nvidia_gpu=false
+    local amd_gpu=false
+    local nvidia_pci=""
+    local intel_pci=""
+    local amd_pci=""
+    
+    for i in /sys/class/drm/card*; do
+        local card=$(basename "$i")
+        local vendor_file="/sys/class/drm/$card/device/vendor"
+        if [[ -f "$vendor_file" ]]; then
+            local vendor=$(cat "$vendor_file" 2>/dev/null || echo "")
+            case "$vendor" in
+                0x8086) intel_gpu=true; intel_pci="/dev/dri/$card" ;;
+                0x10de) nvidia_gpu=true; nvidia_pci="/dev/dri/$card" ;;
+                0x1002) amd_gpu=true; amd_pci="/dev/dri/$card" ;;
+            esac
+        fi
+    done
+    
+    # Determinar tipo de GPU
+    if $is_laptop && $nvidia_gpu && $intel_gpu; then
+        gpu_type="hybrid_intel_nvidia"
+    elif $is_laptop && $nvidia_gpu && $amd_gpu; then
+        gpu_type="hybrid_amd_nvidia"
+    elif $nvidia_gpu && ! $intel_gpu && ! $amd_gpu; then
+        gpu_type="nvidia_only"
+    elif $amd_gpu && ! $nvidia_gpu; then
+        gpu_type="amd_only"
+    elif $intel_gpu && ! $nvidia_gpu && ! $amd_gpu; then
+        gpu_type="intel_only"
+    fi
+    
+    # Detectar CPU vendor
+    local cpu_vendor=""
+    if [[ -f /proc/cpuinfo ]]; then
+        cpu_vendor=$(grep -m1 "vendor_id" /proc/cpuinfo | awk -F: '{print $2}' | xargs)
+    fi
+    
+    # Detectar thermal zones
+    local thermal_zones=()
+    for zone in /sys/class/thermal/thermal_zone*; do
+        if [[ -f "$zone/type" ]]; then
+            local ttype=$(cat "$zone/type" 2>/dev/null)
+            thermal_zones+=("$ttype")
+        fi
+    done
+    
+    # Guardar configuración de hardware
+    cat > "$HARDWARE_FILE" <<EOF
+# Hardware detectado - $(date)
+IS_LAPTOP=$is_laptop
+HAS_BATTERY=$has_battery
+CHASSIS_TYPE=$chassis_type
+GPU_TYPE=$gpu_type
+INTEL_GPU=$intel_gpu
+NVIDIA_GPU=$nvidia_gpu
+AMD_GPU=$amd_gpu
+INTEL_PCI=$intel_pci
+NVIDIA_PCI=$nvidia_pci
+AMD_PCI=$amd_pci
+CPU_VENDOR=$cpu_vendor
+THERMAL_ZONES=$(IFS=,; echo "${thermal_zones[*]}")
+DETECTED_AT=$(date +%s)
+EOF
+    
+    # Guardar tipo de GPU para otros scripts
+    echo "$gpu_type" > "$GPU_TYPE_FILE"
+    
+    info "Hardware detectado: laptop=$is_laptop, gpu_type=$gpu_type, cpu=$cpu_vendor"
+    success "Configuración de hardware guardada en $HARDWARE_FILE"
+}
+
+# ============================================================
+# APLICAR OPTIMIZACIONES DE KERNEL (requiere root)
+# ============================================================
+apply_kernel_optimizations() {
+    info "=== APLICANDO OPTIMIZACIONES DE KERNEL ==="
+    
+    # Verificar si ya se aplicaron
+    if grep -q "KERNEL_OPTIMIZED=1" "$APPLIED_FILE" 2>/dev/null; then
+        info "Optimizaciones de kernel ya aplicadas, omitiendo..."
+        return 0
+    fi
+    
+    local grub_cmdline=""
+    if [[ -f /etc/default/grub ]]; then
+        grub_cmdline=$(grep "^GRUB_CMDLINE_LINUX_DEFAULT=" /etc/default/grub | cut -d'"' -f2)
+    fi
+    
+    # Parámetros necesarios para NVIDIA power management
+    local required_params=(
+        "nvidia-drm.modeset=1"
+        "nvidia.NVreg_DynamicPowerManagement=1"
+        "nvidia.NVreg_DynamicPowerManagementVideoMemoryThreshold=100"
+        "nvidia.NVreg_EnableGpuFirmware=1"
+        "nvidia.NVreg_UsePageAttributeTable=1"
+        "nvidia.NVreg_EnableResidency=1"
+        "processor.max_cstate=1"
+        "intel_idle.max_cstate=0"
+        "i915.enable_dc=1"
+        "i915.enable_fbc=1"
+        "i915.enable_guc=3"
+        "i915.enable_psr=1"
+        "nvme_core.default_ps_max_latency_us=5500"
+        "mem_sleep_default=deep"
+    )
+    
+    local missing_params=()
+    for param in "${required_params[@]}"; do
+        if [[ "$grub_cmdline" != *"$param"* ]]; then
+            missing_params+=("$param")
+        fi
+    done
+    
+    if [[ ${#missing_params[@]} -gt 0 ]]; then
+        warn "Faltan parámetros de kernel: ${missing_params[*]}"
+        
+        run_root "Actualizando GRUB con parámetros de power management" bash -c "
+            # Backup
+            cp /etc/default/grub /etc/default/grub.bak.\$(date +%s)
+            
+            # Construir nueva línea de comandos
+            local new_cmdline=\"$grub_cmdline\"
+            for param in ${missing_params[@]}; do
+                if [[ \"\$new_cmdline\" != *\"\$param\"* ]]; then
+                    new_cmdline=\"\$new_cmdline \$param\"
+                fi
+            done
+            
+            # Actualizar GRUB
+            sed -i \"s/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\\\"\$new_cmdline\\\"/\" /etc/default/grub
+            
+            # Regenerar grub
+            grub-mkconfig -o /boot/grub/grub.cfg
+            
+            echo 'KERNEL_OPTIMIZED=1' >> '$APPLIED_FILE'
+        "
+        
+        warn "REINICIO REQUERIDO para aplicar parámetros de kernel"
+        info "Los cambios surten efecto tras reiniciar"
+    else
+        success "Parámetros de kernel ya configurados correctamente"
+        echo "KERNEL_OPTIMIZED=1" >> "$APPLIED_FILE"
+    fi
+}
+
+# ============================================================
+# CONFIGURAR MODPROBE NVIDIA (requiere root)
+# ============================================================
+configure_nvidia_modprobe() {
+    info "=== CONFIGURANDO MODPROBE NVIDIA ==="
+    
+    if grep -q "NVIDIA_MODPROBE=1" "$APPLIED_FILE" 2>/dev/null; then
+        info "Modprobe NVIDIA ya configurado"
+        return 0
+    fi
+    
+    if [[ ! -f /etc/modprobe.d/nvidia-power.conf ]] || \
+       ! grep -q "NVreg_DynamicPowerManagement=1" /etc/modprobe.d/nvidia-power.conf 2>/dev/null; then
+        
+        run_root "Creando /etc/modprobe.d/nvidia-power.conf" bash -c "
+            cat > /etc/modprobe.d/nvidia-power.conf << 'MODPROBE_EOF'
+# NVIDIA Power Management Optimizado - Auto-generado por thermal-manager
+# Dynamic Power Management: 1 = Adaptive, 2 = Prefer Minimum, 3 = Prefer Maximum
+options nvidia NVreg_DynamicPowerManagement=1
+options nvidia NVreg_DynamicPowerManagementVideoMemoryThreshold=100
+options nvidia NVreg_EnableGpuFirmware=1
+options nvidia NVreg_UsePageAttributeTable=1
+options nvidia NVreg_EnableResidency=1
+options nvidia NVreg_EnableMSI=1
+options nvidia NVreg_RegistryDwords=PowerMizerEnable=0x1;PerfLevelSrc=0x2222;PowerMizerDefault=0x2;PowerMizerDefaultAC=0x2
+MODPROBE_EOF
+            
+            # Regenerar initramfs
+            mkinitcpio -P 2>/dev/null || dracut --force 2>/dev/null || update-initramfs -u 2>/dev/null || true
+            
+            echo 'NVIDIA_MODPROBE=1' >> '$APPLIED_FILE'
+        "
+        
+        warn "Reinicio requerido para aplicar modprobe NVIDIA"
+    else
+        success "Modprobe NVIDIA ya configurado"
+        echo "NVIDIA_MODPROBE=1" >> "$APPLIED_FILE"
+    fi
+}
+
+# ============================================================
+# CONFIGURAR POWER PROFILES DAEMON
+# ============================================================
+configure_power_profiles() {
+    info "=== CONFIGURANDO POWER PROFILES ==="
+    
+    if command -v powerprofilesctl >/dev/null 2>&1; then
+        local current=$(powerprofilesctl get 2>/dev/null | awk '{print $1}')
+        if [[ "$current" != "power-saver" ]]; then
+            info "Cambiando a perfil power-saver (era: $current)"
+            powerprofilesctl set power-saver 2>/dev/null && success "Perfil power-saver activado" || warn "No se pudo cambiar perfil"
+        else
+            success "Ya en perfil power-saver"
+        fi
+    else
+        warn "powerprofilesctl no disponible"
+    fi
+    
+    # Configurar tuned si está disponible
+    if command -v tuned-adm >/dev/null 2>&1; then
+        tuned-adm profile laptop-battery-powersave 2>/dev/null && success "tuned: laptop-battery-powersave" || true
+    fi
+    
+    # Configurar TLP si está disponible
+    if command -v tlp >/dev/null 2>&1; then
+        run_root "Aplicando configuración TLP" tlp start 2>/dev/null && success "TLP iniciado" || true
+    fi
+}
+
+# ============================================================
+# CONFIGURAR GPU RUNTIME PM
+# ============================================================
+configure_gpu_runtime_pm() {
+    info "=== CONFIGURANDO GPU RUNTIME PM ==="
+    
+    source "$HARDWARE_FILE" 2>/dev/null || return 1
+    
+    # Habilitar runtime PM para NVIDIA
+    if [[ "$NVIDIA_GPU" == "true" && -n "$NVIDIA_PCI" ]]; then
+        local nvidia_pci_path="/sys/bus/pci/devices/0000:$(basename "$NVIDIA_PCI" | sed 's/card//')"
+        if [[ ! -d "$nvidia_pci_path" ]]; then
+            # Buscar el path correcto
+            for p in /sys/bus/pci/devices/*/drm/$NVIDIA_PCI; do
+                nvidia_pci_path=$(dirname "$(dirname "$p")")
+                break
+            done
+        fi
+        
+        if [[ -d "$nvidia_pci_path" ]]; then
+            info "Configurando runtime PM para NVIDIA en $nvidia_pci_path"
+            
+            # Estos requieren root
+            run_root "Habilitando runtime PM para NVIDIA" bash -c "
+                echo 'auto' > '$nvidia_pci_path'/power/control
+                echo '1' > '$nvidia_pci_path'/power/autosuspend_delay_ms 2>/dev/null || true
+                echo '0' > '$nvidia_pci_path'/power/runtime_status 2>/dev/null || true
+            "
+            
+            # Configurar módulo nvidia para runtime PM
+            run_root "Configurando parámetros runtime PM del módulo nvidia" bash -c "
+                echo '1' > /sys/module/nvidia/parameters/NVreg_DynamicPowerManagement 2>/dev/null || true
+                echo '100' > /sys/module/nvidia/parameters/NVreg_DynamicPowerManagementVideoMemoryThreshold 2>/dev/null || true
+            "
+            
+            success "Runtime PM configurado para NVIDIA"
+        fi
+    fi
+    
+    # Habilitar runtime PM para Intel iGPU
+    if [[ "$INTEL_GPU" == "true" && -n "$INTEL_PCI" ]]; then
+        local intel_pci_path="/sys/bus/pci/devices/0000:$(basename "$INTEL_PCI" | sed 's/card//')"
+        if [[ ! -d "$intel_pci_path" ]]; then
+            for p in /sys/bus/pci/devices/*/drm/$INTEL_PCI; do
+                intel_pci_path=$(dirname "$(dirname "$p")")
+                break
+            done
+        fi
+        
+        if [[ -d "$intel_pci_path" ]]; then
+            run_root "Habilitando runtime PM para Intel iGPU" bash -c "
+                echo 'auto' > '$intel_pci_path'/power/control
+                echo '1' > '$intel_pci_path'/power/autosuspend_delay_ms 2>/dev/null || true
+            "
+            success "Runtime PM configurado para Intel iGPU"
+        fi
+    fi
+    
+    # AMD GPU
+    if [[ "$AMD_GPU" == "true" && -n "$AMD_PCI" ]]; then
+        local amd_pci_path="/sys/bus/pci/devices/0000:$(basename "$AMD_PCI" | sed 's/card//')"
+        if [[ ! -d "$amd_pci_path" ]]; then
+            for p in /sys/bus/pci/devices/*/drm/$AMD_PCI; do
+                amd_pci_path=$(dirname "$(dirname "$p")")
+                break
+            done
+        fi
+        
+        if [[ -d "$amd_pci_path" ]]; then
+            run_root "Habilitando runtime PM para AMD GPU" bash -c "
+                echo 'auto' > '$amd_pci_path'/power/control
+                echo '1' > '$amd_pci_path'/power/autosuspend_delay_ms 2>/dev/null || true
+                # AMD specific: enable D3cold
+                echo '1' > '$amd_pci_path'/drm/$(basename '$AMD_PCI')/device/enable_d3cold 2>/dev/null || true
+            "
+            success "Runtime PM configurado para AMD GPU"
+        fi
+    fi
+}
+
+# ============================================================
+# CONFIGURAR HYPRLAND PARA USAR iGPU (render offload)
+# ============================================================
+configure_hyprland_gpu() {
+    info "=== CONFIGURANDO HYPRLAND GPU OFFLOAD ==="
+    
+    source "$HARDWARE_FILE" 2>/dev/null || return 1
+    
+    local env_file="$HOME/.config/hypr/lua/env.lua"
+    if [[ ! -f "$env_file" ]]; then
+        warn "No se encontró $env_file"
+        return 1
+    fi
+    
+    # Verificar si ya tiene la configuración correcta
+    if grep -q "WLR_RENDERER.*vulkan" "$env_file" && grep -q "WLR_DRM_DEVICES" "$env_file"; then
+        success "Hyprland ya configurado para GPU offload"
+        return 0
+    fi
+    
+    # Backup
+    cp "$env_file" "$env_file.bak.$(date +%s)"
+    
+    # Agregar configuración de render offload al final del bloque de detección
+    if [[ "$GPU_TYPE" == "hybrid_intel_nvidia" ]]; then
+        cat >> "$env_file" << 'HYPRLAND_EOF'
+
+-- =========================================================================
+-- CONFIGURACIÓN DE RENDER OFFLOAD (AUTO-GENERADA POR thermal-manager)
+-- Fuerza Hyprland/Waybar a renderizar en iGPU (Intel), NVIDIA solo para offload
+-- =========================================================================
+hl.env("WLR_RENDERER", "vulkan")
+hl.env("WLR_DRM_DEVICES", "/dev/dri/renderD128")  -- Intel iGPU render node
+hl.env("__GLX_VENDOR_LIBRARY_NAME", "mesa")
+hl.env("LIBVA_DRIVER_NAME", "iHD")
+hl.env("VDPAU_DRIVER", "iHD")
+
+-- Para aplicaciones que SÍ quieren NVIDIA (offload manual):
+-- __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia comando
+HYPRLAND_EOF
+        success "Hyprland configurado para render en iGPU (Intel)"
+    elif [[ "$GPU_TYPE" == "hybrid_amd_nvidia" ]]; then
+        cat >> "$env_file" << 'HYPRLAND_EOF'
+
+-- =========================================================================
+-- CONFIGURACIÓN DE RENDER OFFLOAD (AUTO-GENERADA POR thermal-manager)
+-- Fuerza Hyprland/Waybar a renderizar en iGPU (AMD), NVIDIA solo para offload
+-- =========================================================================
+hl.env("WLR_RENDERER", "vulkan")
+hl.env("WLR_DRM_DEVICES", "/dev/dri/renderD128")  -- AMD iGPU render node
+hl.env("__GLX_VENDOR_LIBRARY_NAME", "mesa")
+hl.env("LIBVA_DRIVER_NAME", "radeonsi")
+hl.env("VDPAU_DRIVER", "radeonsi")
+
+-- Para aplicaciones que SÍ quieren NVIDIA (offload manual):
+-- __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia comando
+HYPRLAND_EOF
+        success "Hyprland configurado para render en iGPU (AMD)"
+    fi
+}
+
+# ============================================================
+# CONFIGURAR WAYBAR PARA USAR iGPU
+# ============================================================
+configure_waybar_gpu() {
+    info "=== CONFIGURANDO WAYBAR GPU ==="
+    
+    local waybar_env="$HOME/.config/waybar/env"
+    mkdir -p "$(dirname "$waybar_env")"
+    
+    cat > "$waybar_env" << 'WAYBAR_EOF'
+# Waybar GPU Environment - Auto-generado por thermal-manager
+# Fuerza Waybar a usar iGPU para renderizado
+export WLR_RENDERER=vulkan
+export WLR_DRM_DEVICES=/dev/dri/renderD128
+export __GLX_VENDOR_LIBRARY_NAME=mesa
+export LIBVA_DRIVER_NAME=iHD
+export VDPAU_DRIVER=iHD
+WAYBAR_EOF
+    
+    # Modificar waybar launch script para source este archivo
+    local waybar_launch="$HOME/.config/waybar/launch.sh"
+    if [[ -f "$waybar_launch" ]]; then
+        if ! grep -q "source.*waybar/env" "$waybar_launch"; then
+            sed -i '1a source ~/.config/waybar/env' "$waybar_launch"
+            success "Waybar launch.sh actualizado"
+        fi
+    fi
+    
+    success "Waybar configurado para iGPU"
+}
+
+# ============================================================
+# CONFIGURAR PERFORMANCE PROFILE MÍNIMO
+# ============================================================
+configure_performance_profile() {
+    info "=== CONFIGURANDO PERFORMANCE PROFILE MÍNIMO ==="
+    
+    local perf_file="$HOME/.config/hypr/UserConfigs/PerformanceProfile.conf"
+    mkdir -p "$(dirname "$perf_file")"
+    
+    cat > "$perf_file" << 'PERF_EOF'
+# /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */  #
+# Performance Profile — MÁXIMO AHORRO ENERGÉTICO (auto-generado)
+# PERFIL: minimum (temperatura mínima, sin efectos visuales)
+
+$PERF_PROFILE = minimum
+
+# Blur: DESACTIVADO (mayor ahorro GPU)
+$BLUR_ENABLED = 0
+$BLUR_SIZE = 0
+$BLUR_PASSES = 0
+$BLUR_VIBRANCY = 0.0
+$BLUR_CONTRAST = 1.0
+$BLUR_BRIGHTNESS = 1.0
+
+# Shadows: DESACTIVADAS
+$SHADOW_ENABLED = 0
+$SHADOW_RANGE = 0
+$SHADOW_RENDER_POWER = 0
+
+# Animations: MÍNIMAS (solo workspace fade)
+$ANIM_BORDER_ENABLED = 0
+$ANIM_WINDOW_ENABLED = 0
+$ANIM_SPEED_FACTOR = 0.5
+$BASE_WIN_SPEED = 1
+$BASE_WIN_IN_SPEED = 1
+$BASE_WIN_OUT_SPEED = 1
+$BASE_WIN_MOVE_SPEED = 1
+$BASE_BORDER_SPEED = 1
+$BASE_FADE_SPEED = 1
+$BASE_WS_SPEED = 1
+
+# Startup Apps: SOLO ESENCIALES
+$START_AGS = 0
+$START_OVERVIEW = 0
+PERF_EOF
+    
+    success "PerformanceProfile.conf configurado en modo MINIMUM"
+}
+
+# ============================================================
+# DESACTIVAR SCRIPTS DE POLLING INNECESARIOS
+# ============================================================
+disable_polling_scripts() {
+    info "=== DESACTIVANDO SCRIPTS DE POLLING ==="
+    
+    local startup_script="$HOME/.config/hypr/scripts/StartupApps.sh"
+    if [[ -f "$startup_script" ]]; then
+        # Backup
+        cp "$startup_script" "$startup_script.bak.$(date +%s)"
+        
+        # Comentar líneas de dock_hover_monitor y dock_tooltip
+        sed -i 's|^\(.*dock_hover_monitor\.sh.*\)$|# \1  # DESACTIVADO por thermal-manager|' "$startup_script"
+        sed -i 's|^\(.*dock_tooltip\.sh.*\)$|# \1  # DESACTIVADO por thermal-manager|' "$startup_script"
+        
+        # Matar procesos existentes
+        pkill -f "dock_hover_monitor.sh" 2>/dev/null || true
+        pkill -f "dock_tooltip.sh" 2>/dev/null || true
+        
+        success "Scripts de polling desactivados"
+    fi
+}
+
+# ============================================================
+# CONFIGURAR CPU GOVERNOR Y ENERGY PERFORMANCE
+# ============================================================
+configure_cpu_power() {
+    info "=== CONFIGURANDO CPU POWER ==="
+    
+    # Governor a powersave
+    for cpu in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+        if [[ -f "$cpu" ]]; then
+            run_root "Configurando governor powersave" bash -c "
+                echo 'powersave' > '$cpu'
+            "
+        fi
+    done
+    
+    # Energy performance preference
+    for cpu in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do
+        if [[ -f "$cpu" ]]; then
+            run_root "Configurando energy_performance_preference" bash -c "
+                echo 'power' > '$cpu' 2>/dev/null || echo 'balance_power' > '$cpu' 2>/dev/null || true
+            "
+        fi
+    done
+    
+    # Intel pstate: no_turbo
+    if [[ -f /sys/devices/system/cpu/intel_pstate/no_turbo ]]; then
+        run_root "Desactivando Turbo Boost" bash -c "
+            echo '1' > /sys/devices/system/cpu/intel_pstate/no_turbo
+        "
+        success "Turbo Boost desactivado"
+    fi
+    
+    # AMD pstate
+    if [[ -f /sys/devices/system/cpu/amd_pstate/status ]]; then
+        run_root "Configurando AMD PState" bash -c "
+            echo 'active' > /sys/devices/system/cpu/amd_pstate/status 2>/dev/null || true
+            echo 'powersave' > /sys/devices/system/cpu/amd_pstate/status 2>/dev/null || true
+        "
+    fi
+    
+    success "CPU power configurado"
+}
+
+# ============================================================
+# CONFIGURAR THERMALD / THERMAL ZONES
+# ============================================================
+configure_thermal() {
+    info "=== CONFIGURANDO THERMAL ==="
+    
+    # Instalar y configurar thermald si no está
+    if command -v thermald >/dev/null 2>&1; then
+        run_root "Iniciando thermald" systemctl enable --now thermald 2>/dev/null && success "thermald activado" || true
+    fi
+    
+    # Configurar trip points para thermal zones
+    for zone in /sys/class/thermal/thermal_zone*; do
+        local ttype=$(cat "$zone/type" 2>/dev/null || echo "")
+        case "$ttype" in
+            "x86_pkg_temp"|"cpu_thermal"|"acpitz")
+                # Configurar passive cooling más agresivo
+                for trip in "$zone"/trip_point_*_temp; do
+                    if [[ -f "$trip" ]]; then
+                        local current=$(cat "$trip" 2>/dev/null || echo 0)
+                        local new_temp=$((current - 5000))  # Bajar 5°C
+                        [[ $new_temp -lt 30000 ]] && new_temp=30000
+                        run_root "Ajustando trip point $trip" bash -c "
+                            echo $new_temp > '$trip' 2>/dev/null || true
+                        "
+                    fi
+                done
+                ;;
+        esac
+    done
+    
+    success "Thermal configurado"
+}
+
+# ============================================================
+# CREAR SERVICIO SYSTEMD USER PARA MONITOREO CONTINUO
+# ============================================================
+create_monitor_service() {
+    info "=== CREANDO SERVICIO DE MONITOREO ==="
+    
+    local service_dir="$HOME/.config/systemd/user"
+    mkdir -p "$service_dir"
+    
+    cat > "$service_dir/thermal-monitor.service" << 'SERVICE_EOF'
+[Unit]
+Description=Thermal Monitor - Dynamic GPU/CPU power management
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.config/hypr/scripts/thermal-monitor-daemon.sh
+Restart=on-failure
+RestartSec=10
+Environment=DISPLAY=%{DISPLAY}
+Environment=WAYLAND_DISPLAY=%{WAYLAND_DISPLAY}
+Environment=XDG_RUNTIME_DIR=%{XDG_RUNTIME_DIR}
+
+[Install]
+WantedBy=default.target
+SERVICE_EOF
+    
+    # Crear daemon de monitoreo
+    cat > "$HOME/.config/hypr/scripts/thermal-monitor-daemon.sh" << 'DAEMON_EOF'
+#!/usr/bin/env bash
+# Thermal Monitor Daemon - Ajuste dinámico continuo de GPU/CPU
+
+set -euo pipefail
+
+LOG_DIR="$HOME/.cache/hypr/thermal-manager"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/thermal-monitor-daemon.log"
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG_FILE"
+}
+
+# Configuración
+CHECK_INTERVAL=30
+GPU_TEMP_TARGET=50
+GPU_TEMP_CRITICAL=70
+CPU_TEMP_TARGET=55
+CPU_TEMP_CRITICAL=75
+
+get_nvidia_temp() {
+    nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader 2>/dev/null | head -1 | tr -d ' ' || echo 0
+}
+
+get_nvidia_power() {
+    nvidia-smi --query-gpu=power.draw --format=csv,noheader 2>/dev/null | head -1 | tr -d ' ' | awk '{print int($1)}' || echo 0
+}
+
+get_cpu_temp() {
+    # Package temperature
+    sensors 2>/dev/null | grep -i "package id 0:" | awk '{print $4}' | tr -d '+°C' | cut -d. -f1 || echo 0
+}
+
+# Función para forzar power save en NVIDIA
+force_nvidia_powersave() {
+    log "FORZANDO NVIDIA POWER SAVE"
+    # Requiere root - usar pkexec si está disponible
+    if command -v pkexec >/dev/null 2>&1; then
+        pkexec --disable-internal-agent bash -c "
+            nvidia-smi -lgc 210,405 2>/dev/null
+            nvidia-smi -pm 1 2>/dev/null
+        " 2>/dev/null || true
+    fi
+}
+
+# Función para liberar NVIDIA
+release_nvidia_performance() {
+    log "LIBERANDO NVIDIA PERFORMANCE"
+    if command -v pkexec >/dev/null 2>&1; then
+        pkexec --disable-internal-agent bash -c "
+            nvidia-smi -rgc 2>/dev/null
+        " 2>/dev/null || true
+    fi
+}
+
+# Función para ajustar CPU
+adjust_cpu_performance() {
+    local cpu_temp=$1
+    if [[ $cpu_temp -gt $CPU_TEMP_CRITICAL ]]; then
+        log "CPU CRÍTICA: ${cpu_temp}°C - Forzando powersave"
+        for gov in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+            echo powersave > "$gov" 2>/dev/null || true
+        done
+        if [[ -f /sys/devices/system/cpu/intel_pstate/no_turbo ]]; then
+            echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo 2>/dev/null || true
+        fi
+    elif [[ $cpu_temp -gt $CPU_TEMP_TARGET ]]; then
+        log "CPU CALIENTE: ${cpu_temp}°C - Ajustando"
+        for gov in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+            echo powersave > "$gov" 2>/dev/null || true
+        done
+    fi
+}
+
+# Bucle principal
+log "=== Thermal Monitor Daemon INICIADO ==="
+
+while true; do
+    GPU_TEMP=$(get_nvidia_temp)
+    GPU_POWER=$(get_nvidia_power)
+    CPU_TEMP=$(get_cpu_temp)
+    
+    # Log periódico
+    log "GPU: ${GPU_TEMP}°C ${GPU_POWER}W | CPU: ${CPU_TEMP}°C"
+    
+    # GPU Management
+    if [[ $GPU_TEMP -gt $GPU_TEMP_CRITICAL ]]; then
+        force_nvidia_powersave
+    elif [[ $GPU_TEMP -gt $GPU_TEMP_TARGET ]]; then
+        # Moderado - limitar clocks
+        if command -v pkexec >/dev/null 2>&1; then
+            pkexec --disable-internal-agent bash -c "
+                nvidia-smi -lgc 210,1000 2>/dev/null
+            " 2>/dev/null || true
+        fi
+    else
+        # Temperatura OK - permitir performance si hay carga
+        GPU_USAGE=$(nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader 2>/dev/null | head -1 | tr -d ' %')
+        if [[ $GPU_USAGE -gt 50 ]]; then
+            release_nvidia_performance
+        fi
+    fi
+    
+    # CPU Management
+    adjust_cpu_performance "$CPU_TEMP"
+    
+    sleep $CHECK_INTERVAL
+done
+DAEMON_EOF
+    
+    chmod +x "$HOME/.config/hypr/scripts/thermal-monitor-daemon.sh"
+    
+    # Habilitar e iniciar servicio
+    systemctl --user daemon-reload
+    systemctl --user enable thermal-monitor.service 2>/dev/null
+    systemctl --user restart thermal-monitor.service 2>/dev/null
+    
+    success "Servicio thermal-monitor creado y activado"
+}
+
+# ============================================================
+# FUNCIÓN PRINCIPAL
+# ============================================================
+main() {
+    info "═══════════════════════════════════════════════"
+    info "  AUTO THERMAL MANAGER - INICIANDO"
+    info "═══════════════════════════════════════════════"
+    
+    # 1. Detectar hardware
+    detect_hardware
+    
+    # 2. Aplicar optimizaciones de kernel (requiere root GUI)
+    apply_kernel_optimizations
+    
+    # 3. Configurar modprobe NVIDIA (requiere root GUI)
+    configure_nvidia_modprobe
+    
+    # 4. Configurar power profiles
+    configure_power_profiles
+    
+    # 5. Configurar GPU runtime PM (requiere root GUI)
+    configure_gpu_runtime_pm
+    
+    # 6. Configurar Hyprland para iGPU
+    configure_hyprland_gpu
+    
+    # 7. Configurar Waybar para iGPU
+    configure_waybar_gpu
+    
+    # 8. Configurar performance profile mínimo
+    configure_performance_profile
+    
+    # 9. Desactivar scripts de polling
+    disable_polling_scripts
+    
+    # 10. Configurar CPU power (requiere root GUI)
+    configure_cpu_power
+    
+    # 11. Configurar thermal
+    configure_thermal
+    
+    # 12. Crear servicio de monitoreo continuo
+    create_monitor_service
+    
+    info "═══════════════════════════════════════════════"
+    success "AUTO THERMAL MANAGER COMPLETADO"
+    info "═══════════════════════════════════════════════"
+    
+    # Verificar si se requiere reinicio
+    if grep -q "KERNEL_OPTIMIZED=1" "$APPLIED_FILE" 2>/dev/null || \
+       grep -q "NVIDIA_MODPROBE=1" "$APPLIED_FILE" 2>/dev/null; then
+        warn "⚠️  SE REQUIERE REINICIO para aplicar cambios de kernel/modprobe"
+        warn "   Ejecuta: systemctl reboot"
+    fi
+    
+    info "Reinicia Hyprland (SUPER+SHIFT+R) para aplicar cambios de compositor"
+}
+
+# Ejecutar
+main "$@"

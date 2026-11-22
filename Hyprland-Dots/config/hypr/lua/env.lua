@@ -112,7 +112,8 @@ elseif is_laptop and nvidia_card and intel_card then
     hl.env("AQ_DRM_DEVICES", intel_card .. ":" .. nvidia_card)
     hl.env("LIBVA_DRIVER_NAME", "iHD")
     hl.env("__GLX_VENDOR_LIBRARY_NAME", "mesa")
-    hl.env("__NV_PRIME_RENDER_OFFLOAD", "1")
+    -- SIN __NV_PRIME_RENDER_OFFLOAD global: la NVIDIA permanece dormida en reposo.
+    -- El compositor usa la iGPU (AQ_DRM_DEVICES) y la dGPU solo se pide explícitamente.
     hl.env("__GL_THREADED_OPTIMIZATIONS", "1")
     hl.env("__GL_MaxFramesAllowed", "1")
 elseif is_laptop and nvidia_card and amd_card then
@@ -122,7 +123,8 @@ elseif is_laptop and nvidia_card and amd_card then
     hl.env("LIBVA_DRIVER_NAME", "radeonsi")
     hl.env("VDPAU_DRIVER", "radeonsi")
     hl.env("__GLX_VENDOR_LIBRARY_NAME", "mesa")
-    hl.env("__NV_PRIME_RENDER_OFFLOAD", "1")
+    -- SIN __NV_PRIME_RENDER_OFFLOAD global: la NVIDIA permanece dormida en reposo.
+    -- El compositor usa la iGPU (AQ_DRM_DEVICES) y la dGPU solo se pide explícitamente.
     hl.env("__GL_THREADED_OPTIMIZATIONS", "1")
     hl.env("__GL_MaxFramesAllowed", "1")
 elseif nvidia_card then
