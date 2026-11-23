@@ -5,7 +5,7 @@ use audio_core::{AudioCommand, AudioService, AudioState};
 use async_channel::unbounded;
 use gtk4::prelude::*;
 use gtk4::{Application, ApplicationWindow, CssProvider, gdk};
-use std::{cell::{Cell, RefCell}, collections::HashSet, rc::Rc};
+use std::{cell::{Cell, RefCell}, collections::HashMap, collections::HashSet, rc::Rc};
 
 mod ui;
 
@@ -15,7 +15,21 @@ pub struct MixerState {
     pub commands: Rc<async_channel::Sender<AudioCommand>>,
     /// Targets cuyo volumen por canal se modifica de forma independiente.
     pub unlocked: Rc<RefCell<HashSet<String>>>,
-    pub show_all: Rc<Cell<bool>>,
+    /// Pestaña visible actualmente (nombre interno), para el filtro inferior.
+    pub current_tab: Rc<RefCell<String>>,
+    /// Índice del filtro "Mostrar:" elegido en cada pestaña.
+    pub filters: Rc<RefCell<HashMap<String, usize>>>,
+    /// Casilla "Mostrar los medidores de volumen".
+    pub show_meters: Rc<Cell<bool>>,
+    /// Casilla "Hide unavailable card profiles".
+    pub hide_unavailable: Rc<Cell<bool>>,
+}
+
+impl MixerState {
+    /// Devuelve el filtro elegido para una pestaña (0 por defecto).
+    pub fn filter_index(&self, tab: &str) -> usize {
+        *self.filters.borrow().get(tab).unwrap_or(&0)
+    }
 }
 
 impl MixerState {
@@ -64,7 +78,10 @@ fn main() {
         audio: Rc::new(RefCell::new(AudioState::default())),
         commands: Rc::new(cmd_tx),
         unlocked: Rc::new(RefCell::new(HashSet::new())),
-        show_all: Rc::new(Cell::new(true)),
+        current_tab: Rc::new(RefCell::new("playback".into())),
+        filters: Rc::new(RefCell::new(HashMap::new())),
+        show_meters: Rc::new(Cell::new(true)),
+        hide_unavailable: Rc::new(Cell::new(false)),
     };
     let state_app = state.clone();
     let events_for_ui = Rc::new(RefCell::new(None::<Box<dyn Fn()>>));

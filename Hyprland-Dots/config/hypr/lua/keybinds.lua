@@ -204,12 +204,12 @@ bind("SUPER + SHIFT + S", exec(scriptsDir .. "/ScreenShot.sh --swappy"), { descr
 -- =========================================================================
 -- 9. TECLAS MULTIMEDIA
 -- =========================================================================
-bind("XF86AudioRaiseVolume", exec("volume-control --inc"), { locked = true, repeating = true, description = "subir volumen" })
-bind("XF86AudioLowerVolume", exec("volume-control --dec"), { locked = true, repeating = true, description = "bajar volumen" })
-bind("ALT + XF86AudioRaiseVolume", exec("volume-control --inc-precise"), { locked = true, repeating = true, description = "subir volumen preciso" })
-bind("ALT + XF86AudioLowerVolume", exec("volume-control --dec-precise"), { locked = true, repeating = true, description = "bajar volumen preciso" })
-bind("XF86AudioMicMute", exec("volume-control --toggle-mic"), { locked = true, description = "silenciar microfono" })
-bind("XF86AudioMute", exec("volume-control --toggle"), { locked = true, description = "silenciar audio" })
+bind("XF86AudioRaiseVolume", exec(scriptsDir .. "/Volume.sh --inc"), { locked = true, repeating = true, description = "subir volumen" })
+bind("XF86AudioLowerVolume", exec(scriptsDir .. "/Volume.sh --dec"), { locked = true, repeating = true, description = "bajar volumen" })
+bind("ALT + XF86AudioRaiseVolume", exec(scriptsDir .. "/Volume.sh --inc-precise"), { locked = true, repeating = true, description = "subir volumen preciso" })
+bind("ALT + XF86AudioLowerVolume", exec(scriptsDir .. "/Volume.sh --dec-precise"), { locked = true, repeating = true, description = "bajar volumen preciso" })
+bind("XF86AudioMicMute", exec(scriptsDir .. "/Volume.sh --toggle-mic"), { locked = true, description = "silenciar microfono" })
+bind("XF86AudioMute", exec(scriptsDir .. "/Volume.sh --toggle"), { locked = true, description = "silenciar audio" })
 bind("XF86Sleep", exec("systemctl suspend"), { locked = true, description = "suspender" })
 bind("XF86Rfkill", exec(scriptsDir .. "/AirplaneMode.sh"), { locked = true, description = "modo avion" })
 bind("XF86AudioPause", exec(scriptsDir .. "/MediaCtrl.sh --pause"), { locked = true, description = "pausar" })

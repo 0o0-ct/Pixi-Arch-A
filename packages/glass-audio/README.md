@@ -37,4 +37,4 @@ Para imprimir el estado detectado como JSON: `glass-audio --dump`.
 - Clic en el icono de audio de Waybar: `~/.config/hypr/scripts/QsCenterToggle.sh audiocenter` → `~/.local/bin/glass-audio`.
 - `SUPER + SHIFT + V`: abre `~/.local/bin/glass-audio`.
 - `SUPER + V`: queda exclusivamente para QuickShell (`qs -c controlcenter ipc call panel toggle`).
-- `volume-control` permanece disponible como ejecutable manual, sin reasignar `SUPER + V`.
+- Las teclas multimedia (`XF86Audio*`) se gestionan con `~/.config/hypr/scripts/Volume.sh` (pamixer).
