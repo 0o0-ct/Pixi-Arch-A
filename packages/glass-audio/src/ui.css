@@ -1,0 +1,71 @@
+/* glass-audio: glassmorphism dinámico con tokens Matugen/Wallust cargados por glass-theme */
+.audio-window, .audio-window.background { background: transparent; color: @on_surface; }
+.audio-shell { padding: 18px; background: alpha(@surface, 0.20); }
+.audio-panel {
+  background-color: alpha(@surface, 0.82);
+  background-image: linear-gradient(145deg, alpha(@color15, 0.07), alpha(@primary, 0.035) 55%, alpha(@surface, 0.12));
+  border: 1px solid alpha(@color15, 0.13);
+  border-radius: 30px;
+  padding: 22px 22px 18px;
+  box-shadow: inset 0 1px alpha(@color15, 0.13), 0 18px 48px alpha(#000000, 0.20);
+}
+.audio-header { padding: 4px 4px 16px; }
+.audio-title { font-size: 34px; font-weight: 350; letter-spacing: -0.5px; color: @on_surface; }
+.audio-subtitle { font-size: 14px; color: alpha(@on_surface, 0.68); }
+.round-action, .lock-button, .default-button, .default-selected {
+  min-width: 42px; min-height: 42px; padding: 0; border: 0; border-radius: 999px;
+  background: alpha(@on_surface, 0.075); color: @on_surface; font-size: 20px;
+}
+.round-action:hover, .lock-button:hover, .default-button:hover { background: alpha(@on_surface, 0.14); }
+.tab-bar { margin: 0 0 16px; padding: 5px; min-height: 52px; border-radius: 999px; background: alpha(@on_surface, 0.07); }
+.tab-button { min-height: 42px; padding: 0 10px; border: 1px solid transparent; border-radius: 999px; background: transparent; color: alpha(@on_surface, 0.70); font-size: 14px; }
+.tab-button:hover { background: alpha(@on_surface, 0.07); color: @on_surface; }
+.tab-button.active { background: alpha(@surface, 0.84); border-color: alpha(@color15, 0.12); color: @on_surface; font-weight: 600; }
+.audio-stack { background: transparent; }
+.audio-scroll, .audio-scroll > viewport { background: transparent; border: 0; }
+.audio-list { padding: 2px 3px 18px; }
+.audio-section { margin: 6px 8px 2px; color: alpha(@on_surface, 0.68); font-size: 15px; font-weight: 500; }
+.audio-card {
+  padding: 20px; border-radius: 28px;
+  background-color: alpha(@on_surface, 0.045);
+  background-image: linear-gradient(180deg, alpha(@color15, 0.035), transparent 55%);
+  border: 1px solid alpha(@color15, 0.12);
+}
+.card-head { min-height: 56px; }
+.device-icon { min-width: 54px; min-height: 54px; border-radius: 999px; background: alpha(@primary, 0.19); color: @primary; font-size: 25px; }
+.card-name { color: @on_surface; font-size: 17px; font-weight: 550; }
+.port-chip, .filter-chip { min-height: 34px; padding: 0 13px; border: 0; border-radius: 999px; background: alpha(@on_surface, 0.075); color: alpha(@on_surface, 0.75); font-size: 14px; }
+.port-chip:hover, .filter-chip:hover { background: alpha(@on_surface, 0.13); color: @on_surface; }
+.port-chip-label { color: alpha(@on_surface, 0.72); font-size: 13px; }
+.default-button { min-width: 38px; min-height: 38px; background: transparent; border: 1px solid alpha(@on_surface, 0.34); color: alpha(@on_surface, 0.65); font-size: 17px; }
+.default-selected { min-width: 38px; min-height: 38px; background: @primary; color: @on_primary; font-size: 17px; }
+.volume-control { padding-top: 1px; }
+.volume-row { min-height: 58px; }
+.volume-pill { min-height: 58px; border-radius: 999px; background: alpha(@on_surface, 0.075); }
+.volume-mute { min-width: 56px; min-height: 56px; padding: 0; border: 0; border-radius: 999px; background: transparent; color: @on_surface; font-size: 20px; }
+.volume-mute:hover { background: alpha(@on_surface, 0.09); }
+.volume-scale { min-height: 58px; padding: 0; margin: 0; background: transparent; }
+.volume-scale trough { min-height: 58px; border: 0; border-radius: 999px; background: transparent; }
+.volume-scale highlight { min-height: 58px; border: 0; border-radius: 999px; background: @primary; }
+.volume-scale slider { min-width: 1px; min-height: 1px; margin: 0; border: 0; background: transparent; box-shadow: none; }
+.volume-value { min-width: 150px; margin: 0 17px 0 4px; color: @on_surface; font-size: 15px; font-weight: 550; }
+.has-default-marker { background-image: linear-gradient(90deg, transparent 66.4%, alpha(@on_surface, 0.48) 66.4%, alpha(@on_surface, 0.48) 66.7%, transparent 66.7%); }
+.lock-button { min-width: 54px; min-height: 54px; background: alpha(@on_surface, 0.075); font-size: 20px; }
+.vu-meter { min-height: 3px; margin-left: 22px; background: alpha(@on_surface, 0.08); border-radius: 99px; }
+.vu-meter-fill { min-height: 3px; background: alpha(@primary, 0.62); border-radius: 99px; }
+.advanced-expander { color: alpha(@on_surface, 0.72); font-size: 14px; }
+.advanced-expander > title { padding: 2px 0; }
+.advanced-content { padding: 10px 4px 2px; }
+.advanced-label { color: alpha(@on_surface, 0.68); font-size: 13px; margin-top: 5px; }
+.option-row { min-height: 38px; padding: 0 10px; border: 0; border-radius: 12px; background: alpha(@on_surface, 0.045); color: @on_surface; text-align: left; }
+.option-row:hover { background: alpha(@primary, 0.13); }
+.channel-name { min-width: 100px; color: alpha(@on_surface, 0.76); font-size: 13px; }
+.channel-scale { min-height: 30px; background: transparent; }
+.channel-scale trough { min-height: 5px; border: 0; border-radius: 99px; background: alpha(@on_surface, 0.14); }
+.channel-scale highlight { min-height: 5px; border-radius: 99px; background: @primary; }
+.channel-scale slider { min-width: 13px; min-height: 13px; border: 0; border-radius: 99px; background: @on_surface; }
+.channel-value { min-width: 45px; color: alpha(@on_surface, 0.68); font-size: 12px; }
+.filter-chip { margin: 3px 0 0; min-height: 38px; }
+.empty-state { min-height: 180px; padding: 30px; border-radius: 24px; background: alpha(@on_surface, 0.035); }
+.empty-icon { color: alpha(@primary, 0.75); font-size: 34px; }
+.muted-text { color: alpha(@on_surface, 0.62); font-size: 14px; }
