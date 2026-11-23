@@ -1,11 +1,15 @@
-//! glass-audio: mezclador de audio GTK4 con diseño inspirado en One UI y colores
-//! dinámicos del wallpaper (Matugen/Wallust).
+//! glass-audio: mezclador GTK4 estilo One UI 8.5 con barras de relleno,
+//! cristal translúcido y colores dinámicos del wallpaper (Matugen/Wallust).
 
 use audio_core::{AudioCommand, AudioService, AudioState};
 use async_channel::unbounded;
 use gtk4::prelude::*;
 use gtk4::{Application, ApplicationWindow, CssProvider, gdk};
-use std::{cell::{Cell, RefCell}, collections::HashMap, collections::HashSet, rc::Rc};
+use std::{
+    cell::{Cell, RefCell},
+    collections::{HashMap, HashSet},
+    rc::Rc,
+};
 
 mod ui;
 
@@ -13,28 +17,31 @@ mod ui;
 pub struct MixerState {
     pub audio: Rc<RefCell<AudioState>>,
     pub commands: Rc<async_channel::Sender<AudioCommand>>,
-    /// Targets cuyo volumen por canal se modifica de forma independiente.
+    /// Objetivos con volumen por canal independiente.
     pub unlocked: Rc<RefCell<HashSet<String>>>,
-    /// Pestaña visible actualmente (nombre interno), para el filtro inferior.
+    /// Pestaña visible (nombre interno), para el filtro "Mostrar:".
     pub current_tab: Rc<RefCell<String>>,
-    /// Índice del filtro "Mostrar:" elegido en cada pestaña.
+    /// Filtro elegido en cada pestaña.
     pub filters: Rc<RefCell<HashMap<String, usize>>>,
-    /// Casilla "Mostrar los medidores de volumen".
+    /// `true` mientras el usuario arrastra una barra: evita reconstruir la UI.
+    pub dragging: Rc<Cell<bool>>,
+    /// Clave del objetivo que se está arrastrando (para no sobrescribirlo).
+    pub dragging_target: Rc<RefCell<Option<String>>>,
+    /// Barra que debe recuperar el foco tras el refresco (accesibilidad).
+    pub focus_target: Rc<RefCell<Option<String>>>,
+    /// Casillas de Configuración.
     pub show_meters: Rc<Cell<bool>>,
-    /// Casilla "Hide unavailable card profiles".
     pub hide_unavailable: Rc<Cell<bool>>,
-}
-
-impl MixerState {
-    /// Devuelve el filtro elegido para una pestaña (0 por defecto).
-    pub fn filter_index(&self, tab: &str) -> usize {
-        *self.filters.borrow().get(tab).unwrap_or(&0)
-    }
 }
 
 impl MixerState {
     fn send(&self, command: AudioCommand) {
         let _ = self.commands.send_blocking(command);
+    }
+
+    /// Filtro seleccionado en una pestaña (0 por defecto).
+    pub fn filter_index(&self, tab: &str) -> usize {
+        *self.filters.borrow().get(tab).unwrap_or(&0)
     }
 }
 
@@ -80,9 +87,13 @@ fn main() {
         unlocked: Rc::new(RefCell::new(HashSet::new())),
         current_tab: Rc::new(RefCell::new("playback".into())),
         filters: Rc::new(RefCell::new(HashMap::new())),
+        dragging: Rc::new(Cell::new(false)),
+        dragging_target: Rc::new(RefCell::new(None)),
+        focus_target: Rc::new(RefCell::new(None)),
         show_meters: Rc::new(Cell::new(true)),
         hide_unavailable: Rc::new(Cell::new(false)),
     };
+
     let state_app = state.clone();
     let events_for_ui = Rc::new(RefCell::new(None::<Box<dyn Fn()>>));
     let refresh_for_events = events_for_ui.clone();
@@ -101,8 +112,8 @@ fn main() {
         let window = ApplicationWindow::builder()
             .application(app)
             .title("Sonido")
-            .default_width(1040)
-            .default_height(820)
+            .default_width(560)
+            .default_height(720)
             .resizable(true)
             .build();
         window.add_css_class("audio-window");

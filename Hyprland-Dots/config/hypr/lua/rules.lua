@@ -39,7 +39,7 @@ hl.window_rule({ match = { class = "nm-connection-editor" }, float = true, cente
 hl.window_rule({ match = { class = "com.pixi.glassbt" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
 hl.window_rule({ match = { class = "glass-bt" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
 hl.window_rule({ match = { class = "com.pixi.glassnet" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
-hl.window_rule({ match = { class = "com.pixi.glassaudio" }, float = true, size = { 720, 640 }, center = true, border_size = 0, no_shadow = true, rounding = 28 })
+hl.window_rule({ match = { class = "com.pixi.glassaudio" }, float = true, size = { 720, 640 }, center = true, border_size = 0, no_shadow = true, rounding = 36 })
 hl.window_rule({ match = { class = "glass-net" }, float = true, size = { 460, 640 }, center = true, border_size = 0, no_shadow = true })
 
 -- Diálogos y visores
@@ -69,6 +69,12 @@ hl.window_rule({ match = { class = "xwayland" }, float = false })
 -- Ahorro GPU: sin blur en ventanas (criterio de end-4 + wiki oficial).
 -- Los layer surfaces (barra, dock, paneles) conservan su blur.
 hl.window_rule({ match = { class = ".*" }, no_blur = true })
+
+-- ── glass-audio: cristal translúcido (Hyprland 0.57+) ──────────────────────
+-- La API Lua expone `no_blur` (no `blur`): false revierte la regla global de
+-- ahorro GPU. Se declara DESPUÉS de esa regla para que gane por orden.
+-- El CSS de la app usa fondos con alpha; el desenfoque lo aplica el compositor.
+hl.window_rule({ match = { class = "com.pixi.glassaudio" }, no_blur = false, rounding = 36, border_size = 0, no_shadow = true })
 
 -- Ventanas fijadas (pin=1): borde con el rol "primary" de Material 3,
 -- extraído del fondo de pantalla por pixi_colors.py (estilo end-4).

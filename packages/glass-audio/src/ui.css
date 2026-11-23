@@ -1,235 +1,244 @@
-/* glass-audio — One UI / QuickShell · colores dinámicos Matugen/Wallust */
-.audio-window, .audio-window.background { background: transparent; color: @on_surface; }
-.audio-shell { padding: 14px; background: transparent; }
+/* glass-audio — One UI 8.5 · barras de relleno · tokens Matugen/Wallust
+   Colores: SOLO variables del tema (salvo el verde #4ade80 y negro para sombras). */
 
-/* ── Panel de vidrio ── */
+.audio-window,
+.audio-window.background { background: transparent; color: @on_surface; }
+.audio-shell { padding: 12px; background: transparent; }
+
+/* ── Panel flotante de cristal ── */
 .audio-panel {
-  background-color: alpha(@surface, 0.90);
-  background-image: linear-gradient(145deg, alpha(@color15, 0.06), alpha(@primary, 0.035) 55%, alpha(@surface, 0.12));
-  border: 1px solid alpha(@outline_variant, 0.40);
-  border-radius: 18px;
-  padding: 16px 16px 14px;
-  box-shadow: inset 0 1px alpha(@color15, 0.15), 0 24px 60px alpha(#000000, 0.28);
+  background-color: alpha(@surface, 0.78);
+  background-image: linear-gradient(145deg, alpha(@color15, 0.07), alpha(@primary, 0.05) 55%, alpha(@surface, 0.12));
+  border: 1px solid alpha(@color15, 0.14);
+  border-radius: 36px;
+  padding: 22px 22px 18px;
+  box-shadow: inset 0 1px alpha(@color15, 0.16), 0 24px 64px alpha(#000000, 0.30);
 }
-.audio-header { padding: 2px 2px 14px; }
-.audio-title { font-size: 30px; font-weight: 400; letter-spacing: -0.5px; color: @on_surface; }
-.audio-subtitle { font-size: 13px; color: alpha(@on_surface, 0.66); }
+
+/* ── Cabecera ── */
+.audio-header { padding: 2px 4px 18px; }
+.audio-title { font-size: 34px; font-weight: 300; letter-spacing: -0.6px; color: @on_surface; }
+.audio-subtitle { font-size: 13px; color: alpha(@on_surface, 0.55); }
 .round-action {
-  min-width: 40px; min-height: 40px; padding: 0; border: 0; border-radius: 999px;
-  background: alpha(@on_surface, 0.08); color: @on_surface;
+  min-width: 42px; min-height: 42px; padding: 0;
+  border: 1px solid alpha(@color15, 0.14); border-radius: 999px;
+  background: alpha(@on_surface, 0.07); color: @on_surface;
+  transition: background-color 160ms ease, border-color 160ms ease;
 }
-.round-action:hover { background: alpha(@on_surface, 0.16); }
+.round-action:hover { background: alpha(@on_surface, 0.16); border-color: alpha(@primary, 0.40); }
 .button-icon { -gtk-icon-style: symbolic; min-width: 20px; min-height: 20px; }
 
-/* ── Barra de pestañas superior ── */
+/* ── Pestañas segmentadas (activa = icono + texto, inactivas = icono) ── */
 .tab-bar {
-  margin: 0 0 14px;
-  padding: 4px;
-  min-height: 48px;
+  margin: 0 0 16px; padding: 4px; min-height: 50px;
   border-radius: 999px;
   background: alpha(@on_surface, 0.07);
-  border: 1px solid alpha(@outline_variant, 0.12);
+  border: 1px solid alpha(@outline_variant, 0.16);
 }
 .tab-button {
-  min-height: 40px;
-  padding: 0 12px;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  background: transparent;
-  color: alpha(@on_surface, 0.60);
-  font-size: 13px;
+  min-height: 42px; padding: 0 12px;
+  border: 1px solid transparent; border-radius: 999px;
+  background: transparent; color: alpha(@on_surface, 0.55);
+  font-size: 13px; font-weight: 400;
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
 }
-.tab-button:hover { background: alpha(@on_surface, 0.08); color: alpha(@on_surface, 0.85); }
+.tab-button:hover { background: alpha(@on_surface, 0.09); color: alpha(@on_surface, 0.85); }
+.tab-button.inactive { padding: 0 13px; }
 .tab-button.active {
-  background: alpha(@surface, 0.82);
-  border-color: alpha(@color15, 0.16);
-  color: @on_surface;
-  font-weight: 600;
-  box-shadow: 0 2px 8px alpha(#000000, 0.22);
+  background: alpha(@surface, 0.86);
+  border-color: alpha(@color15, 0.18);
+  color: @on_surface; font-weight: 600;
+  box-shadow: 0 4px 14px alpha(#000000, 0.22);
 }
-.tab-icon { -gtk-icon-style: symbolic; min-width: 18px; min-height: 18px; }
+.tab-icon { -gtk-icon-style: symbolic; min-width: 19px; min-height: 19px; }
 .tab-text { margin-left: 2px; }
 
 /* ── Contenido ── */
 .audio-stack { background: transparent; }
 .audio-scroll, .audio-scroll > viewport { background: transparent; border: 0; }
-.audio-list { padding: 2px 2px 16px; }
+.audio-list { padding: 2px 2px 12px; }
 .audio-section {
-  margin: 8px 6px 2px;
-  color: alpha(@on_surface, 0.62);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.4px;
+  margin: 10px 8px 6px;
+  color: alpha(@on_surface, 0.55);
+  font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
 }
 
-/* ── Tarjetas de item ── */
+/* ── Tarjetas flotantes separadas ── */
 .stream-item, .device-item {
-  padding: 14px 16px;
-  border-radius: 14px;
-  background-color: alpha(@on_surface, 0.04);
-  background-image: linear-gradient(180deg, alpha(@color15, 0.035), transparent 60%);
-  border: 1px solid alpha(@outline_variant, 0.22);
+  padding: 18px 20px;
+  border-radius: 28px;
+  background-color: alpha(@on_surface, 0.035);
+  background-image: linear-gradient(180deg, alpha(@color15, 0.045), transparent 60%);
+  border: 1px solid alpha(@color15, 0.14);
+  box-shadow: inset 0 1px alpha(@color15, 0.10), 0 8px 24px alpha(#000000, 0.14);
+  transition: background-color 160ms ease, border-color 160ms ease;
 }
 .stream-item:hover, .device-item:hover {
-  border-color: alpha(@primary, 0.32);
-  background-color: alpha(@on_surface, 0.065);
+  background-color: alpha(@on_surface, 0.06);
+  border-color: alpha(@primary, 0.28);
 }
-.stream-item + .stream-item, .device-item + .device-item {
-  border-top: 1px solid alpha(@outline_variant, 0.18);
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  margin-top: -2px;
-}
-
-.item-top { min-height: 44px; }
+.item-top { min-height: 46px; }
 .stream-icon, .device-icon {
   -gtk-icon-style: symbolic;
-  min-width: 42px; min-height: 42px;
+  min-width: 44px; min-height: 44px; padding: 10px;
   border-radius: 999px;
-  background: alpha(@primary, 0.16);
-  color: @primary;
-  padding: 9px;
+  background: alpha(@primary, 0.18); color: @primary;
 }
-.item-title { color: @on_surface; font-size: 15px; font-weight: 550; }
+.item-title { color: @on_surface; font-size: 16px; font-weight: 600; }
+.item-sub { color: alpha(@on_surface, 0.55); font-size: 12px; }
 
-.mute-button, .lock-button {
-  min-width: 38px; min-height: 38px;
-  padding: 8px;
-  border: 1px solid alpha(@outline_variant, 0.18);
-  border-radius: 999px;
-  background: alpha(@on_surface, 0.05);
-  color: alpha(@on_surface, 0.78);
+/* ── Componente estrella: barra de relleno (sin perilla) ── */
+.fill-bar-wrap { margin-top: 8px; }
+.fill-bar { min-height: 52px; padding: 0; margin: 0; background: transparent; }
+.fill-bar trough {
+  min-height: 52px; border-radius: 999px;
+  background: alpha(@on_surface, 0.10);
+  border: 1px solid alpha(@outline_variant, 0.25);
 }
-.mute-button:hover, .lock-button:hover {
-  background: alpha(@primary, 0.16);
-  color: @on_surface;
-  border-color: alpha(@primary, 0.40);
+.fill-bar highlight {
+  min-height: 52px; border-radius: 999px; border: 0;
+  background-image: linear-gradient(90deg, alpha(@primary, 0.85), @primary);
 }
-.check-slot { min-width: 26px; min-height: 26px; }
-.default-check {
-  -gtk-icon-style: symbolic;
-  min-width: 20px; min-height: 20px;
-  color: #4ade80;
+.fill-bar slider {
+  min-width: 4px; min-height: 24px; border: 0; border-radius: 999px;
+  background: alpha(@on_primary, 0.9); box-shadow: none;
 }
-.check-slot.is-default .default-check { color: #4ade80; }
+.fill-bar.over-100 highlight {
+  background-image: linear-gradient(90deg, alpha(@primary, 0.85), alpha(@color15, 0.95));
+}
+.fill-bar-mark { border-radius: 1px; background: alpha(@on_surface, 0.35); }
+.fill-bar:disabled trough { background: alpha(@on_surface, 0.05); }
+.fill-bar:disabled highlight { background-image: linear-gradient(90deg, alpha(@outline_variant, 0.35), alpha(@outline_variant, 0.55)); }
 
-/* ── Campos "Puerto:" / "Perfil:" ── */
-.field-row { min-height: 34px; margin: 2px 0 2px 46px; }
-.field-label { color: alpha(@on_surface, 0.62); font-size: 12px; min-width: 48px; }
-.field-value { color: alpha(@on_surface, 0.55); font-size: 12px; }
-.port-combo, .profile-combo { font-size: 12px; }
-dropdown.port-combo button, dropdown.profile-combo button,
-dropdown.filter-combo button {
-  background: alpha(@on_surface, 0.06);
-  border: 1px solid alpha(@outline_variant, 0.22);
-  border-radius: 10px;
-  padding: 6px 10px;
-  color: @on_surface;
+.bar-icon {
+  min-width: 36px; min-height: 36px; padding: 8px;
+  border: 0; border-radius: 999px;
+  background: alpha(@on_surface, 0.14); color: @on_surface;
+  transition: background-color 140ms ease;
 }
-dropdown.port-combo button:hover, dropdown.profile-combo button:hover,
-dropdown.filter-combo button:hover {
-  background: alpha(@primary, 0.14);
-  border-color: alpha(@primary, 0.38);
-}
-
-/* ── Slider: Silencio | barra | 100% (0.00 dB) ── */
-.slider-row { min-height: 40px; margin: 2px 0 0 46px; }
-.slider-caption { color: alpha(@on_surface, 0.52); font-size: 11px; min-width: 56px; }
-.volume-caption {
-  color: @on_surface;
-  font-size: 12px;
-  font-weight: 600;
+.bar-icon:hover { background: alpha(@on_surface, 0.26); }
+.bar-icon:active { background: alpha(@primary, 0.45); }
+.bar-icon-image { -gtk-icon-style: symbolic; min-width: 20px; min-height: 20px; }
+.bar-value {
+  color: @on_surface; font-size: 15px; font-weight: 600;
   font-feature-settings: "tnum";
 }
-.volume-scale { min-height: 40px; padding: 0; margin: 0; background: transparent; }
-.volume-scale trough {
-  min-height: 8px;
-  border: 1px solid alpha(@outline_variant, 0.20);
-  border-radius: 999px;
-  background: alpha(@on_surface, 0.10);
-}
-.volume-scale highlight {
-  min-height: 8px;
-  border: 0;
-  border-radius: 999px;
-  background: @primary;
-}
-.volume-scale slider {
-  min-width: 16px; min-height: 16px;
-  margin: 0;
-  border: 0;
-  border-radius: 999px;
-  background: @on_surface;
-  box-shadow: 0 2px 6px alpha(#000000, 0.30);
+.bar-db {
+  color: alpha(@on_surface, 0.50); font-size: 12px;
+  font-feature-settings: "tnum"; margin-left: 46px;
 }
 
-/* ── Medidor VU ── */
-.vu-meter {
-  min-height: 4px;
-  margin: 0 0 2px 102px;
-  background: alpha(@on_surface, 0.08);
-  border-radius: 99px;
+/* ── Medidor VU reducido a línea fina ── */
+.vu-line { min-height: 3px; margin: 2px 0 2px 46px; background: alpha(@on_surface, 0.07); border-radius: 99px; }
+.vu-line-fill { min-height: 3px; background: alpha(@primary, 0.62); border-radius: 99px; }
+
+/* ── Campos Puerto / Perfil y desplegables ── */
+.field-row { min-height: 36px; margin: 4px 0 0 46px; }
+.field-label { color: alpha(@on_surface, 0.55); font-size: 12px; min-width: 52px; }
+.field-value { color: alpha(@on_surface, 0.50); font-size: 12px; }
+dropdown.port-combo button,
+dropdown.profile-combo button,
+dropdown.filter-combo button {
+  background: alpha(@on_surface, 0.06);
+  border: 1px solid alpha(@outline_variant, 0.25);
+  border-radius: 999px;
+  padding: 6px 14px; color: @on_surface; font-size: 12px;
+  transition: background-color 140ms ease, border-color 140ms ease;
 }
-.vu-meter-fill { min-height: 4px; background: alpha(@primary, 0.70); border-radius: 99px; }
+dropdown.port-combo button:hover,
+dropdown.profile-combo button:hover,
+dropdown.filter-combo button:hover {
+  background: alpha(@primary, 0.16); border-color: alpha(@primary, 0.42);
+}
+
+/* Popover de cristal (evita el fondo opaco por defecto) */
+popover > contents {
+  background-color: alpha(@surface, 0.94);
+  background-image: linear-gradient(145deg, alpha(@color15, 0.06), transparent 60%);
+  border: 1px solid alpha(@outline_variant, 0.28);
+  border-radius: 20px;
+  padding: 6px;
+  box-shadow: 0 14px 36px alpha(#000000, 0.32);
+}
+popover > contents > * { border-radius: 12px; }
+popover menuitem { padding: 8px 12px; border-radius: 12px; color: @on_surface; font-size: 12px; }
+popover menuitem:hover, popover menuitem:selected { background: alpha(@primary, 0.20); }
+
+/* ── Chip único "Predeterminado" (candado + check) ── */
+.default-chip {
+  min-height: 34px; padding: 0 12px;
+  border: 1px solid alpha(@outline_variant, 0.25); border-radius: 999px;
+  background: alpha(@on_surface, 0.05); color: alpha(@on_surface, 0.65);
+  font-size: 12px;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.default-chip:hover { background: alpha(@primary, 0.14); border-color: alpha(@primary, 0.40); }
+.default-chip.is-default {
+  background: alpha(@primary, 0.16); border-color: alpha(@primary, 0.50); color: @on_surface;
+}
+.chip-icon { -gtk-icon-style: symbolic; min-width: 16px; min-height: 16px; color: alpha(@on_surface, 0.55); }
+.default-chip.is-default .chip-icon { color: #4ade80; }
 
 /* ── Opciones avanzadas ── */
-.advanced-expander { color: alpha(@on_surface, 0.62); font-size: 12px; margin-left: 46px; }
+.advanced-expander { color: alpha(@on_surface, 0.55); font-size: 12px; margin: 4px 0 0 46px; }
 .advanced-expander > title { padding: 4px 0; }
-.advanced-content { padding: 8px 4px 2px; }
-.channel-name { min-width: 90px; color: alpha(@on_surface, 0.70); font-size: 12px; }
-.channel-scale { min-height: 26px; background: transparent; }
-.channel-scale trough { min-height: 4px; border: 0; border-radius: 99px; background: alpha(@on_surface, 0.12); }
-.channel-scale highlight { min-height: 4px; border-radius: 99px; background: @primary; }
+.advanced-content { padding: 10px 0 2px 46px; }
+.channel-name { min-width: 92px; color: alpha(@on_surface, 0.62); font-size: 12px; }
+.channel-scale { min-height: 40px; }
+.channel-scale trough { min-height: 40px; border-radius: 999px; background: alpha(@on_surface, 0.09); border: 1px solid alpha(@outline_variant, 0.20); }
+.channel-scale highlight { min-height: 40px; border-radius: 999px; background: @primary; }
 .channel-scale slider {
-  min-width: 12px; min-height: 12px;
-  border: 0; border-radius: 999px;
-  background: @on_surface;
-  box-shadow: 0 1px 4px alpha(#000000, 0.25);
+  min-width: 4px; min-height: 18px; border: 0; border-radius: 999px;
+  background: alpha(@on_primary, 0.9); box-shadow: none;
 }
-.channel-value { min-width: 40px; color: alpha(@on_surface, 0.62); font-size: 11px; }
+.channel-value { min-width: 44px; color: alpha(@on_surface, 0.55); font-size: 11px; font-feature-settings: "tnum"; }
+
+/* ── Interruptores estilo One UI ── */
+.setting-row { min-height: 44px; padding: 4px 2px; }
+.setting-label { color: alpha(@on_surface, 0.82); font-size: 13px; font-weight: 400; }
+switch.oneui-switch {
+  min-width: 46px; min-height: 26px; padding: 2px;
+  border-radius: 999px;
+  background: alpha(@on_surface, 0.16);
+  border: 1px solid alpha(@outline_variant, 0.25);
+  box-shadow: none;
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+switch.oneui-switch:checked { background: @primary; border-color: @primary; }
+switch.oneui-switch slider {
+  min-width: 20px; min-height: 20px; border-radius: 999px;
+  background: @on_surface; box-shadow: 0 2px 5px alpha(#000000, 0.28);
+}
 
 /* ── Barra inferior fija "Mostrar:" ── */
 .filter-bar {
-  margin-top: 12px;
-  padding: 12px 4px 0;
-  border-top: 1px solid alpha(@outline_variant, 0.16);
+  margin-top: 14px; padding: 14px 4px 0;
+  border-top: 1px solid alpha(@outline_variant, 0.18);
 }
-.filter-label { color: alpha(@on_surface, 0.70); font-size: 12px; font-weight: 500; }
-.filter-combo { min-width: 220px; font-size: 12px; }
+.filter-label { color: alpha(@on_surface, 0.60); font-size: 12px; font-weight: 600; }
+.filter-combo { min-width: 220px; }
 
 /* ── Configuración ── */
 .config-checks {
-  margin-top: 14px;
-  padding: 14px 16px;
-  border-radius: 14px;
+  margin-top: 16px; padding: 18px 20px; border-radius: 28px;
   background: alpha(@on_surface, 0.035);
-  border: 1px solid alpha(@outline_variant, 0.20);
+  border: 1px solid alpha(@color15, 0.14);
+  box-shadow: inset 0 1px alpha(@color15, 0.10);
 }
 .config-checks .audio-section { margin: 0 0 6px 0; }
-checkbutton { color: alpha(@on_surface, 0.82); font-size: 12px; }
-checkbutton check {
-  min-width: 16px; min-height: 16px;
-  border: 2px solid alpha(@on_surface, 0.38);
-  border-radius: 4px;
-  background: transparent;
-}
-checkbutton:checked check {
-  background: @primary;
-  border-color: @primary;
-  color: @on_primary;
-}
 
-/* ── Estado vacío (cursiva, gris tenue, centrado) ── */
+/* ── Estados vacíos ── */
 .empty-state {
-  min-height: 120px;
-  padding: 24px;
-  border-radius: 16px;
+  min-height: 150px; padding: 28px; border-radius: 28px;
   background: alpha(@on_surface, 0.025);
-  border: 1px dashed alpha(@outline_variant, 0.20);
+  border: 1px dashed alpha(@outline_variant, 0.22);
 }
-.empty-state-text {
-  color: alpha(@on_surface, 0.48);
-  font-size: 13px;
-  font-style: italic;
+.empty-icon { -gtk-icon-style: symbolic; min-width: 56px; min-height: 56px; color: alpha(@primary, 0.42); }
+.empty-state-text { color: alpha(@on_surface, 0.45); font-size: 13px; font-style: italic; }
+.muted-text { color: alpha(@on_surface, 0.50); font-size: 12px; }
+
+/* ── Foco visible y estados ── */
+.fill-bar:focus, .bar-icon:focus, .tab-button:focus, .default-chip:focus,
+dropdown button:focus, switch:focus, .round-action:focus {
+  box-shadow: 0 0 0 2px alpha(@primary, 0.65);
 }
-.muted-text { color: alpha(@on_surface, 0.58); font-size: 12px; }
