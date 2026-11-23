@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 # /* ---- 💫 https://github.com/0o0-ct/Pixi-Arch-A 💫 ---- */
 # QsCenterToggle.sh <netcenter|btcenter|audiocenter>
-#
-# Abre/cierra un panel "center" de quickshell (netcenter WiFi, btcenter
-# Bluetooth, audiocenter dispositivos de audio). Lo llama waybar desde los
-# módulos network / bluetooth / pulseaudio. Si el panel todavía no está
-# corriendo lo arranca primero y reintenta el toggle hasta que el IPC responde.
-# Dirige el panel al monitor actualmente enfocado.
+# Alterna los paneles de red/Bluetooth y abre el mezclador GTK glass-audio.
 set -u
 
 config="${1:-}"
@@ -15,46 +10,32 @@ if [ -z "$config" ]; then
     exit 2
 fi
 
-# Delegar Red/WiFi a glass-net (nativo Rust, mismo patrón que glass-bt)
-if [ "$config" = "netcenter" ]; then
-    pidof glass-net >/dev/null 2>&1 || { setsid glass-net --hidden >/dev/null 2>&1 & sleep 0.3; }; kill -USR1 $(pidof glass-net) 2>/dev/null || true
-    exit 0
-fi
-
-# Delegar Bluetooth a glass-bt (nativo Rust centrado en monitor y arrastrable)
-if [ "$config" = "btcenter" ]; then
-    pidof glass-bt >/dev/null 2>&1 || { setsid glass-bt --hidden >/dev/null 2>&1 & sleep 0.3; }; kill -USR1 $(pidof glass-bt) 2>/dev/null || true
-    exit 0
-fi
-
-# Delegar Audio a glass-audio (nativo Rust centrado en monitor y arrastrable)
-if [ "$config" = "audiocenter" ]; then
-    pidof glass-audio >/dev/null 2>&1 || { setsid glass-audio >/dev/null 2>&1 & sleep 0.3; }
-    exit 0
-fi
-
-# Delegar Audio a glass-audio (nativo Rust centrado en monitor y arrastrable)
-if [ "$config" = "audiocenter" ]; then
-    pidof glass-audio >/dev/null 2>&1 || { setsid glass-audio >/dev/null 2>&1 & sleep 0.3; }
-    exit 0
-fi
-
-target_mon=$(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.focused) | .name' 2>/dev/null || true)
-
-if ! pgrep -f "qs -c $config" >/dev/null 2>&1; then
-    setsid qs -c "$config" >/dev/null 2>&1 &
-    for _ in $(seq 1 60); do
-        if [ -n "$target_mon" ]; then
-            qs -c "$config" ipc call panel toggleOn "$target_mon" >/dev/null 2>&1 && exit 0
+case "$config" in
+    netcenter)
+        pidof glass-net >/dev/null 2>&1 || { setsid glass-net --hidden >/dev/null 2>&1 & sleep 0.3; }
+        kill -USR1 "$(pidof glass-net)" 2>/dev/null || true
+        exit 0
+        ;;
+    btcenter)
+        pidof glass-bt >/dev/null 2>&1 || { setsid glass-bt --hidden >/dev/null 2>&1 & sleep 0.3; }
+        kill -USR1 "$(pidof glass-bt)" 2>/dev/null || true
+        exit 0
+        ;;
+    audiocenter)
+        # Use the per-user installation so clicks never reopen a stale system binary.
+        audio_bin="$HOME/.local/bin/glass-audio"
+        if [ ! -x "$audio_bin" ]; then
+            audio_bin="$(command -v glass-audio || true)"
         fi
-        qs -c "$config" ipc call panel toggle >/dev/null 2>&1 && exit 0
-        sleep 0.05
-    done
-    exit 1
-fi
-
-if [ -n "$target_mon" ]; then
-    qs -c "$config" ipc call panel toggleOn "$target_mon" >/dev/null 2>&1 || qs -c "$config" ipc call panel toggle >/dev/null 2>&1
-else
-    qs -c "$config" ipc call panel toggle >/dev/null 2>&1
-fi
+        if [ -z "$audio_bin" ] || [ ! -x "$audio_bin" ]; then
+            notify-send -u critical "Mezclador de audio" "No se encontró glass-audio. Ejecuta install-scripts/glass-audio.sh." 2>/dev/null || true
+            exit 1
+        fi
+        setsid "$audio_bin" >/dev/null 2>&1 &
+        exit 0
+        ;;
+    *)
+        echo "Configuración desconocida: $config" >&2
+        exit 2
+        ;;
+esac

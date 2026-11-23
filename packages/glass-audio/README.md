@@ -12,7 +12,17 @@ Mezclador de audio para Arch Linux/Hyprland, implementado en Rust + GTK4. La int
 - Audio gestionado por el servicio `audio-core` (PipeWire/PulseAudio); sin dispositivos de muestra.
 - Tema de vidrio con la paleta de wallpaper cargada por `glass-theme`.
 
-## Compilar y ejecutar
+## Compilar e instalar la versión actual
+
+Desde la raíz del repositorio:
+
+```bash
+./install-scripts/glass-audio.sh
+```
+
+El script compila `packages/glass-audio` y reemplaza el ejecutable de usuario en `~/.local/bin/glass-audio`. Luego abre esa ruta explícitamente, evitando una versión antigua instalada en `/usr/local/bin`.
+
+Para compilar sin instalar:
 
 ```bash
 cd packages
@@ -22,8 +32,9 @@ cargo run --release -p glass-audio
 
 Para imprimir el estado detectado como JSON: `glass-audio --dump`.
 
-## Atajo de Hyprland
+## Integración
 
-`SUPER + SHIFT + V` abre glass-audio. `SUPER + V` queda reservado para `volume-control`.
-
-La ventana admite el desenfoque de Hyprland con namespace `audio-glass` (añádelo a las reglas de capa de tu configuración si corresponde).
+- Clic en el icono de audio de Waybar: `~/.config/hypr/scripts/QsCenterToggle.sh audiocenter` → `~/.local/bin/glass-audio`.
+- `SUPER + SHIFT + V`: abre `~/.local/bin/glass-audio`.
+- `SUPER + V`: queda exclusivamente para QuickShell (`qs -c controlcenter ipc call panel toggle`).
+- `volume-control` permanece disponible como ejecutable manual, sin reasignar `SUPER + V`.
